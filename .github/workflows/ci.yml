@@ -36,8 +36,8 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: provider/go.mod
-          cache-dependency-path: provider/go.sum
+          go-version-file: ${{ matrix.module }}/go.mod
+          cache-dependency-path: ${{ matrix.module }}/go.sum
 
       - name: golangci-lint ${{ matrix.module }}
         uses: golangci/golangci-lint-action@v6
@@ -109,8 +109,8 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: provider/go.mod
-          cache-dependency-path: provider/go.sum
+          go-version-file: tests/go.mod
+          cache-dependency-path: tests/go.sum
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
