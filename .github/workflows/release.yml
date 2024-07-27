@@ -40,6 +40,12 @@ jobs:
         args: -p 3 release
         version: '~> v2'
 
+    - name: Upload binaries
+      uses: actions/upload-artifact@v4
+      with:
+        path: dist/resource_linux_amd64_v1/pulumi-resource-baremetal
+        name: providers
+
   publish_sdk:
     name: Publish SDKs
     runs-on: ubuntu-latest
@@ -67,6 +73,12 @@ jobs:
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
 
+      - name: Install provider binary
+        uses: actions/download-artifact@v4
+        with:
+          name: provider
+          path: bin
+
       - name: Install Go
         uses: actions/setup-go@v5
         with:
@@ -77,12 +89,6 @@ jobs:
         uses: jaxxstorm/action-install-gh-release@v1.12.0
         with:
           repo: pulumi/pulumictl
-
-      - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.12.0
-        with:
-          repo: ${{ github.repository }}
-          tag: ${{ github.ref }}
 
       - name: Install Pulumi CLI
         uses: pulumi/action-install-pulumi-cli@v2.0.0
