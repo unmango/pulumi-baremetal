@@ -7,7 +7,8 @@ before:
   hooks:
     - make gen
 builds:
-  - binary: pulumi-resource-baremetal
+  - id: resource
+    binary: pulumi-resource-baremetal
     dir: provider
     env:
       - CGO_ENABLED=0
@@ -22,7 +23,8 @@ builds:
       # The line below MUST align with the module in current provider/go.mod
       - -X github.com/unmango/pulumi-baremetal/provider/Version={{.Tag}}
     main: ./cmd/pulumi-resource-baremetal/
-  - binary: provisioner
+  - id: provisioner
+    binary: provisioner
     dir: provider
     env:
       - CGO_ENABLED=0

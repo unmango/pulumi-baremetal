@@ -16,8 +16,8 @@ jobs:
 
       - uses: goreleaser/goreleaser-action@v6
         with:
-          version: latest
           args: check
+          version: ~> v2
 
   lint:
     if: github.event_name == 'pull_request'
