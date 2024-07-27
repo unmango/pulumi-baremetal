@@ -106,8 +106,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: false
-          cache-from: gha
-          cache-to: gha
+          cache-from: type=gha
+          cache-to: type=gha
           context: .
           file: tests/Dockerfile
 
