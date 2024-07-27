@@ -5,7 +5,7 @@ before:
   hooks:
     - make gen
 builds:
-  - binary: pulumi-resource-xyz
+  - binary: pulumi-resource-baremetal
     dir: provider
     env:
       - CGO_ENABLED=0
@@ -18,10 +18,8 @@ builds:
       - linux
     ldflags:
       # The line below MUST align with the module in current provider/go.mod
-      - -X github.com/your-org-name/pulumi-xyz/provider/Version={{.Tag }}
-    main: ./cmd/pulumi-resource-xyz/
-changelog:
-  skip: true
+      - -X github.com/unmango/pulumi-baremetal/provider/Version={{.Tag }}
+    main: ./cmd/pulumi-resource-baremetal/
 release:
   disable: false
   prerelease: auto

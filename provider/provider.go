@@ -15,25 +15,32 @@
 package provider
 
 import (
+	"context"
 	"math/rand"
 	"time"
 
 	p "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
+	"github.com/pulumi/pulumi-go-provider/middleware/schema"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
 )
 
 // Version is initialized by the Go linker to contain the semver of this build.
 var Version string
 
-const Name string = "xyz"
+const Name string = "baremetal"
 
 func Provider() p.Provider {
-	// We tell the provider what resources it needs to support.
-	// In this case, a single custom resource.
 	return infer.Provider(infer.Options{
+		Metadata: schema.Metadata{
+			LanguageMap: map[string]any{
+				"csharp": map[string]string{"rootNamespace": "UnMango"},
+				"nodejs": map[string]string{"packageName": "@unmango/baremetal"},
+				"python": map[string]string{"packageName": "unmango_baremetal"},
+			},
+		},
 		Resources: []infer.InferredResource{
-			infer.Resource[Random, RandomArgs, RandomState](),
+			infer.Resource[Random](),
 		},
 		ModuleMap: map[tokens.ModuleName]tokens.ModuleName{
 			"provider": "index",
@@ -70,7 +77,7 @@ type RandomState struct {
 }
 
 // All resources must implement Create at a minimum.
-func (Random) Create(ctx p.Context, name string, input RandomArgs, preview bool) (string, RandomState, error) {
+func (Random) Create(ctx context.Context, name string, input RandomArgs, preview bool) (string, RandomState, error) {
 	state := RandomState{RandomArgs: input}
 	if preview {
 		return name, state, nil

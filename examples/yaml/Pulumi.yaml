@@ -1,13 +1,13 @@
-name: provider-xyz-native
+name: provider-baremetal-native
 runtime: yaml
 plugins:
   providers:
-    - name: xyz
+    - name: baremetal
       path: ../../bin
 
 resources:
   myRandomResource:
-    type: xyz:Random
+    type: baremetal:Random
     properties:
       length: 24
 
