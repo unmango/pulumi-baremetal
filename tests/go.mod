@@ -11,7 +11,7 @@ require (
 	github.com/pulumi/pulumi-go-provider v0.21.0
 	github.com/pulumi/pulumi/sdk/v3 v3.127.0
 	github.com/testcontainers/testcontainers-go v0.32.0
-	github.com/unmango/pulumi-baremetal/provider v0.0.0-20240727201414-9325d21d06c6
+	github.com/unmango/pulumi-baremetal/provider v0.0.0-00010101000000-000000000000
 )
 
 require (
