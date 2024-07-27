@@ -30,8 +30,8 @@ provider::
 provider_debug::
 	(cd provider && go build -o $(WORKING_DIR)/bin/${PROVIDER} -gcflags="all=-N -l" -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER))
 
-test_provider::
-	cd tests && go test -short -v -count=1 -cover -timeout 2h -parallel ${TESTPARALLELISM} ./...
+test_provider:: provisioner
+	cd tests && go test -short -v -count=1 -cover -timeout 2h ./...
 
 provisioner:: bin/provisioner
 
