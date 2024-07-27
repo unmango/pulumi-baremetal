@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "ms-vscode-remote.remote-containers",
+    "mkhl.direnv",
+    "dprint.dprint",
+    "ms-azuretools.vscode-docker",
+    "editorconfig.editorconfig",
+    "github.vscode-github-actions",
+    "ms-dotnettools.csharp",
+    "golang.go",
+    "ms-vscode.makefile-tools",
+    "pulumi.pulumi-lsp-client"
+  ]
+}
