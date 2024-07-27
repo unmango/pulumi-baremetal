@@ -18,8 +18,20 @@ builds:
       - linux
     ldflags:
       # The line below MUST align with the module in current provider/go.mod
-      - -X github.com/unmango/pulumi-baremetal/provider/Version={{.Tag }}
+      - -X github.com/unmango/pulumi-baremetal/provider/Version={{.Tag}}
     main: ./cmd/pulumi-resource-baremetal/
+  - binary: provisioner
+    dir: provider
+    env:
+      - CGO_ENABLED=0
+    goarch:
+      - amd64
+      - arm64
+    goos:
+      - darwin
+      - windows
+      - linux
+    main: ./cmd/provisioner
 release:
   disable: false
   prerelease: auto

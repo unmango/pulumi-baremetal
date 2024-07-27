@@ -35,6 +35,8 @@ test_provider:: provisioner
 
 provisioner:: bin/provisioner
 
+gen:: dotnet_sdk go_sdk nodejs_sdk python_sdk examples
+
 dotnet_sdk:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
 dotnet_sdk::
 	rm -rf sdk/dotnet
