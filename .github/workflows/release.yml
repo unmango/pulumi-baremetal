@@ -71,7 +71,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.goversion }}
-          cache-dependency-path: provider/go.sum
+          cache-dependency-path: sdk/go.sum
 
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.12.0
