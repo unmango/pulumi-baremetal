@@ -58,6 +58,16 @@ jobs:
           go-version-file: provider/go.mod
           cache-dependency-path: provider/go.sum
 
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.5.0
+        with:
+          repo: pulumi/pulumictl
+
+      - name: Install Pulumi
+        uses: pulumi/actions@v5
+        with:
+          pulumi-version-file: .versions/pulumi
+
       - name: Make
         run: make provider
 
