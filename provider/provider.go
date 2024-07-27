@@ -20,6 +20,7 @@ import (
 
 	p "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
+	"github.com/pulumi/pulumi-go-provider/middleware/schema"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
 )
 
@@ -29,11 +30,14 @@ var Version string
 const Name string = "baremetal"
 
 func Provider() p.Provider {
-	// We tell the provider what resources it needs to support.
-	// In this case, a single custom resource.
 	return infer.Provider(infer.Options{
+		Metadata: schema.Metadata{
+			LanguageMap: map[string]any{
+				"nodejs": map[string]string{"packageName": "@unmango/baremetal"},
+			},
+		},
 		Resources: []infer.InferredResource{
-			infer.Resource[Random, RandomArgs, RandomState](),
+			infer.Resource[Random](),
 		},
 		ModuleMap: map[tokens.ModuleName]tokens.ModuleName{
 			"provider": "index",
