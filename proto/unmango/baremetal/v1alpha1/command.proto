@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package unmango.baremetal.v1alpha1;
+
+import "google/protobuf/any.proto";
+
+service CommandService {
+  rpc Tee(TeeRequest) returns (TeeResponse);
+}
+
+message TeeRequest {
+  State state = 1;
+}
+
+message TeeResponse {
+  State state = 1;
+}
+
+message State {
+  google.protobuf.Any pulumi = 1;
+}
