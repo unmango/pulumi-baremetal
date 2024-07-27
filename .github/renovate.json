@@ -4,6 +4,11 @@
 		"config:recommended"
 	],
 	"automerge": true,
+	"ignorePaths": [
+		"**/node_modules/**",
+		"examples/**",
+		"sdk/**"
+	],
 	"customManagers": [
 		{
 			"customType": "regex",
