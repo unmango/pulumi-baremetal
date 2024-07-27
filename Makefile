@@ -104,9 +104,8 @@ down::
 	pulumi stack rm dev -y
 
 devcontainer::
-	git submodule update --init --recursive .devcontainer
-	git submodule update --remote --merge .devcontainer
-	cp -f .devcontainer/devcontainer.json .devcontainer.json
+	git submodule update --remote --merge .github/devcontainer
+	rsync -av .github/devcontainer/.devcontainer/* .devcontainer
 
 .PHONY: build
 
