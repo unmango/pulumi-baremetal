@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/pulumi/pulumi-baremetal/sdk/go/baremetal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal"
 )
 
 func main() {
