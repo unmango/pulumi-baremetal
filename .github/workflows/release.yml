@@ -21,11 +21,6 @@ jobs:
   publish_binary:
     name: publish
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        goversion:
-        - 1.17.x
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v4
@@ -36,19 +31,20 @@ jobs:
     - name: Install Go
       uses: actions/setup-go@v5
       with:
-        go-version: ${{ matrix.goversion }}
+        go-version-file: provider/go.mod
         cache-dependency-path: provider/go.sum
-
-    - name: Install pulumictl
-      uses: jaxxstorm/action-install-gh-release@v1.12.0
-      with:
-        repo: pulumi/pulumictl
 
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v6
       with:
-        args: -p 3 release --rm-dist
-        version: latest
+        args: -p 3 release
+        version: '~> v2'
+
+    - name: Upload binaries
+      uses: actions/upload-artifact@v4
+      with:
+        path: dist/resource_linux_amd64_v1/pulumi-resource-baremetal
+        name: provider
 
   publish_sdk:
     name: Publish SDKs
@@ -77,11 +73,17 @@ jobs:
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
 
+      - name: Install provider binary
+        uses: actions/download-artifact@v4
+        with:
+          name: provider
+          path: bin
+
       - name: Install Go
         uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.goversion }}
-          cache-dependency-path: provider/go.sum
+          cache-dependency-path: sdk/go.sum
 
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.12.0
@@ -106,6 +108,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.pythonversion }}
+
+        # Ensure you have consent first
+      - name: Touch the provider
+        run: make --touch bin/pulumi-resource-baremetal
 
       - name: Generate SDK
         run: make ${{ matrix.language }}_sdk
