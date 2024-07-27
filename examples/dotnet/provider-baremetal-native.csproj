@@ -5,10 +5,9 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
-
 	<ItemGroup>
 		<PackageReference Include="Pulumi" Version="3.*" />
-		<PackageReference Include="UnMango.Baremetal" Version="0.0.1-alpha.1699945013+97b0e04c" />
+		<PackageReference Include="UnMango.Baremetal" Version="0.0.1-alpha.1722050827+cb3eebfb" />
 	</ItemGroup>
 
 </Project>
