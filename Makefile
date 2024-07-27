@@ -29,13 +29,12 @@ BUF_CONFIG := buf.yaml buf.gen.yaml
 MANS    := $(notdir $(basename $(wildcard $(PKG_DIR)/provider/*.go)))
 MAN_SRC := $(MANS:%=$(PKG_DIR)/provider/%.man)
 
-temp:
-	@echo $(MANS)
-
 PROTO_SRC   := $(wildcard $(PROTO_DIR)/*.proto)
 GO_GRPC_SRC := $(PROTO_SRC:proto/%.proto=gen/go/%_grpc.pb.go)
 GO_PB_SRC   := $(PROTO_SRC:proto/%.proto=gen/go/%.pb.go)
 GEN_SRC     := $(GO_GRPC_SRC) $(GO_PB_SRC)
+
+default:: provider provisioner
 
 ensure::
 	cd gen && go mod tidy
