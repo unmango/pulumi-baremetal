@@ -111,7 +111,7 @@ jobs:
 
         # Ensure you have consent first
       - name: Touch the provider
-        run: make --touch bin/provider
+        run: make --touch bin/pulumi-resource-baremetal
 
       - name: Generate SDK
         run: make ${{ matrix.language }}_sdk
