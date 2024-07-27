@@ -34,6 +34,7 @@ func Provider() p.Provider {
 		Metadata: schema.Metadata{
 			LanguageMap: map[string]any{
 				"nodejs": map[string]string{"packageName": "@unmango/baremetal"},
+				"python": map[string]string{"packageName": "unmango_baremetal"},
 			},
 		},
 		Resources: []infer.InferredResource{

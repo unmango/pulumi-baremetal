@@ -17,14 +17,14 @@ def readme():
         return "baremetal Pulumi Package - Development Version"
 
 
-setup(name='pulumi_baremetal',
+setup(name='unmango_baremetal',
       python_requires='>=3.8',
       version=VERSION,
       long_description=readme(),
       long_description_content_type='text/markdown',
       packages=find_packages(),
       package_data={
-          'pulumi_baremetal': [
+          'unmango_baremetal': [
               'py.typed',
               'pulumi-plugin.json',
           ]

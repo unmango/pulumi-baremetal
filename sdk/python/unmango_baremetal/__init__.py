@@ -13,7 +13,7 @@ _utilities.register(
  {
   "pkg": "baremetal",
   "mod": "index",
-  "fqn": "pulumi_baremetal",
+  "fqn": "unmango_baremetal",
   "classes": {
    "baremetal:index:Random": "Random"
   }
@@ -25,7 +25,7 @@ _utilities.register(
  {
   "pkg": "baremetal",
   "token": "pulumi:providers:baremetal",
-  "fqn": "pulumi_baremetal",
+  "fqn": "unmango_baremetal",
   "class": "Provider"
  }
 ]
