@@ -15,42 +15,67 @@
 package tests
 
 import (
-	"testing"
+	"context"
+	"path"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 
 	"github.com/blang/semver"
 	p "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/integration"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/resource"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	tc "github.com/testcontainers/testcontainers-go"
 
 	baremetal "github.com/unmango/pulumi-baremetal/provider"
 )
 
-func TestRandomCreate(t *testing.T) {
-	prov := provider()
+var _ = Describe("Provider", Ordered, func() {
+	var prov integration.Server
+	var container tc.Container
 
-	response, err := prov.Create(p.CreateRequest{
-		Urn: urn("Random"),
-		Properties: resource.PropertyMap{
-			"length": resource.NewNumberProperty(12),
-		},
-		Preview: false,
+	BeforeAll(func(ctx context.Context) {
+		ct, err := tc.GenericContainer(ctx, tc.GenericContainerRequest{
+			ContainerRequest: tc.ContainerRequest{
+				FromDockerfile: tc.FromDockerfile{
+					Context:    repoRoot,
+					Dockerfile: path.Join("tests", "Dockerfile"),
+				},
+			},
+		})
+		Expect(err).NotTo(HaveOccurred())
+		container = ct
+
+		prov = integration.NewServer(
+			baremetal.Name,
+			semver.MustParse("1.0.0"),
+			baremetal.Provider(),
+		)
 	})
 
-	require.NoError(t, err)
-	result := response.Properties["result"].StringValue()
-	assert.Len(t, result, 12)
-}
+	It("should create a random", func() {
+		response, err := prov.Create(p.CreateRequest{
+			Urn: urn("Random"),
+			Properties: resource.PropertyMap{
+				"length": resource.NewNumberProperty(12),
+			},
+			Preview: false,
+		})
+
+		Expect(err).NotTo(HaveOccurred())
+		result := response.Properties["result"].StringValue()
+		Expect(result).To(HaveLen(12))
+	})
+
+	AfterAll(func(ctx context.Context) {
+		err := container.Terminate(ctx)
+		Expect(err).NotTo(HaveOccurred())
+	})
+})
 
 // urn is a helper function to build an urn for running integration tests.
 func urn(typ string) resource.URN {
 	return resource.NewURN("stack", "proj", "",
 		tokens.Type("test:index:"+typ), "name")
-}
-
-// Create a test server.
-func provider() integration.Server {
-	return integration.NewServer(baremetal.Name, semver.MustParse("1.0.0"), baremetal.Provider())
 }
