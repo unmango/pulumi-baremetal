@@ -6,8 +6,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
+using Pulumi;
 
-namespace Pulumi.Baremetal
+namespace UnMango.Baremetal
 {
     [BaremetalResourceType("pulumi:providers:baremetal")]
     public partial class Provider : global::Pulumi.ProviderResource

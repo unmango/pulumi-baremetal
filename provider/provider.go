@@ -33,6 +33,7 @@ func Provider() p.Provider {
 	return infer.Provider(infer.Options{
 		Metadata: schema.Metadata{
 			LanguageMap: map[string]any{
+				"csharp": map[string]string{"rootNamespace": "UnMango"},
 				"nodejs": map[string]string{"packageName": "@unmango/baremetal"},
 				"python": map[string]string{"packageName": "unmango_baremetal"},
 			},
