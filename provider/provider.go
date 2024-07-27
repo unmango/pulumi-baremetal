@@ -15,6 +15,7 @@
 package provider
 
 import (
+	"context"
 	"math/rand"
 	"time"
 
@@ -76,7 +77,7 @@ type RandomState struct {
 }
 
 // All resources must implement Create at a minimum.
-func (Random) Create(ctx p.Context, name string, input RandomArgs, preview bool) (string, RandomState, error) {
+func (Random) Create(ctx context.Context, name string, input RandomArgs, preview bool) (string, RandomState, error) {
 	state := RandomState{RandomArgs: input}
 	if preview {
 		return name, state, nil
