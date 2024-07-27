@@ -109,6 +109,10 @@ jobs:
         with:
           python-version: ${{ matrix.pythonversion }}
 
+        # Ensure you have consent first
+      - name: Touch the provider
+        run: make --touch bin/provider
+
       - name: Generate SDK
         run: make ${{ matrix.language }}_sdk
 
