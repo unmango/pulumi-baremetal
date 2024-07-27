@@ -6,6 +6,6 @@
 	"dependencies": {
 		"typescript": "^4.0.0",
 		"@pulumi/pulumi": "^3.0.0",
-		"@unmango/baremetal": "0.0.1-alpha.1699945013+97b0e04c"
+		"@unmango/baremetal": "0.0.1-alpha.1722051877+d3687c83"
 	}
 }

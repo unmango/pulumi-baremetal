@@ -35,6 +35,7 @@ func Provider() p.Provider {
 		Metadata: schema.Metadata{
 			LanguageMap: map[string]any{
 				"csharp": map[string]string{"rootNamespace": "UnMango"},
+				"go":     map[string]string{"importBasePath": "github.com/unmango/pulumi-baremetal/sdk/go/baremetal"},
 				"nodejs": map[string]string{"packageName": "@unmango/baremetal"},
 				"python": map[string]string{"packageName": "unmango_baremetal"},
 			},

@@ -3,16 +3,16 @@ using System.Linq;
 using Pulumi;
 using Baremetal = UnMango.Baremetal;
 
-return await Deployment.RunAsync(() =>
+return await Deployment.RunAsync(() => 
 {
-    var myRandomResource = new baremetal.Random("myRandomResource", new()
+    var myRandomResource = new Baremetal.Random("myRandomResource", new()
     {
         Length = 24,
     });
 
     return new Dictionary<string, object?>
     {
-        ["output"] =
+        ["output"] = 
         {
             { "value", myRandomResource.Result },
         },
