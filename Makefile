@@ -37,19 +37,19 @@ provisioner:: bin/provisioner
 gen:: dotnet_sdk go_sdk nodejs_sdk python_sdk examples
 
 dotnet_sdk:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
-dotnet_sdk:: bin/$(PROVIDER)
+dotnet_sdk::
 	rm -rf sdk/dotnet
 	pulumi package gen-sdk $(WORKING_DIR)/bin/$(PROVIDER) --language dotnet
 	cd ${PACKDIR}/dotnet/&& \
 		echo "${DOTNET_VERSION}" >version.txt && \
 		dotnet build /p:Version=${DOTNET_VERSION}
 
-go_sdk:: $(WORKING_DIR)/bin/$(PROVIDER)
+go_sdk::
 	rm -rf sdk/go
 	pulumi package gen-sdk $(WORKING_DIR)/bin/$(PROVIDER) --language go
 
 nodejs_sdk:: VERSION := $(shell pulumictl get version --language javascript)
-nodejs_sdk:: bin/$(PROVIDER)
+nodejs_sdk::
 	rm -rf sdk/nodejs
 	pulumi package gen-sdk $(WORKING_DIR)/bin/$(PROVIDER) --language nodejs
 	cd ${PACKDIR}/nodejs/ && \
@@ -60,7 +60,7 @@ nodejs_sdk:: bin/$(PROVIDER)
 		rm ./bin/package.json.bak
 
 python_sdk:: PYPI_VERSION := $(shell pulumictl get version --language python)
-python_sdk:: bin/$(PROVIDER)
+python_sdk::
 	rm -rf sdk/python
 	pulumi package gen-sdk $(WORKING_DIR)/bin/$(PROVIDER) --language python
 	cp README.md ${PACKDIR}/python/
