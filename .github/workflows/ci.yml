@@ -60,3 +60,6 @@ jobs:
 
       - name: Make
         run: make provider
+
+      - name: Test
+        run: make test_provider
