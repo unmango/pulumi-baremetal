@@ -11,11 +11,11 @@ _utilities.register(
     resource_modules="""
 [
  {
-  "pkg": "xyz",
+  "pkg": "baremetal",
   "mod": "index",
-  "fqn": "pulumi_xyz",
+  "fqn": "pulumi_baremetal",
   "classes": {
-   "xyz:index:Random": "Random"
+   "baremetal:index:Random": "Random"
   }
  }
 ]
@@ -23,9 +23,9 @@ _utilities.register(
     resource_packages="""
 [
  {
-  "pkg": "xyz",
-  "token": "pulumi:providers:xyz",
-  "fqn": "pulumi_xyz",
+  "pkg": "baremetal",
+  "token": "pulumi:providers:baremetal",
+  "fqn": "pulumi_baremetal",
   "class": "Provider"
  }
 ]
