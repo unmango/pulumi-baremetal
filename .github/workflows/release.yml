@@ -48,7 +48,7 @@ jobs:
       uses: goreleaser/goreleaser-action@v6
       with:
         args: -p 3 release
-        version: ~> v2
+        version: '~> v2'
 
   publish_sdk:
     name: Publish SDKs
