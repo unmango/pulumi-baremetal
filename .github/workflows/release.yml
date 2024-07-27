@@ -31,7 +31,7 @@ jobs:
     - name: Install Go
       uses: actions/setup-go@v5
       with:
-        go-version: provider/go.sum
+        go-version-file: provider/go.mod
         cache-dependency-path: provider/go.sum
 
     - name: Run GoReleaser
