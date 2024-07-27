@@ -1,6 +1,6 @@
 module github.com/unmango/pulumi-baremetal/tests
 
-go 1.21
+go 1.22
 
 replace github.com/unmango/pulumi-baremetal/provider => ../provider
 

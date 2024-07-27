@@ -21,11 +21,6 @@ jobs:
   publish_binary:
     name: publish
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        goversion:
-        - 1.17.x
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v4
@@ -36,13 +31,8 @@ jobs:
     - name: Install Go
       uses: actions/setup-go@v5
       with:
-        go-version: ${{ matrix.goversion }}
+        go-version: provider/go.sum
         cache-dependency-path: provider/go.sum
-
-    - name: Install pulumictl
-      uses: jaxxstorm/action-install-gh-release@v1.12.0
-      with:
-        repo: pulumi/pulumictl
 
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v6
