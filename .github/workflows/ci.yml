@@ -45,6 +45,40 @@ jobs:
           version: v1.59
           working-directory: ${{ matrix.module }}
 
+  buf:
+    if: github.event_name == 'pull_request'
+    name: Buf
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          version: 1.35.1
+          github_token: ${{ github.token }}
+
+      - name: Get changed files
+        id: diff
+        uses: tj-actions/changed-files@v44
+        with:
+          files: '*.proto'
+
+      - name: Lint
+        if: ${{ steps.diff.outputs.any_changed }}
+        uses: bufbuild/buf-lint-action@v1
+        with:
+          input: ${{ steps.diff.outputs.all_changed_files }}
+
+      - name: Buf breaking
+        if: false # Lots of breaking changes in v1alpha1
+        uses: bufbuild/buf-breaking-action@v1
+        with:
+          input: ${{ steps.diff.outputs.all_changed_files }}
+          against: "https://github.com/${GITHUB_REPOSITORY}.git#branch=main,ref=HEAD~1"
+
+
   provisioner:
     name: Provisioner
     runs-on: ubuntu-latest
@@ -114,16 +148,6 @@ jobs:
         with:
           go-version-file: tests/go.mod
           cache-dependency-path: tests/go.sum
-
-      - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.12.0
-        with:
-          repo: pulumi/pulumictl
-
-      - name: Install Pulumi
-        uses: pulumi/actions@v5
-        with:
-          pulumi-version-file: .versions/pulumi
 
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.12.0
