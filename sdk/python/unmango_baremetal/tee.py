@@ -50,18 +50,16 @@ class Tee(pulumi.CustomResource):
                  stdin: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         """
-        TEE(1)                     User Commands                     TEE(1)
+        TEE(1)                           User Commands                           TEE(1)
 
         NAME
-               tee  - read from standard input and write to standard output
-               and files
+               tee - read from standard input and write to standard output and files
 
         SYNOPSIS
                tee [OPTION]... [FILE]...
 
         DESCRIPTION
-               Copy standard input to each FILE, and also to standard  out‐
-               put.
+               Copy standard input to each FILE, and also to standard output.
 
                -a, --append
                       append to the given FILEs, do not overwrite
@@ -90,36 +88,30 @@ class Tee(pulumi.CustomResource):
                exit-nopipe
                       exit on error writing to any output not a pipe
             
-               The  default  MODE for the -p option is 'warn-nopipe'.  With
-               "nopipe" MODEs, exit immediately if all outputs become  bro‐
-               ken pipes.  The default operation when --output-error is not
-               specified,  is  to  exit  immediately  on error writing to a
-               pipe, and diagnose errors writing to non pipe outputs.
+               The  default  MODE  for  the  -p option is 'warn-nopipe'.  With "nopipe"
+               MODEs, exit immediately if all outputs become broken pipes.  The default
+               operation when --output-error is not specified, is to  exit  immediately
+               on error writing to a pipe, and diagnose errors writing to non pipe out‐
+               puts.
 
         AUTHOR
-               Written by Mike  Parker,  Richard  M.  Stallman,  and  David
-               MacKenzie.
+               Written by Mike Parker, Richard M. Stallman, and David MacKenzie.
 
         REPORTING BUGS
-               GNU   coreutils   online   help:  <https://www.gnu.org/soft‐
-               ware/coreutils/>
-               Report  any  translation  bugs  to  <https://translationpro‐
-               ject.org/team/>
+               GNU coreutils online help: <https://www.gnu.org/software/coreutils/>
+               Report any translation bugs to <https://translationproject.org/team/>
 
         COPYRIGHT
-               Copyright  ©  2024  Free  Software Foundation, Inc.  License
-               GPLv3+: GNU GPL  version  3  or  later  <https://gnu.org/li‐
-               censes/gpl.html>.
-               This is free software: you are free to change and redistrib‐
-               ute  it.   There  is NO WARRANTY, to the extent permitted by
-               law.
+               Copyright © 2024 Free Software Foundation, Inc.  License GPLv3+: GNU GPL
+               version 3 or later <https://gnu.org/licenses/gpl.html>.
+               This  is  free  software:  you  are  free to change and redistribute it.
+               There is NO WARRANTY, to the extent permitted by law.
 
         SEE ALSO
-               Full    documentation    <https://www.gnu.org/software/core‐
-               utils/tee>
+               Full documentation <https://www.gnu.org/software/coreutils/tee>
                or available locally via: info '(coreutils) tee invocation'
 
-        GNU coreutils 9.5            March 2024                      TEE(1)
+        GNU coreutils 9.5                  March 2024                            TEE(1)
 
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
@@ -131,18 +123,16 @@ class Tee(pulumi.CustomResource):
                  args: TeeArgs,
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
-        TEE(1)                     User Commands                     TEE(1)
+        TEE(1)                           User Commands                           TEE(1)
 
         NAME
-               tee  - read from standard input and write to standard output
-               and files
+               tee - read from standard input and write to standard output and files
 
         SYNOPSIS
                tee [OPTION]... [FILE]...
 
         DESCRIPTION
-               Copy standard input to each FILE, and also to standard  out‐
-               put.
+               Copy standard input to each FILE, and also to standard output.
 
                -a, --append
                       append to the given FILEs, do not overwrite
@@ -171,36 +161,30 @@ class Tee(pulumi.CustomResource):
                exit-nopipe
                       exit on error writing to any output not a pipe
             
-               The  default  MODE for the -p option is 'warn-nopipe'.  With
-               "nopipe" MODEs, exit immediately if all outputs become  bro‐
-               ken pipes.  The default operation when --output-error is not
-               specified,  is  to  exit  immediately  on error writing to a
-               pipe, and diagnose errors writing to non pipe outputs.
+               The  default  MODE  for  the  -p option is 'warn-nopipe'.  With "nopipe"
+               MODEs, exit immediately if all outputs become broken pipes.  The default
+               operation when --output-error is not specified, is to  exit  immediately
+               on error writing to a pipe, and diagnose errors writing to non pipe out‐
+               puts.
 
         AUTHOR
-               Written by Mike  Parker,  Richard  M.  Stallman,  and  David
-               MacKenzie.
+               Written by Mike Parker, Richard M. Stallman, and David MacKenzie.
 
         REPORTING BUGS
-               GNU   coreutils   online   help:  <https://www.gnu.org/soft‐
-               ware/coreutils/>
-               Report  any  translation  bugs  to  <https://translationpro‐
-               ject.org/team/>
+               GNU coreutils online help: <https://www.gnu.org/software/coreutils/>
+               Report any translation bugs to <https://translationproject.org/team/>
 
         COPYRIGHT
-               Copyright  ©  2024  Free  Software Foundation, Inc.  License
-               GPLv3+: GNU GPL  version  3  or  later  <https://gnu.org/li‐
-               censes/gpl.html>.
-               This is free software: you are free to change and redistrib‐
-               ute  it.   There  is NO WARRANTY, to the extent permitted by
-               law.
+               Copyright © 2024 Free Software Foundation, Inc.  License GPLv3+: GNU GPL
+               version 3 or later <https://gnu.org/licenses/gpl.html>.
+               This  is  free  software:  you  are  free to change and redistribute it.
+               There is NO WARRANTY, to the extent permitted by law.
 
         SEE ALSO
-               Full    documentation    <https://www.gnu.org/software/core‐
-               utils/tee>
+               Full documentation <https://www.gnu.org/software/coreutils/tee>
                or available locally via: info '(coreutils) tee invocation'
 
-        GNU coreutils 9.5            March 2024                      TEE(1)
+        GNU coreutils 9.5                  March 2024                            TEE(1)
 
         :param str resource_name: The name of the resource.
         :param TeeArgs args: The arguments to use to populate this resource's properties.

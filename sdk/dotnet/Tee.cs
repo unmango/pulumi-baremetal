@@ -11,18 +11,16 @@ using Pulumi;
 namespace UnMango.Baremetal
 {
     /// <summary>
-    /// TEE(1)                     User Commands                     TEE(1)
+    /// TEE(1)                           User Commands                           TEE(1)
     /// 
     /// NAME
-    ///        tee  - read from standard input and write to standard output
-    ///        and files
+    ///        tee - read from standard input and write to standard output and files
     /// 
     /// SYNOPSIS
     ///        tee [OPTION]... [FILE]...
     /// 
     /// DESCRIPTION
-    ///        Copy standard input to each FILE, and also to standard  out‐
-    ///        put.
+    ///        Copy standard input to each FILE, and also to standard output.
     /// 
     ///        -a, --append
     ///               append to the given FILEs, do not overwrite
@@ -51,36 +49,30 @@ namespace UnMango.Baremetal
     ///        exit-nopipe
     ///               exit on error writing to any output not a pipe
     ///     
-    ///        The  default  MODE for the -p option is 'warn-nopipe'.  With
-    ///        "nopipe" MODEs, exit immediately if all outputs become  bro‐
-    ///        ken pipes.  The default operation when --output-error is not
-    ///        specified,  is  to  exit  immediately  on error writing to a
-    ///        pipe, and diagnose errors writing to non pipe outputs.
+    ///        The  default  MODE  for  the  -p option is 'warn-nopipe'.  With "nopipe"
+    ///        MODEs, exit immediately if all outputs become broken pipes.  The default
+    ///        operation when --output-error is not specified, is to  exit  immediately
+    ///        on error writing to a pipe, and diagnose errors writing to non pipe out‐
+    ///        puts.
     /// 
     /// AUTHOR
-    ///        Written by Mike  Parker,  Richard  M.  Stallman,  and  David
-    ///        MacKenzie.
+    ///        Written by Mike Parker, Richard M. Stallman, and David MacKenzie.
     /// 
     /// REPORTING BUGS
-    ///        GNU   coreutils   online   help:  &lt;https://www.gnu.org/soft‐
-    ///        ware/coreutils/&gt;
-    ///        Report  any  translation  bugs  to  &lt;https://translationpro‐
-    ///        ject.org/team/&gt;
+    ///        GNU coreutils online help: &lt;https://www.gnu.org/software/coreutils/&gt;
+    ///        Report any translation bugs to &lt;https://translationproject.org/team/&gt;
     /// 
     /// COPYRIGHT
-    ///        Copyright  ©  2024  Free  Software Foundation, Inc.  License
-    ///        GPLv3+: GNU GPL  version  3  or  later  &lt;https://gnu.org/li‐
-    ///        censes/gpl.html&gt;.
-    ///        This is free software: you are free to change and redistrib‐
-    ///        ute  it.   There  is NO WARRANTY, to the extent permitted by
-    ///        law.
+    ///        Copyright © 2024 Free Software Foundation, Inc.  License GPLv3+: GNU GPL
+    ///        version 3 or later &lt;https://gnu.org/licenses/gpl.html&gt;.
+    ///        This  is  free  software:  you  are  free to change and redistribute it.
+    ///        There is NO WARRANTY, to the extent permitted by law.
     /// 
     /// SEE ALSO
-    ///        Full    documentation    &lt;https://www.gnu.org/software/core‐
-    ///        utils/tee&gt;
+    ///        Full documentation &lt;https://www.gnu.org/software/coreutils/tee&gt;
     ///        or available locally via: info '(coreutils) tee invocation'
     /// 
-    /// GNU coreutils 9.5            March 2024                      TEE(1)
+    /// GNU coreutils 9.5                  March 2024                            TEE(1)
     /// </summary>
     [BaremetalResourceType("baremetal:index:Tee")]
     public partial class Tee : global::Pulumi.CustomResource
