@@ -9,16 +9,30 @@
 		"examples/**",
 		"sdk/**"
 	],
+	"ignoreDeps": [
+		"github.com/unmango/pulumi-baremetal/provider"
+	],
 	"customManagers": [
 		{
 			"customType": "regex",
 			"depNameTemplate": "dprint/dprint",
 			"datasourceTemplate": "github-releases",
 			"fileMatch": [
-				".*\\/.*\\.ya?ml"
+				".github\\/.*\\.ya?ml"
 			],
 			"matchStrings": [
 				"dprint-version: (?<currentValue>.*)"
+			]
+		},
+		{
+			"customType": "regex",
+			"depNameTemplate": "bufbuild/buf",
+			"datasourceTemplate": "github-releases",
+			"fileMatch": [
+				".github\\/.*\\.ya?ml"
+			],
+			"matchStrings": [
+				"(?<currentValue>\\d+\\.\\d+\\.\\d+) # renovate:buf"
 			]
 		},
 		{
