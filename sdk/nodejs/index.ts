@@ -10,18 +10,18 @@ export type Provider = import("./provider").Provider;
 export const Provider: typeof import("./provider").Provider = null as any;
 utilities.lazyLoad(exports, ["Provider"], () => require("./provider"));
 
-export { RandomArgs } from "./random";
-export type Random = import("./random").Random;
-export const Random: typeof import("./random").Random = null as any;
-utilities.lazyLoad(exports, ["Random"], () => require("./random"));
+export { TeeArgs } from "./tee";
+export type Tee = import("./tee").Tee;
+export const Tee: typeof import("./tee").Tee = null as any;
+utilities.lazyLoad(exports, ["Tee"], () => require("./tee"));
 
 
 const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {
         switch (type) {
-            case "baremetal:index:Random":
-                return new Random(name, <any>undefined, { urn })
+            case "baremetal:index:Tee":
+                return new Tee(name, <any>undefined, { urn })
             default:
                 throw new Error(`unknown resource type ${type}`);
         }

@@ -15,6 +15,7 @@ GOPATH			:= $(shell go env GOPATH)
 
 WORKING_DIR     := $(shell pwd)
 EXAMPLES_DIR    := ${WORKING_DIR}/examples/yaml
+PKG_DIR         := ${PROVIDER_PATH}/pkg
 TESTPARALLELISM := 4
 
 OS := $(shell uname)
@@ -33,6 +34,8 @@ test_provider:: provisioner
 	cd tests && go test -short -v -count=1 -cover -timeout 2h ./...
 
 provisioner:: bin/provisioner
+
+mans:: $(PKG_DIR)/provider/tee.man
 
 gen:: dotnet_sdk go_sdk nodejs_sdk python_sdk examples
 
@@ -154,3 +157,6 @@ bin/$(PROVIDER)::
 
 bin/provisioner::
 	cd provider && go build -o ${WORKING_DIR}/$@ $(PROJECT)/${PROVIDER_PATH}/cmd/provisioner
+
+provider/pkg/provider/%.man: provider/pkg/provider/%.go
+	man $* > $@
