@@ -149,4 +149,4 @@ install_nodejs_sdk::
 
 # ------- Real Targets -------
 bin/provisioner::
-	cd provider && go build -o $@ $(PROJECT)/${PROVIDER_PATH}/cmd/provisioner
+	cd provider && go build -o ${WORKING_DIR}/$@ $(PROJECT)/${PROVIDER_PATH}/cmd/provisioner

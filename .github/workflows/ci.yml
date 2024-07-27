@@ -46,6 +46,12 @@ jobs:
       - name: Make
         run: make provisioner
 
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: provisioner
+          path: bin/provisioner
+
   provider:
     runs-on: ubuntu-latest
     steps:
@@ -74,11 +80,27 @@ jobs:
       - name: Make
         run: make provider
 
-      - name: Make provisioner
-        run: make provisioner
+  test:
+    runs-on: ubuntu-latest
+    needs: [provisioner, provider]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: provider/go.mod
+          cache-dependency-path: provider/go.sum
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Download provisioner
+        uses: actions/download-artifact@v4
+        with:
+          name: provisioner
+          path: bin
 
       - name: Build and push
         uses: docker/build-push-action@v6
