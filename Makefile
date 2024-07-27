@@ -8,19 +8,37 @@ NUGET_PKG_NAME   := UnMango.Baremetal
 
 PROVIDER        := pulumi-resource-${PACK}
 VERSION         ?= $(shell pulumictl get version)
+PROTO_VERSION   := v1alpha1
 PROVIDER_PATH   := provider
 VERSION_PATH    := ${PROVIDER_PATH}.Version
 
 GOPATH			:= $(shell go env GOPATH)
 
-WORKING_DIR     := $(shell pwd)
-EXAMPLES_DIR    := ${WORKING_DIR}/examples/yaml
-PKG_DIR         := ${PROVIDER_PATH}/pkg
-TESTPARALLELISM := 4
+WORKING_DIR  := $(shell pwd)
+EXAMPLES_DIR := ${WORKING_DIR}/examples/yaml
+PROTO_PKG    := unmango/baremetal/${PROTO_VERSION}
+PROTO_DIR    := proto/${PROTO_PKG}
+PKG_DIR      := ${PROVIDER_PATH}/pkg
 
+TESTPARALLELISM := 4
 OS := $(shell uname)
+_ := $(shell mkdir -p .make)
+
+BUF_CONFIG := buf.yaml buf.gen.yaml
+
+MANS    := $(notdir $(basename $(wildcard $(PKG_DIR)/provider/*.go)))
+MAN_SRC := $(MANS:%=$(PKG_DIR)/provider/%.man)
+
+temp:
+	@echo $(MANS)
+
+PROTO_SRC   := $(wildcard $(PROTO_DIR)/*.proto)
+GO_GRPC_SRC := $(PROTO_SRC:proto/%.proto=gen/go/%_grpc.pb.go)
+GO_PB_SRC   := $(PROTO_SRC:proto/%.proto=gen/go/%.pb.go)
+GEN_SRC     := $(GO_GRPC_SRC) $(GO_PB_SRC)
 
 ensure::
+	cd gen && go mod tidy
 	cd provider && go mod tidy
 	cd sdk && go mod tidy
 	cd tests && go mod tidy
@@ -35,9 +53,12 @@ test_provider:: provisioner
 
 provisioner:: bin/provisioner
 
-mans:: $(PKG_DIR)/provider/tee.man
+mans:: gen_mans
 
-gen:: dotnet_sdk go_sdk nodejs_sdk python_sdk examples
+gen:: gen_proto gen_mans gen_sdks examples
+gen_proto:: $(GEN_SRC)
+gen_mans:: $(MAN_SRC)
+gen_sdks:: dotnet_sdk go_sdk nodejs_sdk python_sdk
 
 dotnet_sdk:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
 dotnet_sdk::
@@ -115,12 +136,12 @@ devcontainer::
 
 .PHONY: build
 
-build:: provider dotnet_sdk go_sdk nodejs_sdk python_sdk
+build:: provider provisioner dotnet_sdk go_sdk nodejs_sdk python_sdk
 
 # Required for the codegen action that runs in pulumi/pulumi
 only_build:: build
 
-lint::
+lint:: .make/buf_lint
 	for DIR in "provider" "sdk" "tests" ; do \
 		pushd $$DIR && golangci-lint run -c ../.golangci.yml --timeout 10m; popd ; \
 	done
@@ -152,11 +173,25 @@ install_nodejs_sdk::
 	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
 
 # ------- Real Targets -------
-bin/$(PROVIDER)::
+bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC)
 	cd provider && go build -o $(WORKING_DIR)/$@ -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
-bin/provisioner::
+bin/provisioner:: $(GEN_SRC)
 	cd provider && go build -o ${WORKING_DIR}/$@ $(PROJECT)/${PROVIDER_PATH}/cmd/provisioner
 
-provider/pkg/provider/%.man: provider/pkg/provider/%.go
-	man $* > $@
+gen/go/%.pb.go gen/go/%_grpc.pb.go &: $(BUF_CONFIG) .make/%
+	buf generate --clean --path proto/$*.proto
+
+provider/pkg/%.man: provider/pkg/%.go
+	man $(notdir $*) > $@
+
+.make/buf_build: $(PROTO_SRC:proto/%.proto=.make/%)
+	@touch $@
+
+.make/buf_lint: $(PROTO_SRC)
+	buf lint --path $?
+	@touch $@
+
+.make/% &: proto/%.proto
+	buf build --path $^
+	@mkdir -p $(@D) && touch $@
