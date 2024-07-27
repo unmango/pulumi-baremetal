@@ -8,6 +8,7 @@ on:
 
 jobs:
   lint:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -47,6 +48,7 @@ jobs:
         run: make provisioner
 
       - name: Upload binary
+        if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: provisioner
@@ -81,6 +83,7 @@ jobs:
         run: make provider
 
   test:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     needs: [provisioner, provider]
     steps:
