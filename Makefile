@@ -5,12 +5,14 @@ PACKDIR          := sdk
 PROJECT          := github.com/unmango/pulumi-baremetal
 NODE_MODULE_NAME := @unmango/baremetal
 NUGET_PKG_NAME   := UnMango.Baremetal
+PROVISIONER_NAME := baremetal-provisioner
 
 PROVIDER        := pulumi-resource-${PACK}
 VERSION         ?= $(shell pulumictl get version)
 PROTO_VERSION   := v1alpha1
 PROVIDER_PATH   := provider
 VERSION_PATH    := ${PROVIDER_PATH}.Version
+VERSION_TAG     ?= $(shell cut -d'.' -f-3 <<<'${VERSION}')
 
 GOPATH			:= $(shell go env GOPATH)
 
@@ -47,11 +49,12 @@ provider:: bin/$(PROVIDER)
 provider_debug::
 	(cd provider && go build -o $(WORKING_DIR)/bin/${PROVIDER} -gcflags="all=-N -l" -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER))
 
-test_provider:: provisioner .make/test_docker_image
+test_provider:: provisioner .make/provisioner_docker_build
 	cd tests && go test -short -v -count=1 -cover -timeout 2h ./...
 
 provisioner:: bin/provisioner
 
+docker:: .make/provisioner_docker_build
 mans:: gen_mans
 
 gen:: gen_proto gen_mans gen_sdks examples
@@ -175,7 +178,7 @@ install_nodejs_sdk::
 bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC)
 	cd provider && go build -o $(WORKING_DIR)/$@ -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
-bin/provisioner:: $(GEN_SRC)
+bin/provisioner:: $(GEN_SRC) provider/cmd/provisioner/*.go provider/pkg/**/*.go
 	cd provider && go build -o ${WORKING_DIR}/$@ $(PROJECT)/${PROVIDER_PATH}/cmd/provisioner
 
 gen/go/%.pb.go gen/go/%_grpc.pb.go &: $(BUF_CONFIG) .make/%
@@ -195,6 +198,6 @@ provider/pkg/%.man: provider/pkg/%.go
 	buf build --path $^
 	@mkdir -p $(@D) && touch $@
 
-.make/test_docker_image: tests/Dockerfile bin/provisioner
-	docker build . -f $<
+.make/provisioner_docker_build: provider/cmd/provisioner/Dockerfile bin/provisioner
+	docker build ${WORKING_DIR} -f $< -t ${PROVISIONER_NAME}:local-${VERSION_TAG}
 	@touch $@

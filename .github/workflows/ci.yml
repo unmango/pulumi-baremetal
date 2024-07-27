@@ -175,7 +175,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha
           context: .
-          file: tests/Dockerfile
+          file: provider/cmd/provisioner/Dockerfile
 
       - name: Test
         run: make test_provider

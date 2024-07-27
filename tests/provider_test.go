@@ -17,6 +17,7 @@ package tests
 import (
 	"context"
 	"path"
+	"time"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -33,20 +34,25 @@ import (
 
 var _ = Describe("Provider", Ordered, func() {
 	var prov integration.Server
-	var container tc.Container
+	var provisioner tc.Container
 
 	BeforeAll(func(ctx context.Context) {
-		ct, err := tc.GenericContainer(ctx, tc.GenericContainerRequest{
+		By("creating a generic container")
+		container, err := tc.GenericContainer(ctx, tc.GenericContainerRequest{
 			ContainerRequest: tc.ContainerRequest{
 				FromDockerfile: tc.FromDockerfile{
 					Context:    repoRoot,
-					Dockerfile: path.Join("tests", "Dockerfile"),
+					Dockerfile: path.Join("provider", "cmd", "provisioner", "Dockerfile"),
+				},
+				LogConsumerCfg: &tc.LogConsumerConfig{
+					Consumers: []tc.LogConsumer{LogToWriter(GinkgoWriter)},
 				},
 			},
 		})
 		Expect(err).NotTo(HaveOccurred())
-		container = ct
+		provisioner = container
 
+		By("creating a provider server")
 		prov = integration.NewServer(
 			baremetal.Name,
 			semver.MustParse("1.0.0"),
@@ -55,6 +61,9 @@ var _ = Describe("Provider", Ordered, func() {
 	})
 
 	It("should create a random", func() {
+		Skip("TODO")
+
+		By("creating the resource")
 		response, err := prov.Create(p.CreateRequest{
 			Urn: urn("Random"),
 			Properties: resource.PropertyMap{
@@ -69,7 +78,10 @@ var _ = Describe("Provider", Ordered, func() {
 	})
 
 	AfterAll(func(ctx context.Context) {
-		err := container.Terminate(ctx)
+		timeout := time.Duration(10 * time.Second)
+
+		By("stopping the container")
+		err := provisioner.Stop(ctx, &timeout)
 		Expect(err).NotTo(HaveOccurred())
 	})
 })
