@@ -33,6 +33,8 @@ provider_debug::
 test_provider::
 	cd tests && go test -short -v -count=1 -cover -timeout 2h -parallel ${TESTPARALLELISM} ./...
 
+provisioner:: bin/provisioner
+
 dotnet_sdk:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
 dotnet_sdk::
 	rm -rf sdk/dotnet
@@ -116,7 +118,7 @@ only_build:: build
 
 lint::
 	for DIR in "provider" "sdk" "tests" ; do \
-		pushd $$DIR && golangci-lint run -c ../.golangci.yml --timeout 10m && popd ; \
+		pushd $$DIR && golangci-lint run -c ../.golangci.yml --timeout 10m; popd ; \
 	done
 
 install:: install_nodejs_sdk install_dotnet_sdk
@@ -144,3 +146,7 @@ install_go_sdk::
 install_nodejs_sdk::
 	-yarn unlink --cwd $(WORKING_DIR)/sdk/nodejs/bin
 	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
+
+# ------- Real Targets -------
+bin/provisioner::
+	cd provider && go build -o $@ $(PROJECT)/${PROVIDER_PATH}/cmd/provisioner
