@@ -3,7 +3,6 @@ package provider
 import (
 	"context"
 	_ "embed"
-	"errors"
 
 	"github.com/pulumi/pulumi-go-provider/infer"
 )
@@ -29,6 +28,5 @@ type TeeState struct {
 
 func (Tee) Create(ctx context.Context, name string, input TeeArgs, preview bool) (string, TeeState, error) {
 	state := TeeState{}
-
-	return "", state, errors.New("TODO")
+	return name, state, nil
 }

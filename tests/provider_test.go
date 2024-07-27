@@ -16,9 +16,11 @@ package tests
 
 import (
 	"context"
+	"fmt"
 	"path"
 	"time"
 
+	"github.com/docker/go-connections/nat"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
@@ -28,15 +30,24 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/common/resource"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
 	tc "github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/wait"
 
 	baremetal "github.com/unmango/pulumi-baremetal/provider"
 )
 
+const protocol string = "tcp"
+
 var _ = Describe("Provider", Ordered, func() {
-	var prov integration.Server
+	var server integration.Server
 	var provisioner tc.Container
+	var provisionerPort nat.Port
 
 	BeforeAll(func(ctx context.Context) {
+		By("selecting a port")
+		port, err := nat.NewPort(protocol, "6969")
+		Expect(err).NotTo(HaveOccurred())
+		provisionerPort = port
+
 		By("creating a generic container")
 		container, err := tc.GenericContainer(ctx, tc.GenericContainerRequest{
 			ContainerRequest: tc.ContainerRequest{
@@ -44,6 +55,12 @@ var _ = Describe("Provider", Ordered, func() {
 					Context:    repoRoot,
 					Dockerfile: path.Join("provider", "cmd", "provisioner", "Dockerfile"),
 				},
+				Cmd: []string{
+					"--network", protocol,
+					"--address", fmt.Sprintf("localhost:%d", port.Int()),
+				},
+				ExposedPorts: []string{provisionerPort.Port()},
+				WaitingFor:   wait.ForListeningPort(provisionerPort),
 				LogConsumerCfg: &tc.LogConsumerConfig{
 					Consumers: []tc.LogConsumer{LogToWriter(GinkgoWriter)},
 				},
@@ -53,28 +70,28 @@ var _ = Describe("Provider", Ordered, func() {
 		provisioner = container
 
 		By("creating a provider server")
-		prov = integration.NewServer(
+		server = integration.NewServer(
 			baremetal.Name,
 			semver.MustParse("1.0.0"),
 			baremetal.Provider(),
 		)
 	})
 
-	It("should create a random", func() {
-		Skip("TODO")
-
+	It("should create a tee", func() {
 		By("creating the resource")
-		response, err := prov.Create(p.CreateRequest{
-			Urn: urn("Random"),
+		response, err := server.Create(p.CreateRequest{
+			Urn: urn("Tee"),
 			Properties: resource.PropertyMap{
-				"length": resource.NewNumberProperty(12),
+				"stdin": resource.NewStringProperty("test"),
+				"files": resource.NewArrayProperty([]resource.PropertyValue{
+					resource.NewStringProperty("test"),
+				}),
 			},
 			Preview: false,
 		})
 
 		Expect(err).NotTo(HaveOccurred())
-		result := response.Properties["result"].StringValue()
-		Expect(result).To(HaveLen(12))
+		Expect(response).NotTo(BeNil())
 	})
 
 	AfterAll(func(ctx context.Context) {
