@@ -1,4 +1,4 @@
-module provider-xyz-native
+module provider-baremetal-native
 
 go 1.20
 

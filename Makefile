@@ -1,10 +1,10 @@
-PROJECT_NAME := Pulumi Xyz Resource Provider
+PROJECT_NAME := Pulumi baremetal Resource Provider
 
-PACK             := xyz
+PACK             := baremetal
 PACKDIR          := sdk
-PROJECT          := github.com/pulumi/pulumi-xyz
-NODE_MODULE_NAME := @abc/xyz
-NUGET_PKG_NAME   := Abc.Xyz
+PROJECT          := github.com/unmango/pulumi-baremetal
+NODE_MODULE_NAME := @unmango/baremetal
+NUGET_PKG_NAME   := unmango.baremetal
 
 PROVIDER        := pulumi-resource-${PACK}
 VERSION         ?= $(shell pulumictl get version)

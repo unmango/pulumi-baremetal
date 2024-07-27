@@ -1,4 +1,4 @@
-module github.com/pulumi/pulumi-xyz/provider
+module github.com/unmango/pulumi-baremetal/provider
 
 go 1.21
 
