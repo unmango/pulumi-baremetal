@@ -79,6 +79,8 @@ jobs:
           name: provider
           path: bin/pulumi-resource-baremetal
 
+      - run: chmod +x bin/pulumi-resource-baremetal
+
       - name: Install Go
         uses: actions/setup-go@v5
         with:
