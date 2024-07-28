@@ -2,6 +2,8 @@ module github.com/unmango/pulumi-baremetal/tests
 
 go 1.22
 
+replace github.com/unmango/pulumi-baremetal/gen => ../gen
+
 replace github.com/unmango/pulumi-baremetal/provider => ../provider
 
 require (
@@ -124,6 +126,7 @@ require (
 	github.com/tweekmonster/luser v0.0.0-20161003172636-3fa38070dbd7 // indirect
 	github.com/uber/jaeger-client-go v2.30.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
+	github.com/unmango/pulumi-baremetal/gen v0.0.0-00010101000000-000000000000 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect

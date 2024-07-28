@@ -29,5 +29,6 @@ func Provider() p.Provider {
 		ModuleMap: map[tokens.ModuleName]tokens.ModuleName{
 			"provider": "index",
 		},
+		Config: infer.Config[provider.Config](),
 	})
 }

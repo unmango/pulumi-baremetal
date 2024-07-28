@@ -16,6 +16,13 @@ export const Tee: typeof import("./tee").Tee = null as any;
 utilities.lazyLoad(exports, ["Tee"], () => require("./tee"));
 
 
+// Export sub-modules:
+import * as config from "./config";
+
+export {
+    config,
+};
+
 const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {

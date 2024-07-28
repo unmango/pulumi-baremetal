@@ -28,5 +28,13 @@ type TeeState struct {
 
 func (Tee) Create(ctx context.Context, name string, input TeeArgs, preview bool) (string, TeeState, error) {
 	state := TeeState{}
+	c := infer.GetConfig[Config](ctx)
+
+	p, err := c.provisioner()
+	if err != nil {
+		return name, state, err
+	}
+	defer p.conn.Close()
+
 	return name, state, nil
 }

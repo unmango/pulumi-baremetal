@@ -13,6 +13,13 @@ namespace UnMango.Baremetal
     [BaremetalResourceType("pulumi:providers:baremetal")]
     public partial class Provider : global::Pulumi.ProviderResource
     {
+        [Output("address")]
+        public Output<string> Address { get; private set; } = null!;
+
+        [Output("port")]
+        public Output<string> Port { get; private set; } = null!;
+
+
         /// <summary>
         /// Create a Provider resource with the given unique name, arguments, and options.
         /// </summary>
@@ -20,7 +27,7 @@ namespace UnMango.Baremetal
         /// <param name="name">The unique name of the resource</param>
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
-        public Provider(string name, ProviderArgs? args = null, CustomResourceOptions? options = null)
+        public Provider(string name, ProviderArgs args, CustomResourceOptions? options = null)
             : base("baremetal", name, args ?? new ProviderArgs(), MakeResourceOptions(options, ""))
         {
         }
@@ -40,6 +47,12 @@ namespace UnMango.Baremetal
 
     public sealed class ProviderArgs : global::Pulumi.ResourceArgs
     {
+        [Input("address", required: true)]
+        public Input<string> Address { get; set; } = null!;
+
+        [Input("port", required: true)]
+        public Input<string> Port { get; set; } = null!;
+
         public ProviderArgs()
         {
         }
