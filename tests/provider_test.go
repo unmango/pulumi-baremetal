@@ -23,6 +23,9 @@ var _ = Describe("Provider", Ordered, func() {
 		By("creating a provisioner")
 		prov, err := NewTestProvisioner(ctx, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
+
+		err = prov.Start(ctx)
+		Expect(err).NotTo(HaveOccurred())
 		provisioner = prov
 
 		By("creating a provider server")
@@ -31,6 +34,22 @@ var _ = Describe("Provider", Ordered, func() {
 			semver.MustParse("1.0.0"),
 			baremetal.Provider(),
 		)
+	})
+
+	BeforeEach(func(ctx context.Context) {
+		ip, err := provisioner.ct.ContainerIP(ctx)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(ip).NotTo(BeEmpty())
+		port := provisioner.port.Int()
+
+		By("configuring the provider")
+		err = server.Configure(p.ConfigureRequest{
+			Args: resource.PropertyMap{
+				"address": resource.NewStringProperty(ip),
+				"port":    resource.NewNumberProperty(float64(port)),
+			},
+		})
+		Expect(err).NotTo(HaveOccurred())
 	})
 
 	It("should create a tee", func() {
@@ -48,6 +67,7 @@ var _ = Describe("Provider", Ordered, func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(response).NotTo(BeNil())
+		Expect(response.Properties["stdout"].V).To(Equal("Hi friend"))
 	})
 
 	AfterAll(func(ctx context.Context) {

@@ -5,6 +5,7 @@ import (
 	_ "embed"
 
 	"github.com/pulumi/pulumi-go-provider/infer"
+	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 )
 
 //go:embed tee.man
@@ -35,6 +36,16 @@ func (Tee) Create(ctx context.Context, name string, input TeeArgs, preview bool)
 		return name, state, err
 	}
 	defer p.conn.Close()
+
+	msg := "Hi friend"
+	tState := pb.State{Pulumi: []byte(msg)}
+
+	res, err := p.Cmd.Tee(ctx, &pb.TeeRequest{State: &tState})
+	if err != nil {
+		return name, state, err
+	}
+
+	state.Stdout = string(res.State.Pulumi)
 
 	return name, state, nil
 }

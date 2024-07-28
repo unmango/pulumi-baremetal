@@ -181,7 +181,7 @@ bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC) $(wildcard provider/pkg/**/*.go)
 bin/provisioner:: $(GEN_SRC) provider/cmd/provisioner/*.go provider/pkg/**/*.go
 	cd provider && go build -o ${WORKING_DIR}/$@ $(PROJECT)/${PROVIDER_PATH}/cmd/provisioner
 
-gen/go/%.pb.go gen/go/%_grpc.pb.go &: $(BUF_CONFIG) .make/%
+gen/go/%.pb.go gen/go/%_grpc.pb.go &: $(BUF_CONFIG) proto/%.proto
 	buf generate --clean --path proto/$*.proto
 
 provider/pkg/%.man: provider/pkg/%.go
