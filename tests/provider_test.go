@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+	"encoding/json"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -53,11 +54,16 @@ var _ = Describe("Provider", Ordered, func() {
 	})
 
 	It("should create a tee", func() {
+		stdin := "Test stdin"
+		By("generating expected data")
+		stderr, err := json.Marshal([]string{"test"})
+		Expect(err).NotTo(HaveOccurred())
+
 		By("creating the resource")
 		response, err := server.Create(p.CreateRequest{
 			Urn: urn("Tee"),
 			Properties: resource.PropertyMap{
-				"stdin": resource.NewStringProperty("test"),
+				"stdin": resource.NewStringProperty(stdin),
 				"create": resource.NewObjectProperty(resource.PropertyMap{
 					"files": resource.NewArrayProperty([]resource.PropertyValue{
 						resource.NewStringProperty("test"),
@@ -69,8 +75,8 @@ var _ = Describe("Provider", Ordered, func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(response).NotTo(BeNil())
-		Expect(response.Properties["stdout"].V).To(Equal("Hi friend"))
-		Expect(response.Properties["stderr"].V).To(Equal("No errors here"))
+		Expect(response.Properties["stdout"].V).To(Equal(stdin))
+		Expect(response.Properties["stderr"].V).To(Equal(string(stderr)))
 	})
 
 	AfterAll(func(ctx context.Context) {
