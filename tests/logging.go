@@ -21,7 +21,7 @@ func NewLogger(w io.Writer) tc.Logging {
 
 // Accept implements testcontainers.LogConsumer.
 func (w *writerConsumer) Accept(log tc.Log) {
-	w.Write(log.Content)
+	_, _ = w.Write(log.Content)
 }
 
 // Printf implements testcontainers.Logging.

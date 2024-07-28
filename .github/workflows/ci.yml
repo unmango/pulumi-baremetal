@@ -63,10 +63,11 @@ jobs:
         id: diff
         uses: tj-actions/changed-files@v44
         with:
-          files: '*.proto'
+          files: |
+            **/*.proto
 
       - name: Lint
-        if: ${{ steps.diff.outputs.any_changed }}
+        if: ${{ steps.diff.outputs.any_changed == 'true' }}
         uses: bufbuild/buf-lint-action@v1
         with:
           input: ${{ steps.diff.outputs.all_changed_files }}
@@ -91,6 +92,14 @@ jobs:
         with:
           go-version-file: provider/go.mod
           cache-dependency-path: provider/go.sum
+
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.12.0
+        with:
+          repo: pulumi/pulumictl
+
+      - name: Touch targets
+        run: make --touch .make/buf_build
 
       - name: Make
         run: make provisioner
@@ -127,6 +136,9 @@ jobs:
         uses: pulumi/actions@v5
         with:
           pulumi-version-file: .versions/pulumi
+
+      - name: Touch targets
+        run: make --touch .make/buf_build
 
       - name: Make
         run: make provider
