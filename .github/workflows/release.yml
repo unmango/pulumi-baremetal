@@ -77,9 +77,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: provider
-          path: bin/pulumi-resource-baremetal
+          path: bin
 
-      - run: chmod +x bin/pulumi-resource-baremetal
+      - run: |
+          ls -l bin
+          chmod +x bin/pulumi-resource-baremetal
 
       - name: Install Go
         uses: actions/setup-go@v5
