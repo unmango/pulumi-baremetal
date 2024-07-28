@@ -58,8 +58,10 @@ var _ = Describe("Provider", Ordered, func() {
 			Urn: urn("Tee"),
 			Properties: resource.PropertyMap{
 				"stdin": resource.NewStringProperty("test"),
-				"files": resource.NewArrayProperty([]resource.PropertyValue{
-					resource.NewStringProperty("test"),
+				"create": resource.NewObjectProperty(resource.PropertyMap{
+					"files": resource.NewArrayProperty([]resource.PropertyValue{
+						resource.NewStringProperty("test"),
+					}),
 				}),
 			},
 			Preview: false,
@@ -68,6 +70,7 @@ var _ = Describe("Provider", Ordered, func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(response).NotTo(BeNil())
 		Expect(response.Properties["stdout"].V).To(Equal("Hi friend"))
+		Expect(response.Properties["stderr"].V).To(Equal("No errors here"))
 	})
 
 	AfterAll(func(ctx context.Context) {

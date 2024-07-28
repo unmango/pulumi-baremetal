@@ -3,17 +3,14 @@ syntax = "proto3";
 package unmango.baremetal.v1alpha1;
 
 service CommandService {
-  rpc Tee(TeeRequest) returns (TeeResponse);
+  rpc Command(CommandRequest) returns (CommandResponse);
 }
 
-message TeeRequest {
-  State state = 1;
+message CommandRequest {
+  bytes pulumi_raw = 1;
 }
 
-message TeeResponse {
-  State state = 1;
-}
-
-message State {
-  bytes pulumi = 1;
+message CommandResponse {
+  string stdout = 1;
+  string stderr = 2;
 }

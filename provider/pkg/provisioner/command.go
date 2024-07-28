@@ -14,9 +14,10 @@ func NewCommandService() pb.CommandServiceServer {
 	return &commandService{}
 }
 
-// Tee implements baremetalv1alpha1.CommandServiceServer.
-func (c *commandService) Tee(ctx context.Context, req *pb.TeeRequest) (*pb.TeeResponse, error) {
-	return &pb.TeeResponse{
-		State: req.State,
+// Command implements baremetalv1alpha1.CommandServiceServer.
+func (c *commandService) Command(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
+	return &pb.CommandResponse{
+		Stdout: "Hi friend",
+		Stderr: "No errors here",
 	}, nil
 }

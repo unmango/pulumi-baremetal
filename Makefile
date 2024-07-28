@@ -56,6 +56,7 @@ provisioner:: bin/provisioner
 
 docker:: .make/provisioner_docker_build
 mans:: gen_mans
+proto:: gen_proto
 
 gen:: gen_proto gen_mans gen_sdks examples
 gen_proto:: $(GEN_SRC)

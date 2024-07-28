@@ -19,14 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	CommandService_Tee_FullMethodName = "/unmango.baremetal.v1alpha1.CommandService/Tee"
+	CommandService_Command_FullMethodName = "/unmango.baremetal.v1alpha1.CommandService/Command"
 )
 
 // CommandServiceClient is the client API for CommandService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CommandServiceClient interface {
-	Tee(ctx context.Context, in *TeeRequest, opts ...grpc.CallOption) (*TeeResponse, error)
+	Command(ctx context.Context, in *CommandRequest, opts ...grpc.CallOption) (*CommandResponse, error)
 }
 
 type commandServiceClient struct {
@@ -37,10 +37,10 @@ func NewCommandServiceClient(cc grpc.ClientConnInterface) CommandServiceClient {
 	return &commandServiceClient{cc}
 }
 
-func (c *commandServiceClient) Tee(ctx context.Context, in *TeeRequest, opts ...grpc.CallOption) (*TeeResponse, error) {
+func (c *commandServiceClient) Command(ctx context.Context, in *CommandRequest, opts ...grpc.CallOption) (*CommandResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(TeeResponse)
-	err := c.cc.Invoke(ctx, CommandService_Tee_FullMethodName, in, out, cOpts...)
+	out := new(CommandResponse)
+	err := c.cc.Invoke(ctx, CommandService_Command_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (c *commandServiceClient) Tee(ctx context.Context, in *TeeRequest, opts ...
 // All implementations must embed UnimplementedCommandServiceServer
 // for forward compatibility
 type CommandServiceServer interface {
-	Tee(context.Context, *TeeRequest) (*TeeResponse, error)
+	Command(context.Context, *CommandRequest) (*CommandResponse, error)
 	mustEmbedUnimplementedCommandServiceServer()
 }
 
@@ -59,8 +59,8 @@ type CommandServiceServer interface {
 type UnimplementedCommandServiceServer struct {
 }
 
-func (UnimplementedCommandServiceServer) Tee(context.Context, *TeeRequest) (*TeeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Tee not implemented")
+func (UnimplementedCommandServiceServer) Command(context.Context, *CommandRequest) (*CommandResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Command not implemented")
 }
 func (UnimplementedCommandServiceServer) mustEmbedUnimplementedCommandServiceServer() {}
 
@@ -75,20 +75,20 @@ func RegisterCommandServiceServer(s grpc.ServiceRegistrar, srv CommandServiceSer
 	s.RegisterService(&CommandService_ServiceDesc, srv)
 }
 
-func _CommandService_Tee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TeeRequest)
+func _CommandService_Command_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CommandRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CommandServiceServer).Tee(ctx, in)
+		return srv.(CommandServiceServer).Command(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CommandService_Tee_FullMethodName,
+		FullMethod: CommandService_Command_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CommandServiceServer).Tee(ctx, req.(*TeeRequest))
+		return srv.(CommandServiceServer).Command(ctx, req.(*CommandRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -101,8 +101,8 @@ var CommandService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*CommandServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Tee",
-			Handler:    _CommandService_Tee_Handler,
+			MethodName: "Command",
+			Handler:    _CommandService_Command_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
