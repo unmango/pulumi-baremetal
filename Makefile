@@ -187,16 +187,16 @@ gen/go/%.pb.go gen/go/%_grpc.pb.go &: $(BUF_CONFIG) .make/%
 provider/pkg/%.man: provider/pkg/%.go
 	man $(notdir $*) > $@
 
-.make/buf_build: $(PROTO_SRC:proto/%.proto=.make/%)
+buf.lock: $(BUF_CONFIG)
+	buf dep update
+
+.make/buf_build: buf.lock $(PROTO_SRC)
+	buf build --path $(filter %.proto,$?)
 	@touch $@
 
 .make/buf_lint: $(PROTO_SRC)
 	buf lint --path $?
 	@touch $@
-
-.make/% &: proto/%.proto
-	buf build --path $^
-	@mkdir -p $(@D) && touch $@
 
 .make/provisioner_docker_build: provider/cmd/provisioner/Dockerfile bin/provisioner
 	docker build ${WORKING_DIR} -f $< -t ${PROVISIONER_NAME}:local-${VERSION_TAG}
