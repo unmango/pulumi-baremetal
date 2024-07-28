@@ -28,7 +28,7 @@ _ := $(shell mkdir -p .make)
 
 BUF_CONFIG := buf.yaml buf.gen.yaml
 
-MANS    := $(notdir $(basename $(wildcard $(PKG_DIR)/provider/*.go)))
+MANS    := tee
 MAN_SRC := $(MANS:%=$(PKG_DIR)/provider/%.man)
 
 PROTO_SRC   := $(wildcard $(PROTO_DIR)/*.proto)
@@ -175,13 +175,13 @@ install_nodejs_sdk::
 	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
 
 # ------- Real Targets -------
-bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC)
+bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC) $(wildcard provider/pkg/**/*.go)
 	cd provider && go build -o $(WORKING_DIR)/$@ -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
 bin/provisioner:: $(GEN_SRC) provider/cmd/provisioner/*.go provider/pkg/**/*.go
 	cd provider && go build -o ${WORKING_DIR}/$@ $(PROJECT)/${PROVIDER_PATH}/cmd/provisioner
 
-gen/go/%.pb.go gen/go/%_grpc.pb.go &: $(BUF_CONFIG) .make/%
+gen/go/%.pb.go gen/go/%_grpc.pb.go &: $(BUF_CONFIG) proto/%.proto
 	buf generate --clean --path proto/$*.proto
 
 provider/pkg/%.man: provider/pkg/%.go

@@ -17,6 +17,6 @@ func NewCommandService() pb.CommandServiceServer {
 // Tee implements baremetalv1alpha1.CommandServiceServer.
 func (c *commandService) Tee(ctx context.Context, req *pb.TeeRequest) (*pb.TeeResponse, error) {
 	return &pb.TeeResponse{
-		State: &pb.State{},
+		State: req.State,
 	}, nil
 }

@@ -7,6 +7,14 @@ import typing
 # Export this package's modules as members:
 from .provider import *
 from .tee import *
+
+# Make subpackages available:
+if typing.TYPE_CHECKING:
+    import unmango_baremetal.config as __config
+    config = __config
+else:
+    config = _utilities.lazy_import('unmango_baremetal.config')
+
 _utilities.register(
     resource_modules="""
 [

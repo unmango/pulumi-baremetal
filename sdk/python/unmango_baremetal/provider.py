@@ -13,11 +13,32 @@ __all__ = ['ProviderArgs', 'Provider']
 
 @pulumi.input_type
 class ProviderArgs:
-    def __init__(__self__):
+    def __init__(__self__, *,
+                 address: pulumi.Input[str],
+                 port: pulumi.Input[str]):
         """
         The set of arguments for constructing a Provider resource.
         """
-        pass
+        pulumi.set(__self__, "address", address)
+        pulumi.set(__self__, "port", port)
+
+    @property
+    @pulumi.getter
+    def address(self) -> pulumi.Input[str]:
+        return pulumi.get(self, "address")
+
+    @address.setter
+    def address(self, value: pulumi.Input[str]):
+        pulumi.set(self, "address", value)
+
+    @property
+    @pulumi.getter
+    def port(self) -> pulumi.Input[str]:
+        return pulumi.get(self, "port")
+
+    @port.setter
+    def port(self, value: pulumi.Input[str]):
+        pulumi.set(self, "port", value)
 
 
 class Provider(pulumi.ProviderResource):
@@ -25,6 +46,8 @@ class Provider(pulumi.ProviderResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 address: Optional[pulumi.Input[str]] = None,
+                 port: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         """
         Create a Baremetal resource with the given unique name, props, and options.
@@ -35,7 +58,7 @@ class Provider(pulumi.ProviderResource):
     @overload
     def __init__(__self__,
                  resource_name: str,
-                 args: Optional[ProviderArgs] = None,
+                 args: ProviderArgs,
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         Create a Baremetal resource with the given unique name, props, and options.
@@ -54,6 +77,8 @@ class Provider(pulumi.ProviderResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 address: Optional[pulumi.Input[str]] = None,
+                 port: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -63,9 +88,25 @@ class Provider(pulumi.ProviderResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = ProviderArgs.__new__(ProviderArgs)
 
+            if address is None and not opts.urn:
+                raise TypeError("Missing required property 'address'")
+            __props__.__dict__["address"] = address
+            if port is None and not opts.urn:
+                raise TypeError("Missing required property 'port'")
+            __props__.__dict__["port"] = port
         super(Provider, __self__).__init__(
             'baremetal',
             resource_name,
             __props__,
             opts)
+
+    @property
+    @pulumi.getter
+    def address(self) -> pulumi.Output[str]:
+        return pulumi.get(self, "address")
+
+    @property
+    @pulumi.getter
+    def port(self) -> pulumi.Output[str]:
+        return pulumi.get(self, "port")
 
