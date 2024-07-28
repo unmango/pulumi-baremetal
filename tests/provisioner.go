@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -9,6 +10,9 @@ import (
 	"time"
 
 	"github.com/docker/go-connections/nat"
+	p "github.com/pulumi/pulumi-go-provider"
+	"github.com/pulumi/pulumi-go-provider/integration"
+	"github.com/pulumi/pulumi/sdk/v3/go/common/resource"
 	tc "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 )
@@ -23,15 +27,15 @@ type testProvisioner struct {
 	port nat.Port
 }
 
-func NewTestProvisioner(ctx context.Context, logger io.Writer) (*testProvisioner, error) {
+func NewTestProvisioner(ctx context.Context, logger io.Writer) (testProvisioner, error) {
 	cwd, err := os.Getwd()
 	if err != nil {
-		return nil, err
+		return testProvisioner{}, err
 	}
 
 	port, err := nat.NewPort(defaultProtocol, "6969")
 	if err != nil {
-		return nil, err
+		return testProvisioner{}, err
 	}
 
 	container, err := tc.GenericContainer(ctx, tc.GenericContainerRequest{
@@ -52,20 +56,40 @@ func NewTestProvisioner(ctx context.Context, logger io.Writer) (*testProvisioner
 		},
 	})
 	if err != nil {
-		return nil, err
+		return testProvisioner{}, err
 	}
 
-	return &testProvisioner{
+	return testProvisioner{
 		ct:   container,
 		port: port,
 	}, nil
 }
 
-func (p *testProvisioner) Start(ctx context.Context) error {
+func (p testProvisioner) Start(ctx context.Context) error {
 	return p.ct.Start(ctx)
 }
 
-func (p *testProvisioner) Stop(ctx context.Context) error {
+func (p testProvisioner) Stop(ctx context.Context) error {
 	timeout := time.Duration(10 * time.Second)
 	return p.ct.Stop(ctx, &timeout)
+}
+
+func (prov testProvisioner) ConfigureProvider(ctx context.Context, server integration.Server) error {
+	ip, err := prov.ct.ContainerIP(ctx)
+	if err != nil {
+		return err
+	}
+
+	if ip == "" {
+		return errors.New("container returned empty ip")
+	}
+
+	port := prov.port.Int()
+
+	return server.Configure(p.ConfigureRequest{
+		Args: resource.PropertyMap{
+			"address": resource.NewStringProperty(ip),
+			"port":    resource.NewNumberProperty(float64(port)),
+		},
+	})
 }
