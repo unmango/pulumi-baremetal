@@ -29,9 +29,10 @@ _ := $(shell mkdir -p .make)
 BUF_CONFIG := buf.yaml buf.gen.yaml
 
 MANS    := tee
-MAN_SRC := $(MANS:%=$(PKG_DIR)/provider/%.man)
+MAN_SRC := $(MANS:%=$(PKG_DIR)/provider/cmd/%.man)
 
-PROTO_SRC   := $(wildcard $(PROTO_DIR)/*.proto)
+PKG_SRC     := $(shell find provider/pkg -type f -name '*.go')
+PROTO_SRC   := $(shell find $(PROTO_DIR) -type f -name '*.proto')
 GO_GRPC_SRC := $(PROTO_SRC:proto/%.proto=gen/go/%_grpc.pb.go)
 GO_PB_SRC   := $(PROTO_SRC:proto/%.proto=gen/go/%.pb.go)
 GEN_SRC     := $(GO_GRPC_SRC) $(GO_PB_SRC)
@@ -56,6 +57,7 @@ provisioner:: bin/provisioner
 
 docker:: .make/provisioner_docker_build
 mans:: gen_mans
+proto:: gen_proto
 
 gen:: gen_proto gen_mans gen_sdks examples
 gen_proto:: $(GEN_SRC)
@@ -175,10 +177,10 @@ install_nodejs_sdk::
 	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
 
 # ------- Real Targets -------
-bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC) $(wildcard provider/pkg/**/*.go)
+bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC) $(PKG_SRC)
 	cd provider && go build -o $(WORKING_DIR)/$@ -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
-bin/provisioner:: $(GEN_SRC) provider/cmd/provisioner/*.go provider/pkg/**/*.go
+bin/provisioner:: $(GEN_SRC) provider/cmd/provisioner/*.go $(PKG_SRC)
 	cd provider && go build -o ${WORKING_DIR}/$@ $(PROJECT)/${PROVIDER_PATH}/cmd/provisioner
 
 gen/go/%.pb.go gen/go/%_grpc.pb.go &: $(BUF_CONFIG) proto/%.proto

@@ -11,7 +11,7 @@ using Pulumi;
 namespace UnMango.Baremetal
 {
     /// <summary>
-    /// TEE(1)                           User Commands                           TEE(1)
+    /// TEE(1)                                                       User Commands                                                      TEE(1)
     /// 
     /// NAME
     ///        tee - read from standard input and write to standard output and files
@@ -49,11 +49,9 @@ namespace UnMango.Baremetal
     ///        exit-nopipe
     ///               exit on error writing to any output not a pipe
     ///     
-    ///        The  default  MODE  for  the  -p option is 'warn-nopipe'.  With "nopipe"
-    ///        MODEs, exit immediately if all outputs become broken pipes.  The default
-    ///        operation when --output-error is not specified, is to  exit  immediately
-    ///        on error writing to a pipe, and diagnose errors writing to non pipe out‐
-    ///        puts.
+    ///        The default MODE for the -p option is 'warn-nopipe'.  With "nopipe" MODEs, exit immediately if all outputs become broken pipes.
+    ///        The default operation when --output-error is not specified, is to exit immediately on error writing to a pipe, and diagnose er‐
+    ///        rors writing to non pipe outputs.
     /// 
     /// AUTHOR
     ///        Written by Mike Parker, Richard M. Stallman, and David MacKenzie.
@@ -63,28 +61,33 @@ namespace UnMango.Baremetal
     ///        Report any translation bugs to &lt;https://translationproject.org/team/&gt;
     /// 
     /// COPYRIGHT
-    ///        Copyright © 2024 Free Software Foundation, Inc.  License GPLv3+: GNU GPL
-    ///        version 3 or later &lt;https://gnu.org/licenses/gpl.html&gt;.
-    ///        This  is  free  software:  you  are  free to change and redistribute it.
-    ///        There is NO WARRANTY, to the extent permitted by law.
+    ///        Copyright  ©  2024  Free  Software  Foundation,  Inc.   License  GPLv3+:  GNU  GPL  version  3  or  later  &lt;https://gnu.org/li‐
+    ///        censes/gpl.html&gt;.
+    ///        This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by law.
     /// 
     /// SEE ALSO
     ///        Full documentation &lt;https://www.gnu.org/software/coreutils/tee&gt;
     ///        or available locally via: info '(coreutils) tee invocation'
     /// 
-    /// GNU coreutils 9.5                  March 2024                            TEE(1)
+    /// GNU coreutils 9.5                                             March 2024                                                        TEE(1)
     /// </summary>
     [BaremetalResourceType("baremetal:index:Tee")]
     public partial class Tee : global::Pulumi.CustomResource
     {
-        [Output("files")]
-        public Output<ImmutableArray<string>> Files { get; private set; } = null!;
+        [Output("create")]
+        public Output<Outputs.TeeOpts?> Create { get; private set; } = null!;
+
+        [Output("stderr")]
+        public Output<string> Stderr { get; private set; } = null!;
 
         [Output("stdin")]
         public Output<string> Stdin { get; private set; } = null!;
 
         [Output("stdout")]
         public Output<string> Stdout { get; private set; } = null!;
+
+        [Output("test")]
+        public Output<UnMango.Baremetal.V1alpha1.Outputs.CommandRequest> Test { get; private set; } = null!;
 
 
         /// <summary>
@@ -131,16 +134,14 @@ namespace UnMango.Baremetal
 
     public sealed class TeeArgs : global::Pulumi.ResourceArgs
     {
-        [Input("files", required: true)]
-        private InputList<string>? _files;
-        public InputList<string> Files
-        {
-            get => _files ?? (_files = new InputList<string>());
-            set => _files = value;
-        }
+        [Input("create")]
+        public Input<Inputs.TeeOptsArgs>? Create { get; set; }
 
         [Input("stdin", required: true)]
         public Input<string> Stdin { get; set; } = null!;
+
+        [Input("test", required: true)]
+        public Input<UnMango.Baremetal.V1alpha1.Inputs.CommandRequestArgs> Test { get; set; } = null!;
 
         public TeeArgs()
         {

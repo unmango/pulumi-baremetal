@@ -7,19 +7,21 @@ import warnings
 import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
-from .. import _utilities
+from . import _utilities
 
-import types
+__all__ = [
+    'TeeOpts',
+]
 
-__config__ = pulumi.Config('baremetal')
+@pulumi.output_type
+class TeeOpts(dict):
+    def __init__(__self__, *,
+                 files: Sequence[str]):
+        pulumi.set(__self__, "files", files)
 
-
-class _ExportableConfig(types.ModuleType):
     @property
-    def address(self) -> Optional[str]:
-        return __config__.get('address')
+    @pulumi.getter
+    def files(self) -> Sequence[str]:
+        return pulumi.get(self, "files")
 
-    @property
-    def port(self) -> Optional[int]:
-        return __config__.get_int('port')
 

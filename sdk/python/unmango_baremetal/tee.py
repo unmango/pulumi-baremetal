@@ -8,28 +8,25 @@ import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from . import _utilities
+from . import outputs
+from . import v1alpha1 as _v1alpha1
+from ._inputs import *
 
 __all__ = ['TeeArgs', 'Tee']
 
 @pulumi.input_type
 class TeeArgs:
     def __init__(__self__, *,
-                 files: pulumi.Input[Sequence[pulumi.Input[str]]],
-                 stdin: pulumi.Input[str]):
+                 stdin: pulumi.Input[str],
+                 test: pulumi.Input['_v1alpha1.CommandRequestArgs'],
+                 create: Optional[pulumi.Input['TeeOptsArgs']] = None):
         """
         The set of arguments for constructing a Tee resource.
         """
-        pulumi.set(__self__, "files", files)
         pulumi.set(__self__, "stdin", stdin)
-
-    @property
-    @pulumi.getter
-    def files(self) -> pulumi.Input[Sequence[pulumi.Input[str]]]:
-        return pulumi.get(self, "files")
-
-    @files.setter
-    def files(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
-        pulumi.set(self, "files", value)
+        pulumi.set(__self__, "test", test)
+        if create is not None:
+            pulumi.set(__self__, "create", create)
 
     @property
     @pulumi.getter
@@ -40,17 +37,36 @@ class TeeArgs:
     def stdin(self, value: pulumi.Input[str]):
         pulumi.set(self, "stdin", value)
 
+    @property
+    @pulumi.getter
+    def test(self) -> pulumi.Input['_v1alpha1.CommandRequestArgs']:
+        return pulumi.get(self, "test")
+
+    @test.setter
+    def test(self, value: pulumi.Input['_v1alpha1.CommandRequestArgs']):
+        pulumi.set(self, "test", value)
+
+    @property
+    @pulumi.getter
+    def create(self) -> Optional[pulumi.Input['TeeOptsArgs']]:
+        return pulumi.get(self, "create")
+
+    @create.setter
+    def create(self, value: Optional[pulumi.Input['TeeOptsArgs']]):
+        pulumi.set(self, "create", value)
+
 
 class Tee(pulumi.CustomResource):
     @overload
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 files: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 create: Optional[pulumi.Input[Union['TeeOptsArgs', 'TeeOptsArgsDict']]] = None,
                  stdin: Optional[pulumi.Input[str]] = None,
+                 test: Optional[pulumi.Input[Union['_v1alpha1.CommandRequestArgs', '_v1alpha1.CommandRequestArgsDict']]] = None,
                  __props__=None):
         """
-        TEE(1)                           User Commands                           TEE(1)
+        TEE(1)                                                       User Commands                                                      TEE(1)
 
         NAME
                tee - read from standard input and write to standard output and files
@@ -88,11 +104,9 @@ class Tee(pulumi.CustomResource):
                exit-nopipe
                       exit on error writing to any output not a pipe
             
-               The  default  MODE  for  the  -p option is 'warn-nopipe'.  With "nopipe"
-               MODEs, exit immediately if all outputs become broken pipes.  The default
-               operation when --output-error is not specified, is to  exit  immediately
-               on error writing to a pipe, and diagnose errors writing to non pipe out‐
-               puts.
+               The default MODE for the -p option is 'warn-nopipe'.  With "nopipe" MODEs, exit immediately if all outputs become broken pipes.
+               The default operation when --output-error is not specified, is to exit immediately on error writing to a pipe, and diagnose er‐
+               rors writing to non pipe outputs.
 
         AUTHOR
                Written by Mike Parker, Richard M. Stallman, and David MacKenzie.
@@ -102,16 +116,15 @@ class Tee(pulumi.CustomResource):
                Report any translation bugs to <https://translationproject.org/team/>
 
         COPYRIGHT
-               Copyright © 2024 Free Software Foundation, Inc.  License GPLv3+: GNU GPL
-               version 3 or later <https://gnu.org/licenses/gpl.html>.
-               This  is  free  software:  you  are  free to change and redistribute it.
-               There is NO WARRANTY, to the extent permitted by law.
+               Copyright  ©  2024  Free  Software  Foundation,  Inc.   License  GPLv3+:  GNU  GPL  version  3  or  later  <https://gnu.org/li‐
+               censes/gpl.html>.
+               This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by law.
 
         SEE ALSO
                Full documentation <https://www.gnu.org/software/coreutils/tee>
                or available locally via: info '(coreutils) tee invocation'
 
-        GNU coreutils 9.5                  March 2024                            TEE(1)
+        GNU coreutils 9.5                                             March 2024                                                        TEE(1)
 
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
@@ -123,7 +136,7 @@ class Tee(pulumi.CustomResource):
                  args: TeeArgs,
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
-        TEE(1)                           User Commands                           TEE(1)
+        TEE(1)                                                       User Commands                                                      TEE(1)
 
         NAME
                tee - read from standard input and write to standard output and files
@@ -161,11 +174,9 @@ class Tee(pulumi.CustomResource):
                exit-nopipe
                       exit on error writing to any output not a pipe
             
-               The  default  MODE  for  the  -p option is 'warn-nopipe'.  With "nopipe"
-               MODEs, exit immediately if all outputs become broken pipes.  The default
-               operation when --output-error is not specified, is to  exit  immediately
-               on error writing to a pipe, and diagnose errors writing to non pipe out‐
-               puts.
+               The default MODE for the -p option is 'warn-nopipe'.  With "nopipe" MODEs, exit immediately if all outputs become broken pipes.
+               The default operation when --output-error is not specified, is to exit immediately on error writing to a pipe, and diagnose er‐
+               rors writing to non pipe outputs.
 
         AUTHOR
                Written by Mike Parker, Richard M. Stallman, and David MacKenzie.
@@ -175,16 +186,15 @@ class Tee(pulumi.CustomResource):
                Report any translation bugs to <https://translationproject.org/team/>
 
         COPYRIGHT
-               Copyright © 2024 Free Software Foundation, Inc.  License GPLv3+: GNU GPL
-               version 3 or later <https://gnu.org/licenses/gpl.html>.
-               This  is  free  software:  you  are  free to change and redistribute it.
-               There is NO WARRANTY, to the extent permitted by law.
+               Copyright  ©  2024  Free  Software  Foundation,  Inc.   License  GPLv3+:  GNU  GPL  version  3  or  later  <https://gnu.org/li‐
+               censes/gpl.html>.
+               This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by law.
 
         SEE ALSO
                Full documentation <https://www.gnu.org/software/coreutils/tee>
                or available locally via: info '(coreutils) tee invocation'
 
-        GNU coreutils 9.5                  March 2024                            TEE(1)
+        GNU coreutils 9.5                                             March 2024                                                        TEE(1)
 
         :param str resource_name: The name of the resource.
         :param TeeArgs args: The arguments to use to populate this resource's properties.
@@ -201,8 +211,9 @@ class Tee(pulumi.CustomResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 files: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 create: Optional[pulumi.Input[Union['TeeOptsArgs', 'TeeOptsArgsDict']]] = None,
                  stdin: Optional[pulumi.Input[str]] = None,
+                 test: Optional[pulumi.Input[Union['_v1alpha1.CommandRequestArgs', '_v1alpha1.CommandRequestArgsDict']]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -212,12 +223,14 @@ class Tee(pulumi.CustomResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = TeeArgs.__new__(TeeArgs)
 
-            if files is None and not opts.urn:
-                raise TypeError("Missing required property 'files'")
-            __props__.__dict__["files"] = files
+            __props__.__dict__["create"] = create
             if stdin is None and not opts.urn:
                 raise TypeError("Missing required property 'stdin'")
             __props__.__dict__["stdin"] = stdin
+            if test is None and not opts.urn:
+                raise TypeError("Missing required property 'test'")
+            __props__.__dict__["test"] = test
+            __props__.__dict__["stderr"] = None
             __props__.__dict__["stdout"] = None
         super(Tee, __self__).__init__(
             'baremetal:index:Tee',
@@ -241,15 +254,22 @@ class Tee(pulumi.CustomResource):
 
         __props__ = TeeArgs.__new__(TeeArgs)
 
-        __props__.__dict__["files"] = None
+        __props__.__dict__["create"] = None
+        __props__.__dict__["stderr"] = None
         __props__.__dict__["stdin"] = None
         __props__.__dict__["stdout"] = None
+        __props__.__dict__["test"] = None
         return Tee(resource_name, opts=opts, __props__=__props__)
 
     @property
     @pulumi.getter
-    def files(self) -> pulumi.Output[Sequence[str]]:
-        return pulumi.get(self, "files")
+    def create(self) -> pulumi.Output[Optional['outputs.TeeOpts']]:
+        return pulumi.get(self, "create")
+
+    @property
+    @pulumi.getter
+    def stderr(self) -> pulumi.Output[str]:
+        return pulumi.get(self, "stderr")
 
     @property
     @pulumi.getter
@@ -260,4 +280,9 @@ class Tee(pulumi.CustomResource):
     @pulumi.getter
     def stdout(self) -> pulumi.Output[str]:
         return pulumi.get(self, "stdout")
+
+    @property
+    @pulumi.getter
+    def test(self) -> pulumi.Output['_v1alpha1.outputs.CommandRequest']:
+        return pulumi.get(self, "test")
 

@@ -53,13 +53,18 @@ var _ = Describe("Provider", Ordered, func() {
 	})
 
 	It("should create a tee", func() {
+		stdin := "Test stdin"
+		By("generating expected data")
+
 		By("creating the resource")
 		response, err := server.Create(p.CreateRequest{
 			Urn: urn("Tee"),
 			Properties: resource.PropertyMap{
-				"stdin": resource.NewStringProperty("test"),
-				"files": resource.NewArrayProperty([]resource.PropertyValue{
-					resource.NewStringProperty("test"),
+				"stdin": resource.NewStringProperty(stdin),
+				"create": resource.NewObjectProperty(resource.PropertyMap{
+					"files": resource.NewArrayProperty([]resource.PropertyValue{
+						resource.NewStringProperty("test"),
+					}),
 				}),
 			},
 			Preview: false,
@@ -67,7 +72,7 @@ var _ = Describe("Provider", Ordered, func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(response).NotTo(BeNil())
-		Expect(response.Properties["stdout"].V).To(Equal("Hi friend"))
+		Expect(response.Properties["stdout"].V).To(Equal("op: OP_CREATE, cmd: COMMAND_TEE, args: []string{\"test\"}, flags: map[string]*baremetalv1alpha1.Flag(nil)"))
 	})
 
 	AfterAll(func(ctx context.Context) {
@@ -80,5 +85,5 @@ var _ = Describe("Provider", Ordered, func() {
 // urn is a helper function to build an urn for running integration tests.
 func urn(typ string) resource.URN {
 	return resource.NewURN("stack", "proj", "",
-		tokens.Type("test:index:"+typ), "name")
+		tokens.Type("test:cmd:"+typ), "name")
 }
