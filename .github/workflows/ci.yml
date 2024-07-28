@@ -87,6 +87,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Unshallow clone for tags
+        run: git fetch --prune --unshallow --tags
+
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
@@ -99,7 +102,7 @@ jobs:
           repo: pulumi/pulumictl
 
       - name: Touch targets
-        run: make --touch .make/buf_build
+        run: make --touch gen
 
       - name: Make
         run: make provisioner
@@ -138,7 +141,7 @@ jobs:
           pulumi-version-file: .versions/pulumi
 
       - name: Touch targets
-        run: make --touch .make/buf_build
+        run: make --touch gen
 
       - name: Make
         run: make provider
