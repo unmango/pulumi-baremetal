@@ -1,21 +1,35 @@
+# Vendored code
 /vendor/
-**/bin/
-**/obj/
-**/node_modules/
+
+# User Specific
 **/.vs
 **/.idea
 **/.ionide
+
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+
 .pulumi
 Pulumi.*.yaml
-yarn.lock
-ci-scripts
-/nuget/
-sdk/dotnet/version.txt
-provider/**/schema-embed.json
+
 .make/
+.envrc
+
+# Build Artifacts
+**/bin/
+**/obj/
+**/node_modules/
+yarn.lock
+/nuget/
+ci-scripts
+
+provider/**/schema-embed.json
 
 examples/**/venv/
 examples/**/__pycache__/
+
+sdk/dotnet/version.txt
 
 sdk/java/build
 sdk/java/.gradle
