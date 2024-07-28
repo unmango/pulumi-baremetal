@@ -9,6 +9,7 @@
     "ms-dotnettools.csharp",
     "golang.go",
     "ms-vscode.makefile-tools",
-    "pulumi.pulumi-lsp-client"
+    "pulumi.pulumi-lsp-client",
+    "bufbuild.vscode-buf"
   ]
 }

@@ -10,6 +10,7 @@
 		"sdk/**"
 	],
 	"ignoreDeps": [
+		"github.com/unmango/pulumi-baremetal/gen",
 		"github.com/unmango/pulumi-baremetal/provider"
 	],
 	"customManagers": [
