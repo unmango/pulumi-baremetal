@@ -2,7 +2,6 @@ package tests
 
 import (
 	"context"
-	"encoding/json"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -56,8 +55,6 @@ var _ = Describe("Provider", Ordered, func() {
 	It("should create a tee", func() {
 		stdin := "Test stdin"
 		By("generating expected data")
-		stderr, err := json.Marshal([]string{"test"})
-		Expect(err).NotTo(HaveOccurred())
 
 		By("creating the resource")
 		response, err := server.Create(p.CreateRequest{
@@ -75,8 +72,7 @@ var _ = Describe("Provider", Ordered, func() {
 
 		Expect(err).NotTo(HaveOccurred())
 		Expect(response).NotTo(BeNil())
-		Expect(response.Properties["stdout"].V).To(Equal(stdin))
-		Expect(response.Properties["stderr"].V).To(Equal(string(stderr)))
+		Expect(response.Properties["stdout"].V).To(Equal("op: OP_CREATE, cmd: COMMAND_TEE, args: []string{\"test\"}, flags: map[string]*baremetalv1alpha1.Flag(nil)"))
 	})
 
 	AfterAll(func(ctx context.Context) {
@@ -89,5 +85,5 @@ var _ = Describe("Provider", Ordered, func() {
 // urn is a helper function to build an urn for running integration tests.
 func urn(typ string) resource.URN {
 	return resource.NewURN("stack", "proj", "",
-		tokens.Type("test:index:"+typ), "name")
+		tokens.Type("test:cmd:"+typ), "name")
 }

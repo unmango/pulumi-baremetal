@@ -10,9 +10,10 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/v1alpha1"
 )
 
-// TEE(1)                           User Commands                           TEE(1)
+// TEE(1)                                                       User Commands                                                      TEE(1)
 //
 // NAME
 //
@@ -53,11 +54,9 @@ import (
 //	    exit-nopipe
 //	           exit on error writing to any output not a pipe
 //
-//	    The  default  MODE  for  the  -p option is 'warn-nopipe'.  With "nopipe"
-//	    MODEs, exit immediately if all outputs become broken pipes.  The default
-//	    operation when --output-error is not specified, is to  exit  immediately
-//	    on error writing to a pipe, and diagnose errors writing to non pipe out‐
-//	    puts.
+//	    The default MODE for the -p option is 'warn-nopipe'.  With "nopipe" MODEs, exit immediately if all outputs become broken pipes.
+//	    The default operation when --output-error is not specified, is to exit immediately on error writing to a pipe, and diagnose er‐
+//	    rors writing to non pipe outputs.
 //
 // AUTHOR
 //
@@ -70,23 +69,24 @@ import (
 //
 // COPYRIGHT
 //
-//	Copyright © 2024 Free Software Foundation, Inc.  License GPLv3+: GNU GPL
-//	version 3 or later <https://gnu.org/licenses/gpl.html>.
-//	This  is  free  software:  you  are  free to change and redistribute it.
-//	There is NO WARRANTY, to the extent permitted by law.
+//	Copyright  ©  2024  Free  Software  Foundation,  Inc.   License  GPLv3+:  GNU  GPL  version  3  or  later  <https://gnu.org/li‐
+//	censes/gpl.html>.
+//	This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by law.
 //
 // SEE ALSO
 //
 //	Full documentation <https://www.gnu.org/software/coreutils/tee>
 //	or available locally via: info '(coreutils) tee invocation'
 //
-// GNU coreutils 9.5                  March 2024                            TEE(1)
+// GNU coreutils 9.5                                             March 2024                                                        TEE(1)
 type Tee struct {
 	pulumi.CustomResourceState
 
-	Files  pulumi.StringArrayOutput `pulumi:"files"`
-	Stdin  pulumi.StringOutput      `pulumi:"stdin"`
-	Stdout pulumi.StringOutput      `pulumi:"stdout"`
+	Create TeeOptsPtrOutput              `pulumi:"create"`
+	Stderr pulumi.StringOutput           `pulumi:"stderr"`
+	Stdin  pulumi.StringOutput           `pulumi:"stdin"`
+	Stdout pulumi.StringOutput           `pulumi:"stdout"`
+	Test   v1alpha1.CommandRequestOutput `pulumi:"test"`
 }
 
 // NewTee registers a new resource with the given unique name, arguments, and options.
@@ -96,11 +96,11 @@ func NewTee(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.Files == nil {
-		return nil, errors.New("invalid value for required argument 'Files'")
-	}
 	if args.Stdin == nil {
 		return nil, errors.New("invalid value for required argument 'Stdin'")
+	}
+	if args.Test == nil {
+		return nil, errors.New("invalid value for required argument 'Test'")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Tee
@@ -135,14 +135,16 @@ func (TeeState) ElementType() reflect.Type {
 }
 
 type teeArgs struct {
-	Files []string `pulumi:"files"`
-	Stdin string   `pulumi:"stdin"`
+	Create *TeeOpts                `pulumi:"create"`
+	Stdin  string                  `pulumi:"stdin"`
+	Test   v1alpha1.CommandRequest `pulumi:"test"`
 }
 
 // The set of arguments for constructing a Tee resource.
 type TeeArgs struct {
-	Files pulumi.StringArrayInput
-	Stdin pulumi.StringInput
+	Create TeeOptsPtrInput
+	Stdin  pulumi.StringInput
+	Test   v1alpha1.CommandRequestInput
 }
 
 func (TeeArgs) ElementType() reflect.Type {
@@ -182,8 +184,12 @@ func (o TeeOutput) ToTeeOutputWithContext(ctx context.Context) TeeOutput {
 	return o
 }
 
-func (o TeeOutput) Files() pulumi.StringArrayOutput {
-	return o.ApplyT(func(v *Tee) pulumi.StringArrayOutput { return v.Files }).(pulumi.StringArrayOutput)
+func (o TeeOutput) Create() TeeOptsPtrOutput {
+	return o.ApplyT(func(v *Tee) TeeOptsPtrOutput { return v.Create }).(TeeOptsPtrOutput)
+}
+
+func (o TeeOutput) Stderr() pulumi.StringOutput {
+	return o.ApplyT(func(v *Tee) pulumi.StringOutput { return v.Stderr }).(pulumi.StringOutput)
 }
 
 func (o TeeOutput) Stdin() pulumi.StringOutput {
@@ -192,6 +198,10 @@ func (o TeeOutput) Stdin() pulumi.StringOutput {
 
 func (o TeeOutput) Stdout() pulumi.StringOutput {
 	return o.ApplyT(func(v *Tee) pulumi.StringOutput { return v.Stdout }).(pulumi.StringOutput)
+}
+
+func (o TeeOutput) Test() v1alpha1.CommandRequestOutput {
+	return o.ApplyT(func(v *Tee) v1alpha1.CommandRequestOutput { return v.Test }).(v1alpha1.CommandRequestOutput)
 }
 
 func init() {

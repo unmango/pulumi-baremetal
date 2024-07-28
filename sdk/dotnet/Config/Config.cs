@@ -39,8 +39,8 @@ namespace UnMango.Baremetal
             set => _address.Set(value);
         }
 
-        private static readonly __Value<string?> _port = new __Value<string?>(() => __config.Get("port"));
-        public static string? Port
+        private static readonly __Value<int?> _port = new __Value<int?>(() => __config.GetInt32("port"));
+        public static int? Port
         {
             get => _port.Get();
             set => _port.Set(value);

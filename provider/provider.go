@@ -6,6 +6,7 @@ import (
 	"github.com/pulumi/pulumi-go-provider/middleware/schema"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/cmd"
 )
 
 // Version is initialized by the Go linker to contain the semver of this build.
@@ -24,7 +25,7 @@ func Provider() p.Provider {
 			},
 		},
 		Resources: []infer.InferredResource{
-			infer.Resource[provider.Tee](),
+			infer.Resource[cmd.Tee](),
 		},
 		ModuleMap: map[tokens.ModuleName]tokens.ModuleName{
 			"provider": "index",

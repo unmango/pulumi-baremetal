@@ -9,7 +9,13 @@ import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 
-address: Optional[str]
+__all__ = [
+    'CommandRequest',
+]
 
-port: Optional[int]
+@pulumi.output_type
+class CommandRequest(dict):
+    def __init__(__self__):
+        pass
+
 

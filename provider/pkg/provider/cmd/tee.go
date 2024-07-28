@@ -1,13 +1,12 @@
-package provider
+package cmd
 
 import (
-	"bytes"
 	"context"
 	_ "embed"
-	"encoding/gob"
 
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider"
 )
 
 //go:embed tee.man
@@ -48,22 +47,17 @@ func (Tee) Create(ctx context.Context, name string, input TeeArgs, preview bool)
 }
 
 func (state *TeeState) create(ctx context.Context, input TeeArgs) error {
-	c := infer.GetConfig[Config](ctx)
-
-	p, err := c.provisioner()
+	c := infer.GetConfig[provider.Config](ctx)
+	p, err := c.NewProvisioner()
 	if err != nil {
-		return err
-	}
-	defer p.conn.Close()
-
-	buf := &bytes.Buffer{}
-	enc := gob.NewEncoder(buf)
-	if err = enc.Encode(input); err != nil {
 		return err
 	}
 
 	res, err := p.Cmd.Command(ctx, &pb.CommandRequest{
-		PulumiRaw: buf.Bytes(),
+		Op:      pb.Op_OP_CREATE,
+		Command: pb.Command_COMMAND_TEE,
+		Args:    input.Create.Files,
+		Flags:   map[string]*pb.Flag{},
 	})
 	if err != nil {
 		return err

@@ -2,10 +2,12 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
+import * as inputs from "./types/input";
+import * as outputs from "./types/output";
 import * as utilities from "./utilities";
 
 /**
- * TEE(1)                           User Commands                           TEE(1)
+ * TEE(1)                                                       User Commands                                                      TEE(1)
  *
  * NAME
  *        tee - read from standard input and write to standard output and files
@@ -43,11 +45,9 @@ import * as utilities from "./utilities";
  *        exit-nopipe
  *               exit on error writing to any output not a pipe
  *     
- *        The  default  MODE  for  the  -p option is 'warn-nopipe'.  With "nopipe"
- *        MODEs, exit immediately if all outputs become broken pipes.  The default
- *        operation when --output-error is not specified, is to  exit  immediately
- *        on error writing to a pipe, and diagnose errors writing to non pipe out‐
- *        puts.
+ *        The default MODE for the -p option is 'warn-nopipe'.  With "nopipe" MODEs, exit immediately if all outputs become broken pipes.
+ *        The default operation when --output-error is not specified, is to exit immediately on error writing to a pipe, and diagnose er‐
+ *        rors writing to non pipe outputs.
  *
  * AUTHOR
  *        Written by Mike Parker, Richard M. Stallman, and David MacKenzie.
@@ -57,16 +57,15 @@ import * as utilities from "./utilities";
  *        Report any translation bugs to <https://translationproject.org/team/>
  *
  * COPYRIGHT
- *        Copyright © 2024 Free Software Foundation, Inc.  License GPLv3+: GNU GPL
- *        version 3 or later <https://gnu.org/licenses/gpl.html>.
- *        This  is  free  software:  you  are  free to change and redistribute it.
- *        There is NO WARRANTY, to the extent permitted by law.
+ *        Copyright  ©  2024  Free  Software  Foundation,  Inc.   License  GPLv3+:  GNU  GPL  version  3  or  later  <https://gnu.org/li‐
+ *        censes/gpl.html>.
+ *        This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by law.
  *
  * SEE ALSO
  *        Full documentation <https://www.gnu.org/software/coreutils/tee>
  *        or available locally via: info '(coreutils) tee invocation'
  *
- * GNU coreutils 9.5                  March 2024                            TEE(1)
+ * GNU coreutils 9.5                                             March 2024                                                        TEE(1)
  */
 export class Tee extends pulumi.CustomResource {
     /**
@@ -95,9 +94,11 @@ export class Tee extends pulumi.CustomResource {
         return obj['__pulumiType'] === Tee.__pulumiType;
     }
 
-    public readonly files!: pulumi.Output<string[]>;
+    public readonly create!: pulumi.Output<outputs.TeeOpts | undefined>;
+    public /*out*/ readonly stderr!: pulumi.Output<string>;
     public readonly stdin!: pulumi.Output<string>;
     public /*out*/ readonly stdout!: pulumi.Output<string>;
+    public readonly test!: pulumi.Output<outputs.v1alpha1.CommandRequest>;
 
     /**
      * Create a Tee resource with the given unique name, arguments, and options.
@@ -110,19 +111,23 @@ export class Tee extends pulumi.CustomResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.files === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'files'");
-            }
             if ((!args || args.stdin === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'stdin'");
             }
-            resourceInputs["files"] = args ? args.files : undefined;
+            if ((!args || args.test === undefined) && !opts.urn) {
+                throw new Error("Missing required property 'test'");
+            }
+            resourceInputs["create"] = args ? args.create : undefined;
             resourceInputs["stdin"] = args ? args.stdin : undefined;
+            resourceInputs["test"] = args ? args.test : undefined;
+            resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
         } else {
-            resourceInputs["files"] = undefined /*out*/;
+            resourceInputs["create"] = undefined /*out*/;
+            resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdin"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
+            resourceInputs["test"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Tee.__pulumiType, name, resourceInputs, opts);
@@ -133,6 +138,7 @@ export class Tee extends pulumi.CustomResource {
  * The set of arguments for constructing a Tee resource.
  */
 export interface TeeArgs {
-    files: pulumi.Input<pulumi.Input<string>[]>;
+    create?: pulumi.Input<inputs.TeeOptsArgs>;
     stdin: pulumi.Input<string>;
+    test: pulumi.Input<inputs.v1alpha1.CommandRequestArgs>;
 }

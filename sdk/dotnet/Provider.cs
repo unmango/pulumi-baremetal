@@ -16,9 +16,6 @@ namespace UnMango.Baremetal
         [Output("address")]
         public Output<string> Address { get; private set; } = null!;
 
-        [Output("port")]
-        public Output<string> Port { get; private set; } = null!;
-
 
         /// <summary>
         /// Create a Provider resource with the given unique name, arguments, and options.
@@ -50,8 +47,8 @@ namespace UnMango.Baremetal
         [Input("address", required: true)]
         public Input<string> Address { get; set; } = null!;
 
-        [Input("port", required: true)]
-        public Input<string> Port { get; set; } = null!;
+        [Input("port", json: true)]
+        public Input<int>? Port { get; set; }
 
         public ProviderArgs()
         {

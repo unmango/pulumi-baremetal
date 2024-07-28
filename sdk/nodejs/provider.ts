@@ -20,7 +20,6 @@ export class Provider extends pulumi.ProviderResource {
     }
 
     public readonly address!: pulumi.Output<string>;
-    public readonly port!: pulumi.Output<string>;
 
     /**
      * Create a Provider resource with the given unique name, arguments, and options.
@@ -36,11 +35,8 @@ export class Provider extends pulumi.ProviderResource {
             if ((!args || args.address === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'address'");
             }
-            if ((!args || args.port === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'port'");
-            }
             resourceInputs["address"] = args ? args.address : undefined;
-            resourceInputs["port"] = args ? args.port : undefined;
+            resourceInputs["port"] = pulumi.output(args ? args.port : undefined).apply(JSON.stringify);
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Provider.__pulumiType, name, resourceInputs, opts);
@@ -52,5 +48,5 @@ export class Provider extends pulumi.ProviderResource {
  */
 export interface ProviderArgs {
     address: pulumi.Input<string>;
-    port: pulumi.Input<string>;
+    port?: pulumi.Input<number>;
 }

@@ -7,10 +7,30 @@ service CommandService {
 }
 
 message CommandRequest {
-  bytes pulumi_raw = 1;
+  Op op = 1;
+  Command command = 2;
+  repeated string args = 3;
+  map<string, Flag> flags = 4;
 }
 
 message CommandResponse {
   string stdout = 1;
   string stderr = 2;
+}
+
+enum Op {
+  OP_UNSPECIFIED = 0;
+  OP_CREATE = 1;
+  OP_UPDATE = 2;
+  OP_DELETE = 3;
+}
+
+enum Command {
+  COMMAND_UNSPECIFIED = 0;
+  COMMAND_TEE = 1;
+}
+
+message Flag {
+  bool present = 1;
+  optional string value = 2;
 }
