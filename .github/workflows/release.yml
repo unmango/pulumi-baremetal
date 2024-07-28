@@ -144,6 +144,7 @@ jobs:
           user: ${{ env.PYPI_USERNAME }}
           password: ${{ env.PYPI_PASSWORD }}
           packages-dir: ${{ github.workspace }}/sdk/python/bin/dist
+          skip-existing: true
 
       - if: ${{ matrix.language == 'nodejs' }}
         uses: JS-DevTools/npm-publish@v3
