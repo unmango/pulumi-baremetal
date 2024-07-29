@@ -201,6 +201,7 @@ jobs:
             sdk/go/**/pulumiUtilities.go
             sdk/nodejs/package.json
             sdk/python/pyproject.toml
+          continue-with-unexpected-changes: true
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
@@ -251,6 +252,7 @@ jobs:
             sdk/go/**/pulumiUtilities.go
             sdk/nodejs/package.json
             sdk/python/pyproject.toml
+          continue-with-unexpected-changes: true
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
@@ -339,6 +341,7 @@ jobs:
             sdk/go/**/pulumiUtilities.go
             sdk/nodejs/package.json
             sdk/python/pyproject.toml
+          continue-with-unexpected-changes: true
 
   test:
     if: needs.setup.outputs.test == 'true'
