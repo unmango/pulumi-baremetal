@@ -25,6 +25,7 @@ jobs:
         uses: tj-actions/changed-files@v44
         with:
           files: |
+            .github/workflows/**
             .goreleaser.yml
 
       - name: Lint triggers
@@ -32,6 +33,7 @@ jobs:
         uses: tj-actions/changed-files@v44
         with:
           files: |
+            .github/workflows/**
             provider/**/*.go
             sdk/**/*.go
             tests/**/*.go
@@ -41,6 +43,7 @@ jobs:
         uses: tj-actions/changed-files@v44
         with:
           files: |
+            .github/workflows/**
             proto/**/*.proto
             buf.gen.yaml
             buf.lock
@@ -51,6 +54,7 @@ jobs:
         uses: tj-actions/changed-files@v44
         with:
           files: |
+            .github/workflows/**
             sdk/**
 
       - name: Provisioner triggers
@@ -58,6 +62,7 @@ jobs:
         uses: tj-actions/changed-files@v44
         with:
           files: |
+            .github/workflows/**
             gen/**/*.go
             provider/cmd/provisioner/**
             provider/pkg/**
@@ -68,6 +73,7 @@ jobs:
         uses: tj-actions/changed-files@v44
         with:
           files: |
+            .github/workflows/**
             gen/**/*.go
             provider/cmd/provider/**
             provider/pkg/**
@@ -78,6 +84,7 @@ jobs:
         uses: tj-actions/changed-files@v44
         with:
           files: |
+            .github/workflows/**
             test/**
 
   goreleaser:
