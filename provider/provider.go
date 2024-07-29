@@ -19,18 +19,38 @@ func Provider() p.Provider {
 		Metadata: schema.Metadata{
 			PluginDownloadURL: "github://api.github.com/unmango",
 			LanguageMap: map[string]any{
-				"csharp": map[string]string{"rootNamespace": "UnMango"},
-				"go":     map[string]string{"importBasePath": "github.com/unmango/pulumi-baremetal/sdk/go/baremetal"},
-				"nodejs": map[string]string{"packageName": "@unmango/baremetal"},
-				"python": map[string]string{"packageName": "unmango_baremetal"},
+				"csharp": map[string]any{
+					"rootNamespace": "UnMango",
+					"packageReferences": map[string]any{
+						"Pulumi":         "[3.65.0.0,4)",
+						"Pulumi.Command": "1.0.*",
+					},
+				},
+				"go": map[string]any{
+					"importBasePath": "github.com/unmango/pulumi-baremetal/sdk/go/baremetal",
+					"generics":       "side-by-side",
+				},
+				"nodejs": map[string]any{
+					"packageName": "@unmango/baremetal",
+					"dependencies": map[string]any{
+						"@pulumi/command": "^1.0.0",
+					},
+				},
+				"python": map[string]any{
+					"packageName": "unmango_baremetal",
+					"requires": map[string]any{
+						"pulumi-command": ">=1.0.0,<2.0.0",
+					},
+				},
 			},
 		},
+		Config: infer.Config[provider.Config](),
 		Resources: []infer.InferredResource{
 			infer.Resource[cmd.Tee](),
 		},
+		Components: []infer.InferredComponent{infer.Component[*provider.Bootstrap]()},
 		ModuleMap: map[tokens.ModuleName]tokens.ModuleName{
 			"provider": "index",
 		},
-		Config: infer.Config[provider.Config](),
 	})
 }

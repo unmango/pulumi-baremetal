@@ -5,6 +5,7 @@ go 1.22
 replace github.com/unmango/pulumi-baremetal/gen => ../gen
 
 require (
+	github.com/pulumi/pulumi-command/sdk v1.0.1
 	github.com/pulumi/pulumi-go-provider v0.21.0
 	github.com/pulumi/pulumi/sdk/v3 v3.127.0
 	github.com/spf13/cobra v1.8.1
@@ -71,6 +72,7 @@ require (
 	github.com/pkg/term v1.1.0 // indirect
 	github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 // indirect
 	github.com/pulumi/esc v0.9.1 // indirect
+	github.com/pulumi/pulumi-command/provider v0.0.0-20240719124328-eba7cc197173 // indirect
 	github.com/pulumi/pulumi/pkg/v3 v3.127.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
