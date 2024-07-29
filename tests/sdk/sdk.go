@@ -37,8 +37,7 @@ func Test(t *testing.T, dir string, opts integration.ProgramTestOptions) *integr
 
 func DescribeSdk(desc string, test *integration.ProgramTester) bool {
 	return ginkgo.Describe(desc, ginkgo.Ordered, func() {
-		ginkgo.BeforeAll(func() {
-			ginkgo.By("TestLifeCyclePrepare")
+		ginkgo.It("TestLifeCyclePrepare", func() {
 			err := test.TestLifeCyclePrepare()
 			gomega.Expect(err).NotTo(gomega.HaveOccurred())
 			ginkgo.DeferCleanup(test.TestCleanUp)
@@ -54,8 +53,7 @@ func DescribeSdk(desc string, test *integration.ProgramTester) bool {
 			gomega.Expect(err).NotTo(gomega.HaveOccurred())
 		})
 
-		ginkgo.AfterAll(func() {
-			ginkgo.By("TestLifeCycleDestroy")
+		ginkgo.It("TestLifeCycleDestroy", func() {
 			err := test.TestLifeCycleDestroy()
 			gomega.Expect(err).NotTo(gomega.HaveOccurred())
 		})
