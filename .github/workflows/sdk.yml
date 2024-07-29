@@ -1,0 +1,138 @@
+name: SDKs
+
+on:
+  workflow_call:
+    inputs:
+      release:
+        type: boolean
+        default: false
+        required: false
+
+env:
+  PROVIDER: baremetal
+  GITHUB_TOKEN: ${{ github.token }}
+  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  NPM_REGISTRY_URL: https://registry.npmjs.org
+  NUGET_PUBLISH_KEY: ${{ secrets.NUGET_API_KEY }}
+  NUGET_FEED_URL: https://api.nuget.org/v3/index.json
+  PYPI_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+  PYPI_USERNAME: __token__
+
+jobs:
+  sdks:
+    name: SDKs
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dotnetversion:
+          - 6.0.x
+        goversion:
+          - 1.21.x
+        language:
+          - nodejs
+          - python
+          - dotnet
+          - go
+        nodeversion:
+          - 20.x
+        pythonversion:
+          - '3.11'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Unshallow clone for tags
+        run: git fetch --prune --unshallow --tags
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.goversion }}
+          cache-dependency-path: sdk/go.sum
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.nodeversion }}
+          registry-url: ${{ env.NPM_REGISTRY_URL }}
+
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnetversion }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.pythonversion }}
+
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.12.0
+        with:
+          repo: pulumi/pulumictl
+
+      - name: Install Pulumi
+        uses: pulumi/actions@v5
+        with:
+          pulumi-version-file: .versions/pulumi
+
+      - name: Install provider binary
+        uses: actions/download-artifact@v4
+        with:
+          name: provider
+          path: bin
+
+        # Ensure you have consent first
+      - name: Touch the provider
+        run: |
+          make --touch bin/pulumi-resource-baremetal
+          chmod +x bin/pulumi-resource-baremetal
+
+      - name: Generate SDK
+        run: make ${{ matrix.language }}_sdk
+
+      - name: Check worktree clean
+        uses: pulumi/git-status-check-action@v1
+        with:
+          allowed-changes: |
+            sdk/**/pulumi-plugin.json
+            sdk/dotnet/Pulumi.*.csproj
+            sdk/go/**/pulumiUtilities.go
+            sdk/nodejs/package.json
+            sdk/python/pyproject.toml
+          continue-with-unexpected-changes: ${{ inputs.release == 'true' }}
+
+      - if: ${{ inputs.release == 'true' }}
+        name: Compress SDK folder
+        run: tar -zcf sdk/${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }} .
+
+      - if: ${{ inputs.release == 'true' }}
+        name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.language  }}-sdk.tar.gz
+          path: ${{ github.workspace }}/sdk/${{ matrix.language }}.tar.gz
+
+      - if: ${{ matrix.language == 'python' && inputs.release == 'true' }}
+        name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: ${{ env.PYPI_USERNAME }}
+          password: ${{ env.PYPI_PASSWORD }}
+          packages-dir: ${{ github.workspace }}/sdk/python/bin/dist
+          skip-existing: true
+
+      - if: ${{ matrix.language == 'nodejs' && inputs.release == 'true' }}
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          access: public
+          token: ${{ env.NPM_TOKEN }}
+          package: ${{ github.workspace }}/sdk/nodejs/bin/package.json
+
+      - if: ${{ matrix.language == 'dotnet' && inputs.release == 'true' }}
+        name: publish nuget package
+        run: |
+          dotnet nuget push ${{ github.workspace }}/sdk/dotnet/bin/Debug/*.nupkg -s ${{ env.NUGET_FEED_URL }} -k ${{ env.NUGET_PUBLISH_KEY }}
+          echo "done publishing packages"
