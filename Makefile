@@ -180,6 +180,9 @@ install_nodejs_sdk::
 	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
 
 # ------- Real Targets -------
+.envrc: hack/.envrc.example
+	cp $< $@
+
 bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC) $(PKG_SRC)
 	cd provider && go build -o $(WORKING_DIR)/$@ -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 

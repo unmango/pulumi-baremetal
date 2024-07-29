@@ -5,16 +5,23 @@ using Baremetal = UnMango.Baremetal;
 
 return await Deployment.RunAsync(() => 
 {
-    var myRandomResource = new Baremetal.Random("myRandomResource", new()
+    var tee = new Baremetal.Cmd.Tee("tee", new()
     {
-        Length = 24,
+        Stdin = "whoops",
+        Create = new Baremetal.Cmd.Inputs.TeeOptsArgs
+        {
+            Files = new[]
+            {
+                "/tmp/tee/test.txt",
+            },
+        },
     });
 
     return new Dictionary<string, object?>
     {
         ["output"] = 
         {
-            { "value", myRandomResource.Result },
+            { "value", tee.Stdout },
         },
     };
 });

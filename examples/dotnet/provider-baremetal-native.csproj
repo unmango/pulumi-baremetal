@@ -7,7 +7,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Pulumi" Version="3.*" />
-		<PackageReference Include="UnMango.Baremetal" Version="0.0.1-alpha.1722051877+d3687c83" />
+		<PackageReference Include="UnMango.Baremetal" Version="0.0.6" />
 	</ItemGroup>
 
 </Project>
