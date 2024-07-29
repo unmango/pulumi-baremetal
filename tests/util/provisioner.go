@@ -1,4 +1,4 @@
-package tests
+package util
 
 import (
 	"context"
@@ -22,20 +22,20 @@ const (
 	defaultAddress  string = "localhost"
 )
 
-type testProvisioner struct {
-	ct   tc.Container
+type TestProvisioner struct {
+	ctr  tc.Container
 	port nat.Port
 }
 
-func NewTestProvisioner(ctx context.Context, logger io.Writer) (testProvisioner, error) {
+func NewTestProvisioner(ctx context.Context, logger io.Writer) (TestProvisioner, error) {
 	cwd, err := os.Getwd()
 	if err != nil {
-		return testProvisioner{}, err
+		return TestProvisioner{}, err
 	}
 
 	port, err := nat.NewPort(defaultProtocol, "6969")
 	if err != nil {
-		return testProvisioner{}, err
+		return TestProvisioner{}, err
 	}
 
 	container, err := tc.GenericContainer(ctx, tc.GenericContainerRequest{
@@ -57,26 +57,30 @@ func NewTestProvisioner(ctx context.Context, logger io.Writer) (testProvisioner,
 		},
 	})
 	if err != nil {
-		return testProvisioner{}, err
+		return TestProvisioner{}, err
 	}
 
-	return testProvisioner{
-		ct:   container,
+	return TestProvisioner{
+		ctr:  container,
 		port: port,
 	}, nil
 }
 
-func (p testProvisioner) Start(ctx context.Context) error {
-	return p.ct.Start(ctx)
+func (p TestProvisioner) Ctr() tc.Container {
+	return p.ctr
 }
 
-func (p testProvisioner) Stop(ctx context.Context) error {
+func (p TestProvisioner) Start(ctx context.Context) error {
+	return p.ctr.Start(ctx)
+}
+
+func (p TestProvisioner) Stop(ctx context.Context) error {
 	timeout := time.Duration(10 * time.Second)
-	return p.ct.Stop(ctx, &timeout)
+	return p.ctr.Stop(ctx, &timeout)
 }
 
-func (p testProvisioner) Exec(ctx context.Context, args ...string) error {
-	code, output, err := p.ct.Exec(ctx, args)
+func (p TestProvisioner) Exec(ctx context.Context, args ...string) error {
+	code, output, err := p.ctr.Exec(ctx, args)
 	if err != nil {
 		return err
 	}
@@ -93,8 +97,8 @@ func (p testProvisioner) Exec(ctx context.Context, args ...string) error {
 	return nil
 }
 
-func (prov testProvisioner) ConfigureProvider(ctx context.Context, server integration.Server) error {
-	ip, err := prov.ct.ContainerIP(ctx)
+func (prov TestProvisioner) ConfigureProvider(ctx context.Context, server integration.Server) error {
+	ip, err := prov.ctr.ContainerIP(ctx)
 	if err != nil {
 		return err
 	}

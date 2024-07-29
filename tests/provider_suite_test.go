@@ -7,10 +7,11 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/unmango/pulumi-baremetal/tests/util"
 )
 
 var (
-	provisioner testProvisioner
+	provisioner util.TestProvisioner
 )
 
 func TestProvider(t *testing.T) {
@@ -20,7 +21,7 @@ func TestProvider(t *testing.T) {
 
 var _ = BeforeSuite(func(ctx context.Context) {
 	By("creating a provisioner")
-	prov, err := NewTestProvisioner(ctx, os.Stdout)
+	prov, err := util.NewTestProvisioner(ctx, os.Stdout)
 	Expect(err).NotTo(HaveOccurred())
 
 	By("starting the provisioner")
