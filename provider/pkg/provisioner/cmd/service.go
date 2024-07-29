@@ -24,10 +24,15 @@ func NewServer() pb.CommandServiceServer {
 func (c *service) Command(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
 	switch req.Op {
 	case pb.Op_OP_CREATE:
-	default:
-		return nil, fmt.Errorf("unsupported op: %s", req.Op)
+		return c.create(ctx, req)
+	case pb.Op_OP_DELETE:
+		return c.delete(ctx, req)
 	}
 
+	return nil, fmt.Errorf("unsupported op: %s", req.Op)
+}
+
+func (c *service) create(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
 	log := c.log.With("op", req.Op)
 	bin, err := getBin(req.Command)
 	if err != nil {
@@ -45,6 +50,31 @@ func (c *service) Command(ctx context.Context, req *pb.CommandRequest) (*pb.Comm
 
 	log.Info("executing command")
 	err = cmd.Run()
+	if err != nil {
+		log.Error("command failed", "err", err)
+	}
+
+	return &pb.CommandResponse{
+		Stdout: stdout.String(),
+		Stderr: stderr.String(),
+	}, nil
+}
+
+func (c *service) delete(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
+	log := c.log.With("op", req.Op)
+	bin := "rm"
+
+	cmd := exec.CommandContext(ctx, bin, req.Args...)
+	log = log.With("bin", bin, "args", req.Args)
+
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+	cmd.Stdin = strings.NewReader(req.Stdin)
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
+
+	log.Info("executing command")
+	err := cmd.Run()
 	if err != nil {
 		log.Error("command failed", "err", err)
 	}

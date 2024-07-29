@@ -101,7 +101,7 @@ var _ = Describe("Tee", Ordered, func() {
 
 			By("attempting to copy the created file")
 			_, err = provisioner.Ctr().CopyFileFromContainer(ctx, file)
-			Expect(err).To(HaveOccurred()) // Can we be more specific
+			Expect(err).To(MatchError(ContainSubstring("Could not find the file /tmp/tee/create.txt")))
 		})
 	})
 })
