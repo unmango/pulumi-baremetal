@@ -52,3 +52,7 @@ jobs:
     uses: ./.github/workflows/sdk.yml
     with:
       release: true
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      NUGET_API_KEY:  ${{ secrets.NUGET_API_KEY }}
+      PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}

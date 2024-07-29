@@ -7,6 +7,13 @@ on:
         type: boolean
         default: false
         required: false
+    secrets:
+      NPM_TOKEN:
+        required: false
+      NUGET_API_KEY:
+        required: false
+      PYPI_TOKEN:
+        required: false
 
 env:
   PROVIDER: baremetal
