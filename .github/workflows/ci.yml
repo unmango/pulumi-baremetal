@@ -186,9 +186,6 @@ jobs:
         with:
           repo: pulumi/pulumictl
 
-      - name: Touch targets
-        run: make --touch gen
-
       - name: Make
         run: make provisioner
 
@@ -236,9 +233,6 @@ jobs:
         uses: pulumi/actions@v5
         with:
           pulumi-version-file: .versions/pulumi
-
-      - name: Touch targets
-        run: make --touch gen
 
       - name: Make
         run: make provider
