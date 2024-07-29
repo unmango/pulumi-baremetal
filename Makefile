@@ -9,6 +9,7 @@ PROVISIONER_NAME := baremetal-provisioner
 
 PROVIDER        := pulumi-resource-${PACK}
 VERSION         ?= $(shell pulumictl get version)
+SUPPORTED_SDKS  := dotnet go nodejs python
 PROTO_VERSION   := v1alpha1
 PROVIDER_PATH   := provider
 VERSION_PATH    := ${PROVIDER_PATH}.Version
@@ -156,13 +157,7 @@ lint:: .make/buf_lint
 install:: install_nodejs_sdk install_dotnet_sdk
 	cp $(WORKING_DIR)/bin/${PROVIDER} ${GOPATH}/bin
 
-GO_TEST 	 := go test -v -count=1 -cover -timeout 2h -parallel ${TESTPARALLELISM}
-
-test_all:: test_provider
-	cd tests/sdk/nodejs && $(GO_TEST) ./...
-	cd tests/sdk/python && $(GO_TEST) ./...
-	cd tests/sdk/dotnet && $(GO_TEST) ./...
-	cd tests/sdk/go && $(GO_TEST) ./...
+test_all:: test_provider .make/sdk_tests
 
 install_dotnet_sdk::
 	rm -rf $(WORKING_DIR)/nuget/$(NUGET_PKG_NAME).*.nupkg
@@ -210,4 +205,9 @@ buf.lock: $(BUF_CONFIG)
 
 .make/provisioner_docker_build: provider/cmd/provisioner/Dockerfile bin/provisioner
 	docker build ${WORKING_DIR} -f $< -t ${PROVISIONER_NAME}:local-${VERSION_TAG}
+	@touch $@
+
+.make/sdk_tests: $(SUPPORTED_SDKS:%=.make/sdk_%_test)
+.make/sdk_%_test: tests/sdk/%/*.go
+	cd tests/sdk/$* && go test -v -count=1 -cover -timeout 2h ./...
 	@touch $@

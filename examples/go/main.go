@@ -18,9 +18,7 @@ func main() {
 		if err != nil {
 			return err
 		}
-		ctx.Export("output", map[string]interface{}{
-			"value": tee.Stdout,
-		})
+		ctx.Export("stdout", tee.Stdout)
 		return nil
 	})
 }

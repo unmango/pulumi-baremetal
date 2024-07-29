@@ -7,6 +7,4 @@ const tee = new baremetal.cmd.Tee("tee", {
         files: ["/tmp/tee/test.txt"],
     },
 });
-export const output = {
-    value: tee.stdout,
-};
+export const stdout = tee.stdout;

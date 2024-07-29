@@ -19,10 +19,7 @@ return await Deployment.RunAsync(() =>
 
     return new Dictionary<string, object?>
     {
-        ["output"] = 
-        {
-            { "value", tee.Stdout },
-        },
+        ["stdout"] = tee.Stdout,
     };
 });
 

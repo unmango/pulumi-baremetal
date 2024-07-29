@@ -6,6 +6,4 @@ tee = baremetal.cmd.Tee("tee",
     create={
         "files": ["/tmp/tee/test.txt"],
     })
-pulumi.export("output", {
-    "value": tee.stdout,
-})
+pulumi.export("stdout", tee.stdout)

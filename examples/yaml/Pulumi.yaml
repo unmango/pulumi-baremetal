@@ -14,5 +14,4 @@ resources:
         files: ['/tmp/tee/test.txt']
 
 outputs:
-  output:
-    value: ${tee.stdout}
+  stdout: ${tee.stdout}
