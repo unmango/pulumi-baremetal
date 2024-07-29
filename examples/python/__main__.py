@@ -1,7 +1,9 @@
 import pulumi
 import unmango_baremetal as baremetal
 
-my_random_resource = baremetal.Random("myRandomResource", length=24)
-pulumi.export("output", {
-    "value": my_random_resource.result,
-})
+tee = baremetal.cmd.Tee("tee",
+    stdin="whoops",
+    create={
+        "files": ["/tmp/tee/test.txt"],
+    })
+pulumi.export("stdout", tee.stdout)

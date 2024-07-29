@@ -6,11 +6,12 @@ plugins:
       path: ../../bin
 
 resources:
-  myRandomResource:
-    type: baremetal:Random
+  tee:
+    type: baremetal:cmd:Tee
     properties:
-      length: 24
+      stdin: 'whoops'
+      create:
+        files: ['/tmp/tee/test.txt']
 
 outputs:
-  output:
-    value: ${myRandomResource.result}
+  stdout: ${tee.stdout}

@@ -1,4 +1,4 @@
-package tests
+package util
 
 import (
 	"strings"
@@ -19,7 +19,7 @@ func NewIntegrationProvider() integration.Server {
 	)
 }
 
-func urn(typ string, mods ...string) resource.URN {
+func Urn(typ string, mods ...string) resource.URN {
 	if len(mods) == 0 {
 		mods = []string{"index"}
 	}

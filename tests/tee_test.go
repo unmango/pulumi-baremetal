@@ -6,6 +6,7 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/unmango/pulumi-baremetal/tests/util"
 
 	p "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/integration"
@@ -23,7 +24,7 @@ var _ = Describe("Tee", Ordered, func() {
 
 	BeforeEach(func(ctx context.Context) {
 		By("creating a provider server")
-		server = NewIntegrationProvider()
+		server = util.NewIntegrationProvider()
 
 		By("configuring the provider")
 		err := provisioner.ConfigureProvider(ctx, server)
@@ -37,7 +38,7 @@ var _ = Describe("Tee", Ordered, func() {
 
 			By("creating the resource")
 			response, err := server.Create(p.CreateRequest{
-				Urn:     urn("Tee", "cmd"),
+				Urn:     util.Urn("Tee", "cmd"),
 				Preview: false,
 				Properties: resource.PropertyMap{
 					"stdin": resource.NewStringProperty(stdin),
@@ -54,7 +55,7 @@ var _ = Describe("Tee", Ordered, func() {
 			Expect(response.Properties["stdout"].V).To(Equal(stdin))
 
 			By("attempting to copy the created file")
-			reader, err := provisioner.ct.CopyFileFromContainer(ctx, file)
+			reader, err := provisioner.Ctr().CopyFileFromContainer(ctx, file)
 			Expect(err).NotTo(HaveOccurred())
 			result, err := io.ReadAll(reader)
 			Expect(err).NotTo(HaveOccurred())

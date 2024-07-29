@@ -1,7 +1,10 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as baremetal from "@unmango/baremetal";
 
-const myRandomResource = new baremetal.Random("myRandomResource", {length: 24});
-export const output = {
-    value: myRandomResource.result,
-};
+const tee = new baremetal.cmd.Tee("tee", {
+    stdin: "whoops",
+    create: {
+        files: ["/tmp/tee/test.txt"],
+    },
+});
+export const stdout = tee.stdout;
