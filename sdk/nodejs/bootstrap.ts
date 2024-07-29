@@ -21,8 +21,42 @@ export class Bootstrap extends pulumi.ComponentResource {
         return obj['__pulumiType'] === Bootstrap.__pulumiType;
     }
 
+    /**
+     * Name part of the provisioner release archive file.
+     */
+    public /*out*/ readonly archiveName!: pulumi.Output<string>;
+    /**
+     * Provisioner binary path on the remote system.
+     */
+    public /*out*/ readonly binPath!: pulumi.Output<string>;
+    /**
+     * Binary download command.
+     */
     public /*out*/ readonly download!: pulumi.Output<pulumiCommand.remote.Command>;
+    public /*out*/ readonly extract!: pulumi.Output<pulumiCommand.remote.Command>;
+    /**
+     * Name part of the provisioner binary file.
+     */
+    public /*out*/ readonly fileName!: pulumi.Output<string>;
+    /**
+     * Destination directory mkdir command.
+     */
+    public /*out*/ readonly mkdir!: pulumi.Output<pulumiCommand.remote.Command>;
+    /**
+     * Temp download directory mktemp command.
+     */
     public /*out*/ readonly mktemp!: pulumi.Output<pulumiCommand.remote.Command>;
+    /**
+     * Command to move the binary from the temp directory to the destination.
+     */
+    public /*out*/ readonly mv!: pulumi.Output<pulumiCommand.remote.Command>;
+    /**
+     * Temp directory path output by the mktemp command.
+     */
+    public /*out*/ readonly tempDir!: pulumi.Output<string>;
+    /**
+     * Url of the provisioner release archive.
+     */
     public /*out*/ readonly url!: pulumi.Output<string>;
 
     /**
@@ -36,20 +70,35 @@ export class Bootstrap extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.connection === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'connection'");
+            if ((!args || args.directory === undefined) && !opts.urn) {
+                throw new Error("Missing required property 'directory'");
             }
             if ((!args || args.version === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'version'");
             }
             resourceInputs["connection"] = args ? (args.connection ? pulumi.output(args.connection).apply(pulumiCommand.types.input.remote.connectionArgsProvideDefaults) : undefined) : undefined;
+            resourceInputs["directory"] = (args ? args.directory : undefined) ?? "/usr/local/bin";
             resourceInputs["version"] = args ? args.version : undefined;
+            resourceInputs["archiveName"] = undefined /*out*/;
+            resourceInputs["binPath"] = undefined /*out*/;
             resourceInputs["download"] = undefined /*out*/;
+            resourceInputs["extract"] = undefined /*out*/;
+            resourceInputs["fileName"] = undefined /*out*/;
+            resourceInputs["mkdir"] = undefined /*out*/;
             resourceInputs["mktemp"] = undefined /*out*/;
+            resourceInputs["mv"] = undefined /*out*/;
+            resourceInputs["tempDir"] = undefined /*out*/;
             resourceInputs["url"] = undefined /*out*/;
         } else {
+            resourceInputs["archiveName"] = undefined /*out*/;
+            resourceInputs["binPath"] = undefined /*out*/;
             resourceInputs["download"] = undefined /*out*/;
+            resourceInputs["extract"] = undefined /*out*/;
+            resourceInputs["fileName"] = undefined /*out*/;
+            resourceInputs["mkdir"] = undefined /*out*/;
             resourceInputs["mktemp"] = undefined /*out*/;
+            resourceInputs["mv"] = undefined /*out*/;
+            resourceInputs["tempDir"] = undefined /*out*/;
             resourceInputs["url"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
@@ -61,6 +110,13 @@ export class Bootstrap extends pulumi.ComponentResource {
  * The set of arguments for constructing a Bootstrap resource.
  */
 export interface BootstrapArgs {
-    connection: pulumi.Input<pulumiCommand.types.input.remote.ConnectionArgs>;
+    connection?: pulumi.Input<pulumiCommand.types.input.remote.ConnectionArgs>;
+    /**
+     * The directory to store the provisioner binary.
+     */
+    directory: string;
+    /**
+     * The version of the provisioner to bootstrap
+     */
     version: string;
 }

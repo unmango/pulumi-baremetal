@@ -15,31 +15,53 @@ __all__ = ['BootstrapArgs', 'Bootstrap']
 @pulumi.input_type
 class BootstrapArgs:
     def __init__(__self__, *,
-                 connection: pulumi.Input['pulumi_command.remote.ConnectionArgs'],
-                 version: str):
+                 directory: Optional[str] = None,
+                 version: str,
+                 connection: Optional[pulumi.Input['pulumi_command.remote.ConnectionArgs']] = None):
         """
         The set of arguments for constructing a Bootstrap resource.
+        :param str directory: The directory to store the provisioner binary.
+        :param str version: The version of the provisioner to bootstrap
         """
-        pulumi.set(__self__, "connection", connection)
+        if directory is None:
+            directory = '/usr/local/bin'
+        pulumi.set(__self__, "directory", directory)
         pulumi.set(__self__, "version", version)
+        if connection is not None:
+            pulumi.set(__self__, "connection", connection)
 
     @property
     @pulumi.getter
-    def connection(self) -> pulumi.Input['pulumi_command.remote.ConnectionArgs']:
-        return pulumi.get(self, "connection")
+    def directory(self) -> str:
+        """
+        The directory to store the provisioner binary.
+        """
+        return pulumi.get(self, "directory")
 
-    @connection.setter
-    def connection(self, value: pulumi.Input['pulumi_command.remote.ConnectionArgs']):
-        pulumi.set(self, "connection", value)
+    @directory.setter
+    def directory(self, value: str):
+        pulumi.set(self, "directory", value)
 
     @property
     @pulumi.getter
     def version(self) -> str:
+        """
+        The version of the provisioner to bootstrap
+        """
         return pulumi.get(self, "version")
 
     @version.setter
     def version(self, value: str):
         pulumi.set(self, "version", value)
+
+    @property
+    @pulumi.getter
+    def connection(self) -> Optional[pulumi.Input['pulumi_command.remote.ConnectionArgs']]:
+        return pulumi.get(self, "connection")
+
+    @connection.setter
+    def connection(self, value: Optional[pulumi.Input['pulumi_command.remote.ConnectionArgs']]):
+        pulumi.set(self, "connection", value)
 
 
 class Bootstrap(pulumi.ComponentResource):
@@ -48,12 +70,15 @@ class Bootstrap(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  connection: Optional[pulumi.Input[pulumi.InputType['pulumi_command.remote.ConnectionArgs']]] = None,
+                 directory: Optional[str] = None,
                  version: Optional[str] = None,
                  __props__=None):
         """
         Create a Bootstrap resource with the given unique name, props, and options.
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
+        :param str directory: The directory to store the provisioner binary.
+        :param str version: The version of the provisioner to bootstrap
         """
         ...
     @overload
@@ -79,6 +104,7 @@ class Bootstrap(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  connection: Optional[pulumi.Input[pulumi.InputType['pulumi_command.remote.ConnectionArgs']]] = None,
+                 directory: Optional[str] = None,
                  version: Optional[str] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
@@ -91,14 +117,24 @@ class Bootstrap(pulumi.ComponentResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = BootstrapArgs.__new__(BootstrapArgs)
 
-            if connection is None and not opts.urn:
-                raise TypeError("Missing required property 'connection'")
             __props__.__dict__["connection"] = connection
+            if directory is None:
+                directory = '/usr/local/bin'
+            if directory is None and not opts.urn:
+                raise TypeError("Missing required property 'directory'")
+            __props__.__dict__["directory"] = directory
             if version is None and not opts.urn:
                 raise TypeError("Missing required property 'version'")
             __props__.__dict__["version"] = version
+            __props__.__dict__["archive_name"] = None
+            __props__.__dict__["bin_path"] = None
             __props__.__dict__["download"] = None
+            __props__.__dict__["extract"] = None
+            __props__.__dict__["file_name"] = None
+            __props__.__dict__["mkdir"] = None
             __props__.__dict__["mktemp"] = None
+            __props__.__dict__["mv"] = None
+            __props__.__dict__["temp_dir"] = None
             __props__.__dict__["url"] = None
         super(Bootstrap, __self__).__init__(
             'baremetal:index:Bootstrap',
@@ -108,17 +144,79 @@ class Bootstrap(pulumi.ComponentResource):
             remote=True)
 
     @property
+    @pulumi.getter(name="archiveName")
+    def archive_name(self) -> pulumi.Output[str]:
+        """
+        Name part of the provisioner release archive file.
+        """
+        return pulumi.get(self, "archive_name")
+
+    @property
+    @pulumi.getter(name="binPath")
+    def bin_path(self) -> pulumi.Output[str]:
+        """
+        Provisioner binary path on the remote system.
+        """
+        return pulumi.get(self, "bin_path")
+
+    @property
     @pulumi.getter
     def download(self) -> pulumi.Output['pulumi_command.remote.Command']:
+        """
+        Binary download command.
+        """
         return pulumi.get(self, "download")
 
     @property
     @pulumi.getter
+    def extract(self) -> pulumi.Output['pulumi_command.remote.Command']:
+        return pulumi.get(self, "extract")
+
+    @property
+    @pulumi.getter(name="fileName")
+    def file_name(self) -> pulumi.Output[str]:
+        """
+        Name part of the provisioner binary file.
+        """
+        return pulumi.get(self, "file_name")
+
+    @property
+    @pulumi.getter
+    def mkdir(self) -> pulumi.Output['pulumi_command.remote.Command']:
+        """
+        Destination directory mkdir command.
+        """
+        return pulumi.get(self, "mkdir")
+
+    @property
+    @pulumi.getter
     def mktemp(self) -> pulumi.Output['pulumi_command.remote.Command']:
+        """
+        Temp download directory mktemp command.
+        """
         return pulumi.get(self, "mktemp")
 
     @property
     @pulumi.getter
+    def mv(self) -> pulumi.Output['pulumi_command.remote.Command']:
+        """
+        Command to move the binary from the temp directory to the destination.
+        """
+        return pulumi.get(self, "mv")
+
+    @property
+    @pulumi.getter(name="tempDir")
+    def temp_dir(self) -> pulumi.Output[str]:
+        """
+        Temp directory path output by the mktemp command.
+        """
+        return pulumi.get(self, "temp_dir")
+
+    @property
+    @pulumi.getter
     def url(self) -> pulumi.Output[str]:
+        """
+        Url of the provisioner release archive.
+        """
         return pulumi.get(self, "url")
 

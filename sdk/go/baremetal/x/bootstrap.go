@@ -17,9 +17,25 @@ import (
 type Bootstrap struct {
 	pulumi.ResourceState
 
+	// Name part of the provisioner release archive file.
+	ArchiveName pulumix.Output[string] `pulumi:"archiveName"`
+	// Provisioner binary path on the remote system.
+	BinPath pulumix.Output[string] `pulumi:"binPath"`
+	// Binary download command.
 	Download pulumix.GPtrOutput[remote.Command, remote.CommandOutput] `pulumi:"download"`
-	Mktemp   pulumix.GPtrOutput[remote.Command, remote.CommandOutput] `pulumi:"mktemp"`
-	Url      pulumix.Output[string]                                   `pulumi:"url"`
+	Extract  pulumix.GPtrOutput[remote.Command, remote.CommandOutput] `pulumi:"extract"`
+	// Name part of the provisioner binary file.
+	FileName pulumix.Output[string] `pulumi:"fileName"`
+	// Destination directory mkdir command.
+	Mkdir pulumix.GPtrOutput[remote.Command, remote.CommandOutput] `pulumi:"mkdir"`
+	// Temp download directory mktemp command.
+	Mktemp pulumix.GPtrOutput[remote.Command, remote.CommandOutput] `pulumi:"mktemp"`
+	// Command to move the binary from the temp directory to the destination.
+	Mv pulumix.GPtrOutput[remote.Command, remote.CommandOutput] `pulumi:"mv"`
+	// Temp directory path output by the mktemp command.
+	TempDir pulumix.Output[string] `pulumi:"tempDir"`
+	// Url of the provisioner release archive.
+	Url pulumix.Output[string] `pulumi:"url"`
 }
 
 // NewBootstrap registers a new resource with the given unique name, arguments, and options.
@@ -29,11 +45,11 @@ func NewBootstrap(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.Connection == nil {
-		return nil, errors.New("invalid value for required argument 'Connection'")
-	}
 	if args.Connection != nil {
 		args.Connection = pulumix.Apply(args.Connection, func(o *remote.ConnectionArgs) *remote.ConnectionArgs { return o.Defaults() })
+	}
+	if internal.IsZero(args.Directory) {
+		args.Directory = "/usr/local/bin"
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Bootstrap
@@ -45,14 +61,20 @@ func NewBootstrap(ctx *pulumi.Context,
 }
 
 type bootstrapArgs struct {
-	Connection remote.Connection `pulumi:"connection"`
-	Version    string            `pulumi:"version"`
+	Connection *remote.Connection `pulumi:"connection"`
+	// The directory to store the provisioner binary.
+	Directory string `pulumi:"directory"`
+	// The version of the provisioner to bootstrap
+	Version string `pulumi:"version"`
 }
 
 // The set of arguments for constructing a Bootstrap resource.
 type BootstrapArgs struct {
 	Connection pulumix.Input[*remote.ConnectionArgs]
-	Version    string
+	// The directory to store the provisioner binary.
+	Directory string
+	// The version of the provisioner to bootstrap
+	Version string
 }
 
 func (BootstrapArgs) ElementType() reflect.Type {
@@ -79,18 +101,65 @@ func (o BootstrapOutput) ToOutput(ctx context.Context) pulumix.Output[Bootstrap]
 	}
 }
 
+// Name part of the provisioner release archive file.
+func (o BootstrapOutput) ArchiveName() pulumix.Output[string] {
+	value := pulumix.Apply[Bootstrap](o, func(v Bootstrap) pulumix.Output[string] { return v.ArchiveName })
+	return pulumix.Flatten[string, pulumix.Output[string]](value)
+}
+
+// Provisioner binary path on the remote system.
+func (o BootstrapOutput) BinPath() pulumix.Output[string] {
+	value := pulumix.Apply[Bootstrap](o, func(v Bootstrap) pulumix.Output[string] { return v.BinPath })
+	return pulumix.Flatten[string, pulumix.Output[string]](value)
+}
+
+// Binary download command.
 func (o BootstrapOutput) Download() pulumix.GPtrOutput[remote.Command, remote.CommandOutput] {
 	value := pulumix.Apply[Bootstrap](o, func(v Bootstrap) pulumix.GPtrOutput[remote.Command, remote.CommandOutput] { return v.Download })
 	unwrapped := pulumix.Flatten[*remote.Command, pulumix.GPtrOutput[remote.Command, remote.CommandOutput]](value)
 	return pulumix.GPtrOutput[remote.Command, remote.CommandOutput]{OutputState: unwrapped.OutputState}
 }
 
+func (o BootstrapOutput) Extract() pulumix.GPtrOutput[remote.Command, remote.CommandOutput] {
+	value := pulumix.Apply[Bootstrap](o, func(v Bootstrap) pulumix.GPtrOutput[remote.Command, remote.CommandOutput] { return v.Extract })
+	unwrapped := pulumix.Flatten[*remote.Command, pulumix.GPtrOutput[remote.Command, remote.CommandOutput]](value)
+	return pulumix.GPtrOutput[remote.Command, remote.CommandOutput]{OutputState: unwrapped.OutputState}
+}
+
+// Name part of the provisioner binary file.
+func (o BootstrapOutput) FileName() pulumix.Output[string] {
+	value := pulumix.Apply[Bootstrap](o, func(v Bootstrap) pulumix.Output[string] { return v.FileName })
+	return value
+}
+
+// Destination directory mkdir command.
+func (o BootstrapOutput) Mkdir() pulumix.GPtrOutput[remote.Command, remote.CommandOutput] {
+	value := pulumix.Apply[Bootstrap](o, func(v Bootstrap) pulumix.GPtrOutput[remote.Command, remote.CommandOutput] { return v.Mkdir })
+	unwrapped := pulumix.Flatten[*remote.Command, pulumix.GPtrOutput[remote.Command, remote.CommandOutput]](value)
+	return pulumix.GPtrOutput[remote.Command, remote.CommandOutput]{OutputState: unwrapped.OutputState}
+}
+
+// Temp download directory mktemp command.
 func (o BootstrapOutput) Mktemp() pulumix.GPtrOutput[remote.Command, remote.CommandOutput] {
 	value := pulumix.Apply[Bootstrap](o, func(v Bootstrap) pulumix.GPtrOutput[remote.Command, remote.CommandOutput] { return v.Mktemp })
 	unwrapped := pulumix.Flatten[*remote.Command, pulumix.GPtrOutput[remote.Command, remote.CommandOutput]](value)
 	return pulumix.GPtrOutput[remote.Command, remote.CommandOutput]{OutputState: unwrapped.OutputState}
 }
 
+// Command to move the binary from the temp directory to the destination.
+func (o BootstrapOutput) Mv() pulumix.GPtrOutput[remote.Command, remote.CommandOutput] {
+	value := pulumix.Apply[Bootstrap](o, func(v Bootstrap) pulumix.GPtrOutput[remote.Command, remote.CommandOutput] { return v.Mv })
+	unwrapped := pulumix.Flatten[*remote.Command, pulumix.GPtrOutput[remote.Command, remote.CommandOutput]](value)
+	return pulumix.GPtrOutput[remote.Command, remote.CommandOutput]{OutputState: unwrapped.OutputState}
+}
+
+// Temp directory path output by the mktemp command.
+func (o BootstrapOutput) TempDir() pulumix.Output[string] {
+	value := pulumix.Apply[Bootstrap](o, func(v Bootstrap) pulumix.Output[string] { return v.TempDir })
+	return pulumix.Flatten[string, pulumix.Output[string]](value)
+}
+
+// Url of the provisioner release archive.
 func (o BootstrapOutput) Url() pulumix.Output[string] {
 	value := pulumix.Apply[Bootstrap](o, func(v Bootstrap) pulumix.Output[string] { return v.Url })
 	return value

@@ -17,9 +17,25 @@ import (
 type Bootstrap struct {
 	pulumi.ResourceState
 
+	// Name part of the provisioner release archive file.
+	ArchiveName pulumi.StringOutput `pulumi:"archiveName"`
+	// Provisioner binary path on the remote system.
+	BinPath pulumi.StringOutput `pulumi:"binPath"`
+	// Binary download command.
 	Download remote.CommandOutput `pulumi:"download"`
-	Mktemp   remote.CommandOutput `pulumi:"mktemp"`
-	Url      pulumi.StringOutput  `pulumi:"url"`
+	Extract  remote.CommandOutput `pulumi:"extract"`
+	// Name part of the provisioner binary file.
+	FileName pulumi.StringOutput `pulumi:"fileName"`
+	// Destination directory mkdir command.
+	Mkdir remote.CommandOutput `pulumi:"mkdir"`
+	// Temp download directory mktemp command.
+	Mktemp remote.CommandOutput `pulumi:"mktemp"`
+	// Command to move the binary from the temp directory to the destination.
+	Mv remote.CommandOutput `pulumi:"mv"`
+	// Temp directory path output by the mktemp command.
+	TempDir pulumi.StringOutput `pulumi:"tempDir"`
+	// Url of the provisioner release archive.
+	Url pulumi.StringOutput `pulumi:"url"`
 }
 
 // NewBootstrap registers a new resource with the given unique name, arguments, and options.
@@ -29,10 +45,12 @@ func NewBootstrap(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.Connection == nil {
-		return nil, errors.New("invalid value for required argument 'Connection'")
+	if args.Connection != nil {
+		args.Connection = args.Connection.ToConnectionOutput().ApplyT(func(v *remote.Connection) *remote.Connection { return v.Defaults() }).(*remote.ConnectionOutput)
 	}
-	args.Connection = args.Connection.ToConnectionOutput().ApplyT(func(v remote.Connection) remote.Connection { return *v.Defaults() }).(remote.ConnectionOutput)
+	if internal.IsZero(args.Directory) {
+		args.Directory = "/usr/local/bin"
+	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Bootstrap
 	err := ctx.RegisterRemoteComponentResource("baremetal:index:Bootstrap", name, args, &resource, opts...)
@@ -43,14 +61,20 @@ func NewBootstrap(ctx *pulumi.Context,
 }
 
 type bootstrapArgs struct {
-	Connection remote.Connection `pulumi:"connection"`
-	Version    string            `pulumi:"version"`
+	Connection *remote.Connection `pulumi:"connection"`
+	// The directory to store the provisioner binary.
+	Directory string `pulumi:"directory"`
+	// The version of the provisioner to bootstrap
+	Version string `pulumi:"version"`
 }
 
 // The set of arguments for constructing a Bootstrap resource.
 type BootstrapArgs struct {
-	Connection remote.ConnectionInput
-	Version    string
+	Connection *remote.ConnectionInput
+	// The directory to store the provisioner binary.
+	Directory string
+	// The version of the provisioner to bootstrap
+	Version string
 }
 
 func (BootstrapArgs) ElementType() reflect.Type {
@@ -102,14 +126,51 @@ func (o BootstrapOutput) ToOutput(ctx context.Context) pulumix.Output[*Bootstrap
 	}
 }
 
+// Name part of the provisioner release archive file.
+func (o BootstrapOutput) ArchiveName() pulumi.StringOutput {
+	return o.ApplyT(func(v *Bootstrap) pulumi.StringOutput { return v.ArchiveName }).(pulumi.StringOutput)
+}
+
+// Provisioner binary path on the remote system.
+func (o BootstrapOutput) BinPath() pulumi.StringOutput {
+	return o.ApplyT(func(v *Bootstrap) pulumi.StringOutput { return v.BinPath }).(pulumi.StringOutput)
+}
+
+// Binary download command.
 func (o BootstrapOutput) Download() remote.CommandOutput {
 	return o.ApplyT(func(v *Bootstrap) remote.CommandOutput { return v.Download }).(remote.CommandOutput)
 }
 
+func (o BootstrapOutput) Extract() remote.CommandOutput {
+	return o.ApplyT(func(v *Bootstrap) remote.CommandOutput { return v.Extract }).(remote.CommandOutput)
+}
+
+// Name part of the provisioner binary file.
+func (o BootstrapOutput) FileName() pulumi.StringOutput {
+	return o.ApplyT(func(v *Bootstrap) pulumi.StringOutput { return v.FileName }).(pulumi.StringOutput)
+}
+
+// Destination directory mkdir command.
+func (o BootstrapOutput) Mkdir() remote.CommandOutput {
+	return o.ApplyT(func(v *Bootstrap) remote.CommandOutput { return v.Mkdir }).(remote.CommandOutput)
+}
+
+// Temp download directory mktemp command.
 func (o BootstrapOutput) Mktemp() remote.CommandOutput {
 	return o.ApplyT(func(v *Bootstrap) remote.CommandOutput { return v.Mktemp }).(remote.CommandOutput)
 }
 
+// Command to move the binary from the temp directory to the destination.
+func (o BootstrapOutput) Mv() remote.CommandOutput {
+	return o.ApplyT(func(v *Bootstrap) remote.CommandOutput { return v.Mv }).(remote.CommandOutput)
+}
+
+// Temp directory path output by the mktemp command.
+func (o BootstrapOutput) TempDir() pulumi.StringOutput {
+	return o.ApplyT(func(v *Bootstrap) pulumi.StringOutput { return v.TempDir }).(pulumi.StringOutput)
+}
+
+// Url of the provisioner release archive.
 func (o BootstrapOutput) Url() pulumi.StringOutput {
 	return o.ApplyT(func(v *Bootstrap) pulumi.StringOutput { return v.Url }).(pulumi.StringOutput)
 }

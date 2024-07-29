@@ -13,12 +13,60 @@ namespace UnMango.Baremetal
     [BaremetalResourceType("baremetal:index:Bootstrap")]
     public partial class Bootstrap : global::Pulumi.ComponentResource
     {
+        /// <summary>
+        /// Name part of the provisioner release archive file.
+        /// </summary>
+        [Output("archiveName")]
+        public Output<string> ArchiveName { get; private set; } = null!;
+
+        /// <summary>
+        /// Provisioner binary path on the remote system.
+        /// </summary>
+        [Output("binPath")]
+        public Output<string> BinPath { get; private set; } = null!;
+
+        /// <summary>
+        /// Binary download command.
+        /// </summary>
         [Output("download")]
         public Output<Pulumi.Command.Remote.Command> Download { get; private set; } = null!;
 
+        [Output("extract")]
+        public Output<Pulumi.Command.Remote.Command> Extract { get; private set; } = null!;
+
+        /// <summary>
+        /// Name part of the provisioner binary file.
+        /// </summary>
+        [Output("fileName")]
+        public Output<string> FileName { get; private set; } = null!;
+
+        /// <summary>
+        /// Destination directory mkdir command.
+        /// </summary>
+        [Output("mkdir")]
+        public Output<Pulumi.Command.Remote.Command> Mkdir { get; private set; } = null!;
+
+        /// <summary>
+        /// Temp download directory mktemp command.
+        /// </summary>
         [Output("mktemp")]
         public Output<Pulumi.Command.Remote.Command> Mktemp { get; private set; } = null!;
 
+        /// <summary>
+        /// Command to move the binary from the temp directory to the destination.
+        /// </summary>
+        [Output("mv")]
+        public Output<Pulumi.Command.Remote.Command> Mv { get; private set; } = null!;
+
+        /// <summary>
+        /// Temp directory path output by the mktemp command.
+        /// </summary>
+        [Output("tempDir")]
+        public Output<string> TempDir { get; private set; } = null!;
+
+        /// <summary>
+        /// Url of the provisioner release archive.
+        /// </summary>
         [Output("url")]
         public Output<string> Url { get; private set; } = null!;
 
@@ -51,14 +99,24 @@ namespace UnMango.Baremetal
 
     public sealed class BootstrapArgs : global::Pulumi.ResourceArgs
     {
-        [Input("connection", required: true)]
-        public Input<Pulumi.Command.Remote.Inputs.ConnectionArgs> Connection { get; set; } = null!;
+        [Input("connection")]
+        public Input<Pulumi.Command.Remote.Inputs.ConnectionArgs>? Connection { get; set; }
 
+        /// <summary>
+        /// The directory to store the provisioner binary.
+        /// </summary>
+        [Input("directory", required: true)]
+        public string Directory { get; set; } = null!;
+
+        /// <summary>
+        /// The version of the provisioner to bootstrap
+        /// </summary>
         [Input("version", required: true)]
         public string Version { get; set; } = null!;
 
         public BootstrapArgs()
         {
+            Directory = "/usr/local/bin";
         }
         public static new BootstrapArgs Empty => new BootstrapArgs();
     }
