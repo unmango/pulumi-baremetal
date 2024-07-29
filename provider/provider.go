@@ -17,6 +17,7 @@ const Name string = "baremetal"
 func Provider() p.Provider {
 	return infer.Provider(infer.Options{
 		Metadata: schema.Metadata{
+			PluginDownloadURL: "github://api.github.com/unmango",
 			LanguageMap: map[string]any{
 				"csharp": map[string]string{"rootNamespace": "UnMango"},
 				"go":     map[string]string{"importBasePath": "github.com/unmango/pulumi-baremetal/sdk/go/baremetal"},
