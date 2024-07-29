@@ -19,7 +19,7 @@ func (c Config) NewGrpcClient() (*grpc.ClientConn, error) {
 	)
 }
 
-func (c Config) NewProvisioner() (*provisioner, error) {
+func (c Config) NewProvisioner() (Provisioner, error) {
 	conn, err := c.NewGrpcClient()
 	if err != nil {
 		return nil, err
