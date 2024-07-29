@@ -85,11 +85,11 @@ import (
 type Tee struct {
 	pulumi.CustomResourceState
 
-	Create        TeeOptsPtrOutput         `pulumi:"create"`
-	Created_files pulumi.StringArrayOutput `pulumi:"created_files"`
-	Stderr        pulumi.StringOutput      `pulumi:"stderr"`
-	Stdin         pulumi.StringOutput      `pulumi:"stdin"`
-	Stdout        pulumi.StringOutput      `pulumi:"stdout"`
+	Create        pulumix.GPtrOutput[TeeOpts, TeeOptsOutput] `pulumi:"create"`
+	Created_files pulumix.ArrayOutput[string]                `pulumi:"created_files"`
+	Stderr        pulumix.Output[string]                     `pulumi:"stderr"`
+	Stdin         pulumix.Output[string]                     `pulumi:"stdin"`
+	Stdout        pulumix.Output[string]                     `pulumi:"stdout"`
 }
 
 // NewTee registers a new resource with the given unique name, arguments, and options.
@@ -141,43 +141,18 @@ type teeArgs struct {
 
 // The set of arguments for constructing a Tee resource.
 type TeeArgs struct {
-	Create TeeOptsPtrInput
-	Stdin  pulumi.StringInput
+	Create pulumix.Input[*TeeOptsArgs]
+	Stdin  pulumix.Input[string]
 }
 
 func (TeeArgs) ElementType() reflect.Type {
 	return reflect.TypeOf((*teeArgs)(nil)).Elem()
 }
 
-type TeeInput interface {
-	pulumi.Input
-
-	ToTeeOutput() TeeOutput
-	ToTeeOutputWithContext(ctx context.Context) TeeOutput
-}
-
-func (*Tee) ElementType() reflect.Type {
-	return reflect.TypeOf((**Tee)(nil)).Elem()
-}
-
-func (i *Tee) ToTeeOutput() TeeOutput {
-	return i.ToTeeOutputWithContext(context.Background())
-}
-
-func (i *Tee) ToTeeOutputWithContext(ctx context.Context) TeeOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(TeeOutput)
-}
-
-func (i *Tee) ToOutput(ctx context.Context) pulumix.Output[*Tee] {
-	return pulumix.Output[*Tee]{
-		OutputState: i.ToTeeOutputWithContext(ctx).OutputState,
-	}
-}
-
 type TeeOutput struct{ *pulumi.OutputState }
 
 func (TeeOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((**Tee)(nil)).Elem()
+	return reflect.TypeOf((*Tee)(nil)).Elem()
 }
 
 func (o TeeOutput) ToTeeOutput() TeeOutput {
@@ -188,33 +163,39 @@ func (o TeeOutput) ToTeeOutputWithContext(ctx context.Context) TeeOutput {
 	return o
 }
 
-func (o TeeOutput) ToOutput(ctx context.Context) pulumix.Output[*Tee] {
-	return pulumix.Output[*Tee]{
+func (o TeeOutput) ToOutput(ctx context.Context) pulumix.Output[Tee] {
+	return pulumix.Output[Tee]{
 		OutputState: o.OutputState,
 	}
 }
 
-func (o TeeOutput) Create() TeeOptsPtrOutput {
-	return o.ApplyT(func(v *Tee) TeeOptsPtrOutput { return v.Create }).(TeeOptsPtrOutput)
+func (o TeeOutput) Create() pulumix.GPtrOutput[TeeOpts, TeeOptsOutput] {
+	value := pulumix.Apply[Tee](o, func(v Tee) pulumix.GPtrOutput[TeeOpts, TeeOptsOutput] { return v.Create })
+	unwrapped := pulumix.Flatten[*TeeOpts, pulumix.GPtrOutput[TeeOpts, TeeOptsOutput]](value)
+	return pulumix.GPtrOutput[TeeOpts, TeeOptsOutput]{OutputState: unwrapped.OutputState}
 }
 
-func (o TeeOutput) Created_files() pulumi.StringArrayOutput {
-	return o.ApplyT(func(v *Tee) pulumi.StringArrayOutput { return v.Created_files }).(pulumi.StringArrayOutput)
+func (o TeeOutput) Created_files() pulumix.ArrayOutput[string] {
+	value := pulumix.Apply[Tee](o, func(v Tee) pulumix.ArrayOutput[string] { return v.Created_files })
+	unwrapped := pulumix.Flatten[[]string, pulumix.ArrayOutput[string]](value)
+	return pulumix.ArrayOutput[string]{OutputState: unwrapped.OutputState}
 }
 
-func (o TeeOutput) Stderr() pulumi.StringOutput {
-	return o.ApplyT(func(v *Tee) pulumi.StringOutput { return v.Stderr }).(pulumi.StringOutput)
+func (o TeeOutput) Stderr() pulumix.Output[string] {
+	value := pulumix.Apply[Tee](o, func(v Tee) pulumix.Output[string] { return v.Stderr })
+	return pulumix.Flatten[string, pulumix.Output[string]](value)
 }
 
-func (o TeeOutput) Stdin() pulumi.StringOutput {
-	return o.ApplyT(func(v *Tee) pulumi.StringOutput { return v.Stdin }).(pulumi.StringOutput)
+func (o TeeOutput) Stdin() pulumix.Output[string] {
+	value := pulumix.Apply[Tee](o, func(v Tee) pulumix.Output[string] { return v.Stdin })
+	return pulumix.Flatten[string, pulumix.Output[string]](value)
 }
 
-func (o TeeOutput) Stdout() pulumi.StringOutput {
-	return o.ApplyT(func(v *Tee) pulumi.StringOutput { return v.Stdout }).(pulumi.StringOutput)
+func (o TeeOutput) Stdout() pulumix.Output[string] {
+	value := pulumix.Apply[Tee](o, func(v Tee) pulumix.Output[string] { return v.Stdout })
+	return pulumix.Flatten[string, pulumix.Output[string]](value)
 }
 
 func init() {
-	pulumi.RegisterInputType(reflect.TypeOf((*TeeInput)(nil)).Elem(), &Tee{})
 	pulumi.RegisterOutputType(TeeOutput{})
 }

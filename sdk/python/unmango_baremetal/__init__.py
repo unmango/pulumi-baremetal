@@ -5,6 +5,7 @@
 from . import _utilities
 import typing
 # Export this package's modules as members:
+from .bootstrap import *
 from .provider import *
 
 # Make subpackages available:
@@ -26,6 +27,14 @@ _utilities.register(
   "fqn": "unmango_baremetal.cmd",
   "classes": {
    "baremetal:cmd:Tee": "Tee"
+  }
+ },
+ {
+  "pkg": "baremetal",
+  "mod": "index",
+  "fqn": "unmango_baremetal",
+  "classes": {
+   "baremetal:index:Bootstrap": "Bootstrap"
   }
  }
 ]

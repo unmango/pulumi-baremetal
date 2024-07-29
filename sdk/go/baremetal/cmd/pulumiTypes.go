@@ -8,6 +8,7 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
@@ -42,6 +43,12 @@ func (i TeeOptsArgs) ToTeeOptsOutput() TeeOptsOutput {
 
 func (i TeeOptsArgs) ToTeeOptsOutputWithContext(ctx context.Context) TeeOptsOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(TeeOptsOutput)
+}
+
+func (i TeeOptsArgs) ToOutput(ctx context.Context) pulumix.Output[TeeOpts] {
+	return pulumix.Output[TeeOpts]{
+		OutputState: i.ToTeeOptsOutputWithContext(ctx).OutputState,
+	}
 }
 
 func (i TeeOptsArgs) ToTeeOptsPtrOutput() TeeOptsPtrOutput {
@@ -85,6 +92,12 @@ func (i *teeOptsPtrType) ToTeeOptsPtrOutputWithContext(ctx context.Context) TeeO
 	return pulumi.ToOutputWithContext(ctx, i).(TeeOptsPtrOutput)
 }
 
+func (i *teeOptsPtrType) ToOutput(ctx context.Context) pulumix.Output[*TeeOpts] {
+	return pulumix.Output[*TeeOpts]{
+		OutputState: i.ToTeeOptsPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TeeOptsOutput struct{ *pulumi.OutputState }
 
 func (TeeOptsOutput) ElementType() reflect.Type {
@@ -109,6 +122,12 @@ func (o TeeOptsOutput) ToTeeOptsPtrOutputWithContext(ctx context.Context) TeeOpt
 	}).(TeeOptsPtrOutput)
 }
 
+func (o TeeOptsOutput) ToOutput(ctx context.Context) pulumix.Output[TeeOpts] {
+	return pulumix.Output[TeeOpts]{
+		OutputState: o.OutputState,
+	}
+}
+
 func (o TeeOptsOutput) Files() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v TeeOpts) []string { return v.Files }).(pulumi.StringArrayOutput)
 }
@@ -125,6 +144,12 @@ func (o TeeOptsPtrOutput) ToTeeOptsPtrOutput() TeeOptsPtrOutput {
 
 func (o TeeOptsPtrOutput) ToTeeOptsPtrOutputWithContext(ctx context.Context) TeeOptsPtrOutput {
 	return o
+}
+
+func (o TeeOptsPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*TeeOpts] {
+	return pulumix.Output[*TeeOpts]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TeeOptsPtrOutput) Elem() TeeOptsOutput {
