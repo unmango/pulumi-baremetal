@@ -47,6 +47,7 @@ func NewTestProvisioner(ctx context.Context, logger io.Writer) (testProvisioner,
 			Cmd: []string{
 				"--network", defaultProtocol,
 				"--address", fmt.Sprintf("%s:%d", "0.0.0.0", port.Int()),
+				"--verbose",
 			},
 			ExposedPorts: []string{port.Port()},
 			WaitingFor:   wait.ForListeningPort(port),
@@ -72,6 +73,24 @@ func (p testProvisioner) Start(ctx context.Context) error {
 func (p testProvisioner) Stop(ctx context.Context) error {
 	timeout := time.Duration(10 * time.Second)
 	return p.ct.Stop(ctx, &timeout)
+}
+
+func (p testProvisioner) Exec(ctx context.Context, args ...string) error {
+	code, output, err := p.ct.Exec(ctx, args)
+	if err != nil {
+		return err
+	}
+
+	out, err := io.ReadAll(output)
+	if err != nil {
+		return err
+	}
+
+	if code != 0 {
+		return fmt.Errorf("unexpected return code: %d, output: %s", code, out)
+	}
+
+	return nil
 }
 
 func (prov testProvisioner) ConfigureProvider(ctx context.Context, server integration.Server) error {

@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+	"io"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -14,6 +15,12 @@ import (
 var _ = Describe("Tee", Ordered, func() {
 	var server integration.Server
 
+	BeforeAll(func(ctx context.Context) {
+		By("creating a working directory for the tee test")
+		err := provisioner.Exec(ctx, "mkdir", "-p", "/tmp/tee")
+		Expect(err).NotTo(HaveOccurred())
+	})
+
 	BeforeEach(func(ctx context.Context) {
 		By("creating a provider server")
 		server = NewIntegrationProvider()
@@ -23,26 +30,35 @@ var _ = Describe("Tee", Ordered, func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	It("should create a tee", func() {
-		stdin := "Test stdin"
-		By("generating expected data")
+	Describe("Create", func() {
+		It("should write stdin to a file", func(ctx context.Context) {
+			stdin := "Test stdin"
+			file := "/tmp/tee/create.txt"
 
-		By("creating the resource")
-		response, err := server.Create(p.CreateRequest{
-			Urn: urn("Tee", "cmd"),
-			Properties: resource.PropertyMap{
-				"stdin": resource.NewStringProperty(stdin),
-				"create": resource.NewObjectProperty(resource.PropertyMap{
-					"files": resource.NewArrayProperty([]resource.PropertyValue{
-						resource.NewStringProperty("test"),
+			By("creating the resource")
+			response, err := server.Create(p.CreateRequest{
+				Urn:     urn("Tee", "cmd"),
+				Preview: false,
+				Properties: resource.PropertyMap{
+					"stdin": resource.NewStringProperty(stdin),
+					"create": resource.NewObjectProperty(resource.PropertyMap{
+						"files": resource.NewArrayProperty([]resource.PropertyValue{
+							resource.NewStringProperty(file),
+						}),
 					}),
-				}),
-			},
-			Preview: false,
-		})
+				},
+			})
 
-		Expect(err).NotTo(HaveOccurred())
-		Expect(response).NotTo(BeNil())
-		Expect(response.Properties["stdout"].V).To(Equal("op: OP_CREATE, cmd: COMMAND_TEE, args: []string{\"test\"}, flags: map[string]*baremetalv1alpha1.Flag(nil)"))
+			Expect(err).NotTo(HaveOccurred())
+			Expect(response.Properties["stderr"].V).To(BeEmpty())
+			Expect(response.Properties["stdout"].V).To(Equal(stdin))
+
+			By("attempting to copy the created file")
+			reader, err := provisioner.ct.CopyFileFromContainer(ctx, file)
+			Expect(err).NotTo(HaveOccurred())
+			result, err := io.ReadAll(reader)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(string(result)).To(Equal(stdin))
+		})
 	})
 })
