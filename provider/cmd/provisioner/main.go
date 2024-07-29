@@ -28,6 +28,7 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
+		slog.SetDefault(log)
 		log.Info("serving", "network", network, "address", address, "verbose", verbose)
 		return provisioner.Serve(lis)
 	},

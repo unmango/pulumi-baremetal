@@ -58,6 +58,7 @@ func (state *TeeState) create(ctx context.Context, input TeeArgs) error {
 		Command: pb.Command_COMMAND_TEE,
 		Args:    input.Create.Files,
 		Flags:   map[string]*pb.Flag{},
+		Stdin:   input.Stdin,
 	})
 	if err != nil {
 		return err

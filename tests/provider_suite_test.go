@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -19,9 +20,10 @@ func TestProvider(t *testing.T) {
 
 var _ = BeforeSuite(func(ctx context.Context) {
 	By("creating a provisioner")
-	prov, err := NewTestProvisioner(ctx, GinkgoWriter)
+	prov, err := NewTestProvisioner(ctx, os.Stdout)
 	Expect(err).NotTo(HaveOccurred())
 
+	By("starting the provisioner")
 	err = prov.Start(ctx)
 	Expect(err).NotTo(HaveOccurred())
 	provisioner = prov
