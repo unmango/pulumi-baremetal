@@ -14,6 +14,7 @@ import (
 )
 
 var _ = Describe("Tee", Ordered, func() {
+	urn := util.Urn("Tee", "cmd")
 	var server integration.Server
 
 	BeforeAll(func(ctx context.Context) {
@@ -22,37 +23,51 @@ var _ = Describe("Tee", Ordered, func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	BeforeEach(func(ctx context.Context) {
+	BeforeAll(func(ctx context.Context) {
 		By("creating a provider server")
 		server = util.NewIntegrationProvider()
+	})
 
+	BeforeAll(func(ctx context.Context) {
 		By("configuring the provider")
 		err := provisioner.ConfigureProvider(ctx, server)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	Describe("Create", func() {
-		It("should write stdin to a file", func(ctx context.Context) {
-			stdin := "Test stdin"
-			file := "/tmp/tee/create.txt"
+	Describe("write stdin to a file", func() {
+		stdin := "Test stdin"
+		file := "/tmp/tee/create.txt"
 
-			By("creating the resource")
+		var teeId *string
+		var stdout *string
+		var stderr *string
+
+		props := resource.PropertyMap{
+			"stdin": resource.NewStringProperty(stdin),
+			"create": resource.NewObjectProperty(resource.PropertyMap{
+				"files": resource.NewArrayProperty([]resource.PropertyValue{
+					resource.NewStringProperty(file),
+				}),
+			}),
+		}
+
+		It("should create", func(ctx context.Context) {
 			response, err := server.Create(p.CreateRequest{
-				Urn:     util.Urn("Tee", "cmd"),
-				Preview: false,
-				Properties: resource.PropertyMap{
-					"stdin": resource.NewStringProperty(stdin),
-					"create": resource.NewObjectProperty(resource.PropertyMap{
-						"files": resource.NewArrayProperty([]resource.PropertyValue{
-							resource.NewStringProperty(file),
-						}),
-					}),
-				},
+				Urn:        urn,
+				Preview:    false,
+				Properties: props,
 			})
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(response.Properties["stderr"].V).To(BeEmpty())
-			Expect(response.Properties["stdout"].V).To(Equal(stdin))
+			teeId = &response.ID
+
+			e, ok := response.Properties["stderr"].V.(string)
+			Expect(ok).To(BeTrueBecause("stderr was not a string"))
+			stderr = &e
+
+			o, ok := response.Properties["stdout"].V.(string)
+			Expect(ok).To(BeTrueBecause("stdout was not a string"))
+			stdout = &o
 
 			By("attempting to copy the created file")
 			reader, err := provisioner.Ctr().CopyFileFromContainer(ctx, file)
@@ -60,6 +75,33 @@ var _ = Describe("Tee", Ordered, func() {
 			result, err := io.ReadAll(reader)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(string(result)).To(Equal(stdin))
+		})
+
+		It("should delete", func(ctx context.Context) {
+			Expect(teeId).NotTo(BeNil())
+			err := server.Delete(p.DeleteRequest{
+				Urn: urn,
+				ID:  *teeId,
+				Properties: resource.PropertyMap{
+					"stdin": resource.NewStringProperty(stdin),
+					"create": resource.NewObjectProperty(resource.PropertyMap{
+						"files": resource.NewArrayProperty([]resource.PropertyValue{
+							resource.NewStringProperty(file),
+						}),
+					}),
+					"stdout": resource.NewStringProperty(*stdout),
+					"stderr": resource.NewStringProperty(*stderr),
+					"created_files": resource.NewArrayProperty([]resource.PropertyValue{
+						resource.NewStringProperty(file),
+					}),
+				},
+			})
+
+			Expect(err).NotTo(HaveOccurred())
+
+			By("attempting to copy the created file")
+			_, err = provisioner.Ctr().CopyFileFromContainer(ctx, file)
+			Expect(err).To(HaveOccurred()) // Can we be more specific
 		})
 	})
 })

@@ -22,6 +22,12 @@ func NewServer() pb.CommandServiceServer {
 
 // Command implements baremetalv1alpha1.CommandServiceServer.
 func (c *service) Command(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
+	switch req.Op {
+	case pb.Op_OP_CREATE:
+	default:
+		return nil, fmt.Errorf("unsupported op: %s", req.Op)
+	}
+
 	log := c.log.With("op", req.Op)
 	bin, err := getBin(req.Command)
 	if err != nil {
