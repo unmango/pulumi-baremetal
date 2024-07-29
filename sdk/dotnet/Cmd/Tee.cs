@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 using Pulumi.Serialization;
 using Pulumi;
 
-namespace UnMango.Baremetal
+namespace UnMango.Baremetal.Cmd
 {
     /// <summary>
-    /// TEE(1)                                                       User Commands                                                      TEE(1)
+    /// TEE(1)                                                                                   User Commands                                                                                   TEE(1)
     /// 
     /// NAME
     ///        tee - read from standard input and write to standard output and files
@@ -49,9 +49,8 @@ namespace UnMango.Baremetal
     ///        exit-nopipe
     ///               exit on error writing to any output not a pipe
     ///     
-    ///        The default MODE for the -p option is 'warn-nopipe'.  With "nopipe" MODEs, exit immediately if all outputs become broken pipes.
-    ///        The default operation when --output-error is not specified, is to exit immediately on error writing to a pipe, and diagnose er‐
-    ///        rors writing to non pipe outputs.
+    ///        The default MODE for the -p option is 'warn-nopipe'.  With "nopipe" MODEs, exit immediately if all outputs become broken pipes.  The default operation when --output-error is not speci‐
+    ///        fied, is to exit immediately on error writing to a pipe, and diagnose errors writing to non pipe outputs.
     /// 
     /// AUTHOR
     ///        Written by Mike Parker, Richard M. Stallman, and David MacKenzie.
@@ -61,17 +60,16 @@ namespace UnMango.Baremetal
     ///        Report any translation bugs to &lt;https://translationproject.org/team/&gt;
     /// 
     /// COPYRIGHT
-    ///        Copyright  ©  2024  Free  Software  Foundation,  Inc.   License  GPLv3+:  GNU  GPL  version  3  or  later  &lt;https://gnu.org/li‐
-    ///        censes/gpl.html&gt;.
+    ///        Copyright © 2024 Free Software Foundation, Inc.  License GPLv3+: GNU GPL version 3 or later &lt;https://gnu.org/licenses/gpl.html&gt;.
     ///        This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by law.
     /// 
     /// SEE ALSO
     ///        Full documentation &lt;https://www.gnu.org/software/coreutils/tee&gt;
     ///        or available locally via: info '(coreutils) tee invocation'
     /// 
-    /// GNU coreutils 9.5                                             March 2024                                                        TEE(1)
+    /// GNU coreutils 9.5                                                                          March 2024                                                                                    TEE(1)
     /// </summary>
-    [BaremetalResourceType("baremetal:index:Tee")]
+    [BaremetalResourceType("baremetal:cmd:Tee")]
     public partial class Tee : global::Pulumi.CustomResource
     {
         [Output("create")]
@@ -86,9 +84,6 @@ namespace UnMango.Baremetal
         [Output("stdout")]
         public Output<string> Stdout { get; private set; } = null!;
 
-        [Output("test")]
-        public Output<UnMango.Baremetal.V1alpha1.Outputs.CommandRequest> Test { get; private set; } = null!;
-
 
         /// <summary>
         /// Create a Tee resource with the given unique name, arguments, and options.
@@ -98,12 +93,12 @@ namespace UnMango.Baremetal
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
         public Tee(string name, TeeArgs args, CustomResourceOptions? options = null)
-            : base("baremetal:index:Tee", name, args ?? new TeeArgs(), MakeResourceOptions(options, ""))
+            : base("baremetal:cmd:Tee", name, args ?? new TeeArgs(), MakeResourceOptions(options, ""))
         {
         }
 
         private Tee(string name, Input<string> id, CustomResourceOptions? options = null)
-            : base("baremetal:index:Tee", name, null, MakeResourceOptions(options, id))
+            : base("baremetal:cmd:Tee", name, null, MakeResourceOptions(options, id))
         {
         }
 
@@ -139,9 +134,6 @@ namespace UnMango.Baremetal
 
         [Input("stdin", required: true)]
         public Input<string> Stdin { get; set; } = null!;
-
-        [Input("test", required: true)]
-        public Input<UnMango.Baremetal.V1alpha1.Inputs.CommandRequestArgs> Test { get; set; } = null!;
 
         public TeeArgs()
         {

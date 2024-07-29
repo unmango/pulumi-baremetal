@@ -10,12 +10,18 @@ from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 
 __all__ = [
-    'CommandRequest',
+    'TeeOpts',
 ]
 
 @pulumi.output_type
-class CommandRequest(dict):
-    def __init__(__self__):
-        pass
+class TeeOpts(dict):
+    def __init__(__self__, *,
+                 files: Sequence[str]):
+        pulumi.set(__self__, "files", files)
+
+    @property
+    @pulumi.getter
+    def files(self) -> Sequence[str]:
+        return pulumi.get(self, "files")
 
 

@@ -6,29 +6,26 @@ from . import _utilities
 import typing
 # Export this package's modules as members:
 from .provider import *
-from .tee import *
-from ._inputs import *
-from . import outputs
 
 # Make subpackages available:
 if typing.TYPE_CHECKING:
+    import unmango_baremetal.cmd as __cmd
+    cmd = __cmd
     import unmango_baremetal.config as __config
     config = __config
-    import unmango_baremetal.v1alpha1 as __v1alpha1
-    v1alpha1 = __v1alpha1
 else:
+    cmd = _utilities.lazy_import('unmango_baremetal.cmd')
     config = _utilities.lazy_import('unmango_baremetal.config')
-    v1alpha1 = _utilities.lazy_import('unmango_baremetal.v1alpha1')
 
 _utilities.register(
     resource_modules="""
 [
  {
   "pkg": "baremetal",
-  "mod": "index",
-  "fqn": "unmango_baremetal",
+  "mod": "cmd",
+  "fqn": "unmango_baremetal.cmd",
   "classes": {
-   "baremetal:index:Tee": "Tee"
+   "baremetal:cmd:Tee": "Tee"
   }
  }
 ]

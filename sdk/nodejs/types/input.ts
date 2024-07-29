@@ -5,10 +5,8 @@ import * as pulumi from "@pulumi/pulumi";
 import * as inputs from "../types/input";
 import * as outputs from "../types/output";
 
-export interface TeeOptsArgs {
-    files: pulumi.Input<pulumi.Input<string>[]>;
-}
-export namespace v1alpha1 {
-    export interface CommandRequestArgs {
+export namespace cmd {
+    export interface TeeOptsArgs {
+        files: pulumi.Input<pulumi.Input<string>[]>;
     }
 }
