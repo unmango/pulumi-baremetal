@@ -45,6 +45,9 @@ ensure::
 	cd sdk && go mod tidy
 	cd tests && go mod tidy
 
+remake::
+	rm -rf bin .make
+
 provider:: bin/$(PROVIDER)
 
 provider_debug::
