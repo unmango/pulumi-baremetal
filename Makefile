@@ -55,7 +55,7 @@ provider_debug::
 	(cd provider && go build -o $(WORKING_DIR)/bin/${PROVIDER} -gcflags="all=-N -l" -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER))
 
 test_provider:: provisioner .make/provisioner_docker_build
-	cd tests && go test -short -v -count=1 -cover -timeout 2h ./...
+	cd tests && go test -short -v -count=1 -cover -timeout 2h ./.
 
 provisioner:: bin/provisioner
 
