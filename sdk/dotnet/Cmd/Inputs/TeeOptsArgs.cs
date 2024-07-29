@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Pulumi.Serialization;
 using Pulumi;
 
-namespace UnMango.Baremetal.Inputs
+namespace UnMango.Baremetal.Cmd.Inputs
 {
 
     public sealed class TeeOptsArgs : global::Pulumi.ResourceArgs

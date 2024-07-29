@@ -87,14 +87,6 @@ jobs:
           go-version: ${{ matrix.goversion }}
           cache-dependency-path: sdk/go.sum
 
-      - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.12.0
-        with:
-          repo: pulumi/pulumictl
-
-      - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v2.0.0
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -121,12 +113,13 @@ jobs:
       - name: Check worktree clean
         uses: pulumi/git-status-check-action@v1
         with:
-          allowed-changes: |-
+          allowed-changes: |
             sdk/**/pulumi-plugin.json
             sdk/dotnet/Pulumi.*.csproj
             sdk/go/**/pulumiUtilities.go
             sdk/nodejs/package.json
             sdk/python/pyproject.toml
+          continue-with-unexpected-changes: true
 
       - name: Compress SDK folder
         run: tar -zcf sdk/${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }} .

@@ -8,14 +8,18 @@ using System.Threading.Tasks;
 using Pulumi.Serialization;
 using Pulumi;
 
-namespace UnMango.Baremetal.V1alpha1.Inputs
+namespace UnMango.Baremetal.Cmd.Outputs
 {
 
-    public sealed class CommandRequestArgs : global::Pulumi.ResourceArgs
+    [OutputType]
+    public sealed class TeeOpts
     {
-        public CommandRequestArgs()
+        public readonly ImmutableArray<string> Files;
+
+        [OutputConstructor]
+        private TeeOpts(ImmutableArray<string> files)
         {
+            Files = files;
         }
-        public static new CommandRequestArgs Empty => new CommandRequestArgs();
     }
 }

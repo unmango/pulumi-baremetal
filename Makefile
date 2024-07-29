@@ -45,6 +45,9 @@ ensure::
 	cd sdk && go mod tidy
 	cd tests && go mod tidy
 
+remake::
+	rm -rf bin .make
+
 provider:: bin/$(PROVIDER)
 
 provider_debug::
@@ -187,7 +190,9 @@ gen/go/%.pb.go gen/go/%_grpc.pb.go &: $(BUF_CONFIG) proto/%.proto
 	buf generate --clean --path proto/$*.proto
 
 provider/pkg/%.man: provider/pkg/%.go
-	man $(notdir $*) > $@
+	# man $(notdir $*) > $@
+	# This is a terrible idea when the output depends on the terminal size
+	touch $@
 
 buf.lock: $(BUF_CONFIG)
 	buf dep update

@@ -5,12 +5,9 @@ import * as pulumi from "@pulumi/pulumi";
 import * as inputs from "../types/input";
 import * as outputs from "../types/output";
 
-export interface TeeOpts {
-    files: string[];
-}
-
-export namespace v1alpha1 {
-    export interface CommandRequest {
+export namespace cmd {
+    export interface TeeOpts {
+        files: string[];
     }
 
 }

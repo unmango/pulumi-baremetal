@@ -3,13 +3,95 @@ name: CI
 on:
   pull_request:
     branches: [main]
-  push:
-    branches: [main]
 
 jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      goreleaser: ${{ steps.goreleaser.outputs.any_changed }}
+      lint: ${{ steps.lint.outputs.any_changed }}
+      buf: ${{ steps.buf.outputs.any_changed }}
+      provisioner: ${{ steps.provisioner.outputs.any_changed || steps.test.outputs.any_changed || github.actor == 'renovate[bot]' }}
+      provider: ${{ steps.provider.outputs.any_changed || steps.test.outputs.any_changed || github.actor == 'renovate[bot]' }}
+      sdk: ${{ steps.sdk.outputs.any_changed || steps.provider.outputs.any_changed || github.actor == 'renovate[bot]' }}
+      test: ${{ steps.test.outputs.any_changed || steps.provisioner.outputs.any_changed || steps.provider.outputs.any_changed || github.actor == 'renovate[bot]' }}
+    steps:
+      - name: Chekcout
+        uses: actions/checkout@v4
+
+      - name: Goreleaser triggers
+        id: goreleaser
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            .github/workflows/**
+            .goreleaser.yml
+
+      - name: Lint triggers
+        id: lint
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            .github/workflows/**
+            provider/**/*.go
+            sdk/**/*.go
+            tests/**/*.go
+
+      - name: Buf triggers
+        id: buf
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            .github/workflows/**
+            proto/**/*.proto
+            buf.gen.yaml
+            buf.lock
+            buf.yaml
+
+      - name: SDK triggers
+        id: sdk
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            .github/workflows/**
+            sdk/**
+
+      - name: Provisioner triggers
+        id: provisioner
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            .github/workflows/**
+            gen/**/*.go
+            provider/cmd/provisioner/**
+            provider/pkg/**
+            provider/*go*
+
+      - name: Provider triggers
+        id: provider
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            .github/workflows/**
+            gen/**/*.go
+            provider/cmd/provider/**
+            provider/pkg/**
+            provider/*go*
+
+      - name: Test triggers
+        id: test
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            .github/workflows/**
+            test/**
+
   goreleaser:
+    if: needs.setup.outputs.goreleaser == 'true'
     name: GoReleaser Check
     runs-on: ubuntu-latest
+    needs: [setup]
     steps:
       - name: Chekcout
         uses: actions/checkout@v4
@@ -20,9 +102,10 @@ jobs:
           version: '~> v2'
 
   lint:
-    if: github.event_name == 'pull_request'
+    if: needs.setup.outputs.lint == 'true'
     name: Lint
     runs-on: ubuntu-latest
+    needs: [setup]
     strategy:
       matrix:
         module:
@@ -46,9 +129,10 @@ jobs:
           working-directory: ${{ matrix.module }}
 
   buf:
-    if: github.event_name == 'pull_request'
+    if: needs.setup.outputs.buf == 'true'
     name: Buf
     runs-on: ubuntu-latest
+    needs: [setup]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -79,10 +163,11 @@ jobs:
           input: ${{ steps.diff.outputs.all_changed_files }}
           against: "https://github.com/${GITHUB_REPOSITORY}.git#branch=main,ref=HEAD~1"
 
-
   provisioner:
+    if: needs.setup.outputs.provisioner == 'true'
     name: Provisioner
     runs-on: ubuntu-latest
+    needs: [setup]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -101,22 +186,31 @@ jobs:
         with:
           repo: pulumi/pulumictl
 
-      - name: Touch targets
-        run: make --touch gen
-
       - name: Make
         run: make provisioner
 
+      - name: Check worktree clean
+        uses: pulumi/git-status-check-action@v1
+        with:
+          allowed-changes: |
+            sdk/**/pulumi-plugin.json
+            sdk/dotnet/Pulumi.*.csproj
+            sdk/go/**/pulumiUtilities.go
+            sdk/nodejs/package.json
+            sdk/python/pyproject.toml
+          continue-with-unexpected-changes: true
+
       - name: Upload binary
-        if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: provisioner
           path: bin/provisioner
 
   provider:
+    if: needs.setup.outputs.provider == 'true'
     name: Provider
     runs-on: ubuntu-latest
+    needs: [setup]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -140,17 +234,114 @@ jobs:
         with:
           pulumi-version-file: .versions/pulumi
 
-      - name: Touch targets
-        run: make --touch gen
-
       - name: Make
         run: make provider
 
+      - name: Check worktree clean
+        uses: pulumi/git-status-check-action@v1
+        with:
+          allowed-changes: |
+            sdk/**/pulumi-plugin.json
+            sdk/dotnet/Pulumi.*.csproj
+            sdk/go/**/pulumiUtilities.go
+            sdk/nodejs/package.json
+            sdk/python/pyproject.toml
+          continue-with-unexpected-changes: true
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          path: bin/pulumi-resource-baremetal
+          name: provider
+
+  sdk:
+    if: needs.setup.outputs.sdk == 'true'
+    name: SDKs
+    runs-on: ubuntu-latest
+    needs: [setup, provider]
+    strategy:
+      fail-fast: true
+      matrix:
+        dotnetversion:
+          - 6.0.x
+        goversion:
+          - 1.21.x
+        language:
+          - nodejs
+          - python
+          - dotnet
+          - go
+        nodeversion:
+          - 20.x
+        pythonversion:
+          - '3.11'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Unshallow clone for tags
+        run: git fetch --prune --unshallow --tags
+
+      - name: Install provider binary
+        uses: actions/download-artifact@v4
+        with:
+          name: provider
+          path: bin
+
+      - run: chmod +x bin/pulumi-resource-baremetal
+
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.12.0
+        with:
+          repo: pulumi/pulumictl
+
+      - name: Install Pulumi CLI
+        uses: pulumi/action-install-pulumi-cli@v2.0.0
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.goversion }}
+          cache-dependency-path: sdk/go.sum
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.nodeversion }}
+
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnetversion }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.pythonversion }}
+
+        # Ensure you have consent first
+      - name: Touch the provider
+        run: make --touch bin/pulumi-resource-baremetal
+
+      - name: Generate SDK
+        run: make ${{ matrix.language }}_sdk
+
+      - name: Check worktree clean
+        uses: pulumi/git-status-check-action@v1
+        with:
+          allowed-changes: |
+            sdk/**/pulumi-plugin.json
+            sdk/dotnet/Pulumi.*.csproj
+            sdk/go/**/pulumiUtilities.go
+            sdk/nodejs/package.json
+            sdk/python/pyproject.toml
+          continue-with-unexpected-changes: true
+
   test:
-    if: github.event_name == 'pull_request'
+    if: needs.setup.outputs.test == 'true'
     name: Tests
     runs-on: ubuntu-latest
-    needs: [provisioner, provider]
+    needs: [setup, provisioner]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
