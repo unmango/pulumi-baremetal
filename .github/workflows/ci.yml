@@ -257,85 +257,10 @@ jobs:
   sdk:
     if: needs.setup.outputs.sdk == 'true'
     name: SDKs
-    runs-on: ubuntu-latest
     needs: [setup, provider]
-    strategy:
-      fail-fast: true
-      matrix:
-        dotnetversion:
-          - 6.0.x
-        goversion:
-          - 1.21.x
-        language:
-          - nodejs
-          - python
-          - dotnet
-          - go
-        nodeversion:
-          - 20.x
-        pythonversion:
-          - '3.11'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
-
-      - name: Install provider binary
-        uses: actions/download-artifact@v4
-        with:
-          name: provider
-          path: bin
-
-      - run: chmod +x bin/pulumi-resource-baremetal
-
-      - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.12.0
-        with:
-          repo: pulumi/pulumictl
-
-      - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v2.0.0
-
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: ${{ matrix.goversion }}
-          cache-dependency-path: sdk/go.sum
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.nodeversion }}
-
-      - name: Setup DotNet
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ matrix.dotnetversion }}
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.pythonversion }}
-
-        # Ensure you have consent first
-      - name: Touch the provider
-        run: make --touch bin/pulumi-resource-baremetal
-
-      - name: Generate SDK
-        run: make ${{ matrix.language }}_sdk
-
-      - name: Check worktree clean
-        uses: pulumi/git-status-check-action@v1
-        with:
-          allowed-changes: |
-            sdk/**/pulumi-plugin.json
-            sdk/dotnet/Pulumi.*.csproj
-            sdk/go/**/pulumiUtilities.go
-            sdk/nodejs/package.json
-            sdk/python/pyproject.toml
-          continue-with-unexpected-changes: true
+    uses: ./.github/workflows/sdk.yml
+    with:
+      release: false
 
   test:
     if: needs.setup.outputs.test == 'true'
@@ -355,18 +280,18 @@ jobs:
           go-version-file: tests/go.mod
           cache-dependency-path: tests/go.sum
 
-      - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.12.0
-        with:
-          repo: pulumi/pulumictl
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Install Pulumi
         uses: pulumi/actions@v5
         with:
           pulumi-version-file: .versions/pulumi
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.12.0
+        with:
+          repo: pulumi/pulumictl
 
       - name: Download provisioner
         uses: actions/download-artifact@v4
