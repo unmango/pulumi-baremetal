@@ -105,14 +105,14 @@ namespace UnMango.Baremetal
         /// <summary>
         /// The directory to store the provisioner binary.
         /// </summary>
-        [Input("directory", required: true)]
-        public string Directory { get; set; } = null!;
+        [Input("directory")]
+        public Input<string>? Directory { get; set; }
 
         /// <summary>
         /// The version of the provisioner to bootstrap
         /// </summary>
         [Input("version", required: true)]
-        public string Version { get; set; } = null!;
+        public Input<string> Version { get; set; } = null!;
 
         public BootstrapArgs()
         {

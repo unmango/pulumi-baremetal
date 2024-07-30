@@ -45,11 +45,14 @@ func NewBootstrap(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
+	if args.Version == nil {
+		return nil, errors.New("invalid value for required argument 'Version'")
+	}
 	if args.Connection != nil {
 		args.Connection = args.Connection.ToConnectionOutput().ApplyT(func(v *remote.Connection) *remote.Connection { return v.Defaults() }).(*remote.ConnectionOutput)
 	}
-	if internal.IsZero(args.Directory) {
-		args.Directory = "/usr/local/bin"
+	if args.Directory == nil {
+		args.Directory = pulumi.StringPtr("/usr/local/bin")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Bootstrap
@@ -63,7 +66,7 @@ func NewBootstrap(ctx *pulumi.Context,
 type bootstrapArgs struct {
 	Connection *remote.Connection `pulumi:"connection"`
 	// The directory to store the provisioner binary.
-	Directory string `pulumi:"directory"`
+	Directory *string `pulumi:"directory"`
 	// The version of the provisioner to bootstrap
 	Version string `pulumi:"version"`
 }
@@ -72,9 +75,9 @@ type bootstrapArgs struct {
 type BootstrapArgs struct {
 	Connection *remote.ConnectionInput
 	// The directory to store the provisioner binary.
-	Directory string
+	Directory pulumi.StringPtrInput
 	// The version of the provisioner to bootstrap
-	Version string
+	Version pulumi.StringInput
 }
 
 func (BootstrapArgs) ElementType() reflect.Type {

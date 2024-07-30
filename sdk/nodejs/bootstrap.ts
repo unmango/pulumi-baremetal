@@ -70,9 +70,6 @@ export class Bootstrap extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.directory === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'directory'");
-            }
             if ((!args || args.version === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'version'");
             }
@@ -114,9 +111,9 @@ export interface BootstrapArgs {
     /**
      * The directory to store the provisioner binary.
      */
-    directory: string;
+    directory?: pulumi.Input<string>;
     /**
      * The version of the provisioner to bootstrap
      */
-    version: string;
+    version: pulumi.Input<string>;
 }

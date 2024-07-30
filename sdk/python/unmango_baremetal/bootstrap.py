@@ -15,43 +15,32 @@ __all__ = ['BootstrapArgs', 'Bootstrap']
 @pulumi.input_type
 class BootstrapArgs:
     def __init__(__self__, *,
-                 directory: Optional[str] = None,
-                 version: str,
-                 connection: Optional[pulumi.Input['pulumi_command.remote.ConnectionArgs']] = None):
+                 version: pulumi.Input[str],
+                 connection: Optional[pulumi.Input['pulumi_command.remote.ConnectionArgs']] = None,
+                 directory: Optional[pulumi.Input[str]] = None):
         """
         The set of arguments for constructing a Bootstrap resource.
-        :param str directory: The directory to store the provisioner binary.
-        :param str version: The version of the provisioner to bootstrap
+        :param pulumi.Input[str] version: The version of the provisioner to bootstrap
+        :param pulumi.Input[str] directory: The directory to store the provisioner binary.
         """
-        if directory is None:
-            directory = '/usr/local/bin'
-        pulumi.set(__self__, "directory", directory)
         pulumi.set(__self__, "version", version)
         if connection is not None:
             pulumi.set(__self__, "connection", connection)
+        if directory is None:
+            directory = '/usr/local/bin'
+        if directory is not None:
+            pulumi.set(__self__, "directory", directory)
 
     @property
     @pulumi.getter
-    def directory(self) -> str:
-        """
-        The directory to store the provisioner binary.
-        """
-        return pulumi.get(self, "directory")
-
-    @directory.setter
-    def directory(self, value: str):
-        pulumi.set(self, "directory", value)
-
-    @property
-    @pulumi.getter
-    def version(self) -> str:
+    def version(self) -> pulumi.Input[str]:
         """
         The version of the provisioner to bootstrap
         """
         return pulumi.get(self, "version")
 
     @version.setter
-    def version(self, value: str):
+    def version(self, value: pulumi.Input[str]):
         pulumi.set(self, "version", value)
 
     @property
@@ -63,6 +52,18 @@ class BootstrapArgs:
     def connection(self, value: Optional[pulumi.Input['pulumi_command.remote.ConnectionArgs']]):
         pulumi.set(self, "connection", value)
 
+    @property
+    @pulumi.getter
+    def directory(self) -> Optional[pulumi.Input[str]]:
+        """
+        The directory to store the provisioner binary.
+        """
+        return pulumi.get(self, "directory")
+
+    @directory.setter
+    def directory(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "directory", value)
+
 
 class Bootstrap(pulumi.ComponentResource):
     @overload
@@ -70,15 +71,15 @@ class Bootstrap(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  connection: Optional[pulumi.Input[pulumi.InputType['pulumi_command.remote.ConnectionArgs']]] = None,
-                 directory: Optional[str] = None,
-                 version: Optional[str] = None,
+                 directory: Optional[pulumi.Input[str]] = None,
+                 version: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         """
         Create a Bootstrap resource with the given unique name, props, and options.
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
-        :param str directory: The directory to store the provisioner binary.
-        :param str version: The version of the provisioner to bootstrap
+        :param pulumi.Input[str] directory: The directory to store the provisioner binary.
+        :param pulumi.Input[str] version: The version of the provisioner to bootstrap
         """
         ...
     @overload
@@ -104,8 +105,8 @@ class Bootstrap(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  connection: Optional[pulumi.Input[pulumi.InputType['pulumi_command.remote.ConnectionArgs']]] = None,
-                 directory: Optional[str] = None,
-                 version: Optional[str] = None,
+                 directory: Optional[pulumi.Input[str]] = None,
+                 version: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -120,8 +121,6 @@ class Bootstrap(pulumi.ComponentResource):
             __props__.__dict__["connection"] = connection
             if directory is None:
                 directory = '/usr/local/bin'
-            if directory is None and not opts.urn:
-                raise TypeError("Missing required property 'directory'")
             __props__.__dict__["directory"] = directory
             if version is None and not opts.urn:
                 raise TypeError("Missing required property 'version'")
