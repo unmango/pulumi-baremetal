@@ -14,6 +14,6 @@ var _ = internal.GetEnvOrDefault
 func GetAddress(ctx *pulumi.Context) string {
 	return config.Get(ctx, "baremetal:address")
 }
-func GetPort(ctx *pulumi.Context) int {
-	return config.GetInt(ctx, "baremetal:port")
+func GetPort(ctx *pulumi.Context) string {
+	return config.Get(ctx, "baremetal:port")
 }

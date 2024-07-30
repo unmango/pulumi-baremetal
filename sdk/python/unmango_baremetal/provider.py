@@ -15,7 +15,7 @@ __all__ = ['ProviderArgs', 'Provider']
 class ProviderArgs:
     def __init__(__self__, *,
                  address: pulumi.Input[str],
-                 port: Optional[pulumi.Input[int]] = None):
+                 port: Optional[pulumi.Input[str]] = None):
         """
         The set of arguments for constructing a Provider resource.
         """
@@ -34,11 +34,11 @@ class ProviderArgs:
 
     @property
     @pulumi.getter
-    def port(self) -> Optional[pulumi.Input[int]]:
+    def port(self) -> Optional[pulumi.Input[str]]:
         return pulumi.get(self, "port")
 
     @port.setter
-    def port(self, value: Optional[pulumi.Input[int]]):
+    def port(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "port", value)
 
 
@@ -48,7 +48,7 @@ class Provider(pulumi.ProviderResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  address: Optional[pulumi.Input[str]] = None,
-                 port: Optional[pulumi.Input[int]] = None,
+                 port: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         """
         Create a Baremetal resource with the given unique name, props, and options.
@@ -79,7 +79,7 @@ class Provider(pulumi.ProviderResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  address: Optional[pulumi.Input[str]] = None,
-                 port: Optional[pulumi.Input[int]] = None,
+                 port: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -92,7 +92,7 @@ class Provider(pulumi.ProviderResource):
             if address is None and not opts.urn:
                 raise TypeError("Missing required property 'address'")
             __props__.__dict__["address"] = address
-            __props__.__dict__["port"] = pulumi.Output.from_input(port).apply(pulumi.runtime.to_json) if port is not None else None
+            __props__.__dict__["port"] = port
         super(Provider, __self__).__init__(
             'baremetal',
             resource_name,
@@ -103,4 +103,9 @@ class Provider(pulumi.ProviderResource):
     @pulumi.getter
     def address(self) -> pulumi.Output[str]:
         return pulumi.get(self, "address")
+
+    @property
+    @pulumi.getter
+    def port(self) -> pulumi.Output[Optional[str]]:
+        return pulumi.get(self, "port")
 

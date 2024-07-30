@@ -15,10 +15,10 @@ Object.defineProperty(exports, "address", {
     enumerable: true,
 });
 
-export declare const port: number | undefined;
+export declare const port: string | undefined;
 Object.defineProperty(exports, "port", {
     get() {
-        return __config.getObject<number>("port");
+        return __config.get("port");
     },
     enumerable: true,
 });

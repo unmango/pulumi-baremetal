@@ -2,9 +2,6 @@
 # vim: set ts=2 sw=2 tw=0 fo=cnqoj
 version: 2
 
-archives:
-  - id: archive
-    name_template: '{{ .ProjectName }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}'
 builds:
   - id: resource
     binary: pulumi-resource-baremetal
@@ -20,7 +17,7 @@ builds:
       - linux
     ldflags:
       # The line below MUST align with the module in current provider/go.mod
-      - -X github.com/unmango/pulumi-baremetal/provider/Version={{.Tag}}
+      - -X github.com/unmango/pulumi-baremetal/provider.Version={{.Tag}}
     main: ./cmd/pulumi-resource-baremetal/
   - id: provisioner
     binary: provisioner
@@ -35,8 +32,14 @@ builds:
       - windows
       - linux
     main: ./cmd/provisioner
+
+archives:
+  - id: archive
+    name_template: '{{ .ProjectName }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}'
+
 release:
   disable: false
   prerelease: auto
+
 snapshot:
   name_template: '{{ .Tag }}-SNAPSHOT'

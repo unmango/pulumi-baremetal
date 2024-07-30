@@ -96,12 +96,11 @@ func (prov provisioner) ConfigureProvider(ctx context.Context, server integratio
 		return errors.New("container returned empty ip")
 	}
 
-	port := prov.port.Int()
-
+	port := prov.port.Port()
 	return server.Configure(p.ConfigureRequest{
 		Args: resource.PropertyMap{
 			"address": resource.NewStringProperty(ip),
-			"port":    resource.NewNumberProperty(float64(port)),
+			"port":    resource.NewStringProperty(port),
 		},
 	})
 }
