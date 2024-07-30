@@ -5,11 +5,6 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "./utilities";
 
 // Export members:
-export { BootstrapArgs } from "./bootstrap";
-export type Bootstrap = import("./bootstrap").Bootstrap;
-export const Bootstrap: typeof import("./bootstrap").Bootstrap = null as any;
-utilities.lazyLoad(exports, ["Bootstrap"], () => require("./bootstrap"));
-
 export { ProviderArgs } from "./provider";
 export type Provider = import("./provider").Provider;
 export const Provider: typeof import("./provider").Provider = null as any;
@@ -26,19 +21,6 @@ export {
     config,
     types,
 };
-
-const _module = {
-    version: utilities.getVersion(),
-    construct: (name: string, type: string, urn: string): pulumi.Resource => {
-        switch (type) {
-            case "baremetal:index:Bootstrap":
-                return new Bootstrap(name, <any>undefined, { urn })
-            default:
-                throw new Error(`unknown resource type ${type}`);
-        }
-    },
-};
-pulumi.runtime.registerResourceModule("baremetal", "index", _module)
 pulumi.runtime.registerResourcePackage("baremetal", {
     version: utilities.getVersion(),
     constructProvider: (name: string, type: string, urn: string): pulumi.ProviderResource => {

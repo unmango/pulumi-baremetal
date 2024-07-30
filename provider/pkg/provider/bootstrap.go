@@ -76,27 +76,27 @@ func (*Bootstrap) Construct(ctx *p.Context, name string, typ string, inputs Boot
 	archiveName := fmt.Sprintf("provisioner-v%s-linux-arm64.tar.gz", version)
 	url := fmt.Sprintf("https://github.com/unmango/pulumi-baremetal/releases/download/v%s/%s", version, archiveName)
 
-	ctx.Log.Debug("Mktemp", nil)
+	_ = ctx.Log.Debug("Mktemp", nil)
 	if err := state.mktemp(ctx, p.Any(version)); err != nil {
 		return nil, err
 	}
 
-	ctx.Log.Debug("Download", nil)
+	_ = ctx.Log.Debug("Download", nil)
 	if err := state.download(ctx, url); err != nil {
 		return nil, err
 	}
 
-	ctx.Log.Debug("Mkdir", nil)
+	_ = ctx.Log.Debug("Mkdir", nil)
 	if err := state.mkdir(ctx, inputs.Directory); err != nil {
 		return nil, err
 	}
 
-	ctx.Log.Debug("Extract", nil)
+	_ = ctx.Log.Debug("Extract", nil)
 	if err := state.extract(ctx, archiveName); err != nil {
 		return nil, err
 	}
 
-	ctx.Log.Debug("Mv", nil)
+	_ = ctx.Log.Debug("Mv", nil)
 	if err := state.mv(ctx, inputs.Directory, p.Any(version)); err != nil {
 		return nil, err
 	}

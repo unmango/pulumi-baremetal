@@ -13,7 +13,6 @@
         "strict": true
     },
     "files": [
-        "bootstrap.ts",
         "cmd/index.ts",
         "cmd/tee.ts",
         "config/index.ts",

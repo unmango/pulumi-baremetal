@@ -49,7 +49,8 @@ func Provider() p.Provider {
 			infer.Resource[cmd.Tee](),
 		},
 		Components: []infer.InferredComponent{
-			infer.Component[*provider.Bootstrap, provider.BootstrapArgs, *provider.BootstrapState](),
+			// Consuming external resources is no bueno
+			// infer.Component[*provider.Bootstrap](),
 		},
 		ModuleMap: map[tokens.ModuleName]tokens.ModuleName{
 			"provider": "index",
