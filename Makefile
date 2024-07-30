@@ -178,7 +178,7 @@ install_nodejs_sdk::
 .envrc: hack/.envrc.example
 	cp $< $@
 
-bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC) $(PKG_SRC)
+bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC) $(PKG_SRC) provider/*go*
 	cd provider && go build -o $(WORKING_DIR)/$@ -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
 bin/provisioner:: $(GEN_SRC) provider/cmd/provisioner/*.go $(PKG_SRC)

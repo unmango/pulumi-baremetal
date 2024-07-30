@@ -5,6 +5,7 @@ go 1.22
 replace github.com/unmango/pulumi-baremetal/gen => ../gen
 
 require (
+	github.com/pulumi/pulumi-command/sdk v1.0.1
 	github.com/pulumi/pulumi-go-provider v0.21.0
 	github.com/pulumi/pulumi/sdk/v3 v3.127.0
 	github.com/spf13/cobra v1.8.1

@@ -22,20 +22,27 @@ const (
 	defaultAddress  string = "localhost"
 )
 
-type TestProvisioner struct {
-	ctr  tc.Container
+type TestProvisioner interface {
+	TestHost
+
+	ConfigureProvider(context.Context, integration.Server) error
+	Ctr() tc.Container
+}
+
+type provisioner struct {
+	host
 	port nat.Port
 }
 
 func NewTestProvisioner(ctx context.Context, logger io.Writer) (TestProvisioner, error) {
 	cwd, err := os.Getwd()
 	if err != nil {
-		return TestProvisioner{}, err
+		return nil, err
 	}
 
 	port, err := nat.NewPort(defaultProtocol, "6969")
 	if err != nil {
-		return TestProvisioner{}, err
+		return nil, err
 	}
 
 	container, err := tc.GenericContainer(ctx, tc.GenericContainerRequest{
@@ -57,47 +64,29 @@ func NewTestProvisioner(ctx context.Context, logger io.Writer) (TestProvisioner,
 		},
 	})
 	if err != nil {
-		return TestProvisioner{}, err
+		return nil, err
 	}
 
-	return TestProvisioner{
-		ctr:  container,
+	return &provisioner{
+		host: host{ctr: container},
 		port: port,
 	}, nil
 }
 
-func (p TestProvisioner) Ctr() tc.Container {
+func (p provisioner) Ctr() tc.Container {
 	return p.ctr
 }
 
-func (p TestProvisioner) Start(ctx context.Context) error {
+func (p provisioner) Start(ctx context.Context) error {
 	return p.ctr.Start(ctx)
 }
 
-func (p TestProvisioner) Stop(ctx context.Context) error {
+func (p provisioner) Stop(ctx context.Context) error {
 	timeout := time.Duration(10 * time.Second)
 	return p.ctr.Stop(ctx, &timeout)
 }
 
-func (p TestProvisioner) Exec(ctx context.Context, args ...string) error {
-	code, output, err := p.ctr.Exec(ctx, args)
-	if err != nil {
-		return err
-	}
-
-	out, err := io.ReadAll(output)
-	if err != nil {
-		return err
-	}
-
-	if code != 0 {
-		return fmt.Errorf("unexpected return code: %d, output: %s", code, out)
-	}
-
-	return nil
-}
-
-func (prov TestProvisioner) ConfigureProvider(ctx context.Context, server integration.Server) error {
+func (prov provisioner) ConfigureProvider(ctx context.Context, server integration.Server) error {
 	ip, err := prov.ctr.ContainerIP(ctx)
 	if err != nil {
 		return err

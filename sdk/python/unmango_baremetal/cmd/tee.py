@@ -219,6 +219,7 @@ class Tee(pulumi.CustomResource):
             if stdin is None and not opts.urn:
                 raise TypeError("Missing required property 'stdin'")
             __props__.__dict__["stdin"] = stdin
+            __props__.__dict__["created_files"] = None
             __props__.__dict__["stderr"] = None
             __props__.__dict__["stdout"] = None
         super(Tee, __self__).__init__(
@@ -244,6 +245,7 @@ class Tee(pulumi.CustomResource):
         __props__ = TeeArgs.__new__(TeeArgs)
 
         __props__.__dict__["create"] = None
+        __props__.__dict__["created_files"] = None
         __props__.__dict__["stderr"] = None
         __props__.__dict__["stdin"] = None
         __props__.__dict__["stdout"] = None
@@ -253,6 +255,11 @@ class Tee(pulumi.CustomResource):
     @pulumi.getter
     def create(self) -> pulumi.Output[Optional['outputs.TeeOpts']]:
         return pulumi.get(self, "create")
+
+    @property
+    @pulumi.getter
+    def created_files(self) -> pulumi.Output[Sequence[str]]:
+        return pulumi.get(self, "created_files")
 
     @property
     @pulumi.getter

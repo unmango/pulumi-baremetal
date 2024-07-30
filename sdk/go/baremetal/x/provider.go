@@ -16,7 +16,7 @@ import (
 type Provider struct {
 	pulumi.ProviderResourceState
 
-	Address pulumi.StringOutput `pulumi:"address"`
+	Address pulumix.Output[string] `pulumi:"address"`
 }
 
 // NewProvider registers a new resource with the given unique name, arguments, and options.
@@ -45,43 +45,18 @@ type providerArgs struct {
 
 // The set of arguments for constructing a Provider resource.
 type ProviderArgs struct {
-	Address pulumi.StringInput
-	Port    pulumi.IntPtrInput
+	Address pulumix.Input[string]
+	Port    pulumix.Input[*int]
 }
 
 func (ProviderArgs) ElementType() reflect.Type {
 	return reflect.TypeOf((*providerArgs)(nil)).Elem()
 }
 
-type ProviderInput interface {
-	pulumi.Input
-
-	ToProviderOutput() ProviderOutput
-	ToProviderOutputWithContext(ctx context.Context) ProviderOutput
-}
-
-func (*Provider) ElementType() reflect.Type {
-	return reflect.TypeOf((**Provider)(nil)).Elem()
-}
-
-func (i *Provider) ToProviderOutput() ProviderOutput {
-	return i.ToProviderOutputWithContext(context.Background())
-}
-
-func (i *Provider) ToProviderOutputWithContext(ctx context.Context) ProviderOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(ProviderOutput)
-}
-
-func (i *Provider) ToOutput(ctx context.Context) pulumix.Output[*Provider] {
-	return pulumix.Output[*Provider]{
-		OutputState: i.ToProviderOutputWithContext(ctx).OutputState,
-	}
-}
-
 type ProviderOutput struct{ *pulumi.OutputState }
 
 func (ProviderOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((**Provider)(nil)).Elem()
+	return reflect.TypeOf((*Provider)(nil)).Elem()
 }
 
 func (o ProviderOutput) ToProviderOutput() ProviderOutput {
@@ -92,17 +67,17 @@ func (o ProviderOutput) ToProviderOutputWithContext(ctx context.Context) Provide
 	return o
 }
 
-func (o ProviderOutput) ToOutput(ctx context.Context) pulumix.Output[*Provider] {
-	return pulumix.Output[*Provider]{
+func (o ProviderOutput) ToOutput(ctx context.Context) pulumix.Output[Provider] {
+	return pulumix.Output[Provider]{
 		OutputState: o.OutputState,
 	}
 }
 
-func (o ProviderOutput) Address() pulumi.StringOutput {
-	return o.ApplyT(func(v *Provider) pulumi.StringOutput { return v.Address }).(pulumi.StringOutput)
+func (o ProviderOutput) Address() pulumix.Output[string] {
+	value := pulumix.Apply[Provider](o, func(v Provider) pulumix.Output[string] { return v.Address })
+	return pulumix.Flatten[string, pulumix.Output[string]](value)
 }
 
 func init() {
-	pulumi.RegisterInputType(reflect.TypeOf((*ProviderInput)(nil)).Elem(), &Provider{})
 	pulumi.RegisterOutputType(ProviderOutput{})
 }
