@@ -9,6 +9,7 @@ import (
 	"github.com/pulumi/pulumi-go-provider/infer"
 	p "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	px "github.com/pulumi/pulumi/sdk/v3/go/pulumix"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/fx"
 )
 
 const binName string = "provisioner"
@@ -17,8 +18,8 @@ type Bootstrap struct{}
 
 type BootstrapArgs struct {
 	Connection *remote.Connection `pulumi:"connection,optional" provider:"type=command@1.0.1:remote:Connection"`
-	Directory  string             `pulumi:"directory,optional"`
-	Version    string             `pulumi:"version"`
+	Directory  p.StringInput      `pulumi:"directory,optional"`
+	Version    p.StringInput      `pulumi:"version"`
 }
 
 var _ = (infer.Annotated)((*BootstrapArgs)(nil))
@@ -125,9 +126,9 @@ func (s *BootstrapState) mktemp(ctx *p.Context, triggers ...px.Input[any]) error
 }
 
 func (s *BootstrapState) download(ctx *p.Context, url string) error {
-	create := px.Apply(s.TempDir, func(dir string) string {
-		return fmt.Sprintf("wget --directory-prefix %s %s", dir, url)
-	})
+	create := fx.Sprintf("wget --directory-prefix %s %s",
+		s.TempDir.AsAny(),
+		px.Val(url).AsAny())
 
 	cmd, err := remote.NewCommand(ctx, "download", &remote.CommandArgs{
 		Connection: s.conn,
@@ -140,10 +141,14 @@ func (s *BootstrapState) download(ctx *p.Context, url string) error {
 	return err
 }
 
-func (s *BootstrapState) mkdir(ctx *p.Context, dir string) error {
+func (s *BootstrapState) mkdir(ctx *p.Context, dir p.StringInput) error {
+	create := px.Apply(dir.ToStringOutput(), func(dir string) string {
+		return fmt.Sprintf("mkdir --parents %s", dir)
+	})
+
 	cmd, err := remote.NewCommand(ctx, "mkdir", &remote.CommandArgs{
 		Connection: s.conn,
-		Create:     p.StringPtr(fmt.Sprintf("mkdir --parents %s", dir)),
+		Create:     px.Cast[p.StringOutput](create),
 	}, p.Parent(s))
 
 	s.Mkdir = cmd
@@ -179,21 +184,28 @@ func (s *BootstrapState) extract(ctx *p.Context, archiveName string) error {
 	return err
 }
 
-func (s *BootstrapState) mv(ctx *p.Context, dir string, triggers ...px.Input[any]) error {
-	downloadPath := px.Apply(s.TempDir, func(dir string) string {
+func (s *BootstrapState) mv(ctx *p.Context, dir p.StringInput, triggers ...px.Input[any]) error {
+	downloadPath := px.Apply(s.TempDir, func(tmp string) string {
+		return path.Join(tmp, binName)
+	})
+
+	binPath := px.Apply(dir.ToStringOutput(), func(dir string) string {
 		return path.Join(dir, binName)
 	})
 
-	binPath := path.Join(dir, binName)
-	create := px.Apply(downloadPath, func(dp string) string {
-		return fmt.Sprintf("mv %s %s", dp, binPath)
+	create := px.Apply2(downloadPath, binPath, func(dp, bp string) string {
+		return fmt.Sprintf("mv %s %s", dp, bp)
+	})
+
+	delete := px.Apply(binPath, func(bp string) string {
+		return fmt.Sprintf("rm -f %s", bp)
 	})
 
 	cmd, err := remote.NewCommand(ctx, "mv",
 		&remote.CommandArgs{
 			Connection: s.conn,
 			Create:     px.Cast[p.StringOutput](create),
-			Delete:     p.StringPtr(fmt.Sprintf("rm -f %s", binPath)),
+			Delete:     px.Cast[p.StringOutput](delete),
 			Triggers:   px.Cast[p.ArrayOutput](px.All(triggers...)),
 		},
 		p.Parent(s),
@@ -204,7 +216,7 @@ func (s *BootstrapState) mv(ctx *p.Context, dir string, triggers ...px.Input[any
 	)
 
 	s.FileName = binName
-	s.BinPath = px.Val(binPath)
+	s.BinPath = binPath
 	s.Mv = cmd
 
 	return err
