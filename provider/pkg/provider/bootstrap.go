@@ -73,7 +73,7 @@ func (*Bootstrap) Construct(ctx *p.Context, name string, typ string, inputs Boot
 	}
 
 	version := inputs.Version
-	archiveName := fmt.Sprintf("provisioner-v%s-linux-arm64.tar.gz", version)
+	archiveName := fmt.Sprintf("pulumi-resource-baremetal-v%s-linux-arm64.tar.gz", version)
 	url := fmt.Sprintf("https://github.com/unmango/pulumi-baremetal/releases/download/v%s/%s", version, archiveName)
 
 	_ = ctx.Log.Debug("Mktemp", nil)
