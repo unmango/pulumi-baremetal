@@ -48,7 +48,9 @@ func Provider() p.Provider {
 		Resources: []infer.InferredResource{
 			infer.Resource[cmd.Tee](),
 		},
-		Components: []infer.InferredComponent{infer.Component[*provider.Bootstrap]()},
+		Components: []infer.InferredComponent{
+			infer.Component[*provider.Bootstrap, provider.BootstrapArgs, *provider.BootstrapState](),
+		},
 		ModuleMap: map[tokens.ModuleName]tokens.ModuleName{
 			"provider": "index",
 		},

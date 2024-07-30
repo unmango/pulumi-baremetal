@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/pulumi/pulumi/sdk/v3/go/common/resource"
 	tc "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 )
@@ -11,12 +12,15 @@ import (
 const (
 	SshUserName string = "pulumi-baremetal"
 	SshPassword string = "Password!123"
+	SshPort     int    = 2222
 )
 
 const version string = "version-9.7_p1-r4" // TODO: Go embed?
 
 type SshServer interface {
 	TestHost
+
+	ConnectionProps(context.Context) (resource.PropertyValue, error)
 }
 
 type server struct{ host }
@@ -24,10 +28,10 @@ type server struct{ host }
 var _ = (SshServer)((*server)(nil))
 
 func NewSshServer(ctx context.Context) (SshServer, error) {
-	ctr, err := tc.GenericContainer(ctx, tc.GenericContainerRequest{
+	container, err := tc.GenericContainer(ctx, tc.GenericContainerRequest{
 		ContainerRequest: tc.ContainerRequest{
 			Image:        fmt.Sprintf("lscr.io/linuxserver/openssh-server:%s", version),
-			ExposedPorts: []string{"22"},
+			ExposedPorts: []string{fmt.Sprint(SshPort)},
 			WaitingFor:   wait.ForExposedPort(),
 			Env: map[string]string{
 				"PUID":            "1000",
@@ -44,6 +48,22 @@ func NewSshServer(ctx context.Context) (SshServer, error) {
 		return nil, err
 	}
 
-	host := host{ctr: ctr}
+	host := host{ctr: container}
 	return &server{host: host}, nil
+}
+
+func (s *server) ConnectionProps(ctx context.Context) (resource.PropertyValue, error) {
+	ip, err := s.ctr.ContainerIP(ctx)
+	if err != nil {
+		return resource.PropertyValue{}, err
+	}
+
+	props := resource.NewObjectProperty(resource.PropertyMap{
+		"host":     resource.NewStringProperty(ip),
+		"port":     resource.NewPropertyValue(SshPort),
+		"user":     resource.NewStringProperty(SshUserName),
+		"password": resource.NewStringProperty(SshPassword),
+	})
+
+	return props, nil
 }
