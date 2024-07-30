@@ -33,7 +33,7 @@ type TeeArgs struct {
 type TeeState struct {
 	TeeArgs
 
-	CreatedFiles []string `pulumi:"created_files"`
+	CreatedFiles []string `pulumi:"createdFiles"`
 	Stderr       string   `pulumi:"stderr"`
 	Stdout       string   `pulumi:"stdout"`
 }
@@ -44,6 +44,11 @@ var _ infer.CustomDelete[TeeState] = Tee{}
 // Create implements infer.CustomCreate.
 func (Tee) Create(ctx context.Context, name string, inputs TeeArgs, preview bool) (string, TeeState, error) {
 	state := TeeState{}
+	if preview {
+		// Could dial the host and warn if the connection fails
+		return name, state, nil
+	}
+
 	if err := state.create(ctx, inputs); err != nil {
 		return name, state, err
 	}
