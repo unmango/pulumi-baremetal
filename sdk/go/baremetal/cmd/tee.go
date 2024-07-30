@@ -85,11 +85,11 @@ import (
 type Tee struct {
 	pulumi.CustomResourceState
 
-	Create        TeeOptsPtrOutput         `pulumi:"create"`
-	Created_files pulumi.StringArrayOutput `pulumi:"created_files"`
-	Stderr        pulumi.StringOutput      `pulumi:"stderr"`
-	Stdin         pulumi.StringOutput      `pulumi:"stdin"`
-	Stdout        pulumi.StringOutput      `pulumi:"stdout"`
+	Create       TeeOptsPtrOutput         `pulumi:"create"`
+	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
+	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
+	Stdin        pulumi.StringOutput      `pulumi:"stdin"`
+	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
 }
 
 // NewTee registers a new resource with the given unique name, arguments, and options.
@@ -198,8 +198,8 @@ func (o TeeOutput) Create() TeeOptsPtrOutput {
 	return o.ApplyT(func(v *Tee) TeeOptsPtrOutput { return v.Create }).(TeeOptsPtrOutput)
 }
 
-func (o TeeOutput) Created_files() pulumi.StringArrayOutput {
-	return o.ApplyT(func(v *Tee) pulumi.StringArrayOutput { return v.Created_files }).(pulumi.StringArrayOutput)
+func (o TeeOutput) CreatedFiles() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Tee) pulumi.StringArrayOutput { return v.CreatedFiles }).(pulumi.StringArrayOutput)
 }
 
 func (o TeeOutput) Stderr() pulumi.StringOutput {

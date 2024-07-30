@@ -257,7 +257,7 @@ class Tee(pulumi.CustomResource):
         return pulumi.get(self, "create")
 
     @property
-    @pulumi.getter
+    @pulumi.getter(name="createdFiles")
     def created_files(self) -> pulumi.Output[Sequence[str]]:
         return pulumi.get(self, "created_files")
 
