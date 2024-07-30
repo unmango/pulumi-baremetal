@@ -21,7 +21,6 @@ func (c Config) NewGrpcClient() (*grpc.ClientConn, error) {
 		parts = append(parts, c.Port)
 	}
 
-	// Why must I over-engineer things
 	target := strings.Join(parts, ":")
 	return grpc.NewClient(target,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
