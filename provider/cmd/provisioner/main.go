@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/provisioner"
+	p "github.com/unmango/pulumi-baremetal/provider/pkg/provisioner"
 )
 
 var (
@@ -28,9 +28,11 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		slog.SetDefault(log)
+		log.Debug("creating provisioner")
+		provisioner := p.New(lis, p.WithLogger(log))
+
 		log.Info("serving", "network", network, "address", address, "verbose", verbose)
-		return provisioner.Serve(lis)
+		return provisioner.Serve()
 	},
 }
 
@@ -40,10 +42,10 @@ func main() {
 	rootCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Log verbosity")
 
 	if err := rootCmd.Execute(); err != nil {
-		log.Error("provisioner failed", "err", err)
+		log.Error("failed to execute", "err", err)
 	}
 
-	log.Debug("Exiting gracefully")
+	log.Debug("exiting gracefully")
 }
 
 func logger(verbose bool) *slog.Logger {

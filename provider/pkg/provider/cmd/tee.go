@@ -4,9 +4,11 @@ import (
 	"context"
 	_ "embed"
 
+	"github.com/pkg/errors"
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/provider"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
 
 //go:embed tee.man
@@ -38,19 +40,23 @@ type TeeState struct {
 	Stdout       string   `pulumi:"stdout"`
 }
 
-var _ infer.CustomCreate[TeeArgs, TeeState] = Tee{}
-var _ infer.CustomDelete[TeeState] = Tee{}
+var _ = (infer.CustomCreate[TeeArgs, TeeState])((*Tee)(nil))
+var _ = (infer.CustomDelete[TeeState])((*Tee)(nil))
 
 // Create implements infer.CustomCreate.
 func (Tee) Create(ctx context.Context, name string, inputs TeeArgs, preview bool) (string, TeeState, error) {
 	state := TeeState{}
+	log := logger.FromContext(ctx)
+
 	if preview {
 		// Could dial the host and warn if the connection fails
+		log.Debug("skipping during preview")
 		return name, state, nil
 	}
 
 	if err := state.create(ctx, inputs); err != nil {
-		return name, state, err
+		log.Error("failed creating")
+		return name, state, errors.Wrap(err, "create")
 	}
 
 	return name, state, nil
@@ -58,16 +64,25 @@ func (Tee) Create(ctx context.Context, name string, inputs TeeArgs, preview bool
 
 // Delete implements infer.CustomDelete.
 func (Tee) Delete(ctx context.Context, id string, props TeeState) error {
-	return props.delete(ctx)
+	log := logger.FromContext(ctx)
+	if err := props.delete(ctx); err != nil {
+		log.Error("failed deleting")
+		return errors.Wrap(err, "delete")
+	}
+
+	return nil
 }
 
 func (state *TeeState) create(ctx context.Context, input TeeArgs) error {
-	p, err := provisioner(ctx)
+	log := logger.FromContext(ctx)
+	p, err := provisioner.FromContext(ctx)
 	if err != nil {
-		return err
+		log.Error("failed creating provisioner")
+		return errors.Wrap(err, "creating provisioner")
 	}
 
-	res, err := p.Cmd().Command(ctx, &pb.CommandRequest{
+	log.Debug("sending command request to provisioner")
+	res, err := p.Command(ctx, &pb.CommandRequest{
 		Op:      pb.Op_OP_CREATE,
 		Command: pb.Command_COMMAND_TEE,
 		Args:    input.Create.Files,
@@ -75,40 +90,44 @@ func (state *TeeState) create(ctx context.Context, input TeeArgs) error {
 		Stdin:   input.Stdin,
 	})
 	if err != nil {
-		return err
+		log.Error("failed sending command request")
+		return errors.Wrap(err, "command request")
 	}
 
+	log.Debug("assigning outputs")
 	state.CreatedFiles = input.Create.Files
 	state.Stderr = res.Stderr
 	state.Stdout = res.Stdout
 
+	log.Debug("finished create")
 	return nil
 }
 
 func (state *TeeState) delete(ctx context.Context) error {
-	p, err := provisioner(ctx)
+	log := logger.FromContext(ctx)
+	p, err := provisioner.FromContext(ctx)
 	if err != nil {
-		return err
+		log.Error("failed creating provisioner")
+		return errors.Wrap(err, "creating provisioner")
 	}
 
-	res, err := p.Cmd().Command(ctx, &pb.CommandRequest{
+	log.Debug("sending command request to provisioner")
+	res, err := p.Command(ctx, &pb.CommandRequest{
 		Op:      pb.Op_OP_DELETE,
 		Command: pb.Command_COMMAND_TEE,
 		Args:    state.CreatedFiles,
 		Flags:   map[string]*pb.Flag{},
 	})
 	if err != nil {
-		return err
+		log.Error("failed sending command request")
+		return errors.Wrap(err, "command request")
 	}
 
+	log.Debug("assigning outputs")
 	state.CreatedFiles = []string{}
 	state.Stderr = res.Stderr
 	state.Stdout = res.Stdout
 
+	log.Debug("finished delete")
 	return nil
-}
-
-func provisioner(ctx context.Context) (provider.Provisioner, error) {
-	c := infer.GetConfig[provider.Config](ctx)
-	return c.NewProvisioner()
 }
