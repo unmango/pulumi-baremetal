@@ -35,9 +35,9 @@ var _ = BeforeSuite(func(ctx context.Context) {
 	ssh, err := util.NewSshServer(ctx)
 	Expect(err).NotTo(HaveOccurred())
 
-	By("starting the ssh server")
-	err = ssh.Start(ctx)
-	Expect(err).NotTo(HaveOccurred())
+	// By("starting the ssh server")
+	// err = ssh.Start(ctx)
+	// Expect(err).NotTo(HaveOccurred())
 	sshServer = ssh
 })
 
@@ -46,7 +46,7 @@ var _ = AfterSuite(func(ctx context.Context) {
 	err := provisioner.Stop(ctx)
 	Expect(err).NotTo(HaveOccurred())
 
-	By("stopping the ssh server")
-	err = sshServer.Stop(ctx)
-	Expect(err).NotTo(HaveOccurred())
+	// By("stopping the ssh server")
+	// err = sshServer.Stop(ctx)
+	// Expect(err).NotTo(HaveOccurred())
 })

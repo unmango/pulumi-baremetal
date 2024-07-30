@@ -32,7 +32,7 @@ func (b *BootstrapArgs) Annotate(a infer.Annotator) {
 
 type BootstrapState struct {
 	p.ResourceState
-	conn remote.ConnectionArgs
+	conn *remote.ConnectionArgs
 
 	ArchiveName px.Output[string] `pulumi:"archiveName"`
 	BinPath     px.Output[string] `pulumi:"binPath"`
@@ -210,12 +210,12 @@ func (s *BootstrapState) mv(ctx *p.Context, dir string, triggers ...px.Input[any
 	return err
 }
 
-func mapConnection(conn *remote.Connection) remote.ConnectionArgs {
+func mapConnection(conn *remote.Connection) *remote.ConnectionArgs {
 	if conn == nil {
-		panic("TODO")
+		return nil
 	}
 
-	return remote.ConnectionArgs{
+	return &remote.ConnectionArgs{
 		AgentSocketPath:    p.StringPtrFromPtr(conn.AgentSocketPath),
 		DialErrorLimit:     p.IntPtrFromPtr(conn.DialErrorLimit),
 		Host:               p.String(conn.Host),
