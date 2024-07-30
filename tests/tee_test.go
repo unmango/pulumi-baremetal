@@ -91,7 +91,7 @@ var _ = Describe("Tee", Ordered, func() {
 					}),
 					"stdout": resource.NewStringProperty(*stdout),
 					"stderr": resource.NewStringProperty(*stderr),
-					"created_files": resource.NewArrayProperty([]resource.PropertyValue{
+					"createdFiles": resource.NewArrayProperty([]resource.PropertyValue{
 						resource.NewStringProperty(file),
 					}),
 				},
