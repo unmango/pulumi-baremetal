@@ -80,8 +80,8 @@ namespace UnMango.Baremetal.Cmd
         [Output("create")]
         public Output<Outputs.TeeOpts?> Create { get; private set; } = null!;
 
-        [Output("created_files")]
-        public Output<ImmutableArray<string>> Created_files { get; private set; } = null!;
+        [Output("createdFiles")]
+        public Output<ImmutableArray<string>> CreatedFiles { get; private set; } = null!;
 
         [Output("stderr")]
         public Output<string> Stderr { get; private set; } = null!;
