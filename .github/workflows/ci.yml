@@ -159,6 +159,13 @@ jobs:
           go-version-file: provider/go.mod
           cache-dependency-path: provider/go.sum
 
+      # Still not sure why this is trying to do buf things
+      - name: Setup buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          version: 1.35.1
+          github_token: ${{ github.token }}
+
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.12.0
         with:

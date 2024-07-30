@@ -36,7 +36,7 @@ func (p *provisioner) Serve() error {
 
 func New(lis net.Listener, o ...opt) Provisioner {
 	options := &Options{}
-	opts.Apply(options, o...)
+	_ = opts.Apply(options, o...)
 
 	return &provisioner{
 		State:    options.State(),
