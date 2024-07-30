@@ -9,11 +9,11 @@ import (
 
 type Config struct {
 	Address string `pulumi:"address"`
-	Port    int    `pulumi:"port,optional"`
+	Port    string `pulumi:"port,optional"`
 }
 
 func (c Config) NewGrpcClient() (*grpc.ClientConn, error) {
-	target := fmt.Sprintf("%s:%d", c.Address, c.Port)
+	target := fmt.Sprintf("%s:%s", c.Address, c.Port)
 	return grpc.NewClient(target,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)

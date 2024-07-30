@@ -20,6 +20,6 @@ class _ExportableConfig(types.ModuleType):
         return __config__.get('address')
 
     @property
-    def port(self) -> Optional[int]:
-        return __config__.get_int('port')
+    def port(self) -> Optional[str]:
+        return __config__.get('port')
 

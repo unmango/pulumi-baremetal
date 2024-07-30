@@ -16,7 +16,8 @@ import (
 type Provider struct {
 	pulumi.ProviderResourceState
 
-	Address pulumi.StringOutput `pulumi:"address"`
+	Address pulumi.StringOutput    `pulumi:"address"`
+	Port    pulumi.StringPtrOutput `pulumi:"port"`
 }
 
 // NewProvider registers a new resource with the given unique name, arguments, and options.
@@ -39,14 +40,14 @@ func NewProvider(ctx *pulumi.Context,
 }
 
 type providerArgs struct {
-	Address string `pulumi:"address"`
-	Port    *int   `pulumi:"port"`
+	Address string  `pulumi:"address"`
+	Port    *string `pulumi:"port"`
 }
 
 // The set of arguments for constructing a Provider resource.
 type ProviderArgs struct {
 	Address pulumi.StringInput
-	Port    pulumi.IntPtrInput
+	Port    pulumi.StringPtrInput
 }
 
 func (ProviderArgs) ElementType() reflect.Type {
@@ -100,6 +101,10 @@ func (o ProviderOutput) ToOutput(ctx context.Context) pulumix.Output[*Provider] 
 
 func (o ProviderOutput) Address() pulumi.StringOutput {
 	return o.ApplyT(func(v *Provider) pulumi.StringOutput { return v.Address }).(pulumi.StringOutput)
+}
+
+func (o ProviderOutput) Port() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Provider) pulumi.StringPtrOutput { return v.Port }).(pulumi.StringPtrOutput)
 }
 
 func init() {

@@ -11,5 +11,5 @@ from .. import _utilities
 
 address: Optional[str]
 
-port: Optional[int]
+port: Optional[str]
 
