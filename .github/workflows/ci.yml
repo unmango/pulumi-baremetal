@@ -201,15 +201,22 @@ jobs:
           go-version-file: provider/go.mod
           cache-dependency-path: provider/go.sum
 
-      - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.12.0
+      # Idk why this is trying to do buf things
+      - name: Setup buf
+        uses: bufbuild/buf-setup-action@v1
         with:
-          repo: pulumi/pulumictl
+          version: 1.35.1
+          github_token: ${{ github.token }}
 
       - name: Install Pulumi
         uses: pulumi/actions@v5
         with:
           pulumi-version-file: .versions/pulumi
+
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.12.0
+        with:
+          repo: pulumi/pulumictl
 
       - name: Make
         run: make provider
@@ -275,7 +282,10 @@ jobs:
           name: provisioner
           path: bin
 
-      - run: chmod +x bin/provisioner
+      - name: Touch the provisioner
+        run: |
+          make --touch bin/provisioner
+          chmod +x bin/provisioner
 
       - name: Build and push
         uses: docker/build-push-action@v6
