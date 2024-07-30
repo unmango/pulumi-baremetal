@@ -6,7 +6,7 @@ import (
 
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/provider"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
 
 //go:embed tee.man
@@ -44,6 +44,7 @@ var _ infer.CustomDelete[TeeState] = Tee{}
 // Create implements infer.CustomCreate.
 func (Tee) Create(ctx context.Context, name string, inputs TeeArgs, preview bool) (string, TeeState, error) {
 	state := TeeState{}
+
 	if preview {
 		// Could dial the host and warn if the connection fails
 		return name, state, nil
@@ -62,12 +63,12 @@ func (Tee) Delete(ctx context.Context, id string, props TeeState) error {
 }
 
 func (state *TeeState) create(ctx context.Context, input TeeArgs) error {
-	p, err := provisioner(ctx)
+	p, err := provisioner.FromContext(ctx)
 	if err != nil {
 		return err
 	}
 
-	res, err := p.Cmd().Command(ctx, &pb.CommandRequest{
+	res, err := p.Command(ctx, &pb.CommandRequest{
 		Op:      pb.Op_OP_CREATE,
 		Command: pb.Command_COMMAND_TEE,
 		Args:    input.Create.Files,
@@ -86,12 +87,12 @@ func (state *TeeState) create(ctx context.Context, input TeeArgs) error {
 }
 
 func (state *TeeState) delete(ctx context.Context) error {
-	p, err := provisioner(ctx)
+	p, err := provisioner.FromContext(ctx)
 	if err != nil {
 		return err
 	}
 
-	res, err := p.Cmd().Command(ctx, &pb.CommandRequest{
+	res, err := p.Command(ctx, &pb.CommandRequest{
 		Op:      pb.Op_OP_DELETE,
 		Command: pb.Command_COMMAND_TEE,
 		Args:    state.CreatedFiles,
@@ -106,9 +107,4 @@ func (state *TeeState) delete(ctx context.Context) error {
 	state.Stdout = res.Stdout
 
 	return nil
-}
-
-func provisioner(ctx context.Context) (provider.Provisioner, error) {
-	c := infer.GetConfig[provider.Config](ctx)
-	return c.NewProvisioner()
 }

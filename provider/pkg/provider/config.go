@@ -27,12 +27,3 @@ func (c Config) NewGrpcClient() (*grpc.ClientConn, error) {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 }
-
-func (c Config) NewProvisioner() (Provisioner, error) {
-	conn, err := c.NewGrpcClient()
-	if err != nil {
-		return nil, err
-	}
-
-	return NewProvisioner(conn), nil
-}

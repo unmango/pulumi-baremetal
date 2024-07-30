@@ -9,7 +9,7 @@ import (
 	"github.com/pulumi/pulumi-go-provider/infer"
 	p "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	px "github.com/pulumi/pulumi/sdk/v3/go/pulumix"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/fx"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/internal/fx"
 )
 
 const binName string = "provisioner"

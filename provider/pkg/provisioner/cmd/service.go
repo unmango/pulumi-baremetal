@@ -8,39 +8,45 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/pkg/errors"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/internal"
 )
 
 type service struct {
 	pb.UnimplementedCommandServiceServer
-	log *slog.Logger
+	*internal.State
 }
 
-func NewServer() pb.CommandServiceServer {
-	return &service{log: slog.Default()}
+func NewServer(state *internal.State) pb.CommandServiceServer {
+	return &service{State: state}
 }
 
 // Command implements baremetalv1alpha1.CommandServiceServer.
-func (c *service) Command(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
+func (s *service) Command(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
+	s.Log.Debug("parsing command op")
 	switch req.Op {
 	case pb.Op_OP_CREATE:
-		return c.create(ctx, req)
+		return s.create(ctx, req)
 	case pb.Op_OP_DELETE:
-		return c.delete(ctx, req)
+		return s.delete(ctx, req)
 	}
 
+	s.Log.Error("unsupported op", "op", req.Op)
 	return nil, fmt.Errorf("unsupported op: %s", req.Op)
 }
 
-func (c *service) create(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
-	log := c.log.With("op", req.Op)
+func (s *service) create(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
+	log := s.logger(req)
 	bin, err := getBin(req.Command)
 	if err != nil {
-		return nil, err
+		log.Error("getting bin from command", "err", err)
+		return nil, errors.Wrap(err, "getting bin from command")
 	}
 
-	cmd := exec.CommandContext(ctx, bin, req.Args...)
 	log = log.With("bin", bin, "args", req.Args)
+	log.Debug("creating command with context")
+	cmd := exec.CommandContext(ctx, bin, req.Args...)
 
 	stdout := &bytes.Buffer{}
 	stderr := &bytes.Buffer{}
@@ -54,18 +60,20 @@ func (c *service) create(ctx context.Context, req *pb.CommandRequest) (*pb.Comma
 		log.Error("command failed", "err", err)
 	}
 
+	log.Debug("command succeeded")
 	return &pb.CommandResponse{
 		Stdout: stdout.String(),
 		Stderr: stderr.String(),
 	}, nil
 }
 
-func (c *service) delete(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
-	log := c.log.With("op", req.Op)
+func (s *service) delete(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
+	log := s.logger(req)
 	bin := "rm"
 
-	cmd := exec.CommandContext(ctx, bin, req.Args...)
 	log = log.With("bin", bin, "args", req.Args)
+	log.Debug("creating command with context")
+	cmd := exec.CommandContext(ctx, bin, req.Args...)
 
 	stdout := &bytes.Buffer{}
 	stderr := &bytes.Buffer{}
@@ -92,4 +100,8 @@ func getBin(cmd pb.Command) (string, error) {
 	}
 
 	return "", fmt.Errorf("unrecognized command: %s", cmd)
+}
+
+func (s *service) logger(req *pb.CommandRequest) *slog.Logger {
+	return s.Log.With("op", req.Op, "cmd", req.Command)
 }
