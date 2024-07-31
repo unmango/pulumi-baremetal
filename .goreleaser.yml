@@ -4,8 +4,8 @@ version: 2
 
 before:
   hooks:
-    - make dist/baremetal-provisioner.service
-    - make dist/install.sh
+    - make out/baremetal-provisioner.service
+    - make out/install.sh
 
 builds:
   - id: resource
@@ -50,8 +50,8 @@ release:
   prerelease: auto
   extra_files:
     - glob: dist/provisioner-*
-    - glob: dist/install.sh
-    - glob: dist/baremetal-provisioner.service
+    - glob: out/install.sh
+    - glob: out/baremetal-provisioner.service
 
 snapshot:
   name_template: '{{ .Tag }}-SNAPSHOT'
