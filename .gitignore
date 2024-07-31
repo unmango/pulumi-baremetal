@@ -14,6 +14,7 @@
 Pulumi.*.yaml
 
 .make/
+.test/
 .envrc
 
 # Build Artifacts
@@ -23,6 +24,8 @@ Pulumi.*.yaml
 yarn.lock
 /nuget/
 ci-scripts
+.work/
+dist/
 
 provider/**/schema-embed.json
 
