@@ -50,6 +50,7 @@ remake::
 	rm -rf bin dist out .make .test hack/.work
 
 provider:: bin/$(PROVIDER)
+provisioner:: bin/provisioner
 
 provider_debug::
 	go -C ${PROVIDER_PATH} build \
@@ -58,9 +59,9 @@ provider_debug::
 		-ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" \
 		$(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
+test_all:: test_provider test_sdks
 test_provider:: .test/provider
-
-provisioner:: bin/provisioner
+test_sdks:: .test/sdks
 
 docker:: .make/provisioner_docker_build
 mans:: gen_mans
@@ -145,8 +146,6 @@ lint:: .make/buf_lint
 
 install:: install_nodejs_sdk install_dotnet_sdk
 	cp $(WORKING_DIR)/bin/${PROVIDER} ${GOPATH}/bin
-
-test_all:: test_provider .make/sdk_tests
 
 install_dotnet_sdk::
 	rm -rf $(WORKING_DIR)/nuget/$(NUGET_PKG_NAME).*.nupkg
