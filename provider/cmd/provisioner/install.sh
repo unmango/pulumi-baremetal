@@ -191,7 +191,7 @@ function main() {
 }
 
 function theyReadTheDocs() {
-	if [ -z "${IREADTHEDOCS:-}" ]; then
+	if [ -z "${IREADTHEDOCS:-${PULUMI_COMMAND_IREADTHEDOCS:-}}" ]; then
 		echo '🚨 Please take a look through the script here before proceeding'
 		echo 'https://github.com/unmango/pulumi-baremetal/tree/main/provider/cmd/provisioner/install.sh'
 		echo ''
