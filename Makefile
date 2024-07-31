@@ -47,7 +47,7 @@ ensure::
 	cd tests && go mod tidy
 
 remake::
-	rm -rf bin .make .test hack/.work dist/
+	rm -rf bin dist out .make .test hack/.work
 
 provider:: bin/$(PROVIDER)
 
@@ -179,10 +179,10 @@ install_nodejs_sdk::
 	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
 
 # ------- Real Targets -------
-dist/install.sh: $(PROVIDER_PATH)/cmd/provisioner/install.sh
+out/install.sh: $(PROVIDER_PATH)/cmd/provisioner/install.sh
 	mkdir -p '${@D}' && cp '$<' '$@'
 
-dist/baremetal-provisioner.service: $(PROVIDER_PATH)/cmd/provisioner/baremetal-provisioner.service
+out/baremetal-provisioner.service: $(PROVIDER_PATH)/cmd/provisioner/baremetal-provisioner.service
 	mkdir -p '${@D}' && cp '$<' '$@'
 
 bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC) $(PKG_SRC) provider/*go*
@@ -222,7 +222,7 @@ buf.lock: $(BUF_CONFIG)
 	cd tests/sdk/$* && go test -v -count=1 -cover -timeout 2h ./...
 	@touch $@
 
-.test/install_script: dist/install.sh
+.test/install_script: out/install.sh
 	DEV_MODE=true INSTALL_DIR=${WORKING_DIR}/bin $<
 	@touch $@
 
