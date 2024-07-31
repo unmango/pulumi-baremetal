@@ -50,7 +50,7 @@ if $IS_GIT; then
 fi
 
 if [ -n "${CI:-}" ]; then
-	echo "🙋 Hello from CI! Do the emoji's make you puke? 🤮"
+	echo "🙋 Hello from CI! Do the emoji's make you wanna puke? 🤮"
 	if [ -n "${GITHUB_ACTIONS:-}" ]; then
 		WORK="$GITHUB_WORKSPACE"
 	else
@@ -69,7 +69,8 @@ function log() {
 OS="$(os)"
 ARCH="$(arch)"
 LATEST_RELEASE_JSON="$WORK/release.json"
-BASE_URL='https://api.github.com/repos/unmango/pulumi-baremetal'
+GITHUB='https://github.com/unmango/pulumi-baremetal'
+GITHUB_API='https://api.github.com/repos/unmango/pulumi-baremetal'
 VERSION="${VERSION:-}"
 SRC_BIN="${SRC_BIN:-provisioner}"
 BIN_NAME="${BIN_NAME:-$SRC_BIN}"
@@ -78,13 +79,19 @@ INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 
 function latestRelease() {
 	if [ ! -s "$LATEST_RELEASE_JSON" ]; then
-		curl "https://api.github.com/repos/unmango/pulumi-baremetal/releases/latest" >"$LATEST_RELEASE_JSON"
+		curl "$GITHUB_API/releases/latest" >"$LATEST_RELEASE_JSON"
 	fi
 
 	cat "$LATEST_RELEASE_JSON"
 }
 
 function main() {
+	if $DEV_MODE; then
+		echo '🚧 DEV_MODE=true, Carry on friend'
+	elif theyReadTheDocs; then
+		echo '🤗 Thanks for reading scripts instead of blindly executing bits from the internet!'
+	fi
+
 	if [ -z "$VERSION" ]; then
 		log 'VERSION unset, fetching latest release'
 		VERSION="$(latestRelease | $JQ -r '.tag_name')"
@@ -97,7 +104,8 @@ function main() {
 	log "WORK=$WORK"
 	log "BIN_NAME=$BIN_NAME"
 	log "SRC_BIN=$SRC_BIN"
-	log "BASE_URL=$BASE_URL"
+	log "GITHUB=$GITHUB"
+	log "GITHUB_API=$GITHUB_API"
 
 	log 'Testing install directory'
 	if ! mkdir -p "$INSTALL_DIR"; then
@@ -115,13 +123,31 @@ function main() {
 	ARCHIVE_NAME="$(VERSION="$VERSION" envsubst <<<"$ARCHIVE_TMPL")"
 	log "ARCHIVE_NAME=$ARCHIVE_NAME"
 
-	URL="https://github.com/unmango/pulumi-baremetal/releases/download/$VERSION/$ARCHIVE_NAME"
+	URL="$GITHUB/releases/download/$VERSION/$ARCHIVE_NAME"
 	log "URL=$URL"
+	echo '🧬 Downloading...'
 	curl -L "$URL" | tar -zx -C "$INSTALL_DIR" "$SRC_BIN" --transform "s/$SRC_BIN/$BIN_NAME/"
 
 	chmod +x "$BIN"
 	echo '⭐ Done'
 	log "$BIN"
+}
+
+function theyReadTheDocs() {
+	if [ -z "${IREADTHEDOCS:-}" ]; then
+		echo '🚨 Please take a look through the script here before proceeding'
+		echo 'https://github.com/unmango/pulumi-baremetal/tree/main/provider/cmd/provisioner/install.sh'
+		echo ''
+		echo 'This script would like to create or modify these files:'
+		echo "$INSTALL_DIR/$BIN_NAME"
+		echo ''
+		echo 'And make requests to these urls:'
+		echo "$GITHUB"
+		echo "$GITHUB_API"
+		echo ''
+		echo 'If this is expected, set update your env and run this script again'
+		exit 1
+	fi
 }
 
 main
