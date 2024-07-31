@@ -34,9 +34,6 @@ jobs:
         go-version-file: provider/go.mod
         cache-dependency-path: provider/go.sum
 
-    - name: Make release artifacts
-      run: make dist/{install.sh,baremetal-provisioner.service}
-
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v6
       with:
