@@ -38,6 +38,9 @@ var _ = Describe("Tee", Ordered, func() {
 		stdin := "Test stdin"
 		file := "/tmp/tee/create.txt"
 
+		updatedStdin := "This is different"
+		updatedFile := "/tmp/tee/update.txt"
+
 		var teeId *string
 		var stdout *string
 		var stderr *string
@@ -92,9 +95,26 @@ var _ = Describe("Tee", Ordered, func() {
 						resource.NewStringProperty(file),
 					}),
 				},
+				News: resource.PropertyMap{
+					"stdin": resource.NewStringProperty(updatedStdin),
+					"create": resource.NewObjectProperty(resource.PropertyMap{
+						"files": resource.NewArrayProperty([]resource.PropertyValue{
+							resource.NewStringProperty(updatedFile),
+						}),
+					}),
+				},
 			})
 
 			Expect(err).NotTo(HaveOccurred())
+
+			out, ok := response.Properties["stderr"].V.(string)
+			Expect(ok).To(BeTrueBecause("stderr was not a string"))
+			stderr = &out
+
+			out, ok = response.Properties["stdout"].V.(string)
+			Expect(ok).To(BeTrueBecause("stdout was not a string"))
+			stdout = &out
+
 			Expect(provisioner).NotTo(ContainFile(ctx, file))
 		})
 
@@ -106,16 +126,16 @@ var _ = Describe("Tee", Ordered, func() {
 				Urn: urn,
 				ID:  *teeId,
 				Properties: resource.PropertyMap{
-					"stdin": resource.NewStringProperty(stdin),
+					"stdin": resource.NewStringProperty(updatedStdin),
 					"create": resource.NewObjectProperty(resource.PropertyMap{
 						"files": resource.NewArrayProperty([]resource.PropertyValue{
-							resource.NewStringProperty(file),
+							resource.NewStringProperty(updatedFile),
 						}),
 					}),
 					"stdout": resource.NewStringProperty(*stdout),
 					"stderr": resource.NewStringProperty(*stderr),
 					"createdFiles": resource.NewArrayProperty([]resource.PropertyValue{
-						resource.NewStringProperty(file),
+						resource.NewStringProperty(updatedFile),
 					}),
 				},
 			})
