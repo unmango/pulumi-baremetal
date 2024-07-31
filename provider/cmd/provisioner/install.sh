@@ -1,6 +1,13 @@
 #!/bin/bash
 set -eu
 
+function require() {
+	if [ -z "$1" ]; then
+		echo "$2 is required"
+		exit 1
+	fi
+}
+
 # https://stackoverflow.com/questions/45125516/possible-values-for-uname-m
 function arch() {
 	case "$(uname -m)" in
@@ -43,6 +50,9 @@ if $IS_GIT; then
 		WORK="$GIT_ROOT/hack/.work"
 		mkdir -p "$WORK"
 		INSTALL_DIR="${INSTALL_DIR:-$WORK}"
+		CONFIG_DIR="${CONFIG_DIR:-$WORK}"
+		LISTEN_ADDRESS='localhost:6969'
+		SYSTEMD_SERVICE_FILE="${SYSTEMD_SERVICE_FILE:-$WORK/baremetal.service}"
 	else
 		echo 'Skipping when in a git repository'
 		exit 0
@@ -59,6 +69,7 @@ if [ -n "${CI:-}" ]; then
 	fi
 fi
 
+require "${LISTEN_ADDRESS:-}" 'LISTEN_ADDRESS'
 WORK="${WORK:-"$(mktemp --tmpdir -d pulumi-baremetal-XXXX)"}"
 LOGS="$WORK/logs.txt"
 
@@ -76,6 +87,10 @@ SRC_BIN="${SRC_BIN:-provisioner}"
 BIN_NAME="${BIN_NAME:-$SRC_BIN}"
 ARCHIVE_TMPL="pulumi-resource-baremetal-\$VERSION-$OS-$ARCH.tar.gz"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
+SYSTEMD_DIR='/etc/systemd/system'
+SYSTEMD_SERVICE_FILE="${SYSTEMD_SERVICE_FILE:-$SYSTEMD_DIR/baremetal-provisioner.service}"
+CONFIG_DIR="${CONFIG_DIR:-$SYSTEMD_SERVICE_FILE.d}"
+VARS_FILE="$CONFIG_DIR/vars.env"
 
 function latestRelease() {
 	if [ ! -s "$LATEST_RELEASE_JSON" ]; then
@@ -89,7 +104,7 @@ function main() {
 	if $DEV_MODE; then
 		echo '🚧 DEV_MODE=true, Carry on friend'
 	elif theyReadTheDocs; then
-		echo '🤗 Thanks for reading scripts instead of blindly executing bits from the internet!'
+		echo '🤗 Thanks for reading scripts before you execute!'
 	fi
 
 	if [ -z "$VERSION" ]; then
@@ -101,11 +116,14 @@ function main() {
 	log "VERSION=$VERSION"
 	log "OS=$OS, ARCH=$ARCH"
 	log "INSTALL_DIR=$INSTALL_DIR"
+	log "LISTEN_ADDRESS=$LISTEN_ADDRESS"
 	log "WORK=$WORK"
 	log "BIN_NAME=$BIN_NAME"
+	log "SYSTEMD_SERVICE_FILE=$SYSTEMD_SERVICE_FILE"
 	log "SRC_BIN=$SRC_BIN"
 	log "GITHUB=$GITHUB"
 	log "GITHUB_API=$GITHUB_API"
+	log "VARS_FILE=$VARS_FILE"
 
 	log 'Testing install directory'
 	if ! mkdir -p "$INSTALL_DIR"; then
@@ -129,8 +147,25 @@ function main() {
 	curl -L "$URL" | tar -zx -C "$INSTALL_DIR" "$SRC_BIN" --transform "s/$SRC_BIN/$BIN_NAME/"
 
 	chmod +x "$BIN"
-	echo '⭐ Done'
+	echo 'Provisioner downloaded'
 	log "$BIN"
+
+	if [ ! -f "$SYSTEMD_SERVICE_FILE" ]; then
+		URL="$GITHUB/releases/download/$VERSION/baremetal-provisioner.service"
+		log 'Fetching systemd unit file'
+		curl -fL "$URL" | sed "s/\$VARS_FILE/$VARS_FILE/" >"$SYSTEMD_SERVICE_FILE"
+	fi
+
+	log 'Ensuring config directory'
+	mkdir -p "$CONFIG_DIR"
+
+	log 'Creating vars file'
+	TMP_VARS="$(mktemp --tmpdir XXXX.env)"
+	echo "PROVISIONER_BIN=$BIN" | tee -a "$TMP_VARS"
+	echo "LISTEN_ADDRESS=$LISTEN_ADDRESS" | tee -a "$TMP_VARS"
+	mv "$TMP_VARS" "$VARS_FILE"
+
+	echo '⭐ Done'
 }
 
 function theyReadTheDocs() {
@@ -140,12 +175,14 @@ function theyReadTheDocs() {
 		echo ''
 		echo 'This script would like to create or modify these files:'
 		echo "$INSTALL_DIR/$BIN_NAME"
+		echo "$SYSTEMD_SERVICE_FILE"
+		echo "$VARS_FILE"
 		echo ''
 		echo 'And make requests to these urls:'
 		echo "$GITHUB"
 		echo "$GITHUB_API"
 		echo ''
-		echo 'If this is expected, set update your env and run this script again'
+		echo 'If this is expected, update your env and run this script again'
 		exit 1
 	fi
 }

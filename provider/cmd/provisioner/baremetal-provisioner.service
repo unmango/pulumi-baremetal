@@ -1,0 +1,17 @@
+[Unit]
+Description=The Pulumi Bare Metal Provisioner
+Documentation=https://github.com/unmango/pulumi-baremetal
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+EnvironmentFile=$VARS_FILE
+ExecStart=$PROVISIONER_BIN \
+	--address $LISTEN_ADDRESS \
+	--network $LISTEN_NETWORK \
+	--verbose
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
