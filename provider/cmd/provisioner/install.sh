@@ -158,28 +158,24 @@ function main() {
 
 	installProvisioner
 
-	if [ ! -f "$SYSTEMD_SERVICE_FILE" ]; then
-		if $DEV_MODE && $IS_GIT; then
-			FILE="$GIT_ROOT/provider/cmd/provisioner/baremetal-provisioner.service"
-			sed "s@\$VARS_FILE@$VARS_FILE@g" "$FILE" >"$SYSTEMD_SERVICE_FILE"
-		else
-			URL="$GITHUB/releases/download/$VERSION/baremetal-provisioner.service"
-			log 'Fetching systemd unit file'
-			curl -fL "$URL" | sed "s@\$VARS_FILE@$VARS_FILE@g" >"$SYSTEMD_SERVICE_FILE"
-		fi
+	export PROVISIONER_BIN="$BIN"
+	export LISTEN_ADDRESS
+	export LISTEN_NETWORK
+
+	if $DEV_MODE && $IS_GIT; then
+		FILE="$GIT_ROOT/provider/cmd/provisioner/baremetal-provisioner.service"
+		echo "🌱 Sourcing local unit file: $FILE"
+		envsubst <"$FILE" >"$SYSTEMD_SERVICE_FILE"
+	else
+		URL="$GITHUB/releases/download/$VERSION/baremetal-provisioner.service"
+		log 'Fetching systemd unit file'
+		curl -fL "$URL" | envsubst >"$SYSTEMD_SERVICE_FILE"
 	fi
 
-	log 'Ensuring config directory'
-	mkdir -p "$CONFIG_DIR"
-
-	log 'Creating vars file'
-	TMP_VARS="$(mktemp --tmpdir XXXX.env)"
-	echo "PROVISIONER_BIN=$BIN" | tee -a "$TMP_VARS"
-	echo "LISTEN_ADDRESS=$LISTEN_ADDRESS" | tee -a "$TMP_VARS"
-	echo "LISTEN_NETWORK=$LISTEN_NETWORK" | tee -a "$TMP_VARS"
-	mv "$TMP_VARS" "$VARS_FILE"
-
-	if $DEV_MODE; then exit 0; fi
+	if $DEV_MODE; then
+		echo '🚧 Skipping daemon-reload and service enable in dev mode'
+		exit 0
+	fi
 
 	log 'Reloading systemd'
 	systemctl daemon-reload
