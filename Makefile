@@ -178,6 +178,9 @@ install_nodejs_sdk::
 dist/install.sh: $(PROVIDER_PATH)/cmd/provisioner/install.sh
 	mkdir -p '${@D}' && cp '$<' '$@'
 
+dist/baremetal-provisioner.service: $(PROVIDER_PATH)/cmd/provisioner/baremetal-provisioner.service
+	mkdir -p '${@D}' && cp '$<' '$@'
+
 bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC) $(PKG_SRC) provider/*go*
 	cd provider && go build -o $(WORKING_DIR)/$@ -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
