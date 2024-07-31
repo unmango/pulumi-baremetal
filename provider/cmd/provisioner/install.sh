@@ -115,6 +115,27 @@ function printVars() {
 	log "VARS_FILE=$VARS_FILE"
 }
 
+function installProvisioner() {
+	BIN="$INSTALL_DIR/$BIN_NAME"
+	if [ -f "$BIN" ]; then
+		log "$BIN"
+		echo "👻 Up to date"
+		return 0
+	fi
+
+	ARCHIVE_NAME="$(VERSION="$VERSION" envsubst <<<"$ARCHIVE_TMPL")"
+	log "ARCHIVE_NAME=$ARCHIVE_NAME"
+
+	URL="$GITHUB/releases/download/$VERSION/$ARCHIVE_NAME"
+	log "URL=$URL"
+	echo '🧬 Downloading...'
+	curl -L "$URL" | tar -zx -C "$INSTALL_DIR" "$SRC_BIN" --transform "s/$SRC_BIN/$BIN_NAME/"
+
+	chmod +x "$BIN"
+	echo 'Provisioner downloaded'
+	log "$BIN"
+}
+
 function main() {
 	if $DEV_MODE; then
 		echo '🚧 DEV_MODE=true, Carry on friend'
@@ -132,24 +153,7 @@ function main() {
 	log 'Ensuring install directory'
 	mkdir -p "$INSTALL_DIR"
 
-	BIN="$INSTALL_DIR/$BIN_NAME"
-	if [ -f "$BIN" ]; then
-		log "$BIN"
-		echo "👻 Up to date"
-		exit 0
-	fi
-
-	ARCHIVE_NAME="$(VERSION="$VERSION" envsubst <<<"$ARCHIVE_TMPL")"
-	log "ARCHIVE_NAME=$ARCHIVE_NAME"
-
-	URL="$GITHUB/releases/download/$VERSION/$ARCHIVE_NAME"
-	log "URL=$URL"
-	echo '🧬 Downloading...'
-	curl -L "$URL" | tar -zx -C "$INSTALL_DIR" "$SRC_BIN" --transform "s/$SRC_BIN/$BIN_NAME/"
-
-	chmod +x "$BIN"
-	echo 'Provisioner downloaded'
-	log "$BIN"
+	installProvisioner
 
 	if [ ! -f "$SYSTEMD_SERVICE_FILE" ]; then
 		if $DEV_MODE && $IS_GIT; then
@@ -170,6 +174,8 @@ function main() {
 	echo "PROVISIONER_BIN=$BIN" | tee -a "$TMP_VARS"
 	echo "LISTEN_ADDRESS=$LISTEN_ADDRESS" | tee -a "$TMP_VARS"
 	mv "$TMP_VARS" "$VARS_FILE"
+
+	if $DEV_MODE; then exit 0; fi
 
 	log 'Reloading systemd'
 	systemctl daemon-reload
