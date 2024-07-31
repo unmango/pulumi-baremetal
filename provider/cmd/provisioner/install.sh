@@ -38,13 +38,19 @@ DEV_MODE="${DEV_MODE:-false}"
 GIT="$(assertTool 'git')"
 JQ="$(assertTool 'jq')"
 
+# Supporting PULUMI_COMMAND_* prefixes allows for safer sshd AcceptEnv= configurations.
+INSTALL_DIR="${INSTALL_DIR:-${PULUMI_COMMAND_INSTALL_DIR:-}}"
+CONFIG_DIR="${CONFIG_DIR:-${PULUMI_COMMAND_CONFG_DIR:-}}"
+LISTEN_ADDRESS="${LISTEN_ADDRESS:-${PULUMI_COMMAND_LISTEN_ADDRESS:-}}"
+SYSTEMD_SERVICE_FILE="${SYSTEMD_SERVICE_FILE:-${PULUMI_COMMAND_SYSTEMD_SERVICE_FILE:-}}"
+WORK="${WORK:-${PULUMI_COMMAND_WORK:-}}"
+VERSION="${VERSION:-${PULUMI_COMMAND_VERSION:-}}"
+SRC_BIN="${SRC_BIN:-${PULUMI_COMMAND_SRC_BIN:-}}"
+BIN_NAME="${BIN_NAME:-${PULUMI_COMMAND_BIN_NAME:-}}"
+
 if GIT_ROOT=$($GIT rev-parse --show-toplevel 2>/dev/null); then
 	IS_GIT=true
-else
-	IS_GIT=false
-fi
 
-if $IS_GIT; then
 	if $DEV_MODE; then
 		echo 'Using git repository root'
 		WORK="$GIT_ROOT/hack/.work"
@@ -57,6 +63,8 @@ if $IS_GIT; then
 		echo 'Skipping when in a git repository'
 		exit 0
 	fi
+else
+	IS_GIT=false
 fi
 
 if [ -n "${CI:-}" ]; then
