@@ -46,6 +46,7 @@ GINKGO ?= go run github.com/onsi/ginkgo/v2/ginkgo
 default:: provider provisioner
 
 ensure:: $(GO_MODULES:%=.make/tidy/%)
+	cd hack && go mod tidy
 
 remake::
 	rm -rf bin dist out .make .test hack/.work
@@ -132,6 +133,9 @@ down::
 devcontainer::
 	git submodule update --remote --merge .github/devcontainer
 	rsync -av .github/devcontainer/.devcontainer/* .devcontainer
+
+release::
+	go -C hack run ./cmd/release/main.go
 
 .PHONY: build
 build:: provider provisioner dotnet_sdk go_sdk nodejs_sdk python_sdk
