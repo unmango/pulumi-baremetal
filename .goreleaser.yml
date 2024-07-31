@@ -2,6 +2,10 @@
 # vim: set ts=2 sw=2 tw=0 fo=cnqoj
 version: 2
 
+hooks:
+  - make dist/baremetal-provisioner.service
+  - make dist/install.sh
+
 builds:
   - id: resource
     binary: pulumi-resource-baremetal

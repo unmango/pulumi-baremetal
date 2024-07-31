@@ -13,7 +13,7 @@ SUPPORTED_SDKS  := dotnet go nodejs python
 PROTO_VERSION   := v1alpha1
 PROVIDER_PATH   := provider
 VERSION_PATH    := ${PROVIDER_PATH}.Version
-VERSION_TAG     ?= $(shell cut -d'.' -f-3 <<<'${VERSION}')
+VERSION_TAG     ?= $(shell cut -d'.' -f-3 <<<'${VERSION}' | sed 's/+dirty//')
 
 GOPATH			:= $(shell go env GOPATH)
 
@@ -52,10 +52,14 @@ remake::
 provider:: bin/$(PROVIDER)
 
 provider_debug::
-	(cd provider && go build -o $(WORKING_DIR)/bin/${PROVIDER} -gcflags="all=-N -l" -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER))
+	go -C ${PROVIDER_PATH} build \
+		-o $(WORKING_DIR)/bin/${PROVIDER} \
+		-gcflags="all=-N -l" \
+		-ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" \
+		$(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
 test_provider:: provisioner .make/provisioner_docker_build
-	cd tests && go test -short -v -count=1 -cover -timeout 2h ./.
+	go -C tests test -short -v -count=1 -cover -timeout 2h ./.
 
 provisioner:: bin/provisioner
 
@@ -182,18 +186,21 @@ dist/baremetal-provisioner.service: $(PROVIDER_PATH)/cmd/provisioner/baremetal-p
 	mkdir -p '${@D}' && cp '$<' '$@'
 
 bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC) $(PKG_SRC) provider/*go*
-	cd provider && go build -o $(WORKING_DIR)/$@ -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
+	go -C provider build \
+		-o $(WORKING_DIR)/$@ \
+		-ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" \
+		$(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
 bin/provisioner:: $(GEN_SRC) provider/cmd/provisioner/*.go $(PKG_SRC)
-	cd provider && go build -o ${WORKING_DIR}/$@ $(PROJECT)/${PROVIDER_PATH}/cmd/provisioner
+	go -C provider build -o ${WORKING_DIR}/$@ $(PROJECT)/${PROVIDER_PATH}/cmd/provisioner
 
 gen/go/%.pb.go gen/go/%_grpc.pb.go &: $(BUF_CONFIG) proto/%.proto
 	buf generate --clean --path proto/$*.proto
 
 provider/pkg/%.man: provider/pkg/%.go
-	# man $(notdir $*) > $@
-	# This is a terrible idea when the output depends on the terminal size
-	touch $@
+	@# man $(notdir $*) > $@
+	@# This is a terrible idea when the output depends on the terminal size
+	@touch $@
 
 buf.lock: $(BUF_CONFIG)
 	buf dep update
