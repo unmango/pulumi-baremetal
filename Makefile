@@ -58,8 +58,7 @@ provider_debug::
 		-ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" \
 		$(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
-test_provider:: provisioner .make/provisioner_docker_build
-	go -C tests test -short -v -count=1 -cover -timeout 2h ./.
+test_provider:: .test/provider
 
 provisioner:: bin/provisioner
 
@@ -67,10 +66,11 @@ docker:: .make/provisioner_docker_build
 mans:: gen_mans
 proto:: gen_proto
 
-gen:: gen_proto gen_mans gen_sdks examples
+gen:: gen_proto gen_mans gen_sdks gen_examples
 gen_proto:: $(GEN_SRC)
 gen_mans:: $(MAN_SRC)
-gen_sdks:: dotnet_sdk go_sdk nodejs_sdk python_sdk
+gen_sdks:: $(SUPPORTED_SDKS:%=%_sdk)
+gen_examples: $(SUPPORTED_SDKS:%=.make/examples/%)
 
 dotnet_sdk:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
 dotnet_sdk::
@@ -106,21 +106,6 @@ python_sdk::
 		sed -i.bak -e 's/^VERSION = .*/VERSION = "$(PYPI_VERSION)"/g' -e 's/^PLUGIN_VERSION = .*/PLUGIN_VERSION = "$(VERSION)"/g' ./bin/setup.py && \
 		rm ./bin/setup.py.bak && \
 		cd ./bin && python3 setup.py build sdist
-
-gen_examples: gen_go_example \
-		gen_nodejs_example \
-		gen_python_example \
-		gen_dotnet_example
-
-gen_%_example:
-	rm -rf ${WORKING_DIR}/examples/$*
-	pulumi convert \
-		--cwd ${WORKING_DIR}/examples/yaml \
-		--logtostderr \
-		--generate-only \
-		--non-interactive \
-		--language $* \
-		--out ${WORKING_DIR}/examples/$*
 
 define pulumi_login
     export PULUMI_CONFIG_PASSPHRASE=asdfqwerty1234; \
@@ -217,9 +202,24 @@ buf.lock: $(BUF_CONFIG)
 	docker build ${WORKING_DIR} -f $< -t ${PROVISIONER_NAME}:local-${VERSION_TAG}
 	@touch $@
 
-.make/sdk_tests: $(SUPPORTED_SDKS:%=.make/sdk_%_test)
-.make/sdk_%_test: tests/sdk/%/*.go
-	cd tests/sdk/$* && go test -v -count=1 -cover -timeout 2h ./...
+.make/examples/%: examples/yaml/** bin/$(PROVIDER)
+	@mkdir -p ${@D}
+	rm -rf ${WORKING_DIR}/examples/$*
+	pulumi convert \
+		--cwd $(<D) \
+		--logtostderr \
+		--generate-only \
+		--non-interactive \
+		--language $* \
+		--out ${WORKING_DIR}/examples/$*
+	@touch $@
+
+.test/provider: provisioner .make/provisioner_docker_build
+	go -C tests test -short -v -count=1 -cover -timeout 5m ./.
+
+.test/sdks: $(SUPPORTED_SDKS:%=.test/sdk_%)
+.test/sdk_%: tests/sdk/%/*.go sdk/%/**
+	go -C tests/sdk/$* test -v -count=1 -cover -timeout 15m ./...
 	@touch $@
 
 .test/install_script: out/install.sh $(PROVIDER_PATH)/cmd/provisioner/baremetal-provisioner.service Makefile
