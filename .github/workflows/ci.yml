@@ -71,6 +71,7 @@ jobs:
         uses: tj-actions/changed-files@v44
         with:
           files: |
+            .github/workflows/**
             provider/cmd/provisioner/install.sh
 
   goreleaser:
