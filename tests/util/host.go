@@ -43,12 +43,7 @@ func (h host) Exec(ctx context.Context, args ...string) error {
 
 // FileExists implements TestHost.
 func (h *host) FileExists(ctx context.Context, path string) (bool, error) {
-	_, err := h.ctr.CopyFileFromContainer(ctx, path)
-	if err != nil {
-		return false, err
-	}
-
-	return true, nil
+	return FileExists(ctx, h.ctr, path)
 }
 
 // ReadFile implements TestHost.
@@ -79,3 +74,8 @@ func (h *host) Stop(ctx context.Context) error {
 }
 
 var _ = (TestHost)((*host)(nil))
+
+func FileExists(ctx context.Context, ctr tc.Container, path string) (bool, error) {
+	_, err := ctr.CopyFileFromContainer(ctx, path)
+	return err == nil, nil
+}

@@ -2,11 +2,11 @@ package tests
 
 import (
 	"context"
-	"io"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/unmango/pulumi-baremetal/tests/util"
+	. "github.com/unmango/pulumi-baremetal/tests/util/expect"
 
 	p "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/integration"
@@ -61,24 +61,21 @@ var _ = Describe("Tee", Ordered, func() {
 			Expect(err).NotTo(HaveOccurred())
 			teeId = &response.ID
 
-			e, ok := response.Properties["stderr"].V.(string)
+			out, ok := response.Properties["stderr"].V.(string)
 			Expect(ok).To(BeTrueBecause("stderr was not a string"))
-			stderr = &e
+			stderr = &out
 
-			o, ok := response.Properties["stdout"].V.(string)
+			out, ok = response.Properties["stdout"].V.(string)
 			Expect(ok).To(BeTrueBecause("stdout was not a string"))
-			stdout = &o
+			stdout = &out
 
-			By("attempting to copy the created file")
-			reader, err := provisioner.Ctr().CopyFileFromContainer(ctx, file)
-			Expect(err).NotTo(HaveOccurred())
-			result, err := io.ReadAll(reader)
-			Expect(err).NotTo(HaveOccurred())
-			Expect(string(result)).To(Equal(stdin))
+			Expect(provisioner).To(ContainFile(ctx, file))
 		})
 
 		It("should delete", func(ctx context.Context) {
+			By("asserting the developer hasn't made an error")
 			Expect(teeId).NotTo(BeNil())
+
 			err := server.Delete(p.DeleteRequest{
 				Urn: urn,
 				ID:  *teeId,
@@ -98,10 +95,7 @@ var _ = Describe("Tee", Ordered, func() {
 			})
 
 			Expect(err).NotTo(HaveOccurred())
-
-			By("attempting to copy the created file")
-			_, err = provisioner.Ctr().CopyFileFromContainer(ctx, file)
-			Expect(err).To(MatchError(ContainSubstring("Could not find the file /tmp/tee/create.txt")))
+			Expect(provisioner).NotTo(ContainFile(ctx, file))
 		})
 	})
 })
