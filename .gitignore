@@ -23,6 +23,8 @@ Pulumi.*.yaml
 yarn.lock
 /nuget/
 ci-scripts
+.work/
+dist/
 
 provider/**/schema-embed.json
 

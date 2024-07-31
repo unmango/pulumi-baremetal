@@ -25,7 +25,7 @@ PKG_DIR      := ${PROVIDER_PATH}/pkg
 
 TESTPARALLELISM := 4
 OS := $(shell uname)
-_ := $(shell mkdir -p .make)
+_ := $(shell mkdir -p .make .test)
 
 BUF_CONFIG := buf.yaml buf.gen.yaml
 
@@ -47,7 +47,7 @@ ensure::
 	cd tests && go mod tidy
 
 remake::
-	rm -rf bin .make
+	rm -rf bin .make .test hack/.work dist/
 
 provider:: bin/$(PROVIDER)
 
@@ -175,8 +175,8 @@ install_nodejs_sdk::
 	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
 
 # ------- Real Targets -------
-.envrc: hack/.envrc.example
-	cp $< $@
+dist/install.sh: $(PROVIDER_PATH)/cmd/provisioner/install.sh
+	mkdir -p '${@D}' && cp '$<' '$@'
 
 bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC) $(PKG_SRC) provider/*go*
 	cd provider && go build -o $(WORKING_DIR)/$@ -ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" $(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
@@ -211,3 +211,10 @@ buf.lock: $(BUF_CONFIG)
 .make/sdk_%_test: tests/sdk/%/*.go
 	cd tests/sdk/$* && go test -v -count=1 -cover -timeout 2h ./...
 	@touch $@
+
+.test/install_script: dist/install.sh
+	DEV_MODE=true INSTALL_DIR=${WORKING_DIR}/bin $<
+	@touch $@
+
+.envrc: hack/.envrc.example
+	cp $< $@
