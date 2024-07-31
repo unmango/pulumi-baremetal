@@ -100,18 +100,7 @@ function latestRelease() {
 	cat "$LATEST_RELEASE_JSON"
 }
 
-function main() {
-	if $DEV_MODE; then
-		echo '🚧 DEV_MODE=true, Carry on friend'
-	elif theyReadTheDocs; then
-		echo '🤗 Thanks for reading scripts before you execute!'
-	fi
-
-	if [ -z "$VERSION" ]; then
-		log 'VERSION unset, fetching latest release'
-		VERSION="$(latestRelease | $JQ -r '.tag_name')"
-	fi
-
+function printVars() {
 	echo '🔥 Running with vars:'
 	log "VERSION=$VERSION"
 	log "OS=$OS, ARCH=$ARCH"
@@ -124,12 +113,24 @@ function main() {
 	log "GITHUB=$GITHUB"
 	log "GITHUB_API=$GITHUB_API"
 	log "VARS_FILE=$VARS_FILE"
+}
 
-	log 'Testing install directory'
-	if ! mkdir -p "$INSTALL_DIR"; then
-		log "Failed to mkdir -p $INSTALL_DIR"
-		exit 1
+function main() {
+	if $DEV_MODE; then
+		echo '🚧 DEV_MODE=true, Carry on friend'
+	elif theyReadTheDocs; then
+		echo '🤗 Thanks for reading scripts before you execute!'
 	fi
+
+	if [ -z "$VERSION" ]; then
+		log 'VERSION unset, fetching latest release'
+		VERSION="$(latestRelease | $JQ -r '.tag_name')"
+	fi
+
+	printVars
+
+	log 'Ensuring install directory'
+	mkdir -p "$INSTALL_DIR"
 
 	BIN="$INSTALL_DIR/$BIN_NAME"
 	if [ -f "$BIN" ]; then
@@ -151,9 +152,14 @@ function main() {
 	log "$BIN"
 
 	if [ ! -f "$SYSTEMD_SERVICE_FILE" ]; then
-		URL="$GITHUB/releases/download/$VERSION/baremetal-provisioner.service"
-		log 'Fetching systemd unit file'
-		curl -fL "$URL" | sed "s/\$VARS_FILE/$VARS_FILE/" >"$SYSTEMD_SERVICE_FILE"
+		if $DEV_MODE && $IS_GIT; then
+			FILE="$GIT_ROOT/provider/cmd/provisioner/baremetal-provisioner.service"
+			sed "s@\$VARS_FILE@$VARS_FILE@g" "$FILE" >"$SYSTEMD_SERVICE_FILE"
+		else
+			URL="$GITHUB/releases/download/$VERSION/baremetal-provisioner.service"
+			log 'Fetching systemd unit file'
+			curl -fL "$URL" | sed "s@\$VARS_FILE@$VARS_FILE@g" >"$SYSTEMD_SERVICE_FILE"
+		fi
 	fi
 
 	log 'Ensuring config directory'
@@ -164,6 +170,12 @@ function main() {
 	echo "PROVISIONER_BIN=$BIN" | tee -a "$TMP_VARS"
 	echo "LISTEN_ADDRESS=$LISTEN_ADDRESS" | tee -a "$TMP_VARS"
 	mv "$TMP_VARS" "$VARS_FILE"
+
+	log 'Reloading systemd'
+	systemctl daemon-reload
+
+	log 'Enabling service'
+	systemctl enable --now baremetal-provisioner
 
 	echo '⭐ Done'
 }
