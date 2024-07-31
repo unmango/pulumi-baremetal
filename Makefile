@@ -222,7 +222,7 @@ buf.lock: $(BUF_CONFIG)
 	cd tests/sdk/$* && go test -v -count=1 -cover -timeout 2h ./...
 	@touch $@
 
-.test/install_script: out/install.sh
+.test/install_script: out/install.sh $(PROVIDER_PATH)/cmd/provisioner/baremetal-provisioner.service Makefile
 	DEV_MODE=true INSTALL_DIR=${WORKING_DIR}/bin $<
 	@touch $@
 
