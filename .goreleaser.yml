@@ -26,7 +26,7 @@ builds:
     main: ./cmd/pulumi-resource-baremetal/
 
   - id: provisioner
-    binary: provisioner-{{ .Os }}-{{ .Arch }}
+    binary: provisioner
     dir: provider
     env:
       - CGO_ENABLED=0
@@ -42,8 +42,6 @@ builds:
 archives:
   - id: archive
     name_template: pulumi-resource-baremetal-{{ .Tag }}-{{ .Os }}-{{ .Arch }}
-    builds:
-      - resource
 
 release:
   disable: false
