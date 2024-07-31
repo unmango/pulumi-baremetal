@@ -72,6 +72,32 @@ var _ = Describe("Tee", Ordered, func() {
 			Expect(provisioner).To(ContainFile(ctx, file))
 		})
 
+		It("should update", func(ctx context.Context) {
+			By("asserting the developer hasn't made an error")
+			Expect(teeId).NotTo(BeNil())
+
+			response, err := server.Update(p.UpdateRequest{
+				Urn: urn,
+				ID:  *teeId,
+				Olds: resource.PropertyMap{
+					"stdin": resource.NewStringProperty(stdin),
+					"create": resource.NewObjectProperty(resource.PropertyMap{
+						"files": resource.NewArrayProperty([]resource.PropertyValue{
+							resource.NewStringProperty(file),
+						}),
+					}),
+					"stdout": resource.NewStringProperty(*stdout),
+					"stderr": resource.NewStringProperty(*stderr),
+					"createdFiles": resource.NewArrayProperty([]resource.PropertyValue{
+						resource.NewStringProperty(file),
+					}),
+				},
+			})
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(provisioner).NotTo(ContainFile(ctx, file))
+		})
+
 		It("should delete", func(ctx context.Context) {
 			By("asserting the developer hasn't made an error")
 			Expect(teeId).NotTo(BeNil())
