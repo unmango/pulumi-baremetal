@@ -323,8 +323,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Make dist/install.sh
-        run: make dist/install.sh
+      - name: Make install script
+        run: make out/install.sh
 
       - name: Test
         run: make .test/install_script
