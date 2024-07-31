@@ -1,13 +1,6 @@
 #!/bin/bash
 set -eu
 
-function require() {
-	if [ -z "$1" ]; then
-		echo "$2 is required"
-		exit 1
-	fi
-}
-
 # https://stackoverflow.com/questions/45125516/possible-values-for-uname-m
 function arch() {
 	case "$(uname -m)" in
@@ -42,6 +35,7 @@ JQ="$(assertTool 'jq')"
 INSTALL_DIR="${INSTALL_DIR:-${PULUMI_COMMAND_INSTALL_DIR:-}}"
 CONFIG_DIR="${CONFIG_DIR:-${PULUMI_COMMAND_CONFG_DIR:-}}"
 LISTEN_ADDRESS="${LISTEN_ADDRESS:-${PULUMI_COMMAND_LISTEN_ADDRESS:-}}"
+LISTEN_NETWORK="${LISTEN_NETWORK:-${PULUMI_COMMAND_LISTEN_NETWORK:-}}"
 SYSTEMD_SERVICE_FILE="${SYSTEMD_SERVICE_FILE:-${PULUMI_COMMAND_SYSTEMD_SERVICE_FILE:-}}"
 WORK="${WORK:-${PULUMI_COMMAND_WORK:-}}"
 VERSION="${VERSION:-${PULUMI_COMMAND_VERSION:-}}"
@@ -77,14 +71,8 @@ if [ -n "${CI:-}" ]; then
 	fi
 fi
 
-require "${LISTEN_ADDRESS:-}" 'LISTEN_ADDRESS'
 WORK="${WORK:-"$(mktemp --tmpdir -d pulumi-baremetal-XXXX)"}"
 LOGS="$WORK/logs.txt"
-
-function log() {
-	tee -a "$LOGS" <<<"$1"
-}
-
 OS="$(os)"
 ARCH="$(arch)"
 LATEST_RELEASE_JSON="$WORK/release.json"
@@ -93,12 +81,18 @@ GITHUB_API='https://api.github.com/repos/unmango/pulumi-baremetal'
 VERSION="${VERSION:-}"
 SRC_BIN="${SRC_BIN:-provisioner}"
 BIN_NAME="${BIN_NAME:-$SRC_BIN}"
+LISTEN_ADDRESS="${LISTEN_ADDRESS:-0.0.0.0}"
+LISTEN_NETWORK="${LISTEN_NETWORK:-tcp}"
 ARCHIVE_TMPL="pulumi-resource-baremetal-\$VERSION-$OS-$ARCH.tar.gz"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 SYSTEMD_DIR='/etc/systemd/system'
 SYSTEMD_SERVICE_FILE="${SYSTEMD_SERVICE_FILE:-$SYSTEMD_DIR/baremetal-provisioner.service}"
 CONFIG_DIR="${CONFIG_DIR:-$SYSTEMD_SERVICE_FILE.d}"
 VARS_FILE="$CONFIG_DIR/vars.env"
+
+function log() {
+	tee -a "$LOGS" <<<"$1"
+}
 
 function latestRelease() {
 	if [ ! -s "$LATEST_RELEASE_JSON" ]; then
@@ -114,6 +108,7 @@ function printVars() {
 	log "OS=$OS, ARCH=$ARCH"
 	log "INSTALL_DIR=$INSTALL_DIR"
 	log "LISTEN_ADDRESS=$LISTEN_ADDRESS"
+	log "LISTEN_NETWORK=$LISTEN_NETWORK"
 	log "WORK=$WORK"
 	log "BIN_NAME=$BIN_NAME"
 	log "SYSTEMD_SERVICE_FILE=$SYSTEMD_SERVICE_FILE"
@@ -181,6 +176,7 @@ function main() {
 	TMP_VARS="$(mktemp --tmpdir XXXX.env)"
 	echo "PROVISIONER_BIN=$BIN" | tee -a "$TMP_VARS"
 	echo "LISTEN_ADDRESS=$LISTEN_ADDRESS" | tee -a "$TMP_VARS"
+	echo "LISTEN_NETWORK=$LISTEN_NETWORK" | tee -a "$TMP_VARS"
 	mv "$TMP_VARS" "$VARS_FILE"
 
 	if $DEV_MODE; then exit 0; fi
@@ -195,7 +191,7 @@ function main() {
 }
 
 function theyReadTheDocs() {
-	if [ -z "${IREADTHEDOCS:-}" ]; then
+	if [ -z "${IREADTHEDOCS:-${PULUMI_COMMAND_IREADTHEDOCS:-}}" ]; then
 		echo '🚨 Please take a look through the script here before proceeding'
 		echo 'https://github.com/unmango/pulumi-baremetal/tree/main/provider/cmd/provisioner/install.sh'
 		echo ''
