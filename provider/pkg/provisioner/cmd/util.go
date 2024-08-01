@@ -2,11 +2,9 @@ package cmd
 
 import (
 	"bytes"
-	"context"
 	"io"
 	"log/slog"
 	"os/exec"
-	"slices"
 	"strings"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
@@ -18,14 +16,6 @@ func stdinReader(stdin *string) io.Reader {
 	}
 
 	return strings.NewReader(*stdin)
-}
-
-func prepend[T any](x T, xs []T) []T {
-	return slices.Insert(xs, 0, x)
-}
-
-func newCommand(ctx context.Context, bin string, args []string) *exec.Cmd {
-	return exec.CommandContext(ctx, bin, args...)
 }
 
 func run(cmd *exec.Cmd, log *slog.Logger) (*pb.CommandResponse, error) {
