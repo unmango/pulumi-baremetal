@@ -7,10 +7,10 @@ plugins:
 
 resources:
   tee:
-    type: baremetal:cmd:Tee
+    type: baremetal:coreutils:Tee
     properties:
-      stdin: 'whoops'
-      create:
+      args:
+        stdin: 'whoops'
         files: ['/tmp/tee/test.txt']
 
 outputs:

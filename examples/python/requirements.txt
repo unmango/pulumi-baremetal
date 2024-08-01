@@ -1,2 +1,2 @@
 pulumi>=3.0.0,<4.0.0
-unmango_baremetal==0.0.6
+unmango_baremetal==0.0.35-alpha.1723743806+94fd5137.dirty

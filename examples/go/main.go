@@ -2,14 +2,14 @@ package main
 
 import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/cmd"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/coreutils"
 )
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-		tee, err := cmd.NewTee(ctx, "tee", &cmd.TeeArgs{
-			Stdin: pulumi.String("whoops"),
-			Create: &cmd.TeeOptsArgs{
+		tee, err := coreutils.NewTee(ctx, "tee", &coreutils.TeeArgs{
+			Args: &coreutils.TeeArgsTypeArgs{
+				Stdin: pulumi.String("whoops"),
 				Files: pulumi.StringArray{
 					pulumi.String("/tmp/tee/test.txt"),
 				},
