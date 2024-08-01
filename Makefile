@@ -25,7 +25,7 @@ PKG_DIR      := ${PROVIDER_PATH}/pkg
 
 TESTPARALLELISM := 4
 OS := $(shell uname)
-_ := $(shell mkdir -p .make .test)
+_ := $(shell mkdir -p .make/{examples,lint} .test)
 
 BUF_CONFIG := buf.yaml buf.gen.yaml
 
@@ -133,16 +133,12 @@ devcontainer::
 	rsync -av .github/devcontainer/.devcontainer/* .devcontainer
 
 .PHONY: build
-
 build:: provider provisioner dotnet_sdk go_sdk nodejs_sdk python_sdk
 
 # Required for the codegen action that runs in pulumi/pulumi
 only_build:: build
 
-lint:: .make/buf_lint
-	for DIR in "provider" "sdk" "tests" ; do \
-		pushd $$DIR && golangci-lint run -c ../.golangci.yml --timeout 10m; popd ; \
-	done
+lint:: .make/lint/buf .make/lint/go
 
 install:: install_nodejs_sdk install_dotnet_sdk
 	cp $(WORKING_DIR)/bin/${PROVIDER} ${GOPATH}/bin
@@ -189,11 +185,16 @@ provider/pkg/%.man: provider/pkg/%.go
 buf.lock: $(BUF_CONFIG)
 	buf dep update
 
+.make/lint/go: $(patsubst %,.make/lint/%,provider sdk tests)
+.make/lint/%: %/*.go %/*/*.go %/*/*/*.go
+	cd $* && golangci-lint run -c ${WORKING_DIR}/.golangci.yml --timeout 10m ./...
+	@touch $@
+
 .make/buf_build: buf.lock $(PROTO_SRC)
 	buf build --path $(filter %.proto,$?)
 	@touch $@
 
-.make/buf_lint: $(PROTO_SRC)
+.make/lint/buf: $(PROTO_SRC)
 	buf lint --path $?
 	@touch $@
 
@@ -202,7 +203,6 @@ buf.lock: $(BUF_CONFIG)
 	@touch $@
 
 .make/examples/%: examples/yaml/** bin/$(PROVIDER)
-	@mkdir -p ${@D}
 	rm -rf ${WORKING_DIR}/examples/$*
 	pulumi convert \
 		--cwd $(<D) \
