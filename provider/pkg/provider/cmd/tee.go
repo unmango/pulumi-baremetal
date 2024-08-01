@@ -7,7 +7,6 @@ import (
 
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
 )
 
 //go:embed tee.man
@@ -37,22 +36,7 @@ var _ = (infer.CustomDelete[TeeState])((*Tee)(nil))
 // Create implements infer.CustomCreate.
 func (Tee) Create(ctx context.Context, name string, inputs TeeArgs, preview bool) (string, TeeState, error) {
 	state := TeeState{}
-	log := logger.FromContext(ctx)
-
-	if inputs.Create == nil {
-		log.Info("nothing to do")
-		return name, state, nil
-	}
-
-	if preview {
-		// Could dial the host and warn if the connection fails
-		log.Debug("skipping during preview")
-		return name, state, nil
-	}
-
-	err := state.Create(ctx, *inputs.Create)
-	if err != nil {
-		log.Error("failed creating")
+	if err := state.Create(ctx, inputs.Create, preview); err != nil {
 		return name, state, fmt.Errorf("create: %w", err)
 	}
 
@@ -61,9 +45,7 @@ func (Tee) Create(ctx context.Context, name string, inputs TeeArgs, preview bool
 
 // Delete implements infer.CustomDelete.
 func (Tee) Delete(ctx context.Context, id string, props TeeState) error {
-	log := logger.FromContext(ctx)
 	if err := props.Delete(ctx); err != nil {
-		log.Error("failed deleting")
 		return fmt.Errorf("delete: %w", err)
 	}
 
