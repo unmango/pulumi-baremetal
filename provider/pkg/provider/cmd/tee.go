@@ -8,7 +8,6 @@ import (
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
 
 //go:embed tee.man
@@ -32,10 +31,7 @@ type TeeArgs struct {
 
 type TeeState struct {
 	TeeArgs
-
-	CreatedFiles []string `pulumi:"createdFiles"`
-	Stderr       string   `pulumi:"stderr"`
-	Stdout       string   `pulumi:"stdout"`
+	CommandState
 }
 
 var _ = (infer.CustomCreate[TeeArgs, TeeState])((*Tee)(nil))
@@ -52,7 +48,12 @@ func (Tee) Create(ctx context.Context, name string, inputs TeeArgs, preview bool
 		return name, state, nil
 	}
 
-	if err := state.create(ctx, inputs); err != nil {
+	err := state.create(ctx,
+		pb.Bin_BIN_TEE,
+		squash(*inputs.Create),
+		&inputs.Stdin,
+	)
+	if err != nil {
 		log.Error("failed creating")
 		return name, state, fmt.Errorf("create: %w", err)
 	}
@@ -71,61 +72,11 @@ func (Tee) Delete(ctx context.Context, id string, props TeeState) error {
 	return nil
 }
 
-func (state *TeeState) create(ctx context.Context, input TeeArgs) error {
-	log := logger.FromContext(ctx)
-	p, err := provisioner.FromContext(ctx)
-	if err != nil {
-		log.Error("failed creating provisioner")
-		return fmt.Errorf("creating provisioner: %w", err)
+func squash(inputs TeeOpts) []string {
+	args := []string{}
+	if inputs.Append {
+		args = append(args, "--append")
 	}
 
-	log.Debug("sending command request to provisioner")
-	res, err := p.Command(ctx, &pb.CommandRequest{
-		Op:      pb.Op_OP_CREATE,
-		Command: pb.Command_COMMAND_TEE,
-		Args:    input.Create.Files,
-		Flags:   map[string]*pb.Flag{},
-		Stdin:   &input.Stdin,
-	})
-	if err != nil {
-		log.Error("failed sending command request")
-		return fmt.Errorf("command request: %w", err)
-	}
-
-	log.Debug("assigning outputs")
-	state.CreatedFiles = input.Create.Files
-	state.Stderr = res.Stderr
-	state.Stdout = res.Stdout
-
-	log.Debug("finished create")
-	return nil
-}
-
-func (state *TeeState) delete(ctx context.Context) error {
-	log := logger.FromContext(ctx)
-	p, err := provisioner.FromContext(ctx)
-	if err != nil {
-		log.Error("failed creating provisioner")
-		return fmt.Errorf("creating provisioner: %w", err)
-	}
-
-	log.Debug("sending command request to provisioner")
-	res, err := p.Command(ctx, &pb.CommandRequest{
-		Op:      pb.Op_OP_DELETE,
-		Command: pb.Command_COMMAND_TEE,
-		Args:    state.CreatedFiles,
-		Flags:   map[string]*pb.Flag{},
-	})
-	if err != nil {
-		log.Error("failed sending command request")
-		return fmt.Errorf("command request: %w", err)
-	}
-
-	log.Debug("assigning outputs")
-	state.CreatedFiles = []string{}
-	state.Stderr = res.Stderr
-	state.Stdout = res.Stdout
-
-	log.Debug("finished delete")
-	return nil
+	return append(args, inputs.Files...)
 }

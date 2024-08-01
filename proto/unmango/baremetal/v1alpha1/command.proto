@@ -3,35 +3,45 @@ syntax = "proto3";
 package unmango.baremetal.v1alpha1;
 
 service CommandService {
-  rpc Command(CommandRequest) returns (CommandResponse);
+  rpc Create(CreateRequest) returns (CreateResponse);
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
 }
 
-message CommandRequest {
-  Op op = 1;
+message CreateRequest {
+  Command command = 1;
+}
+
+message CreateResponse {
+  Result result = 1;
+}
+
+message DeleteRequest {
+  Command create = 1;
+}
+
+message DeleteResponse {
+  optional Operation op = 1;
+}
+
+message Operation {
+  Result result = 1;
   Command command = 2;
-  repeated string args = 3;
-  map<string, Flag> flags = 4;
-  optional string stdin = 5;
 }
 
-message CommandResponse {
-  string stdout = 1;
-  string stderr = 2;
+message Command {
+  Bin bin = 1;
+  repeated string args = 2;
+  optional string stdin = 3;
 }
 
-enum Op {
-  OP_UNSPECIFIED = 0;
-  OP_CREATE = 1;
-  OP_UPDATE = 2;
-  OP_DELETE = 3;
+message Result {
+  int32 exit_code = 1;
+  string stdout = 2;
+  string stderr = 3;
 }
 
-enum Command {
-  COMMAND_UNSPECIFIED = 0;
-  COMMAND_TEE = 1;
-}
-
-message Flag {
-  bool present = 1;
-  optional string value = 2;
+enum Bin {
+  BIN_UNSPECIFIED = 0;
+  BIN_TEE = 1;
+  BIN_RM = 2;
 }
