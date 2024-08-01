@@ -17,7 +17,7 @@ type CommandOpts interface {
 type CommandState[T CommandOpts] struct {
 	Stderr       string   `pulumi:"stderr"`
 	Stdout       string   `pulumi:"stdout"`
-	CreateOpts   *T       `pulumi:"createOpts"`
+	CreateOpts   *T       `pulumi:"createOpts,optional"`
 	CreatedFiles []string `pulumi:"createdFiles"`
 }
 

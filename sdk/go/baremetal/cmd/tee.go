@@ -7,7 +7,6 @@ import (
 	"context"
 	"reflect"
 
-	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
@@ -85,9 +84,9 @@ import (
 type Tee struct {
 	pulumi.CustomResourceState
 
+	CreateOpts   TeeOptsPtrOutput         `pulumi:"createOpts"`
 	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
-	Stdin        pulumi.StringOutput      `pulumi:"stdin"`
 	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
 }
 
@@ -95,12 +94,9 @@ type Tee struct {
 func NewTee(ctx *pulumi.Context,
 	name string, args *TeeArgs, opts ...pulumi.ResourceOption) (*Tee, error) {
 	if args == nil {
-		return nil, errors.New("missing one or more required arguments")
+		args = &TeeArgs{}
 	}
 
-	if args.Stdin == nil {
-		return nil, errors.New("invalid value for required argument 'Stdin'")
-	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Tee
 	err := ctx.RegisterResource("baremetal:cmd:Tee", name, args, &resource, opts...)
@@ -135,13 +131,11 @@ func (TeeState) ElementType() reflect.Type {
 
 type teeArgs struct {
 	Create *TeeOpts `pulumi:"create"`
-	Stdin  string   `pulumi:"stdin"`
 }
 
 // The set of arguments for constructing a Tee resource.
 type TeeArgs struct {
 	Create TeeOptsPtrInput
-	Stdin  pulumi.StringInput
 }
 
 func (TeeArgs) ElementType() reflect.Type {
@@ -193,16 +187,16 @@ func (o TeeOutput) ToOutput(ctx context.Context) pulumix.Output[*Tee] {
 	}
 }
 
+func (o TeeOutput) CreateOpts() TeeOptsPtrOutput {
+	return o.ApplyT(func(v *Tee) TeeOptsPtrOutput { return v.CreateOpts }).(TeeOptsPtrOutput)
+}
+
 func (o TeeOutput) CreatedFiles() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Tee) pulumi.StringArrayOutput { return v.CreatedFiles }).(pulumi.StringArrayOutput)
 }
 
 func (o TeeOutput) Stderr() pulumi.StringOutput {
 	return o.ApplyT(func(v *Tee) pulumi.StringOutput { return v.Stderr }).(pulumi.StringOutput)
-}
-
-func (o TeeOutput) Stdin() pulumi.StringOutput {
-	return o.ApplyT(func(v *Tee) pulumi.StringOutput { return v.Stdin }).(pulumi.StringOutput)
 }
 
 func (o TeeOutput) Stdout() pulumi.StringOutput {

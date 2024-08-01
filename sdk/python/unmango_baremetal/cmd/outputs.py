@@ -10,15 +10,15 @@ from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 
 __all__ = [
-    'TeeOptsArgs',
+    'TeeOpts',
 ]
 
-@pulumi.input_type
-class TeeOptsArgs:
+@pulumi.output_type
+class TeeOpts(dict):
     def __init__(__self__, *,
-                 content: pulumi.Input[str],
-                 files: pulumi.Input[Sequence[pulumi.Input[str]]],
-                 append: Optional[pulumi.Input[bool]] = None):
+                 content: str,
+                 files: Sequence[str],
+                 append: Optional[bool] = None):
         pulumi.set(__self__, "content", content)
         pulumi.set(__self__, "files", files)
         if append is not None:
@@ -26,29 +26,17 @@ class TeeOptsArgs:
 
     @property
     @pulumi.getter
-    def content(self) -> pulumi.Input[str]:
+    def content(self) -> str:
         return pulumi.get(self, "content")
 
-    @content.setter
-    def content(self, value: pulumi.Input[str]):
-        pulumi.set(self, "content", value)
-
     @property
     @pulumi.getter
-    def files(self) -> pulumi.Input[Sequence[pulumi.Input[str]]]:
+    def files(self) -> Sequence[str]:
         return pulumi.get(self, "files")
 
-    @files.setter
-    def files(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
-        pulumi.set(self, "files", value)
-
     @property
     @pulumi.getter
-    def append(self) -> Optional[pulumi.Input[bool]]:
+    def append(self) -> Optional[bool]:
         return pulumi.get(self, "append")
-
-    @append.setter
-    def append(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "append", value)
 
 

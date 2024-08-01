@@ -16,6 +16,9 @@ namespace UnMango.Baremetal.Cmd.Inputs
         [Input("append")]
         public Input<bool>? Append { get; set; }
 
+        [Input("content", required: true)]
+        public Input<string> Content { get; set; } = null!;
+
         [Input("files", required: true)]
         private InputList<string>? _files;
         public InputList<string> Files

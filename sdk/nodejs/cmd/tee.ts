@@ -97,9 +97,9 @@ export class Tee extends pulumi.CustomResource {
         return obj['__pulumiType'] === Tee.__pulumiType;
     }
 
+    public /*out*/ readonly createOpts!: pulumi.Output<outputs.cmd.TeeOpts | undefined>;
     public /*out*/ readonly createdFiles!: pulumi.Output<string[]>;
     public /*out*/ readonly stderr!: pulumi.Output<string>;
-    public readonly stdin!: pulumi.Output<string>;
     public /*out*/ readonly stdout!: pulumi.Output<string>;
 
     /**
@@ -109,22 +109,19 @@ export class Tee extends pulumi.CustomResource {
      * @param args The arguments to use to populate this resource's properties.
      * @param opts A bag of options that control this resource's behavior.
      */
-    constructor(name: string, args: TeeArgs, opts?: pulumi.CustomResourceOptions) {
+    constructor(name: string, args?: TeeArgs, opts?: pulumi.CustomResourceOptions) {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.stdin === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'stdin'");
-            }
             resourceInputs["create"] = args ? args.create : undefined;
-            resourceInputs["stdin"] = args ? args.stdin : undefined;
+            resourceInputs["createOpts"] = undefined /*out*/;
             resourceInputs["createdFiles"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
         } else {
+            resourceInputs["createOpts"] = undefined /*out*/;
             resourceInputs["createdFiles"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
-            resourceInputs["stdin"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
@@ -137,5 +134,4 @@ export class Tee extends pulumi.CustomResource {
  */
 export interface TeeArgs {
     create?: pulumi.Input<inputs.cmd.TeeOptsArgs>;
-    stdin: pulumi.Input<string>;
 }
