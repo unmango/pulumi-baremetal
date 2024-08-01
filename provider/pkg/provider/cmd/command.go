@@ -21,8 +21,20 @@ type CommandState[T CommandOpts] struct {
 	CreatedFiles []string `pulumi:"createdFiles"`
 }
 
-func (s *CommandState[T]) Create(ctx context.Context, opts T) error {
+func (s *CommandState[T]) Create(ctx context.Context, opts *T, preview bool) error {
 	log := logger.FromContext(ctx)
+	if opts == nil {
+		log.Info("nothing to do")
+		return nil
+	}
+
+	if preview {
+		// Could dial the host and warn if the connection fails
+		log.Debug("skipping during preview")
+		return nil
+	}
+
+	cmd := (*opts).Cmd()
 	p, err := provisioner.FromContext(ctx)
 	if err != nil {
 		log.Error("failed creating provisioner")
@@ -30,14 +42,14 @@ func (s *CommandState[T]) Create(ctx context.Context, opts T) error {
 	}
 
 	log.Debug("sending create request")
-	res, err := p.Create(ctx, &pb.CreateRequest{Command: opts.Cmd()})
+	res, err := p.Create(ctx, &pb.CreateRequest{Command: cmd})
 	if err != nil {
 		return fmt.Errorf("sending create request: %w", err)
 	}
 
 	s.Stdout = res.Result.Stdout
 	s.Stderr = res.Result.Stderr
-	s.CreateOpts = &opts
+	s.CreateOpts = opts
 
 	log.Info("create success")
 	return nil
