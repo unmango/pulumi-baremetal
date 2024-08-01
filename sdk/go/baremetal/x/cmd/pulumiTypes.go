@@ -15,11 +15,13 @@ import (
 var _ = internal.GetEnvOrDefault
 
 type TeeOpts struct {
-	Files []string `pulumi:"files"`
+	Append *bool    `pulumi:"append"`
+	Files  []string `pulumi:"files"`
 }
 
 type TeeOptsArgs struct {
-	Files pulumix.Input[[]string] `pulumi:"files"`
+	Append pulumix.Input[*bool]    `pulumi:"append"`
+	Files  pulumix.Input[[]string] `pulumi:"files"`
 }
 
 func (TeeOptsArgs) ElementType() reflect.Type {
@@ -56,6 +58,10 @@ func (o TeeOptsOutput) ToOutput(ctx context.Context) pulumix.Output[TeeOpts] {
 	return pulumix.Output[TeeOpts]{
 		OutputState: o.OutputState,
 	}
+}
+
+func (o TeeOptsOutput) Append() pulumix.Output[*bool] {
+	return pulumix.Apply[TeeOpts](o, func(v TeeOpts) *bool { return v.Append })
 }
 
 func (o TeeOptsOutput) Files() pulumix.ArrayOutput[string] {

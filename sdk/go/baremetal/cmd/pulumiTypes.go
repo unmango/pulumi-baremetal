@@ -15,7 +15,8 @@ import (
 var _ = internal.GetEnvOrDefault
 
 type TeeOpts struct {
-	Files []string `pulumi:"files"`
+	Append *bool    `pulumi:"append"`
+	Files  []string `pulumi:"files"`
 }
 
 // TeeOptsInput is an input type that accepts TeeOptsArgs and TeeOptsOutput values.
@@ -30,7 +31,8 @@ type TeeOptsInput interface {
 }
 
 type TeeOptsArgs struct {
-	Files pulumi.StringArrayInput `pulumi:"files"`
+	Append pulumi.BoolPtrInput     `pulumi:"append"`
+	Files  pulumi.StringArrayInput `pulumi:"files"`
 }
 
 func (TeeOptsArgs) ElementType() reflect.Type {
@@ -128,6 +130,10 @@ func (o TeeOptsOutput) ToOutput(ctx context.Context) pulumix.Output[TeeOpts] {
 	}
 }
 
+func (o TeeOptsOutput) Append() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v TeeOpts) *bool { return v.Append }).(pulumi.BoolPtrOutput)
+}
+
 func (o TeeOptsOutput) Files() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v TeeOpts) []string { return v.Files }).(pulumi.StringArrayOutput)
 }
@@ -160,6 +166,15 @@ func (o TeeOptsPtrOutput) Elem() TeeOptsOutput {
 		var ret TeeOpts
 		return ret
 	}).(TeeOptsOutput)
+}
+
+func (o TeeOptsPtrOutput) Append() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *TeeOpts) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.Append
+	}).(pulumi.BoolPtrOutput)
 }
 
 func (o TeeOptsPtrOutput) Files() pulumi.StringArrayOutput {
