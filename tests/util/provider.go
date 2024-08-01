@@ -1,6 +1,7 @@
 package util
 
 import (
+	"context"
 	"strings"
 
 	"github.com/blang/semver"
@@ -11,8 +12,16 @@ import (
 	baremetal "github.com/unmango/pulumi-baremetal/provider"
 )
 
-func NewIntegrationProvider() integration.Server {
+func NewServer() integration.Server {
 	return integration.NewServer(
+		baremetal.Name,
+		semver.MustParse("1.0.0"),
+		baremetal.Provider(),
+	)
+}
+
+func NewServerWithContext(ctx context.Context) integration.Server {
+	return integration.NewServerWithContext(ctx,
 		baremetal.Name,
 		semver.MustParse("1.0.0"),
 		baremetal.Provider(),

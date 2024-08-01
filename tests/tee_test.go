@@ -25,7 +25,7 @@ var _ = Describe("Tee", Ordered, func() {
 
 	BeforeAll(func(ctx context.Context) {
 		By("creating a provider server")
-		server = util.NewIntegrationProvider()
+		server = util.NewServer()
 	})
 
 	BeforeAll(func(ctx context.Context) {

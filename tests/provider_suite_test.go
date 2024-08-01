@@ -23,7 +23,7 @@ func TestProvider(t *testing.T) {
 
 var _ = BeforeSuite(func(ctx context.Context) {
 	By("creating a provisioner")
-	prov, err := util.NewTestProvisioner(ctx, os.Stdout)
+	prov, err := util.NewProvisioner("6969", os.Stdout)
 	Expect(err).NotTo(HaveOccurred())
 
 	By("starting the provisioner")
