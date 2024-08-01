@@ -13,7 +13,7 @@ type CommandState struct {
 	Stderr       string      `pulumi:"stderr"`
 	Stdout       string      `pulumi:"stdout"`
 	Create       *pb.Command `pulumi:"create"`
-	CreatedFiles []string    `pulumi:"created_files"`
+	CreatedFiles []string    `pulumi:"createdFiles"`
 }
 
 func (s *CommandState) create(ctx context.Context, bin pb.Bin, args []string, stdin *string) error {
