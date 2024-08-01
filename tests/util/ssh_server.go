@@ -28,7 +28,7 @@ type server struct{ host }
 var _ = (SshServer)((*server)(nil))
 
 func NewSshServer(ctx context.Context) (SshServer, error) {
-	container, err := tc.GenericContainer(ctx, tc.GenericContainerRequest{
+	req := tc.GenericContainerRequest{
 		ContainerRequest: tc.ContainerRequest{
 			Image:        fmt.Sprintf("lscr.io/linuxserver/openssh-server:%s", version),
 			ExposedPorts: []string{fmt.Sprint(SshPort)},
@@ -43,17 +43,13 @@ func NewSshServer(ctx context.Context) (SshServer, error) {
 				"USER_PASSWORD":   SshPassword,
 			},
 		},
-	})
-	if err != nil {
-		return nil, err
 	}
 
-	host := host{ctr: container}
-	return &server{host: host}, nil
+	return &server{host{req, nil}}, nil
 }
 
 func (s *server) ConnectionProps(ctx context.Context) (resource.PropertyValue, error) {
-	ip, err := s.ctr.ContainerIP(ctx)
+	ip, err := s.Ip(ctx)
 	if err != nil {
 		return resource.PropertyValue{}, err
 	}

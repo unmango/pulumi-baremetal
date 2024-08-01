@@ -8,7 +8,6 @@ replace github.com/unmango/pulumi-baremetal/provider => ../provider
 
 require (
 	github.com/blang/semver v3.5.1+incompatible
-	github.com/docker/go-connections v0.5.0
 	github.com/onsi/ginkgo/v2 v2.19.1
 	github.com/onsi/gomega v1.34.1
 	github.com/pulumi/pulumi-go-provider v0.21.0
@@ -79,6 +78,7 @@ require (
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/djherbis/times v1.6.0 // indirect
 	github.com/docker/docker v27.0.3+incompatible // indirect
+	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/edsrzf/mmap-go v1.1.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect

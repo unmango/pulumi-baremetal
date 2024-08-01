@@ -20,7 +20,7 @@ func NewServer(state *internal.State) pb.CommandServiceServer {
 }
 
 func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateResponse, error) {
-	log := s.Log.With("op", "create", "bin", req.Command.Bin, "args", req.Command.Args)
+	log := s.Log.With("op", "create", "bin", req.Command.Bin.String(), "args", req.Command.Args)
 	if req.Command == nil {
 		log.Error("no command found in request")
 		return nil, fmt.Errorf("no command found in request")
@@ -40,12 +40,12 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (*pb.Create
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
 
-	log.DebugContext(ctx, "running command", "cmd", cmd)
+	log.DebugContext(ctx, "running command", "cmd", cmd.String())
 	if err = cmd.Run(); err != nil {
-		log.ErrorContext(ctx, "failed to run command", "err", err)
+		log.WarnContext(ctx, "command failed", "err", err)
 	}
 
-	log.InfoContext(ctx, "successfully ran command", "cmd", cmd)
+	log.InfoContext(ctx, "finished execcuting command", "cmd", cmd.String())
 	return &pb.CreateResponse{Result: &pb.Result{
 		ExitCode: int32(cmd.ProcessState.ExitCode()),
 		Stdout:   stdout.String(),
@@ -54,7 +54,7 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (*pb.Create
 }
 
 func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteResponse, error) {
-	log := s.Log.With("op", "delete", "bin", req.Create.Bin, "args", req.Create.Args)
+	log := s.Log.With("op", "delete", "bin", req.Create.Bin.String(), "args", req.Create.Args)
 	var cmd *exec.Cmd
 	bin := pb.Bin_BIN_UNSPECIFIED
 
@@ -80,9 +80,9 @@ func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.Delete
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
 
-	log.DebugContext(ctx, "running command", "cmd", cmd)
+	log.DebugContext(ctx, "running command", "cmd", cmd.String())
 	if err := cmd.Run(); err != nil {
-		log.ErrorContext(ctx, "failed to run command", "err", err)
+		log.ErrorContext(ctx, "command failed", "err", err)
 		return &pb.DeleteResponse{}, nil
 	}
 
@@ -96,7 +96,7 @@ func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.Delete
 		},
 	}
 
-	log.InfoContext(ctx, "successfully ran command", "cmd", cmd)
+	log.InfoContext(ctx, "finished executing command", "cmd", cmd.String())
 	return &pb.DeleteResponse{Op: op}, nil
 }
 

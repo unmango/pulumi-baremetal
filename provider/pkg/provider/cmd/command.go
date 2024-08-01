@@ -50,6 +50,7 @@ func (s *CommandState[T]) Create(ctx context.Context, opts *T, preview bool) err
 	s.Stdout = res.Result.Stdout
 	s.Stderr = res.Result.Stderr
 	s.CreateOpts = opts
+	s.CreatedFiles = []string{}
 
 	log.Info("create success")
 	return nil
