@@ -85,7 +85,6 @@ import (
 type Tee struct {
 	pulumi.CustomResourceState
 
-	Create       TeeOptsPtrOutput         `pulumi:"create"`
 	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
 	Stdin        pulumi.StringOutput      `pulumi:"stdin"`
@@ -192,10 +191,6 @@ func (o TeeOutput) ToOutput(ctx context.Context) pulumix.Output[*Tee] {
 	return pulumix.Output[*Tee]{
 		OutputState: o.OutputState,
 	}
-}
-
-func (o TeeOutput) Create() TeeOptsPtrOutput {
-	return o.ApplyT(func(v *Tee) TeeOptsPtrOutput { return v.Create }).(TeeOptsPtrOutput)
 }
 
 func (o TeeOutput) CreatedFiles() pulumi.StringArrayOutput {

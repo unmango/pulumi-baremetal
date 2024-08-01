@@ -97,7 +97,6 @@ export class Tee extends pulumi.CustomResource {
         return obj['__pulumiType'] === Tee.__pulumiType;
     }
 
-    public readonly create!: pulumi.Output<outputs.cmd.TeeOpts | undefined>;
     public /*out*/ readonly createdFiles!: pulumi.Output<string[]>;
     public /*out*/ readonly stderr!: pulumi.Output<string>;
     public readonly stdin!: pulumi.Output<string>;
@@ -123,7 +122,6 @@ export class Tee extends pulumi.CustomResource {
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
         } else {
-            resourceInputs["create"] = undefined /*out*/;
             resourceInputs["createdFiles"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdin"] = undefined /*out*/;

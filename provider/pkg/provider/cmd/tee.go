@@ -20,19 +20,16 @@ func (t *Tee) Annotate(a infer.Annotator) {
 }
 
 type TeeOpts struct {
-	Append bool     `pulumi:"append,optional"`
-	Files  []string `pulumi:"files"`
+	Append  bool     `pulumi:"append,optional"`
+	Content string   `pulumi:"content"`
+	Files   []string `pulumi:"files"`
 }
 
 type TeeArgs struct {
-	Stdin  string   `pulumi:"stdin"`
 	Create *TeeOpts `pulumi:"create,optional"`
 }
 
-type TeeState struct {
-	TeeArgs
-	CommandState
-}
+type TeeState = CommandState[TeeOpts]
 
 var _ = (infer.CustomCreate[TeeArgs, TeeState])((*Tee)(nil))
 var _ = (infer.CustomDelete[TeeState])((*Tee)(nil))
@@ -42,17 +39,18 @@ func (Tee) Create(ctx context.Context, name string, inputs TeeArgs, preview bool
 	state := TeeState{}
 	log := logger.FromContext(ctx)
 
+	if inputs.Create == nil {
+		log.Info("nothing to do")
+		return name, state, nil
+	}
+
 	if preview {
 		// Could dial the host and warn if the connection fails
 		log.Debug("skipping during preview")
 		return name, state, nil
 	}
 
-	err := state.create(ctx,
-		pb.Bin_BIN_TEE,
-		squash(*inputs.Create),
-		&inputs.Stdin,
-	)
+	err := state.Create(ctx, *inputs.Create)
 	if err != nil {
 		log.Error("failed creating")
 		return name, state, fmt.Errorf("create: %w", err)
@@ -64,7 +62,7 @@ func (Tee) Create(ctx context.Context, name string, inputs TeeArgs, preview bool
 // Delete implements infer.CustomDelete.
 func (Tee) Delete(ctx context.Context, id string, props TeeState) error {
 	log := logger.FromContext(ctx)
-	if err := props.delete(ctx); err != nil {
+	if err := props.Delete(ctx); err != nil {
 		log.Error("failed deleting")
 		return fmt.Errorf("delete: %w", err)
 	}
@@ -72,11 +70,14 @@ func (Tee) Delete(ctx context.Context, id string, props TeeState) error {
 	return nil
 }
 
-func squash(inputs TeeOpts) []string {
+func (o TeeOpts) Cmd() *pb.Command {
 	args := []string{}
-	if inputs.Append {
+	if o.Append {
 		args = append(args, "--append")
 	}
 
-	return append(args, inputs.Files...)
+	return &pb.Command{
+		Bin:  pb.Bin_BIN_TEE,
+		Args: append(args, o.Files...),
+	}
 }

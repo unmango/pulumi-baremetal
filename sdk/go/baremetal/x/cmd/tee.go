@@ -85,11 +85,10 @@ import (
 type Tee struct {
 	pulumi.CustomResourceState
 
-	Create       pulumix.GPtrOutput[TeeOpts, TeeOptsOutput] `pulumi:"create"`
-	CreatedFiles pulumix.ArrayOutput[string]                `pulumi:"createdFiles"`
-	Stderr       pulumix.Output[string]                     `pulumi:"stderr"`
-	Stdin        pulumix.Output[string]                     `pulumi:"stdin"`
-	Stdout       pulumix.Output[string]                     `pulumi:"stdout"`
+	CreatedFiles pulumix.ArrayOutput[string] `pulumi:"createdFiles"`
+	Stderr       pulumix.Output[string]      `pulumi:"stderr"`
+	Stdin        pulumix.Output[string]      `pulumi:"stdin"`
+	Stdout       pulumix.Output[string]      `pulumi:"stdout"`
 }
 
 // NewTee registers a new resource with the given unique name, arguments, and options.
@@ -167,12 +166,6 @@ func (o TeeOutput) ToOutput(ctx context.Context) pulumix.Output[Tee] {
 	return pulumix.Output[Tee]{
 		OutputState: o.OutputState,
 	}
-}
-
-func (o TeeOutput) Create() pulumix.GPtrOutput[TeeOpts, TeeOptsOutput] {
-	value := pulumix.Apply[Tee](o, func(v Tee) pulumix.GPtrOutput[TeeOpts, TeeOptsOutput] { return v.Create })
-	unwrapped := pulumix.Flatten[*TeeOpts, pulumix.GPtrOutput[TeeOpts, TeeOptsOutput]](value)
-	return pulumix.GPtrOutput[TeeOpts, TeeOptsOutput]{OutputState: unwrapped.OutputState}
 }
 
 func (o TeeOutput) CreatedFiles() pulumix.ArrayOutput[string] {

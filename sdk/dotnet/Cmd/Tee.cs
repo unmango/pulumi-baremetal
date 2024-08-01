@@ -77,9 +77,6 @@ namespace UnMango.Baremetal.Cmd
     [BaremetalResourceType("baremetal:cmd:Tee")]
     public partial class Tee : global::Pulumi.CustomResource
     {
-        [Output("create")]
-        public Output<Outputs.TeeOpts?> Create { get; private set; } = null!;
-
         [Output("createdFiles")]
         public Output<ImmutableArray<string>> CreatedFiles { get; private set; } = null!;
 

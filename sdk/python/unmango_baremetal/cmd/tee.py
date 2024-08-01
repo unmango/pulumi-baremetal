@@ -8,7 +8,6 @@ import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
-from . import outputs
 from ._inputs import *
 
 __all__ = ['TeeArgs', 'Tee']
@@ -244,17 +243,11 @@ class Tee(pulumi.CustomResource):
 
         __props__ = TeeArgs.__new__(TeeArgs)
 
-        __props__.__dict__["create"] = None
         __props__.__dict__["created_files"] = None
         __props__.__dict__["stderr"] = None
         __props__.__dict__["stdin"] = None
         __props__.__dict__["stdout"] = None
         return Tee(resource_name, opts=opts, __props__=__props__)
-
-    @property
-    @pulumi.getter
-    def create(self) -> pulumi.Output[Optional['outputs.TeeOpts']]:
-        return pulumi.get(self, "create")
 
     @property
     @pulumi.getter(name="createdFiles")

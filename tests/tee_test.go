@@ -43,8 +43,8 @@ var _ = Describe("Tee", Ordered, func() {
 		var stderr *string
 
 		props := resource.PropertyMap{
-			"stdin": resource.NewStringProperty(stdin),
 			"create": resource.NewObjectProperty(resource.PropertyMap{
+				"content": resource.NewStringProperty(stdin),
 				"files": resource.NewArrayProperty([]resource.PropertyValue{
 					resource.NewStringProperty(file),
 				}),
@@ -80,8 +80,8 @@ var _ = Describe("Tee", Ordered, func() {
 				Urn: urn,
 				ID:  *teeId,
 				Properties: resource.PropertyMap{
-					"stdin": resource.NewStringProperty(stdin),
-					"create": resource.NewObjectProperty(resource.PropertyMap{
+					"createOpts": resource.NewObjectProperty(resource.PropertyMap{
+						"content": resource.NewStringProperty(stdin),
 						"files": resource.NewArrayProperty([]resource.PropertyValue{
 							resource.NewStringProperty(file),
 						}),
