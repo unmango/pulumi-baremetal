@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
@@ -49,12 +50,28 @@ func (s *service) create(ctx context.Context, req *pb.CommandRequest) (*pb.Comma
 }
 
 func (s *service) delete(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
-	switch req.Command {
-	case pb.Command_COMMAND_TEE:
-		return s.deleteTee(ctx, req)
+	log := s.logger(req)
+	bin := "rm"
+
+	log = log.With("bin", bin, "args", req.Args)
+	log.Debug("creating command with context")
+	cmd := exec.CommandContext(ctx, bin, req.Args...)
+
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+	cmd.Stdin = stdinReader(req.Stdin)
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
+
+	log.Info("executing command")
+	if err := cmd.Run(); err != nil {
+		log.Error("command failed", "err", err)
 	}
 
-	return nil, fmt.Errorf("unsupported command: %s", req.Command)
+	return &pb.CommandResponse{
+		Stdout: stdout.String(),
+		Stderr: stderr.String(),
+	}, nil
 }
 
 func getBin(cmd pb.Command) (string, error) {

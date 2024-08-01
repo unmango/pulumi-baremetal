@@ -38,9 +38,6 @@ var _ = Describe("Tee", Ordered, func() {
 		stdin := "Test stdin"
 		file := "/tmp/tee/create.txt"
 
-		updatedStdin := "This is different"
-		updatedFile := "/tmp/tee/update.txt"
-
 		var teeId *string
 		var stdout *string
 		var stderr *string
@@ -75,16 +72,14 @@ var _ = Describe("Tee", Ordered, func() {
 			Expect(provisioner).To(ContainFile(ctx, file))
 		})
 
-		It("should update", func(ctx context.Context) {
-			Skip("update isn't fully implemented yet")
-
+		It("should delete", func(ctx context.Context) {
 			By("asserting the developer hasn't made an error")
 			Expect(teeId).NotTo(BeNil())
 
-			response, err := server.Update(p.UpdateRequest{
+			err := server.Delete(p.DeleteRequest{
 				Urn: urn,
 				ID:  *teeId,
-				Olds: resource.PropertyMap{
+				Properties: resource.PropertyMap{
 					"stdin": resource.NewStringProperty(stdin),
 					"create": resource.NewObjectProperty(resource.PropertyMap{
 						"files": resource.NewArrayProperty([]resource.PropertyValue{
@@ -95,49 +90,6 @@ var _ = Describe("Tee", Ordered, func() {
 					"stderr": resource.NewStringProperty(*stderr),
 					"createdFiles": resource.NewArrayProperty([]resource.PropertyValue{
 						resource.NewStringProperty(file),
-					}),
-				},
-				News: resource.PropertyMap{
-					"stdin": resource.NewStringProperty(updatedStdin),
-					"create": resource.NewObjectProperty(resource.PropertyMap{
-						"files": resource.NewArrayProperty([]resource.PropertyValue{
-							resource.NewStringProperty(updatedFile),
-						}),
-					}),
-				},
-			})
-
-			Expect(err).NotTo(HaveOccurred())
-
-			out, ok := response.Properties["stderr"].V.(string)
-			Expect(ok).To(BeTrueBecause("stderr was not a string"))
-			stderr = &out
-
-			out, ok = response.Properties["stdout"].V.(string)
-			Expect(ok).To(BeTrueBecause("stdout was not a string"))
-			stdout = &out
-
-			Expect(provisioner).NotTo(ContainFile(ctx, file))
-		})
-
-		It("should delete", func(ctx context.Context) {
-			By("asserting the developer hasn't made an error")
-			Expect(teeId).NotTo(BeNil())
-
-			err := server.Delete(p.DeleteRequest{
-				Urn: urn,
-				ID:  *teeId,
-				Properties: resource.PropertyMap{
-					"stdin": resource.NewStringProperty(updatedStdin),
-					"create": resource.NewObjectProperty(resource.PropertyMap{
-						"files": resource.NewArrayProperty([]resource.PropertyValue{
-							resource.NewStringProperty(updatedFile),
-						}),
-					}),
-					"stdout": resource.NewStringProperty(*stdout),
-					"stderr": resource.NewStringProperty(*stderr),
-					"createdFiles": resource.NewArrayProperty([]resource.PropertyValue{
-						resource.NewStringProperty(updatedFile),
 					}),
 				},
 			})
