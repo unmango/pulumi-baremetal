@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"os"
+	"os/exec"
 	"path"
 
 	"github.com/mdelapenya/tlscert"
@@ -55,7 +55,7 @@ func NewProvisioner(
 		Logger: NewLogger(logger),
 		ContainerRequest: tc.ContainerRequest{
 			FromDockerfile: tc.FromDockerfile{
-				Context:    path.Clean(path.Join(cwd, "..")),
+				Context:    gitRoot,
 				Dockerfile: path.Join("provider", "cmd", "provisioner", "Dockerfile"),
 			},
 			Files: []tc.ContainerFile{

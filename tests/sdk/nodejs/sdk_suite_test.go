@@ -19,6 +19,4 @@ func TestSdk(t *testing.T) {
 	RunSpecs(t, "NodeJS Suite")
 }
 
-var _ = Describe("Sdk Test", func() {
-	sdk.DescribeSdk("Sdk Test Inner", test)
-})
+var _ = sdk.DescribeSdk("Sdk Test", test)
