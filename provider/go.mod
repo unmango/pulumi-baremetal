@@ -5,7 +5,6 @@ go 1.22
 replace github.com/unmango/pulumi-baremetal/gen => ../gen
 
 require (
-	github.com/pkg/errors v0.9.1
 	github.com/pulumi/pulumi-command/sdk v1.0.1
 	github.com/pulumi/pulumi-go-provider v0.21.0
 	github.com/pulumi/pulumi/sdk/v3 v3.127.0
@@ -69,6 +68,7 @@ require (
 	github.com/pgavlin/fx v0.1.6 // indirect
 	github.com/pgavlin/goldmark v1.1.33-0.20200616210433-b5eb04559386 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pkg/term v1.1.0 // indirect
 	github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 // indirect
 	github.com/pulumi/esc v0.9.1 // indirect
