@@ -6,9 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os/exec"
-	"strings"
 
-	"github.com/pkg/errors"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/internal"
 )
@@ -41,30 +39,14 @@ func (s *service) create(ctx context.Context, req *pb.CommandRequest) (*pb.Comma
 	bin, err := getBin(req.Command)
 	if err != nil {
 		log.Error("getting bin from command", "err", err)
-		return nil, errors.Wrap(err, "getting bin from command")
+		return nil, fmt.Errorf("getting bin from command: %w", err)
 	}
 
 	log = log.With("bin", bin, "args", req.Args)
 	log.Debug("creating command with context")
 	cmd := exec.CommandContext(ctx, bin, req.Args...)
 
-	stdout := &bytes.Buffer{}
-	stderr := &bytes.Buffer{}
-	cmd.Stdin = strings.NewReader(req.Stdin)
-	cmd.Stdout = stdout
-	cmd.Stderr = stderr
-
-	log.Info("executing command")
-	err = cmd.Run()
-	if err != nil {
-		log.Error("command failed", "err", err)
-	}
-
-	log.Debug("command succeeded")
-	return &pb.CommandResponse{
-		Stdout: stdout.String(),
-		Stderr: stderr.String(),
-	}, nil
+	return run(cmd, log)
 }
 
 func (s *service) delete(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
@@ -77,13 +59,12 @@ func (s *service) delete(ctx context.Context, req *pb.CommandRequest) (*pb.Comma
 
 	stdout := &bytes.Buffer{}
 	stderr := &bytes.Buffer{}
-	cmd.Stdin = strings.NewReader(req.Stdin)
+	cmd.Stdin = stdinReader(req.Stdin)
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
 
 	log.Info("executing command")
-	err := cmd.Run()
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		log.Error("command failed", "err", err)
 	}
 

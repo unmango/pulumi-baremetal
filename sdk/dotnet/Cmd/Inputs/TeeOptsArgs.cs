@@ -13,6 +13,9 @@ namespace UnMango.Baremetal.Cmd.Inputs
 
     public sealed class TeeOptsArgs : global::Pulumi.ResourceArgs
     {
+        [Input("append")]
+        public Input<bool>? Append { get; set; }
+
         [Input("files", required: true)]
         private InputList<string>? _files;
         public InputList<string> Files

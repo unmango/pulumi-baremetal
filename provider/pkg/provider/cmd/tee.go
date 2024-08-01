@@ -3,8 +3,8 @@ package cmd
 import (
 	"context"
 	_ "embed"
+	"fmt"
 
-	"github.com/pkg/errors"
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
@@ -21,15 +21,13 @@ func (t *Tee) Annotate(a infer.Annotator) {
 }
 
 type TeeOpts struct {
-	Files []string `pulumi:"files"`
+	Append bool     `pulumi:"append,optional"`
+	Files  []string `pulumi:"files"`
 }
 
 type TeeArgs struct {
-	Stdin string `pulumi:"stdin"`
-
+	Stdin  string   `pulumi:"stdin"`
 	Create *TeeOpts `pulumi:"create,optional"`
-	Update *TeeOpts `pulumi:"create,optional"`
-	Delete *TeeOpts `pulumi:"create,optional"`
 }
 
 type TeeState struct {
@@ -56,7 +54,7 @@ func (Tee) Create(ctx context.Context, name string, inputs TeeArgs, preview bool
 
 	if err := state.create(ctx, inputs); err != nil {
 		log.Error("failed creating")
-		return name, state, errors.Wrap(err, "create")
+		return name, state, fmt.Errorf("create: %w", err)
 	}
 
 	return name, state, nil
@@ -67,7 +65,7 @@ func (Tee) Delete(ctx context.Context, id string, props TeeState) error {
 	log := logger.FromContext(ctx)
 	if err := props.delete(ctx); err != nil {
 		log.Error("failed deleting")
-		return errors.Wrap(err, "delete")
+		return fmt.Errorf("delete: %w", err)
 	}
 
 	return nil
@@ -78,7 +76,7 @@ func (state *TeeState) create(ctx context.Context, input TeeArgs) error {
 	p, err := provisioner.FromContext(ctx)
 	if err != nil {
 		log.Error("failed creating provisioner")
-		return errors.Wrap(err, "creating provisioner")
+		return fmt.Errorf("creating provisioner: %w", err)
 	}
 
 	log.Debug("sending command request to provisioner")
@@ -87,11 +85,11 @@ func (state *TeeState) create(ctx context.Context, input TeeArgs) error {
 		Command: pb.Command_COMMAND_TEE,
 		Args:    input.Create.Files,
 		Flags:   map[string]*pb.Flag{},
-		Stdin:   input.Stdin,
+		Stdin:   &input.Stdin,
 	})
 	if err != nil {
 		log.Error("failed sending command request")
-		return errors.Wrap(err, "command request")
+		return fmt.Errorf("command request: %w", err)
 	}
 
 	log.Debug("assigning outputs")
@@ -108,7 +106,7 @@ func (state *TeeState) delete(ctx context.Context) error {
 	p, err := provisioner.FromContext(ctx)
 	if err != nil {
 		log.Error("failed creating provisioner")
-		return errors.Wrap(err, "creating provisioner")
+		return fmt.Errorf("creating provisioner: %w", err)
 	}
 
 	log.Debug("sending command request to provisioner")
@@ -120,7 +118,7 @@ func (state *TeeState) delete(ctx context.Context) error {
 	})
 	if err != nil {
 		log.Error("failed sending command request")
-		return errors.Wrap(err, "command request")
+		return fmt.Errorf("command request: %w", err)
 	}
 
 	log.Debug("assigning outputs")
