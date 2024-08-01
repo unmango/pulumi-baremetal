@@ -32,11 +32,12 @@ BUF_CONFIG := buf.yaml buf.gen.yaml
 MANS    := tee
 MAN_SRC := $(MANS:%=$(PKG_DIR)/provider/cmd/%.man)
 
-PKG_SRC     := $(shell find provider/pkg -type f -name '*.go')
-PROTO_SRC   := $(shell find $(PROTO_DIR) -type f -name '*.proto')
-GO_GRPC_SRC := $(PROTO_SRC:proto/%.proto=gen/go/%_grpc.pb.go)
-GO_PB_SRC   := $(PROTO_SRC:proto/%.proto=gen/go/%.pb.go)
-GEN_SRC     := $(GO_GRPC_SRC) $(GO_PB_SRC)
+PROVIDER_SRC := $(shell find $(PROVIDER_PATH) -type f -name '*.go')
+PKG_SRC      := $(shell find provider/pkg -type f -name '*.go')
+PROTO_SRC    := $(shell find $(PROTO_DIR) -type f -name '*.proto')
+GO_GRPC_SRC  := $(PROTO_SRC:proto/%.proto=gen/go/%_grpc.pb.go)
+GO_PB_SRC    := $(PROTO_SRC:proto/%.proto=gen/go/%.pb.go)
+GEN_SRC      := $(GO_GRPC_SRC) $(GO_PB_SRC)
 
 default:: provider provisioner
 
@@ -138,7 +139,7 @@ build:: provider provisioner dotnet_sdk go_sdk nodejs_sdk python_sdk
 # Required for the codegen action that runs in pulumi/pulumi
 only_build:: build
 
-lint:: .make/lint/buf .make/lint/go
+lint:: .make/lint/buf .make/lint_go
 
 install:: install_nodejs_sdk install_dotnet_sdk
 	cp $(WORKING_DIR)/bin/${PROVIDER} ${GOPATH}/bin
@@ -185,9 +186,12 @@ provider/pkg/%.man: provider/pkg/%.go
 buf.lock: $(BUF_CONFIG)
 	buf dep update
 
-.make/lint/go: $(patsubst %,.make/lint/%,provider sdk tests)
-.make/lint/%: %/*.go %/*/*.go %/*/*/*.go
-	cd $* && golangci-lint run -c ${WORKING_DIR}/.golangci.yml --timeout 10m ./...
+.make/lint_go: $(patsubst %,.make/lint/%,provider sdk tests)
+.make/lint/provider: $(PROVIDER_SRC)
+.make/lint/tests: $(shell find tests -name '*.go')
+.make/lint/sdk: $(shell find sdk/go -name '*.go')
+.make/lint/%:
+	cd $* && golangci-lint run -c ${WORKING_DIR}/.golangci.yml --timeout 1m ./...
 	@touch $@
 
 .make/buf_build: buf.lock $(PROTO_SRC)
