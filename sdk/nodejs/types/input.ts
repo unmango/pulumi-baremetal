@@ -8,6 +8,7 @@ import * as outputs from "../types/output";
 export namespace cmd {
     export interface TeeOptsArgs {
         append?: pulumi.Input<boolean>;
+        content: pulumi.Input<string>;
         files: pulumi.Input<pulumi.Input<string>[]>;
     }
 }

@@ -16,23 +16,12 @@ __all__ = ['TeeArgs', 'Tee']
 @pulumi.input_type
 class TeeArgs:
     def __init__(__self__, *,
-                 stdin: pulumi.Input[str],
                  create: Optional[pulumi.Input['TeeOptsArgs']] = None):
         """
         The set of arguments for constructing a Tee resource.
         """
-        pulumi.set(__self__, "stdin", stdin)
         if create is not None:
             pulumi.set(__self__, "create", create)
-
-    @property
-    @pulumi.getter
-    def stdin(self) -> pulumi.Input[str]:
-        return pulumi.get(self, "stdin")
-
-    @stdin.setter
-    def stdin(self, value: pulumi.Input[str]):
-        pulumi.set(self, "stdin", value)
 
     @property
     @pulumi.getter
@@ -50,7 +39,6 @@ class Tee(pulumi.CustomResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  create: Optional[pulumi.Input[Union['TeeOptsArgs', 'TeeOptsArgsDict']]] = None,
-                 stdin: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         """
         TEE(1)                           User Commands                          TEE(1)
@@ -123,7 +111,7 @@ class Tee(pulumi.CustomResource):
     @overload
     def __init__(__self__,
                  resource_name: str,
-                 args: TeeArgs,
+                 args: Optional[TeeArgs] = None,
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         TEE(1)                           User Commands                          TEE(1)
@@ -205,7 +193,6 @@ class Tee(pulumi.CustomResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  create: Optional[pulumi.Input[Union['TeeOptsArgs', 'TeeOptsArgsDict']]] = None,
-                 stdin: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -216,9 +203,7 @@ class Tee(pulumi.CustomResource):
             __props__ = TeeArgs.__new__(TeeArgs)
 
             __props__.__dict__["create"] = create
-            if stdin is None and not opts.urn:
-                raise TypeError("Missing required property 'stdin'")
-            __props__.__dict__["stdin"] = stdin
+            __props__.__dict__["create_opts"] = None
             __props__.__dict__["created_files"] = None
             __props__.__dict__["stderr"] = None
             __props__.__dict__["stdout"] = None
@@ -244,17 +229,16 @@ class Tee(pulumi.CustomResource):
 
         __props__ = TeeArgs.__new__(TeeArgs)
 
-        __props__.__dict__["create"] = None
+        __props__.__dict__["create_opts"] = None
         __props__.__dict__["created_files"] = None
         __props__.__dict__["stderr"] = None
-        __props__.__dict__["stdin"] = None
         __props__.__dict__["stdout"] = None
         return Tee(resource_name, opts=opts, __props__=__props__)
 
     @property
-    @pulumi.getter
-    def create(self) -> pulumi.Output[Optional['outputs.TeeOpts']]:
-        return pulumi.get(self, "create")
+    @pulumi.getter(name="createOpts")
+    def create_opts(self) -> pulumi.Output[Optional['outputs.TeeOpts']]:
+        return pulumi.get(self, "create_opts")
 
     @property
     @pulumi.getter(name="createdFiles")
@@ -265,11 +249,6 @@ class Tee(pulumi.CustomResource):
     @pulumi.getter
     def stderr(self) -> pulumi.Output[str]:
         return pulumi.get(self, "stderr")
-
-    @property
-    @pulumi.getter
-    def stdin(self) -> pulumi.Output[str]:
-        return pulumi.get(self, "stdin")
 
     @property
     @pulumi.getter

@@ -16,11 +16,18 @@ __all__ = [
 @pulumi.output_type
 class TeeOpts(dict):
     def __init__(__self__, *,
+                 content: str,
                  files: Sequence[str],
                  append: Optional[bool] = None):
+        pulumi.set(__self__, "content", content)
         pulumi.set(__self__, "files", files)
         if append is not None:
             pulumi.set(__self__, "append", append)
+
+    @property
+    @pulumi.getter
+    def content(self) -> str:
+        return pulumi.get(self, "content")
 
     @property
     @pulumi.getter

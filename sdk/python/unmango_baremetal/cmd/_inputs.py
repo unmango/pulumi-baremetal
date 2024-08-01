@@ -16,11 +16,22 @@ __all__ = [
 @pulumi.input_type
 class TeeOptsArgs:
     def __init__(__self__, *,
+                 content: pulumi.Input[str],
                  files: pulumi.Input[Sequence[pulumi.Input[str]]],
                  append: Optional[pulumi.Input[bool]] = None):
+        pulumi.set(__self__, "content", content)
         pulumi.set(__self__, "files", files)
         if append is not None:
             pulumi.set(__self__, "append", append)
+
+    @property
+    @pulumi.getter
+    def content(self) -> pulumi.Input[str]:
+        return pulumi.get(self, "content")
+
+    @content.setter
+    def content(self, value: pulumi.Input[str]):
+        pulumi.set(self, "content", value)
 
     @property
     @pulumi.getter

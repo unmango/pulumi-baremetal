@@ -77,17 +77,14 @@ namespace UnMango.Baremetal.Cmd
     [BaremetalResourceType("baremetal:cmd:Tee")]
     public partial class Tee : global::Pulumi.CustomResource
     {
-        [Output("create")]
-        public Output<Outputs.TeeOpts?> Create { get; private set; } = null!;
+        [Output("createOpts")]
+        public Output<Outputs.TeeOpts?> CreateOpts { get; private set; } = null!;
 
         [Output("createdFiles")]
         public Output<ImmutableArray<string>> CreatedFiles { get; private set; } = null!;
 
         [Output("stderr")]
         public Output<string> Stderr { get; private set; } = null!;
-
-        [Output("stdin")]
-        public Output<string> Stdin { get; private set; } = null!;
 
         [Output("stdout")]
         public Output<string> Stdout { get; private set; } = null!;
@@ -100,7 +97,7 @@ namespace UnMango.Baremetal.Cmd
         /// <param name="name">The unique name of the resource</param>
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
-        public Tee(string name, TeeArgs args, CustomResourceOptions? options = null)
+        public Tee(string name, TeeArgs? args = null, CustomResourceOptions? options = null)
             : base("baremetal:cmd:Tee", name, args ?? new TeeArgs(), MakeResourceOptions(options, ""))
         {
         }
@@ -140,9 +137,6 @@ namespace UnMango.Baremetal.Cmd
     {
         [Input("create")]
         public Input<Inputs.TeeOptsArgs>? Create { get; set; }
-
-        [Input("stdin", required: true)]
-        public Input<string> Stdin { get; set; } = null!;
 
         public TeeArgs()
         {

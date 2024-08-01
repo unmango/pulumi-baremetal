@@ -7,7 +7,6 @@ import (
 	"context"
 	"reflect"
 
-	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
@@ -85,10 +84,9 @@ import (
 type Tee struct {
 	pulumi.CustomResourceState
 
-	Create       pulumix.GPtrOutput[TeeOpts, TeeOptsOutput] `pulumi:"create"`
+	CreateOpts   pulumix.GPtrOutput[TeeOpts, TeeOptsOutput] `pulumi:"createOpts"`
 	CreatedFiles pulumix.ArrayOutput[string]                `pulumi:"createdFiles"`
 	Stderr       pulumix.Output[string]                     `pulumi:"stderr"`
-	Stdin        pulumix.Output[string]                     `pulumi:"stdin"`
 	Stdout       pulumix.Output[string]                     `pulumi:"stdout"`
 }
 
@@ -96,12 +94,9 @@ type Tee struct {
 func NewTee(ctx *pulumi.Context,
 	name string, args *TeeArgs, opts ...pulumi.ResourceOption) (*Tee, error) {
 	if args == nil {
-		return nil, errors.New("missing one or more required arguments")
+		args = &TeeArgs{}
 	}
 
-	if args.Stdin == nil {
-		return nil, errors.New("invalid value for required argument 'Stdin'")
-	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Tee
 	err := ctx.RegisterResource("baremetal:cmd:Tee", name, args, &resource, opts...)
@@ -136,13 +131,11 @@ func (TeeState) ElementType() reflect.Type {
 
 type teeArgs struct {
 	Create *TeeOpts `pulumi:"create"`
-	Stdin  string   `pulumi:"stdin"`
 }
 
 // The set of arguments for constructing a Tee resource.
 type TeeArgs struct {
 	Create pulumix.Input[*TeeOptsArgs]
-	Stdin  pulumix.Input[string]
 }
 
 func (TeeArgs) ElementType() reflect.Type {
@@ -169,8 +162,8 @@ func (o TeeOutput) ToOutput(ctx context.Context) pulumix.Output[Tee] {
 	}
 }
 
-func (o TeeOutput) Create() pulumix.GPtrOutput[TeeOpts, TeeOptsOutput] {
-	value := pulumix.Apply[Tee](o, func(v Tee) pulumix.GPtrOutput[TeeOpts, TeeOptsOutput] { return v.Create })
+func (o TeeOutput) CreateOpts() pulumix.GPtrOutput[TeeOpts, TeeOptsOutput] {
+	value := pulumix.Apply[Tee](o, func(v Tee) pulumix.GPtrOutput[TeeOpts, TeeOptsOutput] { return v.CreateOpts })
 	unwrapped := pulumix.Flatten[*TeeOpts, pulumix.GPtrOutput[TeeOpts, TeeOptsOutput]](value)
 	return pulumix.GPtrOutput[TeeOpts, TeeOptsOutput]{OutputState: unwrapped.OutputState}
 }
@@ -183,11 +176,6 @@ func (o TeeOutput) CreatedFiles() pulumix.ArrayOutput[string] {
 
 func (o TeeOutput) Stderr() pulumix.Output[string] {
 	value := pulumix.Apply[Tee](o, func(v Tee) pulumix.Output[string] { return v.Stderr })
-	return pulumix.Flatten[string, pulumix.Output[string]](value)
-}
-
-func (o TeeOutput) Stdin() pulumix.Output[string] {
-	value := pulumix.Apply[Tee](o, func(v Tee) pulumix.Output[string] { return v.Stdin })
 	return pulumix.Flatten[string, pulumix.Output[string]](value)
 }
 

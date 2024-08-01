@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"log/slog"
 	"os/exec"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
@@ -20,69 +19,92 @@ func NewServer(state *internal.State) pb.CommandServiceServer {
 	return &service{State: state}
 }
 
-// Command implements baremetalv1alpha1.CommandServiceServer.
-func (s *service) Command(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
-	s.Log.Debug("parsing command op")
-	switch req.Op {
-	case pb.Op_OP_CREATE:
-		return s.create(ctx, req)
-	case pb.Op_OP_DELETE:
-		return s.delete(ctx, req)
+func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateResponse, error) {
+	log := s.Log.With("op", "create", "bin", req.Command.Bin, "args", req.Command.Args)
+	if req.Command == nil {
+		log.Error("no command found in request")
+		return nil, fmt.Errorf("no command found in request")
 	}
 
-	s.Log.Error("unsupported op", "op", req.Op)
-	return nil, fmt.Errorf("unsupported op: %s", req.Op)
-}
-
-func (s *service) create(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
-	log := s.logger(req)
-	bin, err := getBin(req.Command)
+	bin, err := bin(req.Command.Bin)
 	if err != nil {
-		log.Error("getting bin from command", "err", err)
-		return nil, fmt.Errorf("getting bin from command: %w", err)
+		log.Error("unable to map bin", "err", err)
+		return nil, fmt.Errorf("mapping bin: %w", err)
 	}
 
-	log = log.With("bin", bin, "args", req.Args)
-	log.Debug("creating command with context")
-	cmd := exec.CommandContext(ctx, bin, req.Args...)
+	log.DebugContext(ctx, "building command")
+	cmd := exec.CommandContext(ctx, bin, req.Command.Args...)
+	cmd.Stdin = stdinReader(req.Command.Stdin)
 
-	return run(cmd, log)
-}
-
-func (s *service) delete(ctx context.Context, req *pb.CommandRequest) (*pb.CommandResponse, error) {
-	log := s.logger(req)
-	bin := "rm"
-
-	log = log.With("bin", bin, "args", req.Args)
-	log.Debug("creating command with context")
-	cmd := exec.CommandContext(ctx, bin, req.Args...)
-
-	stdout := &bytes.Buffer{}
-	stderr := &bytes.Buffer{}
-	cmd.Stdin = stdinReader(req.Stdin)
+	stderr, stdout := &bytes.Buffer{}, &bytes.Buffer{}
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
 
-	log.Info("executing command")
-	if err := cmd.Run(); err != nil {
-		log.Error("command failed", "err", err)
+	log.DebugContext(ctx, "running command", "cmd", cmd)
+	if err = cmd.Run(); err != nil {
+		log.ErrorContext(ctx, "failed to run command", "err", err)
 	}
 
-	return &pb.CommandResponse{
-		Stdout: stdout.String(),
-		Stderr: stderr.String(),
-	}, nil
+	log.InfoContext(ctx, "successfully ran command", "cmd", cmd)
+	return &pb.CreateResponse{Result: &pb.Result{
+		ExitCode: int32(cmd.ProcessState.ExitCode()),
+		Stdout:   stdout.String(),
+		Stderr:   stderr.String(),
+	}}, nil
 }
 
-func getBin(cmd pb.Command) (string, error) {
-	switch cmd {
-	case pb.Command_COMMAND_TEE:
+func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteResponse, error) {
+	log := s.Log.With("op", "delete", "bin", req.Create.Bin, "args", req.Create.Args)
+	var cmd *exec.Cmd
+	bin := pb.Bin_BIN_UNSPECIFIED
+
+	switch req.Create.Bin {
+	case pb.Bin_BIN_TEE:
+		// All of the args to `tee` should be files
+		toRemove := req.Create.Args
+		args := prepend("-f", toRemove)
+
+		log.DebugContext(ctx, "building command")
+		cmd = exec.CommandContext(ctx, "rm", args...)
+	default:
+		log.ErrorContext(ctx, "unsupported bin")
+		return nil, fmt.Errorf("unsupported bin: %s", req.Create.Bin)
+	}
+
+	if cmd == nil {
+		log.InfoContext(ctx, "nothing to do")
+		return &pb.DeleteResponse{}, nil
+	}
+
+	stderr, stdout := &bytes.Buffer{}, &bytes.Buffer{}
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
+
+	log.DebugContext(ctx, "running command", "cmd", cmd)
+	if err := cmd.Run(); err != nil {
+		log.ErrorContext(ctx, "failed to run command", "err", err)
+		return &pb.DeleteResponse{}, nil
+	}
+
+	log.DebugContext(ctx, "describing operation")
+	op := &pb.Operation{
+		Command: &pb.Command{Bin: bin, Args: cmd.Args},
+		Result: &pb.Result{
+			ExitCode: int32(cmd.ProcessState.ExitCode()),
+			Stdout:   stdout.String(),
+			Stderr:   stderr.String(),
+		},
+	}
+
+	log.InfoContext(ctx, "successfully ran command", "cmd", cmd)
+	return &pb.DeleteResponse{Op: op}, nil
+}
+
+func bin(b pb.Bin) (string, error) {
+	switch b {
+	case pb.Bin_BIN_TEE:
 		return "tee", nil
 	}
 
-	return "", fmt.Errorf("unrecognized command: %s", cmd)
-}
-
-func (s *service) logger(req *pb.CommandRequest) *slog.Logger {
-	return s.Log.With("op", req.Op, "cmd", req.Command)
+	return "", fmt.Errorf("unrecognized bin: %s", b)
 }
