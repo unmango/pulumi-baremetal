@@ -4,6 +4,7 @@ package unmango.baremetal.v1alpha1;
 
 service CommandService {
   rpc Create(CreateRequest) returns (CreateResponse);
+  rpc Update(UpdateRequest) returns (UpdateResponse);
   rpc Delete(DeleteRequest) returns (DeleteResponse);
 }
 
@@ -13,6 +14,17 @@ message CreateRequest {
 }
 
 message CreateResponse {
+  Result result = 1;
+  repeated string files = 2;
+}
+
+message UpdateRequest {
+  Command command = 1;
+  repeated string expect_files = 2;
+  Operation create = 3;
+}
+
+message UpdateResponse {
   Result result = 1;
   repeated string files = 2;
 }
