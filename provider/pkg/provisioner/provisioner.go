@@ -2,6 +2,7 @@ package provisioner
 
 import (
 	"crypto/tls"
+	"fmt"
 	"log/slog"
 	"net"
 
@@ -39,7 +40,10 @@ func (p *provisioner) Serve() error {
 
 func New(lis net.Listener, o ...opt) Provisioner {
 	options := &Options{slog.Default(), []grpc.ServerOption{}}
-	_ = opts.Apply(options, o...)
+	err := opts.Apply(options, o...)
+	if err != nil {
+		panic(err) // TODO: Update the signature to return an error
+	}
 
 	return &provisioner{
 		State:    options.state(),
@@ -55,12 +59,31 @@ func WithLogger(logger *slog.Logger) opt {
 	}
 }
 
-func WithTLS(config *tls.Config) opt {
+func WithGrpcOption(opt grpc.ServerOption) opt {
 	return func(o *Options) error {
-		creds := credentials.NewTLS(config)
-		o.grpc = append(o.grpc, grpc.Creds(creds))
+		o.grpcOption(opt)
 		return nil
 	}
+}
+
+func WithTLS(config *tls.Config) opt {
+	return func(o *Options) error {
+		o.tlsConfig(config)
+		return nil
+	}
+}
+
+func WithOptionalCertificates(caFile, certFile, keyFile string) opt {
+	missingFile := caFile == "" || certFile == "" || keyFile == ""
+	return opts.If(!missingFile, func(o *Options) error {
+		certs, err := LoadCertificates(caFile, certFile, keyFile)
+		if err != nil {
+			return fmt.Errorf("failed to load certificates: %w", err)
+		}
+
+		o.tlsConfig(certs)
+		return nil
+	})
 }
 
 func Serve(lis net.Listener) error {
@@ -69,6 +92,15 @@ func Serve(lis net.Listener) error {
 
 func (o *Options) state() *internal.State {
 	return &internal.State{Log: o.logger}
+}
+
+func (o *Options) grpcOption(opt grpc.ServerOption) {
+	o.grpc = append(o.grpc, opt)
+}
+
+func (o *Options) tlsConfig(config *tls.Config) {
+	creds := credentials.NewTLS(config)
+	o.grpcOption(grpc.Creds(creds))
 }
 
 func (p *provisioner) registerCommandService(srv pb.CommandServiceServer) {
