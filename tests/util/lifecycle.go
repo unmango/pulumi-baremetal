@@ -8,60 +8,87 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/common/resource"
 )
 
-func LifecycleTest(server integration.Server, l integration.LifeCycleTest) bool {
+// Based on https://github.com/pulumi/pulumi-go-provider/blob/main/integration/integration.go
+
+func Run(server integration.Server, l integration.LifeCycleTest) {
 	urn := resource.NewURN("test", "provider", "", l.Resource, "test")
 
-	runCreate := func(op integration.Operation) p.CreateResponse {
-		ginkgo.By("sending a check request")
+	runCreate := func(op integration.Operation) (p.CreateResponse, bool) {
+		ginkgo.By("sending check request")
 		check, err := server.Check(p.CheckRequest{
 			Urn:  urn,
 			Olds: nil,
 			News: op.Inputs,
 		})
-
 		gomega.Expect(err).NotTo(gomega.HaveOccurred())
-		gomega.Expect(check.Failures).To(gomega.BeEquivalentTo(op.CheckFailures))
 
-		ginkgo.By("sending a preview create request")
+		if len(op.CheckFailures) > 0 || len(check.Failures) > 0 {
+			gomega.Expect(check.Failures).To(gomega.BeEquivalentTo(op.CheckFailures))
+			return p.CreateResponse{}, false
+		}
+
+		ginkgo.By("sending preview create request")
 		_, err = server.Create(p.CreateRequest{
 			Urn:        urn,
 			Properties: check.Inputs.Copy(),
 			Preview:    true,
 		})
-
-		if op.ExpectFailure {
-			gomega.Expect(err).To(gomega.HaveOccurred())
-		} else {
-			gomega.Expect(err).NotTo(gomega.HaveOccurred())
+		// We allow the failure from ExpectFailure to hit at either the preview or the Create.
+		if op.ExpectFailure && err != nil {
+			return p.CreateResponse{}, false
 		}
 
-		ginkgo.By("sending a create request")
+		ginkgo.By("sending create request")
 		create, err := server.Create(p.CreateRequest{
 			Urn:        urn,
 			Properties: check.Inputs.Copy(),
 		})
-
 		if op.ExpectFailure {
 			gomega.Expect(err).To(gomega.HaveOccurred())
-		} else {
-			gomega.Expect(err).NotTo(gomega.HaveOccurred())
+			return p.CreateResponse{}, false
 		}
 
-		return create
+		gomega.Expect(err).NotTo(gomega.HaveOccurred())
+		if err != nil {
+			return p.CreateResponse{}, false
+		}
+		if op.Hook != nil {
+			op.Hook(check.Inputs, create.Properties.Copy())
+		}
+		if op.ExpectedOutput != nil {
+			gomega.Expect(create.Properties).To(gomega.BeEquivalentTo(op.ExpectedOutput))
+		}
+
+		return create, true
 	}
 
-	runDiff := func(op integration.Operation, id string, olds resource.PropertyMap) (p.DiffResponse, bool) {
-		ginkgo.By("sending a check request")
+	createResponse, keepGoing := runCreate(l.Create)
+	if !keepGoing {
+		return
+	}
+
+	id := createResponse.ID
+	olds := createResponse.Properties
+	for _, update := range l.Updates {
+		ginkgo.By("performing update")
+
+		ginkgo.By("sending check request")
 		check, err := server.Check(p.CheckRequest{
 			Urn:  urn,
 			Olds: olds,
-			News: op.Inputs,
+			News: update.Inputs,
 		})
 
 		gomega.Expect(err).NotTo(gomega.HaveOccurred())
-		gomega.Expect(check.Failures).To(gomega.BeEquivalentTo(op.CheckFailures))
+		if err != nil {
+			return
+		}
+		if len(update.CheckFailures) > 0 || len(check.Failures) > 0 {
+			gomega.Expect(check.Failures).To(gomega.BeEquivalentTo(update.CheckFailures))
+			continue
+		}
 
-		ginkgo.By("sending a diff request")
+		ginkgo.By("sending diff request")
 		diff, err := server.Diff(p.DiffRequest{
 			ID:   id,
 			Urn:  urn,
@@ -70,6 +97,12 @@ func LifecycleTest(server integration.Server, l integration.LifeCycleTest) bool 
 		})
 
 		gomega.Expect(err).NotTo(gomega.HaveOccurred())
+		if err != nil {
+			return
+		}
+		if !diff.HasChanges {
+			continue
+		}
 
 		isDelete := false
 		for _, v := range diff.DetailedDiff {
@@ -82,49 +115,72 @@ func LifecycleTest(server integration.Server, l integration.LifeCycleTest) bool 
 				isDelete = true
 			}
 		}
-
-		return diff, isDelete
-	}
-
-	runDelete := func(id string, olds resource.PropertyMap, diff p.DiffResponse) {
-		runDelete := func() {
-			err := server.Delete(p.DeleteRequest{
-				ID:         id,
-				Urn:        urn,
-				Properties: olds,
-			})
-			gomega.Expect(err).NotTo(gomega.HaveOccurred())
-		}
-
-		if diff.DeleteBeforeReplace {
-			runDelete()
-			result, keepGoing := runCreate(update)
-			if !keepGoing {
-				continue
+		if isDelete {
+			runDelete := func() {
+				err = server.Delete(p.DeleteRequest{
+					ID:         id,
+					Urn:        urn,
+					Properties: olds,
+				})
+				gomega.Expect(err).NotTo(gomega.HaveOccurred())
 			}
-			id = result.ID
-			olds = result.Properties
+			if diff.DeleteBeforeReplace {
+				runDelete()
+				result, keepGoing := runCreate(update)
+				if !keepGoing {
+					continue
+				}
+				id = result.ID
+				olds = result.Properties
+			} else {
+				result, keepGoing := runCreate(update)
+				if !keepGoing {
+					continue
+				}
+
+				runDelete()
+				// Set the new block
+				id = result.ID
+				olds = result.Properties
+			}
 		} else {
-			result, keepGoing := runCreate(update)
-			if !keepGoing {
+
+			// Now perform the preview
+			_, err = server.Update(p.UpdateRequest{
+				ID:      id,
+				Urn:     urn,
+				Olds:    olds,
+				News:    check.Inputs.Copy(),
+				Preview: true,
+			})
+
+			if update.ExpectFailure && err != nil {
 				continue
 			}
 
-			runDelete()
-			// Set the new block
-			id = result.ID
+			result, err := server.Update(p.UpdateRequest{
+				ID:   id,
+				Urn:  urn,
+				Olds: olds,
+				News: check.Inputs.Copy(),
+			})
+			if update.ExpectFailure {
+				gomega.Expect(err).To(gomega.HaveOccurred())
+				continue
+			}
+			if update.Hook != nil {
+				update.Hook(check.Inputs, result.Properties.Copy())
+			}
+			if update.ExpectedOutput != nil {
+				gomega.Expect(result.Properties.Copy()).To(gomega.BeEquivalentTo(update.ExpectedOutput))
+			}
 			olds = result.Properties
 		}
 	}
-
-	return ginkgo.Describe("Resource Lifecycle", ginkgo.Ordered, func() {
-
-		createResponse := runCreate(l.Create)
-
-		id := createResponse.ID
-		olds := createResponse.Properties
-		for i, update := range l.Updates {
-			diff, isDelete := runDiff(update, id, olds)
-		}
+	err := server.Delete(p.DeleteRequest{
+		ID:         id,
+		Urn:        urn,
+		Properties: olds,
 	})
+	gomega.Expect(err).NotTo(gomega.HaveOccurred())
 }
