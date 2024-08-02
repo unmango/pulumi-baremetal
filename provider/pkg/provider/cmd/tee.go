@@ -27,16 +27,27 @@ type TeeArgs struct {
 type TeeState = CommandState[TeeArgs]
 
 var _ = (infer.CustomCreate[TeeArgs, TeeState])((*Tee)(nil))
+var _ = (infer.CustomUpdate[TeeArgs, TeeState])((*Tee)(nil))
 var _ = (infer.CustomDelete[TeeState])((*Tee)(nil))
 
 // Create implements infer.CustomCreate.
 func (Tee) Create(ctx context.Context, name string, inputs TeeArgs, preview bool) (string, TeeState, error) {
 	state := TeeState{}
-	if err := state.Create(ctx, &inputs, preview); err != nil {
+	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("create: %w", err)
 	}
 
 	return name, state, nil
+}
+
+// Update implements infer.CustomUpdate.
+func (Tee) Update(ctx context.Context, id string, olds TeeState, news TeeArgs, preview bool) (TeeState, error) {
+	state, err := olds.Update(ctx, news, preview)
+	if err != nil {
+		return olds, fmt.Errorf("update: %w", err)
+	}
+
+	return state, nil
 }
 
 // Delete implements infer.CustomDelete.
