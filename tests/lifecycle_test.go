@@ -2,7 +2,6 @@ package tests
 
 import (
 	"context"
-	"fmt"
 	"path"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -67,9 +66,9 @@ var _ = Describe("Command Resources", func() {
 			},
 		}
 
-		run(server, test)
+		It("complete a full lifecycle", func(ctx context.Context) {
+			run(server, test)
 
-		It("should remove created files", func(ctx context.Context) {
 			Expect(provisioner).NotTo(ContainFile(ctx, file))
 		})
 	})
@@ -129,12 +128,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 		return create, true
 	}
 
-	var createResponse p.CreateResponse
-	var keepGoing bool
-
-	It("should create", func() {
-		createResponse, keepGoing = runCreate(l.Create)
-	})
+	createResponse, keepGoing := runCreate(l.Create)
 
 	if !keepGoing {
 		return
@@ -142,118 +136,114 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 
 	id := createResponse.ID
 	olds := createResponse.Properties
-	for i, update := range l.Updates {
-		It(fmt.Sprintf("should update (#%d)", i), func() {
-			By("sending check request")
-			check, err := server.Check(p.CheckRequest{
-				Urn:  urn,
-				Olds: olds,
-				News: update.Inputs,
+	for _, update := range l.Updates {
+		By("sending check request")
+		check, err := server.Check(p.CheckRequest{
+			Urn:  urn,
+			Olds: olds,
+			News: update.Inputs,
+		})
+
+		Expect(err).NotTo(HaveOccurred())
+		if err != nil {
+			return
+		}
+		if len(update.CheckFailures) > 0 || len(check.Failures) > 0 {
+			Expect(check.Failures).To(BeEquivalentTo(update.CheckFailures))
+			return
+		}
+
+		By("sending diff request")
+		diff, err := server.Diff(p.DiffRequest{
+			ID:   id,
+			Urn:  urn,
+			Olds: olds,
+			News: check.Inputs.Copy(),
+		})
+
+		Expect(err).NotTo(HaveOccurred())
+		if err != nil {
+			return
+		}
+		if !diff.HasChanges {
+			return
+		}
+
+		isDelete := false
+		for _, v := range diff.DetailedDiff {
+			switch v.Kind {
+			case p.AddReplace:
+				fallthrough
+			case p.DeleteReplace:
+				fallthrough
+			case p.UpdateReplace:
+				isDelete = true
+			}
+		}
+		if isDelete {
+			runDelete := func() {
+				By("sending a delete request")
+				err = server.Delete(p.DeleteRequest{
+					ID:         id,
+					Urn:        urn,
+					Properties: olds,
+				})
+				Expect(err).NotTo(HaveOccurred())
+			}
+
+			if diff.DeleteBeforeReplace {
+				runDelete()
+				result, keepGoing := runCreate(update)
+				if !keepGoing {
+					return
+				}
+				id = result.ID
+				olds = result.Properties
+			} else {
+				result, keepGoing := runCreate(update)
+				if !keepGoing {
+					return
+				}
+
+				runDelete()
+				// Set the new block
+				id = result.ID
+				olds = result.Properties
+			}
+		} else {
+			// Now perform the preview
+			By("sending a preview update request")
+			_, err = server.Update(p.UpdateRequest{
+				ID:      id,
+				Urn:     urn,
+				Olds:    olds,
+				News:    check.Inputs.Copy(),
+				Preview: true,
 			})
 
-			Expect(err).NotTo(HaveOccurred())
-			if err != nil {
-				return
-			}
-			if len(update.CheckFailures) > 0 || len(check.Failures) > 0 {
-				Expect(check.Failures).To(BeEquivalentTo(update.CheckFailures))
+			if update.ExpectFailure && err != nil {
 				return
 			}
 
-			By("sending diff request")
-			diff, err := server.Diff(p.DiffRequest{
+			By("sending an update request")
+			result, err := server.Update(p.UpdateRequest{
 				ID:   id,
 				Urn:  urn,
 				Olds: olds,
 				News: check.Inputs.Copy(),
 			})
-
-			Expect(err).NotTo(HaveOccurred())
-			if err != nil {
+			if update.ExpectFailure {
+				Expect(err).To(HaveOccurred())
 				return
 			}
-			if !diff.HasChanges {
-				return
+			if update.Hook != nil {
+				update.Hook(check.Inputs, result.Properties.Copy())
 			}
-
-			isDelete := false
-			for _, v := range diff.DetailedDiff {
-				switch v.Kind {
-				case p.AddReplace:
-					fallthrough
-				case p.DeleteReplace:
-					fallthrough
-				case p.UpdateReplace:
-					isDelete = true
-				}
+			if update.ExpectedOutput != nil {
+				Expect(result.Properties.Copy()).To(BeEquivalentTo(update.ExpectedOutput))
 			}
-
-			if isDelete {
-				runDelete := func() {
-					By("sending a delete request")
-					err = server.Delete(p.DeleteRequest{
-						ID:         id,
-						Urn:        urn,
-						Properties: olds,
-					})
-					Expect(err).NotTo(HaveOccurred())
-				}
-
-				if diff.DeleteBeforeReplace {
-					runDelete()
-					result, keepGoing := runCreate(update)
-					if !keepGoing {
-						return
-					}
-					id = result.ID
-					olds = result.Properties
-				} else {
-					result, keepGoing := runCreate(update)
-					if !keepGoing {
-						return
-					}
-
-					runDelete()
-					// Set the new block
-					id = result.ID
-					olds = result.Properties
-				}
-			} else {
-				// Now perform the preview
-				By("sending a preview update request")
-				_, err = server.Update(p.UpdateRequest{
-					ID:      id,
-					Urn:     urn,
-					Olds:    olds,
-					News:    check.Inputs.Copy(),
-					Preview: true,
-				})
-
-				if update.ExpectFailure && err != nil {
-					return
-				}
-
-				By("sending an update request")
-				result, err := server.Update(p.UpdateRequest{
-					ID:   id,
-					Urn:  urn,
-					Olds: olds,
-					News: check.Inputs.Copy(),
-				})
-				if update.ExpectFailure {
-					Expect(err).To(HaveOccurred())
-					return
-				}
-				if update.Hook != nil {
-					By("calling the update hook")
-					update.Hook(check.Inputs, result.Properties.Copy())
-				}
-				if update.ExpectedOutput != nil {
-					Expect(result.Properties.Copy()).To(BeEquivalentTo(update.ExpectedOutput))
-				}
-				olds = result.Properties
-			}
-		})
+			olds = result.Properties
+		}
 	}
 
 	err := server.Delete(p.DeleteRequest{
