@@ -44,14 +44,10 @@ var _ = Describe("Command Resources", func() {
 		test := integration.LifeCycleTest{
 			Resource: "baremetal:cmd:Tee",
 			Create: integration.Operation{
-				Inputs: resource.PropertyMap{
-					"create": resource.NewObjectProperty(resource.PropertyMap{
-						"content": resource.NewStringProperty(stdin),
-						"files": resource.NewArrayProperty([]resource.PropertyValue{
-							resource.NewStringProperty(file),
-						}),
-					}),
-				},
+				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"content": stdin,
+					"files":   []string{file},
+				}),
 				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 					"exitCode":     0,
 					"stdout":       stdin,

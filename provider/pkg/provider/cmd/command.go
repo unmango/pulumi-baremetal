@@ -10,16 +10,16 @@ import (
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
 
-type CommandOpts interface {
+type CommandArgs interface {
 	Cmd() *pb.Command
 	ExpectedFiles() []string
 }
 
-type CommandState[T CommandOpts] struct {
+type CommandState[T CommandArgs] struct {
+	Args         *T       `pulumi:"args,optional"`
 	ExitCode     int      `pulumi:"exitCode"`
 	Stderr       string   `pulumi:"stderr"`
 	Stdout       string   `pulumi:"stdout"`
-	Args         *T       `pulumi:"args,optional"`
 	CreatedFiles []string `pulumi:"createdFiles"`
 }
 
@@ -71,7 +71,7 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 
 	if s.Args == nil {
 		log.Error("invalid command state")
-		return errors.New("invalid state, create was nil")
+		return errors.New("invalid state, args was nil")
 	}
 
 	log.Debug("sending delete request")
