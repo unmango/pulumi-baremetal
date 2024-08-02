@@ -21,16 +21,27 @@ func containerPath(name string) string {
 	return path.Join(work, name)
 }
 
-var _ = Describe("tee", Ordered, func() {
-	stdin := "Test lifecycle stdin"
-	file := containerPath("create.txt")
-
+var _ = Describe("Command Resources", func() {
 	var server integration.Server
-	var test integration.LifeCycleTest
 
-	BeforeAll(func(ctx context.Context) {
-		By("creating the lifecycle test")
-		test = integration.LifeCycleTest{
+	BeforeEach(func(ctx context.Context) {
+		By("creating an integration server")
+		server = util.NewServer()
+
+		By("configuring the provider")
+		err := provisioner.ConfigureProvider(ctx, server)
+		Expect(err).NotTo(HaveOccurred())
+
+		By("creating a workspace in the container")
+		err = provisioner.Exec(ctx, "mkdir", "-p", work)
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	Describe("Tee", Ordered, func() {
+		stdin := "Test lifecycle stdin"
+		file := containerPath("create.txt")
+
+		test := integration.LifeCycleTest{
 			Resource: "baremetal:cmd:Tee",
 			Create: integration.Operation{
 				Inputs: resource.PropertyMap{
@@ -60,22 +71,13 @@ var _ = Describe("tee", Ordered, func() {
 			},
 		}
 
-		By("creating an integration server")
-		server = util.NewServer()
+		It("should complete a full lifecycle", func() {
+			run(server, test)
+		})
 
-		By("configuring the provider")
-		err := provisioner.ConfigureProvider(ctx, server)
-		Expect(err).NotTo(HaveOccurred())
-
-		By("creating a workspace in the container")
-		err = provisioner.Exec(ctx, "mkdir", "-p", work)
-		Expect(err).NotTo(HaveOccurred())
-	})
-
-	It("should complete a full lifecycle", func(ctx context.Context) {
-		run(server, test)
-
-		Expect(provisioner).NotTo(ContainFile(ctx, file))
+		It("should remove created files", func(ctx context.Context) {
+			Expect(provisioner).NotTo(ContainFile(ctx, file))
+		})
 	})
 })
 
