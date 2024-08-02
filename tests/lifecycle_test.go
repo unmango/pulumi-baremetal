@@ -38,6 +38,7 @@ var _ = Describe("Command Resources", func() {
 
 	Describe("Tee", Ordered, func() {
 		stdin := "Test lifecycle stdin"
+		newStdin := "Updated stdin"
 		file := containerPath("create.txt")
 		newFile := containerPath("update.txt")
 
@@ -65,31 +66,84 @@ var _ = Describe("Command Resources", func() {
 					Expect(string(data)).To(Equal(stdin))
 				},
 			},
-			Updates: []integration.Operation{{
-				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"content": stdin,
-					"files":   []string{newFile},
-				}),
-				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"exitCode":     0,
-					"stdout":       stdin,
-					"stderr":       "",
-					"createdFiles": []string{newFile},
-					"args": map[string]interface{}{
-						"append":  false,
+			Updates: []integration.Operation{
+				{
+					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
 						"content": stdin,
 						"files":   []string{newFile},
-					},
-				}),
-				Hook: func(inputs, output resource.PropertyMap) {
-					ctx := context.Background()
-					Expect(provisioner).NotTo(ContainFile(ctx, file))
+					}),
+					ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
+						"exitCode":     0,
+						"stdout":       stdin,
+						"stderr":       "",
+						"createdFiles": []string{newFile},
+						"args": map[string]interface{}{
+							"append":  false,
+							"content": stdin,
+							"files":   []string{newFile},
+						},
+					}),
+					Hook: func(inputs, output resource.PropertyMap) {
+						ctx := context.Background()
+						Expect(provisioner).NotTo(ContainFile(ctx, file))
 
-					data, err := provisioner.ReadFile(ctx, newFile)
-					Expect(err).NotTo(HaveOccurred())
-					Expect(string(data)).To(Equal(stdin))
+						data, err := provisioner.ReadFile(ctx, newFile)
+						Expect(err).NotTo(HaveOccurred())
+						Expect(string(data)).To(Equal(stdin))
+					},
 				},
-			}},
+				{
+					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+						"content": newStdin,
+						"files":   []string{newFile},
+					}),
+					ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
+						"exitCode":     0,
+						"stdout":       newStdin,
+						"stderr":       "",
+						"createdFiles": []string{newFile},
+						"args": map[string]interface{}{
+							"append":  false,
+							"content": newStdin,
+							"files":   []string{newFile},
+						},
+					}),
+					Hook: func(inputs, output resource.PropertyMap) {
+						ctx := context.Background()
+						data, err := provisioner.ReadFile(ctx, newFile)
+						Expect(err).NotTo(HaveOccurred())
+						Expect(string(data)).To(Equal(newStdin))
+					},
+				},
+				{
+					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+						"content": newStdin,
+						"files":   []string{file, newFile},
+					}),
+					ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
+						"exitCode":     0,
+						"stdout":       newStdin,
+						"stderr":       "",
+						"createdFiles": []string{file, newFile},
+						"args": map[string]interface{}{
+							"append":  false,
+							"content": newStdin,
+							"files":   []string{file, newFile},
+						},
+					}),
+					Hook: func(inputs, output resource.PropertyMap) {
+						ctx := context.Background()
+
+						data, err := provisioner.ReadFile(ctx, file)
+						Expect(err).NotTo(HaveOccurred())
+						Expect(string(data)).To(Equal(newStdin))
+
+						data, err = provisioner.ReadFile(ctx, newFile)
+						Expect(err).NotTo(HaveOccurred())
+						Expect(string(data)).To(Equal(newStdin))
+					},
+				},
+			},
 		}
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
