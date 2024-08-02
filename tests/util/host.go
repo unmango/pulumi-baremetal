@@ -24,7 +24,7 @@ type TestHost interface {
 	Ip(context.Context) (string, error)
 	ReadFile(context.Context, string) ([]byte, error)
 	WriteFile(context.Context, string, []byte) error
-	CreateCertBundle(context.Context, string, string) (*HostCerts, error)
+	WithCerts(context.Context, *CertBundle) (*HostCerts, error)
 
 	Start(context.Context) error
 	Stop(context.Context) error
@@ -106,25 +106,11 @@ func (h *host) Ip(ctx context.Context) (string, error) {
 }
 
 // CreateCertBundle implemnts TestHost.
-func (h *host) CreateCertBundle(ctx context.Context, name string, dir string) (*HostCerts, error) {
-	ctr, err := h.ensureContainer(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	host, err := ctr.Host(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("retriving host: %w", err)
-	}
-
-	_, err = h.Exec(ctx, "mkdir", "--parents", dir)
+func (h *host) WithCerts(ctx context.Context, bundle *CertBundle) (*HostCerts, error) {
+	dir := "/etc/baremetal"
+	_, err := h.Exec(ctx, "mkdir", "--parents", dir)
 	if err != nil {
 		return nil, fmt.Errorf("creating cert directory: %w", err)
-	}
-
-	bundle, err := NewCertBundle(host, name)
-	if err != nil {
-		return nil, fmt.Errorf("creating cert bundle: %w", err)
 	}
 
 	caFile := path.Join(dir, "ca.pem")

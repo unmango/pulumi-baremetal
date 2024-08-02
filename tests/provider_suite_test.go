@@ -13,6 +13,7 @@ import (
 
 var (
 	provisioner util.TestProvisioner
+	pcerts      *util.HostCerts
 	sshServer   util.SshServer
 )
 
@@ -30,6 +31,18 @@ var _ = BeforeSuite(func(ctx context.Context) {
 	err = prov.Start(ctx)
 	Expect(err).NotTo(HaveOccurred())
 	provisioner = prov
+
+	By("fetching the provisioner IP")
+	ip, err := prov.Ip(ctx)
+	Expect(err).NotTo(HaveOccurred())
+
+	By("generating certificates")
+	bundle, err := util.NewCertBundle(ip, "provisioner")
+	Expect(err).NotTo(HaveOccurred())
+
+	By("copying certs into the provisioner")
+	pcerts, err = prov.WithCerts(ctx, bundle)
+	Expect(err).NotTo(HaveOccurred())
 
 	By("creating an ssh server")
 	ssh, err := util.NewSshServer(ctx)
