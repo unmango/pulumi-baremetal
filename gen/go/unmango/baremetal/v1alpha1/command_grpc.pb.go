@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion8
 
 const (
 	CommandService_Create_FullMethodName = "/unmango.baremetal.v1alpha1.CommandService/Create"
+	CommandService_Update_FullMethodName = "/unmango.baremetal.v1alpha1.CommandService/Update"
 	CommandService_Delete_FullMethodName = "/unmango.baremetal.v1alpha1.CommandService/Delete"
 )
 
@@ -28,6 +29,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CommandServiceClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 }
 
@@ -49,6 +51,16 @@ func (c *commandServiceClient) Create(ctx context.Context, in *CreateRequest, op
 	return out, nil
 }
 
+func (c *commandServiceClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateResponse)
+	err := c.cc.Invoke(ctx, CommandService_Update_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *commandServiceClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(DeleteResponse)
@@ -64,6 +76,7 @@ func (c *commandServiceClient) Delete(ctx context.Context, in *DeleteRequest, op
 // for forward compatibility
 type CommandServiceServer interface {
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
+	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
 	mustEmbedUnimplementedCommandServiceServer()
 }
@@ -74,6 +87,9 @@ type UnimplementedCommandServiceServer struct {
 
 func (UnimplementedCommandServiceServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+}
+func (UnimplementedCommandServiceServer) Update(context.Context, *UpdateRequest) (*UpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
 func (UnimplementedCommandServiceServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
@@ -109,6 +125,24 @@ func _CommandService_Create_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommandService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommandServiceServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommandService_Update_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommandServiceServer).Update(ctx, req.(*UpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CommandService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteRequest)
 	if err := dec(in); err != nil {
@@ -137,6 +171,10 @@ var CommandService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Create",
 			Handler:    _CommandService_Create_Handler,
+		},
+		{
+			MethodName: "Update",
+			Handler:    _CommandService_Update_Handler,
 		},
 		{
 			MethodName: "Delete",

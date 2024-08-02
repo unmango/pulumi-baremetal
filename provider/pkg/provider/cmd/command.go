@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
@@ -10,26 +9,21 @@ import (
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
 
-type CommandOpts interface {
+type CommandArgs interface {
 	Cmd() *pb.Command
 	ExpectedFiles() []string
 }
 
-type CommandState[T CommandOpts] struct {
+type CommandState[T CommandArgs] struct {
+	Args         T        `pulumi:"args"`
 	ExitCode     int      `pulumi:"exitCode"`
 	Stderr       string   `pulumi:"stderr"`
 	Stdout       string   `pulumi:"stdout"`
-	Args         *T       `pulumi:"args,optional"`
 	CreatedFiles []string `pulumi:"createdFiles"`
 }
 
-func (s *CommandState[T]) Create(ctx context.Context, opts *T, preview bool) error {
+func (s *CommandState[T]) Create(ctx context.Context, inputs T, preview bool) error {
 	log := logger.FromContext(ctx)
-	if opts == nil {
-		log.Info("nothing to do")
-		return nil
-	}
-
 	if preview {
 		// Could dial the host and warn if the connection fails
 		log.Debug("skipping during preview")
@@ -44,21 +38,59 @@ func (s *CommandState[T]) Create(ctx context.Context, opts *T, preview bool) err
 
 	log.Debug("sending create request")
 	res, err := p.Create(ctx, &pb.CreateRequest{
-		Command:     (*opts).Cmd(),
-		ExpectFiles: (*opts).ExpectedFiles(),
+		Command:     inputs.Cmd(),
+		ExpectFiles: inputs.ExpectedFiles(),
 	})
 	if err != nil {
 		return fmt.Errorf("sending create request: %w", err)
 	}
 
+	s.Args = inputs
 	s.ExitCode = int(res.Result.ExitCode)
 	s.Stdout = res.Result.Stdout
 	s.Stderr = res.Result.Stderr
-	s.Args = opts
 	s.CreatedFiles = res.Files
 
 	log.Info("create success")
 	return nil
+}
+
+func (s *CommandState[T]) Update(ctx context.Context, inputs T, preview bool) (CommandState[T], error) {
+	log := logger.FromContext(ctx)
+	p, err := provisioner.FromContext(ctx)
+	result := s.Copy()
+
+	if err != nil {
+		log.Error("failed creating provisioner")
+		return result, fmt.Errorf("creating provisioner: %w", err)
+	}
+
+	log.Debug("sending update request")
+	res, err := p.Update(ctx, &pb.UpdateRequest{
+		Command:     inputs.Cmd(),
+		ExpectFiles: inputs.ExpectedFiles(),
+		Create: &pb.Operation{
+			Files:   s.CreatedFiles,
+			Command: s.Args.Cmd(),
+			Result: &pb.Result{
+				ExitCode: int32(s.ExitCode),
+				Stdout:   s.Stdout,
+				Stderr:   s.Stderr,
+			},
+		},
+	})
+	if err != nil {
+		return result, fmt.Errorf("sending update request: %w", err)
+	}
+
+	result.Args = inputs
+	result.ExitCode = int(res.Result.ExitCode)
+	result.Stdout = res.Result.Stdout
+	result.Stderr = res.Result.Stderr
+	result.CreatedFiles = res.Files
+
+	log.Info("update success")
+	return result, nil
 }
 
 func (s *CommandState[T]) Delete(ctx context.Context) error {
@@ -69,16 +101,11 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 		return fmt.Errorf("creating provisioner: %w", err)
 	}
 
-	if s.Args == nil {
-		log.Error("invalid command state")
-		return errors.New("invalid state, create was nil")
-	}
-
 	log.Debug("sending delete request")
 	res, err := p.Delete(ctx, &pb.DeleteRequest{
 		Create: &pb.Operation{
 			Files:   s.CreatedFiles,
-			Command: (*s.Args).Cmd(),
+			Command: s.Args.Cmd(),
 			Result: &pb.Result{
 				ExitCode: int32(s.ExitCode),
 				Stdout:   s.Stdout,
@@ -102,4 +129,14 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 
 	log.Info("delete success")
 	return nil
+}
+
+func (s *CommandState[T]) Copy() CommandState[T] {
+	return CommandState[T]{
+		Args:         s.Args,
+		ExitCode:     s.ExitCode,
+		Stderr:       s.Stderr,
+		Stdout:       s.Stdout,
+		CreatedFiles: s.CreatedFiles,
+	}
 }
