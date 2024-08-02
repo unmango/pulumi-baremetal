@@ -6,7 +6,7 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/unmango/pulumi-baremetal/tests/util/expect"
+	. "github.com/unmango/pulumi-baremetal/tests/expect"
 
 	p "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/integration"
@@ -27,12 +27,24 @@ var _ = Describe("Command Resources", func() {
 		By("creating an integration server")
 		server = util.NewServer()
 
-		By("configuring the provider")
-		err := provisioner.ConfigureProvider(ctx, server)
+		By("creating a workspace in the container")
+		_, err := provisioner.Exec(ctx, "mkdir", "-p", work)
 		Expect(err).NotTo(HaveOccurred())
 
-		By("creating a workspace in the container")
-		err = provisioner.Exec(ctx, "mkdir", "-p", work)
+		By("generating certificates")
+		certs, err := provisioner.CreateCertBundle(ctx, "lifecycle", work)
+		Expect(err).NotTo(HaveOccurred())
+
+		By("fetching provisioner connection details")
+		addr, port, err := provisioner.ConnectionDetails(ctx)
+		Expect(err).NotTo(HaveOccurred())
+
+		By("configuring the provider")
+		err = util.ConfigureProvider(server).
+			WithProvisioner(addr, port).
+			WithCerts(certs).
+			Configure()
+
 		Expect(err).NotTo(HaveOccurred())
 	})
 

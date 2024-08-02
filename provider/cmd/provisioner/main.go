@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"net"
 	"os"
@@ -10,53 +11,66 @@ import (
 )
 
 var (
-	address string
-	network string
-	verbose bool
-	log     *slog.Logger
+	address  string
+	network  string
+	caFile   string
+	certFile string
+	keyFile  string
+	verbose  bool
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "provisioner",
 	Short: "The pulumi-baremetal provisioner",
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		log = logger(verbose)
-	},
 	RunE: func(cmd *cobra.Command, args []string) error {
+		var level slog.Level
+		if verbose {
+			level = slog.LevelDebug
+		}
+
+		handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			Level: level,
+		})
+
+		log := slog.New(handler)
 		lis, err := net.Listen(network, address)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to create listener: %w", err)
 		}
 
 		log.Debug("creating provisioner")
-		provisioner := p.New(lis, p.WithLogger(log))
+		provisioner := p.New(lis,
+			p.WithLogger(log),
+			p.WithOptionalCertificates(caFile, certFile, keyFile),
+		)
 
-		log.Info("serving", "network", network, "address", address, "verbose", verbose)
+		log.Info("serving",
+			"network", network,
+			"address", address,
+			"verbose", verbose,
+			"caFile", caFile,
+			"certFile", certFile,
+			"keyFile", keyFile,
+		)
+
 		return provisioner.Serve()
 	},
 }
 
 func main() {
-	rootCmd.Flags().StringVar(&address, "address", "", "Must be a valid `net.Listen()` address.")
+	rootCmd.Flags().StringVar(&address, "address", "", "Must be a valid `net.Listen()` address")
 	rootCmd.Flags().StringVar(&network, "network", "tcp", "Must be a valid `net.Listen()` network. i.e. \"tcp\", \"tcp4\", \"tcp6\", \"unix\" or \"unixpacket\"")
 	rootCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Log verbosity")
 
+	rootCmd.Flags().StringVar(&caFile, "ca-file", "", "The path to the certificate authority file")
+	rootCmd.Flags().StringVar(&certFile, "cert-file", "", "The path to the server certificate file")
+	rootCmd.Flags().StringVar(&keyFile, "key-file", "", "The path to the server private key file")
+	rootCmd.MarkFlagsRequiredTogether("ca-file", "cert-file", "key-file")
+
 	if err := rootCmd.Execute(); err != nil {
-		log.Error("failed to execute", "err", err)
+		fmt.Printf("failed to execute: %s\n", err)
+		os.Exit(1)
 	}
 
-	log.Debug("exiting gracefully")
-}
-
-func logger(verbose bool) *slog.Logger {
-	var level slog.Level
-	if verbose {
-		level = slog.LevelDebug
-	}
-
-	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: level,
-	})
-
-	return slog.New(handler)
+	fmt.Println("exiting gracefully")
 }

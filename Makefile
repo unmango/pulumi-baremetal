@@ -33,7 +33,7 @@ MANS    := tee
 MAN_SRC := $(MANS:%=$(PKG_DIR)/provider/cmd/%.man)
 
 GO_MODULES   := gen provider sdk tests
-GO_SRC       := $(shell find . -type f -name '*.go')
+GO_SRC       := $(subst ./,,$(shell find . -type f -name '*.go'))
 PROVIDER_SRC := $(filter $(PROVIDER_PATH)/%,$(GO_SRC))
 PKG_SRC      := $(filter $(PKG_DIR)/%,$(GO_SRC))
 PROTO_SRC    := $(shell find $(PROTO_DIR) -type f -name '*.proto')
@@ -184,6 +184,10 @@ provider/pkg/%.man: provider/pkg/%.go
 buf.lock: $(BUF_CONFIG)
 	buf dep update
 
+.make/tidy/gen: $(filter gen/%,$(GO_SRC))
+.make/tidy/provider: $(filter provider/%,$(GO_SRC))
+.make/tidy/sdk: $(filter sdk/%,$(GO_SRC))
+.make/tidy/tests: $(filter tests/%,$(GO_SRC))
 $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 	go -C $* mod tidy
 	@touch $@

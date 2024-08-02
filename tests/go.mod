@@ -8,6 +8,7 @@ replace github.com/unmango/pulumi-baremetal/provider => ../provider
 
 require (
 	github.com/blang/semver v3.5.1+incompatible
+	github.com/mdelapenya/tlscert v0.1.0
 	github.com/onsi/ginkgo/v2 v2.19.1
 	github.com/onsi/gomega v1.34.1
 	github.com/pulumi/pulumi-go-provider v0.21.0
@@ -15,6 +16,7 @@ require (
 	github.com/pulumi/pulumi/sdk/v3 v3.127.0
 	github.com/testcontainers/testcontainers-go v0.32.0
 	github.com/unmango/pulumi-baremetal/provider v0.0.0-00010101000000-000000000000
+	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
 )
 
 require (
@@ -204,7 +206,6 @@ require (
 	gocloud.dev v0.37.0 // indirect
 	gocloud.dev/secrets/hashivault v0.37.0 // indirect
 	golang.org/x/crypto v0.25.0 // indirect
-	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/mod v0.19.0 // indirect
 	golang.org/x/net v0.27.0 // indirect
 	golang.org/x/oauth2 v0.20.0 // indirect
