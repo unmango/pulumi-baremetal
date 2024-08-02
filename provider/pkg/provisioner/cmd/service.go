@@ -67,9 +67,40 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (*pb.Create
 	}, nil
 }
 
+func (s *service) Update(ctx context.Context, req *pb.UpdateRequest) (res *pb.UpdateResponse, err error) {
+	log := s.Log.With("op", "update", "create", req.Create)
+
+	var delete *pb.DeleteResponse
+	toDelete := req.Create.Files
+	if len(toDelete) > 0 {
+		delete, err = s.Delete(ctx, &pb.DeleteRequest{Create: req.Create})
+	} else {
+		log.InfoContext(ctx, "nothing to delete")
+	}
+	if err != nil {
+		log.ErrorContext(ctx, "failed performing delete", "err", err)
+		return nil, fmt.Errorf("failed deleting: %w", err)
+	}
+
+	create, err := s.Create(ctx, &pb.CreateRequest{
+		Command:     req.Command,
+		ExpectFiles: req.ExpectFiles,
+	})
+	if err != nil {
+		log.ErrorContext(ctx, "failed performing create", "err", err)
+		return nil, fmt.Errorf("failed creating: %w", err)
+	}
+
+	return &pb.UpdateResponse{
+		Delete: delete.Op,
+		Result: create.Result,
+		Files:  create.Files,
+	}, nil
+}
+
 func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteResponse, error) {
 	log := s.Log.With("op", "delete", "create", req.Create)
-	bin := pb.Bin_BIN_UNSPECIFIED
+	bin := pb.Bin_BIN_RM
 
 	toDelete := req.Create.Files
 	if len(toDelete) == 0 {

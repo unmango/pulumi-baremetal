@@ -78,7 +78,7 @@ var _ = Describe("Command Resources", func() {
 					"args": map[string]interface{}{
 						"append":  false,
 						"content": stdin,
-						"files":   []string{file},
+						"files":   []string{newFile},
 					},
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
@@ -96,6 +96,7 @@ var _ = Describe("Command Resources", func() {
 			run(server, test)
 
 			Expect(provisioner).NotTo(ContainFile(ctx, file))
+			Expect(provisioner).NotTo(ContainFile(ctx, newFile))
 		})
 	})
 })

@@ -27,6 +27,7 @@ message UpdateRequest {
 message UpdateResponse {
   Result result = 1;
   repeated string files = 2;
+  optional Operation delete = 3;
 }
 
 message DeleteRequest {
