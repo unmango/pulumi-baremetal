@@ -4,17 +4,27 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"path"
+	"strings"
 	"time"
 
 	tc "github.com/testcontainers/testcontainers-go"
 )
 
+type HostCerts struct {
+	Bundle   CertBundle
+	CaPath   string
+	CertPath string
+	KeyPath  string
+}
+
 type TestHost interface {
-	Exec(context.Context, ...string) error
+	Exec(context.Context, ...string) (string, error)
 	FileExists(context.Context, string) (bool, error)
 	Ip(context.Context) (string, error)
 	ReadFile(context.Context, string) ([]byte, error)
 	WriteFile(context.Context, string, []byte) error
+	CreateCertBundle(context.Context, string, string) (*HostCerts, error)
 
 	Start(context.Context) error
 	Stop(context.Context) error
@@ -25,27 +35,28 @@ type host struct {
 	ctr *tc.Container
 }
 
-func (h host) Exec(ctx context.Context, args ...string) error {
+// Exec implements TestHost.
+func (h host) Exec(ctx context.Context, args ...string) (string, error) {
 	ctr, err := h.ensureContainer(ctx)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	code, output, err := ctr.Exec(ctx, args)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	out, err := io.ReadAll(output)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if code != 0 {
-		return fmt.Errorf("unexpected return code: %d, output: %s", code, out)
+		return "", fmt.Errorf("unexpected return code: %d, output: %s", code, out)
 	}
 
-	return nil
+	return strings.TrimSpace(string(out)), nil
 }
 
 // FileExists implements TestHost.
@@ -84,6 +95,7 @@ func (h *host) WriteFile(ctx context.Context, path string, data []byte) error {
 	return ctr.CopyToContainer(ctx, data, path, 0700)
 }
 
+// Ip implements TestHost.
 func (h *host) Ip(ctx context.Context) (string, error) {
 	ctr, err := h.ensureContainer(ctx)
 	if err != nil {
@@ -91,6 +103,45 @@ func (h *host) Ip(ctx context.Context) (string, error) {
 	}
 
 	return ctr.ContainerIP(ctx)
+}
+
+// CreateCertBundle implemnts TestHost.
+func (h *host) CreateCertBundle(ctx context.Context, name string, dir string) (*HostCerts, error) {
+	ctr, err := h.ensureContainer(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	host, err := ctr.Host(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("retriving host: %w", err)
+	}
+
+	_, err = h.Exec(ctx, "mkdir", "--parents", dir)
+	if err != nil {
+		return nil, fmt.Errorf("creating cert directory: %w", err)
+	}
+
+	bundle, err := NewCertBundle(host, name)
+	if err != nil {
+		return nil, fmt.Errorf("creating cert bundle: %w", err)
+	}
+
+	caFile := path.Join(dir, "ca.pem")
+	certFile := path.Join(dir, "cert.pem")
+	keyFile := path.Join(dir, "key.pem")
+
+	if err = h.WriteFile(ctx, caFile, bundle.Ca.Bytes); err != nil {
+		return nil, fmt.Errorf("writing ca file: %w", err)
+	}
+	if err = h.WriteFile(ctx, certFile, bundle.Cert.Bytes); err != nil {
+		return nil, fmt.Errorf("writing cert file: %w", err)
+	}
+	if err = h.WriteFile(ctx, keyFile, bundle.Cert.KeyBytes); err != nil {
+		return nil, fmt.Errorf("writing key file: %w", err)
+	}
+
+	return &HostCerts{*bundle, caFile, certFile, keyFile}, nil
 }
 
 // Start implements TestHost.

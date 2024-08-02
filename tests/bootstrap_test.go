@@ -41,7 +41,7 @@ var _ = Describe("Bootstrap", Ordered, func() {
 
 	BeforeAll(func(ctx context.Context) {
 		By("configuring the provider")
-		err := provisioner.ConfigureProvider(ctx, server)
+		err := util.ConfigureProvider(server).Configure()
 		Expect(err).NotTo(HaveOccurred())
 	})
 

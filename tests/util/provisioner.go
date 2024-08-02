@@ -2,15 +2,11 @@ package util
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path"
 
-	p "github.com/pulumi/pulumi-go-provider"
-	"github.com/pulumi/pulumi-go-provider/integration"
-	"github.com/pulumi/pulumi/sdk/v3/go/common/resource"
 	tc "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 )
@@ -23,7 +19,7 @@ const (
 type TestProvisioner interface {
 	TestHost
 
-	ConfigureProvider(context.Context, integration.Server) error
+	ConnectionDetails(context.Context) (address, port string, err error)
 }
 
 type provisioner struct {
@@ -59,21 +55,13 @@ func NewProvisioner(port string, logger io.Writer) (TestProvisioner, error) {
 	return &provisioner{host{req, nil}, port}, nil
 }
 
-func (prov provisioner) ConfigureProvider(ctx context.Context, server integration.Server) error {
-	ip, err := prov.Ip(ctx)
+// ConnectionDetails implements TestProvisioner.
+func (p *provisioner) ConnectionDetails(ctx context.Context) (address string, port string, err error) {
+	address, err = p.Ip(ctx)
 	if err != nil {
-		return err
+		return
 	}
 
-	if ip == "" {
-		return errors.New("container returned empty ip")
-	}
-
-	port := prov.port
-	return server.Configure(p.ConfigureRequest{
-		Args: resource.PropertyMap{
-			"address": resource.NewStringProperty(ip),
-			"port":    resource.NewStringProperty(port),
-		},
-	})
+	port = p.port
+	return
 }
