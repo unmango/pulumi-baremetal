@@ -42,7 +42,11 @@ func TestLifecycle(t *testing.T) {
 		_ = t.Run(name, func(t *testing.T) {
 			test := createTest(t, ctx, prov)
 			server := util.NewServerWithContext(ctx)
-			prov.ConfigureProvider(ctx, server)
+			err := prov.ConfigureProvider(ctx, server)
+			if err != nil {
+				t.Fatalf("failed to configure provider: %s", err)
+			}
+
 			test.Run(t, server)
 		})
 	}

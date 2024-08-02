@@ -1,3 +1,4 @@
+_ := $(shell mkdir -p .make/{examples,lint,tidy} .test)
 PROJECT_NAME := Pulumi baremetal Resource Provider
 
 PACK             := baremetal
@@ -25,15 +26,16 @@ PKG_DIR      := ${PROVIDER_PATH}/pkg
 
 TESTPARALLELISM := 4
 OS := $(shell uname)
-_ := $(shell mkdir -p .make/{examples,lint} .test)
 
 BUF_CONFIG := buf.yaml buf.gen.yaml
 
 MANS    := tee
 MAN_SRC := $(MANS:%=$(PKG_DIR)/provider/cmd/%.man)
 
-PROVIDER_SRC := $(shell find $(PROVIDER_PATH) -type f -name '*.go')
-PKG_SRC      := $(shell find provider/pkg -type f -name '*.go')
+GO_MODULES   := gen provider sdk tests
+GO_SRC       := $(shell find . -type f -name '*.go')
+PROVIDER_SRC := $(filter $(PROVIDER_PATH)/%,$(GO_SRC))
+PKG_SRC      := $(filter $(PKG_DIR)/%,$(GO_SRC))
 PROTO_SRC    := $(shell find $(PROTO_DIR) -type f -name '*.proto')
 GO_GRPC_SRC  := $(PROTO_SRC:proto/%.proto=gen/go/%_grpc.pb.go)
 GO_PB_SRC    := $(PROTO_SRC:proto/%.proto=gen/go/%.pb.go)
@@ -41,11 +43,7 @@ GEN_SRC      := $(GO_GRPC_SRC) $(GO_PB_SRC)
 
 default:: provider provisioner
 
-ensure::
-	cd gen && go mod tidy
-	cd provider && go mod tidy
-	cd sdk && go mod tidy
-	cd tests && go mod tidy
+ensure:: $(GO_MODULES:%=.make/tidy/%)
 
 remake::
 	rm -rf bin dist out .make .test hack/.work
@@ -185,6 +183,10 @@ provider/pkg/%.man: provider/pkg/%.go
 
 buf.lock: $(BUF_CONFIG)
 	buf dep update
+
+$(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
+	go -C $* mod tidy
+	@touch $@
 
 .make/lint_go: $(patsubst %,.make/lint/%,provider sdk tests)
 .make/lint/provider: $(PROVIDER_SRC)
