@@ -1,6 +1,7 @@
 package provisioner
 
 import (
+	"crypto/tls"
 	"log/slog"
 	"net"
 
@@ -9,10 +10,12 @@ import (
 	"github.com/unmango/pulumi-baremetal/provider/pkg/internal/opts"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provisioner/cmd"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 type Options struct {
 	logger *slog.Logger
+	grpc   []grpc.ServerOption
 }
 
 type opt func(*Options) error
@@ -29,19 +32,19 @@ type provisioner struct {
 
 // Serve implements Provisioner.
 func (p *provisioner) Serve() error {
-	p.RegisterCommandServiceServer(cmd.NewServer(p.State))
+	p.registerCommandService(cmd.NewServer(p.State))
 
 	return p.server.Serve(p.listener)
 }
 
 func New(lis net.Listener, o ...opt) Provisioner {
-	options := &Options{}
+	options := &Options{slog.Default(), []grpc.ServerOption{}}
 	_ = opts.Apply(options, o...)
 
 	return &provisioner{
-		State:    options.State(),
+		State:    options.state(),
 		listener: lis,
-		server:   grpc.NewServer(),
+		server:   grpc.NewServer(options.grpc...),
 	}
 }
 
@@ -52,14 +55,22 @@ func WithLogger(logger *slog.Logger) opt {
 	}
 }
 
+func WithTLS(config *tls.Config) opt {
+	return func(o *Options) error {
+		creds := credentials.NewTLS(config)
+		o.grpc = append(o.grpc, grpc.Creds(creds))
+		return nil
+	}
+}
+
 func Serve(lis net.Listener) error {
 	return New(lis).Serve()
 }
 
-func (o *Options) State() *internal.State {
+func (o *Options) state() *internal.State {
 	return &internal.State{Log: o.logger}
 }
 
-func (p *provisioner) RegisterCommandServiceServer(srv pb.CommandServiceServer) {
+func (p *provisioner) registerCommandService(srv pb.CommandServiceServer) {
 	pb.RegisterCommandServiceServer(p.server, srv)
 }
