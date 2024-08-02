@@ -9,14 +9,16 @@ service CommandService {
 
 message CreateRequest {
   Command command = 1;
+  repeated string expect_files = 2;
 }
 
 message CreateResponse {
   Result result = 1;
+  repeated string files = 2;
 }
 
 message DeleteRequest {
-  Command create = 1;
+  Operation create = 1;
 }
 
 message DeleteResponse {
@@ -26,6 +28,7 @@ message DeleteResponse {
 message Operation {
   Result result = 1;
   Command command = 2;
+  repeated string files = 3;
 }
 
 message Command {

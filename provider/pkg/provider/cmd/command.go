@@ -12,12 +12,14 @@ import (
 
 type CommandOpts interface {
 	Cmd() *pb.Command
+	ExpectedFiles() []string
 }
 
 type CommandState[T CommandOpts] struct {
+	ExitCode     int      `pulumi:"exitCode"`
 	Stderr       string   `pulumi:"stderr"`
 	Stdout       string   `pulumi:"stdout"`
-	CreateOpts   *T       `pulumi:"createOpts,optional"`
+	Args         *T       `pulumi:"args,optional"`
 	CreatedFiles []string `pulumi:"createdFiles"`
 }
 
@@ -34,7 +36,6 @@ func (s *CommandState[T]) Create(ctx context.Context, opts *T, preview bool) err
 		return nil
 	}
 
-	cmd := (*opts).Cmd()
 	p, err := provisioner.FromContext(ctx)
 	if err != nil {
 		log.Error("failed creating provisioner")
@@ -42,15 +43,19 @@ func (s *CommandState[T]) Create(ctx context.Context, opts *T, preview bool) err
 	}
 
 	log.Debug("sending create request")
-	res, err := p.Create(ctx, &pb.CreateRequest{Command: cmd})
+	res, err := p.Create(ctx, &pb.CreateRequest{
+		Command:     (*opts).Cmd(),
+		ExpectFiles: (*opts).ExpectedFiles(),
+	})
 	if err != nil {
 		return fmt.Errorf("sending create request: %w", err)
 	}
 
+	s.ExitCode = int(res.Result.ExitCode)
 	s.Stdout = res.Result.Stdout
 	s.Stderr = res.Result.Stderr
-	s.CreateOpts = opts
-	s.CreatedFiles = []string{}
+	s.Args = opts
+	s.CreatedFiles = res.Files
 
 	log.Info("create success")
 	return nil
@@ -64,14 +69,22 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 		return fmt.Errorf("creating provisioner: %w", err)
 	}
 
-	if s.CreateOpts == nil {
+	if s.Args == nil {
 		log.Error("invalid command state")
 		return errors.New("invalid state, create was nil")
 	}
 
 	log.Debug("sending delete request")
 	res, err := p.Delete(ctx, &pb.DeleteRequest{
-		Create: (*s.CreateOpts).Cmd(),
+		Create: &pb.Operation{
+			Files:   s.CreatedFiles,
+			Command: (*s.Args).Cmd(),
+			Result: &pb.Result{
+				ExitCode: int32(s.ExitCode),
+				Stdout:   s.Stdout,
+				Stderr:   s.Stderr,
+			},
+		},
 	})
 	if err != nil {
 		return fmt.Errorf("sending delete request: %w", err)
