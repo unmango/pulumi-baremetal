@@ -10,7 +10,7 @@ import (
 
 // Based on https://github.com/pulumi/pulumi-go-provider/blob/main/integration/integration.go
 
-func Run(server integration.Server, l integration.LifeCycleTest) {
+func TestLifecycle(server integration.Server, l integration.LifeCycleTest) {
 	urn := resource.NewURN("test", "provider", "", l.Resource, "test")
 
 	runCreate := func(op integration.Operation) (p.CreateResponse, bool) {
