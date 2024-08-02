@@ -67,9 +67,7 @@ var _ = Describe("Command Resources", func() {
 			},
 		}
 
-		It("should complete a full lifecycle", func() {
-			run(server, test)
-		})
+		run(server, test)
 
 		It("should remove created files", func(ctx context.Context) {
 			Expect(provisioner).NotTo(ContainFile(ctx, file))
@@ -131,7 +129,13 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 		return create, true
 	}
 
-	createResponse, keepGoing := runCreate(l.Create)
+	var createResponse p.CreateResponse
+	var keepGoing bool
+
+	It("should create", func() {
+		createResponse, keepGoing = runCreate(l.Create)
+	})
+
 	if !keepGoing {
 		return
 	}
@@ -139,7 +143,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 	id := createResponse.ID
 	olds := createResponse.Properties
 	for i, update := range l.Updates {
-		Describe(fmt.Sprintf("update #%d", i), func() {
+		It(fmt.Sprintf("should update (#%d)", i), func() {
 			By("sending check request")
 			check, err := server.Check(p.CheckRequest{
 				Urn:  urn,
@@ -183,8 +187,10 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 					isDelete = true
 				}
 			}
+
 			if isDelete {
 				runDelete := func() {
+					By("sending a delete request")
 					err = server.Delete(p.DeleteRequest{
 						ID:         id,
 						Urn:        urn,
@@ -192,6 +198,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 					})
 					Expect(err).NotTo(HaveOccurred())
 				}
+
 				if diff.DeleteBeforeReplace {
 					runDelete()
 					result, keepGoing := runCreate(update)
@@ -212,8 +219,8 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 					olds = result.Properties
 				}
 			} else {
-
 				// Now perform the preview
+				By("sending a preview update request")
 				_, err = server.Update(p.UpdateRequest{
 					ID:      id,
 					Urn:     urn,
@@ -226,6 +233,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 					return
 				}
 
+				By("sending an update request")
 				result, err := server.Update(p.UpdateRequest{
 					ID:   id,
 					Urn:  urn,
@@ -237,6 +245,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 					return
 				}
 				if update.Hook != nil {
+					By("calling the update hook")
 					update.Hook(check.Inputs, result.Properties.Copy())
 				}
 				if update.ExpectedOutput != nil {
