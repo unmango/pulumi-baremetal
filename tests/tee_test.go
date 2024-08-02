@@ -80,14 +80,15 @@ var _ = Describe("Tee", Ordered, func() {
 				Urn: urn,
 				ID:  *teeId,
 				Properties: resource.PropertyMap{
-					"createOpts": resource.NewObjectProperty(resource.PropertyMap{
+					"args": resource.NewObjectProperty(resource.PropertyMap{
 						"content": resource.NewStringProperty(stdin),
 						"files": resource.NewArrayProperty([]resource.PropertyValue{
 							resource.NewStringProperty(file),
 						}),
 					}),
-					"stdout": resource.NewStringProperty(*stdout),
-					"stderr": resource.NewStringProperty(*stderr),
+					"exitCode": resource.NewNumberProperty(0),
+					"stdout":   resource.NewStringProperty(*stdout),
+					"stderr":   resource.NewStringProperty(*stderr),
 					"createdFiles": resource.NewArrayProperty([]resource.PropertyValue{
 						resource.NewStringProperty(file),
 					}),

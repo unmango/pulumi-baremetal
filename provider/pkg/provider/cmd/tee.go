@@ -59,7 +59,12 @@ func (o TeeOpts) Cmd() *pb.Command {
 	}
 
 	return &pb.Command{
-		Bin:  pb.Bin_BIN_TEE,
-		Args: append(args, o.Files...),
+		Bin:   pb.Bin_BIN_TEE,
+		Args:  append(args, o.Files...),
+		Stdin: &o.Content,
 	}
+}
+
+func (o TeeOpts) ExpectedFiles() []string {
+	return o.Files
 }

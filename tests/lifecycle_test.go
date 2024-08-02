@@ -63,14 +63,26 @@ func TeeTest(t *testing.T, ctx context.Context, p util.TestProvisioner) integrat
 					}),
 				}),
 			},
+			ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
+				"exitCode":     0,
+				"stdout":       stdin,
+				"stderr":       "",
+				"createdFiles": []string{file},
+				"args": map[string]interface{}{
+					"append":  false,
+					"content": stdin,
+					"files":   []string{file},
+				},
+			}),
 			Hook: func(inputs, output resource.PropertyMap) {
-				exists, err := p.FileExists(ctx, file)
+				data, err := p.ReadFile(ctx, file)
 				if err != nil {
-					t.Fatalf("failed to check file's existence: %s", err)
+					t.Fatalf("failed to read file: %s", err)
 				}
 
-				if !exists {
-					t.Fatalf("expected %s to exist", file)
+				contents := string(data)
+				if contents != stdin {
+					t.Errorf("expected '%s' to match '%s'", contents, stdin)
 				}
 			},
 		},

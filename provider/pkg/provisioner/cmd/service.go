@@ -3,8 +3,11 @@ package cmd
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
+	"os"
 	"os/exec"
+	"slices"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/internal"
@@ -36,49 +39,54 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (*pb.Create
 	cmd := exec.CommandContext(ctx, bin, req.Command.Args...)
 	cmd.Stdin = stdinReader(req.Command.Stdin)
 
-	stderr, stdout := &bytes.Buffer{}, &bytes.Buffer{}
-	cmd.Stdout = stdout
-	cmd.Stderr = stderr
+	createdFiles := make([]string, len(req.ExpectFiles))
+	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
+	cmd.Stdout, cmd.Stderr = stdout, stderr
 
 	log.DebugContext(ctx, "running command", "cmd", cmd.String())
 	if err = cmd.Run(); err != nil {
 		log.WarnContext(ctx, "command failed", "err", err)
+	} else {
+		for i, file := range req.ExpectFiles {
+			if _, err := os.Stat(file); err != nil {
+				log.ErrorContext(ctx, "expected file did not exist", "file", file, "err", err)
+			} else {
+				createdFiles[i] = file
+			}
+		}
 	}
 
-	log.InfoContext(ctx, "finished execcuting command", "cmd", cmd.String())
-	return &pb.CreateResponse{Result: &pb.Result{
-		ExitCode: int32(cmd.ProcessState.ExitCode()),
-		Stdout:   stdout.String(),
-		Stderr:   stderr.String(),
-	}}, nil
+	log.InfoContext(ctx, "finished executing command", "cmd", cmd.String(), "created", createdFiles)
+	return &pb.CreateResponse{
+		Files: createdFiles,
+		Result: &pb.Result{
+			ExitCode: int32(cmd.ProcessState.ExitCode()),
+			Stdout:   stdout.String(),
+			Stderr:   stderr.String(),
+		},
+	}, nil
 }
 
 func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteResponse, error) {
-	log := s.Log.With("op", "delete", "bin", req.Create.Bin.String(), "args", req.Create.Args)
-	var cmd *exec.Cmd
+	log := s.Log.With("op", "delete", "create", req.Create)
 	bin := pb.Bin_BIN_UNSPECIFIED
 
-	switch req.Create.Bin {
-	case pb.Bin_BIN_TEE:
-		// All of the args to `tee` should be files
-		toRemove := req.Create.Args
-		args := prepend("-f", toRemove)
-
-		log.DebugContext(ctx, "building command")
-		cmd = exec.CommandContext(ctx, "rm", args...)
-	default:
-		log.ErrorContext(ctx, "unsupported bin")
-		return nil, fmt.Errorf("unsupported bin: %s", req.Create.Bin)
-	}
-
-	if cmd == nil {
+	toDelete := req.Create.Files
+	if len(toDelete) == 0 {
 		log.InfoContext(ctx, "nothing to do")
 		return &pb.DeleteResponse{}, nil
 	}
 
+	// I think `rm` handles this these days but you can never be too sure
+	if slices.Contains(toDelete, "/") {
+		log.ErrorContext(ctx, "refusing to remove '/'", "remark", "nice try hackers")
+		return nil, errors.New("attempted to remove root")
+	}
+
+	log.DebugContext(ctx, "building command")
+	cmd := exec.CommandContext(ctx, "rm", prepend("-f", toDelete)...)
 	stderr, stdout := &bytes.Buffer{}, &bytes.Buffer{}
-	cmd.Stdout = stdout
-	cmd.Stderr = stderr
+	cmd.Stdout, cmd.Stderr = stdout, stderr
 
 	log.DebugContext(ctx, "running command", "cmd", cmd.String())
 	if err := cmd.Run(); err != nil {
