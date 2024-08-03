@@ -47,9 +47,10 @@ func Provider() p.Provider {
 		Config: infer.Config[provider.Config](),
 		Resources: []infer.InferredResource{
 			infer.Resource[cmd.Tee](),
+			infer.Resource[cmd.Wget](),
 		},
 		Components: []infer.InferredComponent{
-			// Consuming external resources is no bueno
+			// Consuming external resources is no bueno atm
 			// infer.Component[*provider.Bootstrap](),
 		},
 		ModuleMap: map[tokens.ModuleName]tokens.ModuleName{
