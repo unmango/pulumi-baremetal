@@ -6,7 +6,7 @@ import * as inputs from "../types/input";
 import * as outputs from "../types/output";
 
 export namespace cmd {
-    export interface TeeOpts {
+    export interface TeeArgs {
         append?: boolean;
         content: string;
         files: string[];

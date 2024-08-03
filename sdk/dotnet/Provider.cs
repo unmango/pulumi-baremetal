@@ -16,6 +16,15 @@ namespace UnMango.Baremetal
         [Output("address")]
         public Output<string> Address { get; private set; } = null!;
 
+        [Output("caPem")]
+        public Output<string?> CaPem { get; private set; } = null!;
+
+        [Output("certPem")]
+        public Output<string?> CertPem { get; private set; } = null!;
+
+        [Output("keyPem")]
+        public Output<string?> KeyPem { get; private set; } = null!;
+
         [Output("port")]
         public Output<string?> Port { get; private set; } = null!;
 
@@ -50,6 +59,15 @@ namespace UnMango.Baremetal
     {
         [Input("address", required: true)]
         public Input<string> Address { get; set; } = null!;
+
+        [Input("caPem")]
+        public Input<string>? CaPem { get; set; }
+
+        [Input("certPem")]
+        public Input<string>? CertPem { get; set; }
+
+        [Input("keyPem")]
+        public Input<string>? KeyPem { get; set; }
 
         [Input("port")]
         public Input<string>? Port { get; set; }

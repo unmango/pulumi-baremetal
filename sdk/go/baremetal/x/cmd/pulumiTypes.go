@@ -14,67 +14,45 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
-type TeeOpts struct {
+type TeeArgsType struct {
 	Append  *bool    `pulumi:"append"`
 	Content string   `pulumi:"content"`
 	Files   []string `pulumi:"files"`
 }
 
-type TeeOptsArgs struct {
-	Append  pulumix.Input[*bool]    `pulumi:"append"`
-	Content pulumix.Input[string]   `pulumi:"content"`
-	Files   pulumix.Input[[]string] `pulumi:"files"`
+type TeeArgsTypeOutput struct{ *pulumi.OutputState }
+
+func (TeeArgsTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*TeeArgsType)(nil)).Elem()
 }
 
-func (TeeOptsArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*TeeOpts)(nil)).Elem()
-}
-
-func (i TeeOptsArgs) ToTeeOptsOutput() TeeOptsOutput {
-	return i.ToTeeOptsOutputWithContext(context.Background())
-}
-
-func (i TeeOptsArgs) ToTeeOptsOutputWithContext(ctx context.Context) TeeOptsOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(TeeOptsOutput)
-}
-
-func (i *TeeOptsArgs) ToOutput(ctx context.Context) pulumix.Output[*TeeOptsArgs] {
-	return pulumix.Val(i)
-}
-
-type TeeOptsOutput struct{ *pulumi.OutputState }
-
-func (TeeOptsOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*TeeOpts)(nil)).Elem()
-}
-
-func (o TeeOptsOutput) ToTeeOptsOutput() TeeOptsOutput {
+func (o TeeArgsTypeOutput) ToTeeArgsTypeOutput() TeeArgsTypeOutput {
 	return o
 }
 
-func (o TeeOptsOutput) ToTeeOptsOutputWithContext(ctx context.Context) TeeOptsOutput {
+func (o TeeArgsTypeOutput) ToTeeArgsTypeOutputWithContext(ctx context.Context) TeeArgsTypeOutput {
 	return o
 }
 
-func (o TeeOptsOutput) ToOutput(ctx context.Context) pulumix.Output[TeeOpts] {
-	return pulumix.Output[TeeOpts]{
+func (o TeeArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[TeeArgsType] {
+	return pulumix.Output[TeeArgsType]{
 		OutputState: o.OutputState,
 	}
 }
 
-func (o TeeOptsOutput) Append() pulumix.Output[*bool] {
-	return pulumix.Apply[TeeOpts](o, func(v TeeOpts) *bool { return v.Append })
+func (o TeeArgsTypeOutput) Append() pulumix.Output[*bool] {
+	return pulumix.Apply[TeeArgsType](o, func(v TeeArgsType) *bool { return v.Append })
 }
 
-func (o TeeOptsOutput) Content() pulumix.Output[string] {
-	return pulumix.Apply[TeeOpts](o, func(v TeeOpts) string { return v.Content })
+func (o TeeArgsTypeOutput) Content() pulumix.Output[string] {
+	return pulumix.Apply[TeeArgsType](o, func(v TeeArgsType) string { return v.Content })
 }
 
-func (o TeeOptsOutput) Files() pulumix.ArrayOutput[string] {
-	value := pulumix.Apply[TeeOpts](o, func(v TeeOpts) []string { return v.Files })
+func (o TeeArgsTypeOutput) Files() pulumix.ArrayOutput[string] {
+	value := pulumix.Apply[TeeArgsType](o, func(v TeeArgsType) []string { return v.Files })
 	return pulumix.ArrayOutput[string]{OutputState: value.OutputState}
 }
 
 func init() {
-	pulumi.RegisterOutputType(TeeOptsOutput{})
+	pulumi.RegisterOutputType(TeeArgsTypeOutput{})
 }

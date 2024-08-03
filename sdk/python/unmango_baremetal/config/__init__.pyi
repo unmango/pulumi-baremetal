@@ -11,5 +11,11 @@ from .. import _utilities
 
 address: Optional[str]
 
+caPem: Optional[str]
+
+certPem: Optional[str]
+
+keyPem: Optional[str]
+
 port: Optional[str]
 

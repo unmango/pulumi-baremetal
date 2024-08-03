@@ -12,14 +12,14 @@ namespace UnMango.Baremetal.Cmd.Outputs
 {
 
     [OutputType]
-    public sealed class TeeOpts
+    public sealed class TeeArgs
     {
         public readonly bool? Append;
         public readonly string Content;
         public readonly ImmutableArray<string> Files;
 
         [OutputConstructor]
-        private TeeOpts(
+        private TeeArgs(
             bool? append,
 
             string content,

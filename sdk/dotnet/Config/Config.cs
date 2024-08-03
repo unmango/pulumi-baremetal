@@ -39,6 +39,27 @@ namespace UnMango.Baremetal
             set => _address.Set(value);
         }
 
+        private static readonly __Value<string?> _caPem = new __Value<string?>(() => __config.Get("caPem"));
+        public static string? CaPem
+        {
+            get => _caPem.Get();
+            set => _caPem.Set(value);
+        }
+
+        private static readonly __Value<string?> _certPem = new __Value<string?>(() => __config.Get("certPem"));
+        public static string? CertPem
+        {
+            get => _certPem.Get();
+            set => _certPem.Set(value);
+        }
+
+        private static readonly __Value<string?> _keyPem = new __Value<string?>(() => __config.Get("keyPem"));
+        public static string? KeyPem
+        {
+            get => _keyPem.Get();
+            set => _keyPem.Set(value);
+        }
+
         private static readonly __Value<string?> _port = new __Value<string?>(() => __config.Get("port"));
         public static string? Port
         {

@@ -10,11 +10,11 @@ from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 
 __all__ = [
-    'TeeOpts',
+    'TeeArgs',
 ]
 
 @pulumi.output_type
-class TeeOpts(dict):
+class TeeArgs(dict):
     def __init__(__self__, *,
                  content: str,
                  files: Sequence[str],

@@ -17,6 +17,9 @@ type Provider struct {
 	pulumi.ProviderResourceState
 
 	Address pulumi.StringOutput    `pulumi:"address"`
+	CaPem   pulumi.StringPtrOutput `pulumi:"caPem"`
+	CertPem pulumi.StringPtrOutput `pulumi:"certPem"`
+	KeyPem  pulumi.StringPtrOutput `pulumi:"keyPem"`
 	Port    pulumi.StringPtrOutput `pulumi:"port"`
 }
 
@@ -41,12 +44,18 @@ func NewProvider(ctx *pulumi.Context,
 
 type providerArgs struct {
 	Address string  `pulumi:"address"`
+	CaPem   *string `pulumi:"caPem"`
+	CertPem *string `pulumi:"certPem"`
+	KeyPem  *string `pulumi:"keyPem"`
 	Port    *string `pulumi:"port"`
 }
 
 // The set of arguments for constructing a Provider resource.
 type ProviderArgs struct {
 	Address pulumi.StringInput
+	CaPem   pulumi.StringPtrInput
+	CertPem pulumi.StringPtrInput
+	KeyPem  pulumi.StringPtrInput
 	Port    pulumi.StringPtrInput
 }
 
@@ -101,6 +110,18 @@ func (o ProviderOutput) ToOutput(ctx context.Context) pulumix.Output[*Provider] 
 
 func (o ProviderOutput) Address() pulumi.StringOutput {
 	return o.ApplyT(func(v *Provider) pulumi.StringOutput { return v.Address }).(pulumi.StringOutput)
+}
+
+func (o ProviderOutput) CaPem() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Provider) pulumi.StringPtrOutput { return v.CaPem }).(pulumi.StringPtrOutput)
+}
+
+func (o ProviderOutput) CertPem() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Provider) pulumi.StringPtrOutput { return v.CertPem }).(pulumi.StringPtrOutput)
+}
+
+func (o ProviderOutput) KeyPem() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Provider) pulumi.StringPtrOutput { return v.KeyPem }).(pulumi.StringPtrOutput)
 }
 
 func (o ProviderOutput) Port() pulumi.StringPtrOutput {
