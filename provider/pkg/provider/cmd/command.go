@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
@@ -35,6 +36,13 @@ func (s *CommandState[T]) Create(ctx context.Context, inputs T, preview bool) er
 		log.Error("failed creating provisioner")
 		return fmt.Errorf("creating provisioner: %w", err)
 	}
+
+	temp, err := json.Marshal(inputs.ExpectedFiles())
+	if err != nil {
+		return fmt.Errorf("failed marshalling json: %w", err)
+	}
+
+	log.Info(string(temp))
 
 	log.Debug("sending create request")
 	res, err := p.Create(ctx, &pb.CreateRequest{

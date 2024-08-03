@@ -163,7 +163,7 @@ var _ = Describe("Command Resources", func() {
 		})
 	})
 
-	Describe("Wget", Ordered, func() {
+	FDescribe("Wget", Ordered, func() {
 		dir := containerPath("wget")
 		url := "https://raw.githubusercontent.com/unmango/pulumi-baremetal/main/README.md"
 		file := path.Join(dir, "README.md")
@@ -236,6 +236,12 @@ var _ = Describe("Command Resources", func() {
 				},
 			},
 		}
+
+		BeforeAll(func(ctx context.Context) {
+			By("creating a workspace for wget in the container")
+			_, err := provisioner.Exec(ctx, "mkdir", "-p", dir)
+			Expect(err).NotTo(HaveOccurred())
+		})
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			run(server, test)

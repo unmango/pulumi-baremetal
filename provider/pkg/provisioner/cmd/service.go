@@ -23,7 +23,7 @@ func NewServer(state internal.State) pb.CommandServiceServer {
 	return &service{State: state.WithLogger(log)}
 }
 
-func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateResponse, error) {
+func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.CreateResponse, err error) {
 	log := s.Log.With("op", "create", "bin", req.Command.Bin.String(), "args", req.Command.Args)
 	if req.Command == nil {
 		log.Error("no command found in request")
@@ -57,11 +57,40 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (*pb.Create
 		}
 	}
 
+	if cmd.Err != nil {
+		return nil, fmt.Errorf("command had an error: %w", err)
+	}
+
+	defer func() {
+		if wtf := recover(); wtf != nil {
+			err = fmt.Errorf("WTF is happening: %s", wtf)
+			res = &pb.CreateResponse{Result: &pb.Result{}}
+		}
+	}()
+
+	nilBefore := cmd.ProcessState == nil
+	exitCode := cmd.ProcessState.ExitCode()
+
+	if exitCode == -1 {
+		log = log.With("exit_code", exitCode)
+		if cmd.ProcessState == nil {
+			return nil, fmt.Errorf("WTF man why is the process state nil: %v", nilBefore)
+		}
+
+		if cmd.ProcessState.Exited() {
+			log.ErrorContext(ctx, "process was cancelled")
+			return nil, errors.New("process was cancelled")
+		} else {
+			log.ErrorContext(ctx, "process hasn't exited")
+			return nil, errors.New("process hasn't exited")
+		}
+	}
+
 	log.InfoContext(ctx, "finished executing command", "cmd", cmd.String(), "created", createdFiles)
 	return &pb.CreateResponse{
 		Files: createdFiles,
 		Result: &pb.Result{
-			ExitCode: int32(cmd.ProcessState.ExitCode()),
+			ExitCode: int32(exitCode),
 			Stdout:   stdout.String(),
 			Stderr:   stderr.String(),
 		},
