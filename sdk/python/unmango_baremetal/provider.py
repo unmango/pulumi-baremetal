@@ -15,11 +15,20 @@ __all__ = ['ProviderArgs', 'Provider']
 class ProviderArgs:
     def __init__(__self__, *,
                  address: pulumi.Input[str],
+                 ca_pem: Optional[pulumi.Input[str]] = None,
+                 cert_pem: Optional[pulumi.Input[str]] = None,
+                 key_pem: Optional[pulumi.Input[str]] = None,
                  port: Optional[pulumi.Input[str]] = None):
         """
         The set of arguments for constructing a Provider resource.
         """
         pulumi.set(__self__, "address", address)
+        if ca_pem is not None:
+            pulumi.set(__self__, "ca_pem", ca_pem)
+        if cert_pem is not None:
+            pulumi.set(__self__, "cert_pem", cert_pem)
+        if key_pem is not None:
+            pulumi.set(__self__, "key_pem", key_pem)
         if port is not None:
             pulumi.set(__self__, "port", port)
 
@@ -31,6 +40,33 @@ class ProviderArgs:
     @address.setter
     def address(self, value: pulumi.Input[str]):
         pulumi.set(self, "address", value)
+
+    @property
+    @pulumi.getter(name="caPem")
+    def ca_pem(self) -> Optional[pulumi.Input[str]]:
+        return pulumi.get(self, "ca_pem")
+
+    @ca_pem.setter
+    def ca_pem(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "ca_pem", value)
+
+    @property
+    @pulumi.getter(name="certPem")
+    def cert_pem(self) -> Optional[pulumi.Input[str]]:
+        return pulumi.get(self, "cert_pem")
+
+    @cert_pem.setter
+    def cert_pem(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "cert_pem", value)
+
+    @property
+    @pulumi.getter(name="keyPem")
+    def key_pem(self) -> Optional[pulumi.Input[str]]:
+        return pulumi.get(self, "key_pem")
+
+    @key_pem.setter
+    def key_pem(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "key_pem", value)
 
     @property
     @pulumi.getter
@@ -48,6 +84,9 @@ class Provider(pulumi.ProviderResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  address: Optional[pulumi.Input[str]] = None,
+                 ca_pem: Optional[pulumi.Input[str]] = None,
+                 cert_pem: Optional[pulumi.Input[str]] = None,
+                 key_pem: Optional[pulumi.Input[str]] = None,
                  port: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         """
@@ -79,6 +118,9 @@ class Provider(pulumi.ProviderResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  address: Optional[pulumi.Input[str]] = None,
+                 ca_pem: Optional[pulumi.Input[str]] = None,
+                 cert_pem: Optional[pulumi.Input[str]] = None,
+                 key_pem: Optional[pulumi.Input[str]] = None,
                  port: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
@@ -92,6 +134,9 @@ class Provider(pulumi.ProviderResource):
             if address is None and not opts.urn:
                 raise TypeError("Missing required property 'address'")
             __props__.__dict__["address"] = address
+            __props__.__dict__["ca_pem"] = ca_pem
+            __props__.__dict__["cert_pem"] = cert_pem
+            __props__.__dict__["key_pem"] = key_pem
             __props__.__dict__["port"] = port
         super(Provider, __self__).__init__(
             'baremetal',
@@ -103,6 +148,21 @@ class Provider(pulumi.ProviderResource):
     @pulumi.getter
     def address(self) -> pulumi.Output[str]:
         return pulumi.get(self, "address")
+
+    @property
+    @pulumi.getter(name="caPem")
+    def ca_pem(self) -> pulumi.Output[Optional[str]]:
+        return pulumi.get(self, "ca_pem")
+
+    @property
+    @pulumi.getter(name="certPem")
+    def cert_pem(self) -> pulumi.Output[Optional[str]]:
+        return pulumi.get(self, "cert_pem")
+
+    @property
+    @pulumi.getter(name="keyPem")
+    def key_pem(self) -> pulumi.Output[Optional[str]]:
+        return pulumi.get(self, "key_pem")
 
     @property
     @pulumi.getter

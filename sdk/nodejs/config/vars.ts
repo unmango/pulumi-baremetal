@@ -15,6 +15,30 @@ Object.defineProperty(exports, "address", {
     enumerable: true,
 });
 
+export declare const caPem: string | undefined;
+Object.defineProperty(exports, "caPem", {
+    get() {
+        return __config.get("caPem");
+    },
+    enumerable: true,
+});
+
+export declare const certPem: string | undefined;
+Object.defineProperty(exports, "certPem", {
+    get() {
+        return __config.get("certPem");
+    },
+    enumerable: true,
+});
+
+export declare const keyPem: string | undefined;
+Object.defineProperty(exports, "keyPem", {
+    get() {
+        return __config.get("keyPem");
+    },
+    enumerable: true,
+});
+
 export declare const port: string | undefined;
 Object.defineProperty(exports, "port", {
     get() {

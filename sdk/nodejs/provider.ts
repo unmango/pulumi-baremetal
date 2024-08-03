@@ -20,6 +20,9 @@ export class Provider extends pulumi.ProviderResource {
     }
 
     public readonly address!: pulumi.Output<string>;
+    public readonly caPem!: pulumi.Output<string | undefined>;
+    public readonly certPem!: pulumi.Output<string | undefined>;
+    public readonly keyPem!: pulumi.Output<string | undefined>;
     public readonly port!: pulumi.Output<string | undefined>;
 
     /**
@@ -37,6 +40,9 @@ export class Provider extends pulumi.ProviderResource {
                 throw new Error("Missing required property 'address'");
             }
             resourceInputs["address"] = args ? args.address : undefined;
+            resourceInputs["caPem"] = args ? args.caPem : undefined;
+            resourceInputs["certPem"] = args ? args.certPem : undefined;
+            resourceInputs["keyPem"] = args ? args.keyPem : undefined;
             resourceInputs["port"] = args ? args.port : undefined;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
@@ -49,5 +55,8 @@ export class Provider extends pulumi.ProviderResource {
  */
 export interface ProviderArgs {
     address: pulumi.Input<string>;
+    caPem?: pulumi.Input<string>;
+    certPem?: pulumi.Input<string>;
+    keyPem?: pulumi.Input<string>;
     port?: pulumi.Input<string>;
 }

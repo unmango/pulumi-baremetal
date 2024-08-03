@@ -20,6 +20,18 @@ class _ExportableConfig(types.ModuleType):
         return __config__.get('address')
 
     @property
+    def ca_pem(self) -> Optional[str]:
+        return __config__.get('caPem')
+
+    @property
+    def cert_pem(self) -> Optional[str]:
+        return __config__.get('certPem')
+
+    @property
+    def key_pem(self) -> Optional[str]:
+        return __config__.get('keyPem')
+
+    @property
     def port(self) -> Optional[str]:
         return __config__.get('port')
 

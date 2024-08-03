@@ -17,6 +17,9 @@ type Provider struct {
 	pulumi.ProviderResourceState
 
 	Address pulumix.Output[string]  `pulumi:"address"`
+	CaPem   pulumix.Output[*string] `pulumi:"caPem"`
+	CertPem pulumix.Output[*string] `pulumi:"certPem"`
+	KeyPem  pulumix.Output[*string] `pulumi:"keyPem"`
 	Port    pulumix.Output[*string] `pulumi:"port"`
 }
 
@@ -41,12 +44,18 @@ func NewProvider(ctx *pulumi.Context,
 
 type providerArgs struct {
 	Address string  `pulumi:"address"`
+	CaPem   *string `pulumi:"caPem"`
+	CertPem *string `pulumi:"certPem"`
+	KeyPem  *string `pulumi:"keyPem"`
 	Port    *string `pulumi:"port"`
 }
 
 // The set of arguments for constructing a Provider resource.
 type ProviderArgs struct {
 	Address pulumix.Input[string]
+	CaPem   pulumix.Input[*string]
+	CertPem pulumix.Input[*string]
+	KeyPem  pulumix.Input[*string]
 	Port    pulumix.Input[*string]
 }
 
@@ -77,6 +86,21 @@ func (o ProviderOutput) ToOutput(ctx context.Context) pulumix.Output[Provider] {
 func (o ProviderOutput) Address() pulumix.Output[string] {
 	value := pulumix.Apply[Provider](o, func(v Provider) pulumix.Output[string] { return v.Address })
 	return pulumix.Flatten[string, pulumix.Output[string]](value)
+}
+
+func (o ProviderOutput) CaPem() pulumix.Output[*string] {
+	value := pulumix.Apply[Provider](o, func(v Provider) pulumix.Output[*string] { return v.CaPem })
+	return pulumix.Flatten[*string, pulumix.Output[*string]](value)
+}
+
+func (o ProviderOutput) CertPem() pulumix.Output[*string] {
+	value := pulumix.Apply[Provider](o, func(v Provider) pulumix.Output[*string] { return v.CertPem })
+	return pulumix.Flatten[*string, pulumix.Output[*string]](value)
+}
+
+func (o ProviderOutput) KeyPem() pulumix.Output[*string] {
+	value := pulumix.Apply[Provider](o, func(v Provider) pulumix.Output[*string] { return v.KeyPem })
+	return pulumix.Flatten[*string, pulumix.Output[*string]](value)
 }
 
 func (o ProviderOutput) Port() pulumix.Output[*string] {

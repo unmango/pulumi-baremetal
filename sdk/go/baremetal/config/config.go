@@ -14,6 +14,15 @@ var _ = internal.GetEnvOrDefault
 func GetAddress(ctx *pulumi.Context) string {
 	return config.Get(ctx, "baremetal:address")
 }
+func GetCaPem(ctx *pulumi.Context) string {
+	return config.Get(ctx, "baremetal:caPem")
+}
+func GetCertPem(ctx *pulumi.Context) string {
+	return config.Get(ctx, "baremetal:certPem")
+}
+func GetKeyPem(ctx *pulumi.Context) string {
+	return config.Get(ctx, "baremetal:keyPem")
+}
 func GetPort(ctx *pulumi.Context) string {
 	return config.Get(ctx, "baremetal:port")
 }

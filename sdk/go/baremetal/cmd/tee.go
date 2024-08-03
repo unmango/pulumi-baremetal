@@ -7,6 +7,7 @@ import (
 	"context"
 	"reflect"
 
+	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
@@ -84,8 +85,9 @@ import (
 type Tee struct {
 	pulumi.CustomResourceState
 
-	CreateOpts   TeeOptsPtrOutput         `pulumi:"createOpts"`
+	Args         TeeArgsTypeOutput        `pulumi:"args"`
 	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
+	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
 	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
 }
@@ -94,9 +96,15 @@ type Tee struct {
 func NewTee(ctx *pulumi.Context,
 	name string, args *TeeArgs, opts ...pulumi.ResourceOption) (*Tee, error) {
 	if args == nil {
-		args = &TeeArgs{}
+		return nil, errors.New("missing one or more required arguments")
 	}
 
+	if args.Content == nil {
+		return nil, errors.New("invalid value for required argument 'Content'")
+	}
+	if args.Files == nil {
+		return nil, errors.New("invalid value for required argument 'Files'")
+	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Tee
 	err := ctx.RegisterResource("baremetal:cmd:Tee", name, args, &resource, opts...)
@@ -130,12 +138,16 @@ func (TeeState) ElementType() reflect.Type {
 }
 
 type teeArgs struct {
-	Create *TeeOpts `pulumi:"create"`
+	Append  *bool    `pulumi:"append"`
+	Content string   `pulumi:"content"`
+	Files   []string `pulumi:"files"`
 }
 
 // The set of arguments for constructing a Tee resource.
 type TeeArgs struct {
-	Create TeeOptsPtrInput
+	Append  pulumi.BoolPtrInput
+	Content pulumi.StringInput
+	Files   pulumi.StringArrayInput
 }
 
 func (TeeArgs) ElementType() reflect.Type {
@@ -187,12 +199,16 @@ func (o TeeOutput) ToOutput(ctx context.Context) pulumix.Output[*Tee] {
 	}
 }
 
-func (o TeeOutput) CreateOpts() TeeOptsPtrOutput {
-	return o.ApplyT(func(v *Tee) TeeOptsPtrOutput { return v.CreateOpts }).(TeeOptsPtrOutput)
+func (o TeeOutput) Args() TeeArgsTypeOutput {
+	return o.ApplyT(func(v *Tee) TeeArgsTypeOutput { return v.Args }).(TeeArgsTypeOutput)
 }
 
 func (o TeeOutput) CreatedFiles() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Tee) pulumi.StringArrayOutput { return v.CreatedFiles }).(pulumi.StringArrayOutput)
+}
+
+func (o TeeOutput) ExitCode() pulumi.IntOutput {
+	return o.ApplyT(func(v *Tee) pulumi.IntOutput { return v.ExitCode }).(pulumi.IntOutput)
 }
 
 func (o TeeOutput) Stderr() pulumi.StringOutput {

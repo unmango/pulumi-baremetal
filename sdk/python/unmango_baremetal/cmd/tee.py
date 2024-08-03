@@ -9,28 +9,49 @@ import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from . import outputs
-from ._inputs import *
 
 __all__ = ['TeeArgs', 'Tee']
 
 @pulumi.input_type
 class TeeArgs:
     def __init__(__self__, *,
-                 create: Optional[pulumi.Input['TeeOptsArgs']] = None):
+                 content: pulumi.Input[str],
+                 files: pulumi.Input[Sequence[pulumi.Input[str]]],
+                 append: Optional[pulumi.Input[bool]] = None):
         """
         The set of arguments for constructing a Tee resource.
         """
-        if create is not None:
-            pulumi.set(__self__, "create", create)
+        pulumi.set(__self__, "content", content)
+        pulumi.set(__self__, "files", files)
+        if append is not None:
+            pulumi.set(__self__, "append", append)
 
     @property
     @pulumi.getter
-    def create(self) -> Optional[pulumi.Input['TeeOptsArgs']]:
-        return pulumi.get(self, "create")
+    def content(self) -> pulumi.Input[str]:
+        return pulumi.get(self, "content")
 
-    @create.setter
-    def create(self, value: Optional[pulumi.Input['TeeOptsArgs']]):
-        pulumi.set(self, "create", value)
+    @content.setter
+    def content(self, value: pulumi.Input[str]):
+        pulumi.set(self, "content", value)
+
+    @property
+    @pulumi.getter
+    def files(self) -> pulumi.Input[Sequence[pulumi.Input[str]]]:
+        return pulumi.get(self, "files")
+
+    @files.setter
+    def files(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
+        pulumi.set(self, "files", value)
+
+    @property
+    @pulumi.getter
+    def append(self) -> Optional[pulumi.Input[bool]]:
+        return pulumi.get(self, "append")
+
+    @append.setter
+    def append(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "append", value)
 
 
 class Tee(pulumi.CustomResource):
@@ -38,7 +59,9 @@ class Tee(pulumi.CustomResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 create: Optional[pulumi.Input[Union['TeeOptsArgs', 'TeeOptsArgsDict']]] = None,
+                 append: Optional[pulumi.Input[bool]] = None,
+                 content: Optional[pulumi.Input[str]] = None,
+                 files: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  __props__=None):
         """
         TEE(1)                           User Commands                          TEE(1)
@@ -111,7 +134,7 @@ class Tee(pulumi.CustomResource):
     @overload
     def __init__(__self__,
                  resource_name: str,
-                 args: Optional[TeeArgs] = None,
+                 args: TeeArgs,
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         TEE(1)                           User Commands                          TEE(1)
@@ -192,7 +215,9 @@ class Tee(pulumi.CustomResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 create: Optional[pulumi.Input[Union['TeeOptsArgs', 'TeeOptsArgsDict']]] = None,
+                 append: Optional[pulumi.Input[bool]] = None,
+                 content: Optional[pulumi.Input[str]] = None,
+                 files: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -202,9 +227,16 @@ class Tee(pulumi.CustomResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = TeeArgs.__new__(TeeArgs)
 
-            __props__.__dict__["create"] = create
-            __props__.__dict__["create_opts"] = None
+            __props__.__dict__["append"] = append
+            if content is None and not opts.urn:
+                raise TypeError("Missing required property 'content'")
+            __props__.__dict__["content"] = content
+            if files is None and not opts.urn:
+                raise TypeError("Missing required property 'files'")
+            __props__.__dict__["files"] = files
+            __props__.__dict__["args"] = None
             __props__.__dict__["created_files"] = None
+            __props__.__dict__["exit_code"] = None
             __props__.__dict__["stderr"] = None
             __props__.__dict__["stdout"] = None
         super(Tee, __self__).__init__(
@@ -229,21 +261,27 @@ class Tee(pulumi.CustomResource):
 
         __props__ = TeeArgs.__new__(TeeArgs)
 
-        __props__.__dict__["create_opts"] = None
+        __props__.__dict__["args"] = None
         __props__.__dict__["created_files"] = None
+        __props__.__dict__["exit_code"] = None
         __props__.__dict__["stderr"] = None
         __props__.__dict__["stdout"] = None
         return Tee(resource_name, opts=opts, __props__=__props__)
 
     @property
-    @pulumi.getter(name="createOpts")
-    def create_opts(self) -> pulumi.Output[Optional['outputs.TeeOpts']]:
-        return pulumi.get(self, "create_opts")
+    @pulumi.getter
+    def args(self) -> pulumi.Output['outputs.TeeArgs']:
+        return pulumi.get(self, "args")
 
     @property
     @pulumi.getter(name="createdFiles")
     def created_files(self) -> pulumi.Output[Sequence[str]]:
         return pulumi.get(self, "created_files")
+
+    @property
+    @pulumi.getter(name="exitCode")
+    def exit_code(self) -> pulumi.Output[int]:
+        return pulumi.get(self, "exit_code")
 
     @property
     @pulumi.getter
