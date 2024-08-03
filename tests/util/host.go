@@ -105,7 +105,7 @@ func (h *host) Ip(ctx context.Context) (string, error) {
 	return ctr.ContainerIP(ctx)
 }
 
-// CreateCertBundle implemnts TestHost.
+// WithCerts implemnts TestHost.
 func (h *host) WithCerts(ctx context.Context, bundle *CertBundle) (*HostCerts, error) {
 	dir := "/etc/baremetal"
 	_, err := h.Exec(ctx, "mkdir", "--parents", dir)
