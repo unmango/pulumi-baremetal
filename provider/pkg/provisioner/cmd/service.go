@@ -44,6 +44,10 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.Cr
 	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
 	cmd.Stdout, cmd.Stderr = stdout, stderr
 
+	if cmd.Err != nil {
+		return nil, fmt.Errorf("command had an error: %w", err)
+	}
+
 	log.DebugContext(ctx, "running command", "cmd", cmd.String())
 	if err = cmd.Run(); err != nil {
 		log.WarnContext(ctx, "command failed", "err", err)
@@ -55,10 +59,6 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.Cr
 				createdFiles[i] = file
 			}
 		}
-	}
-
-	if cmd.Err != nil {
-		return nil, fmt.Errorf("command had an error: %w", err)
 	}
 
 	defer func() {
