@@ -31,10 +31,6 @@ var _ = Describe("Command Resources", func() {
 		_, err := provisioner.Exec(ctx, "mkdir", "-p", work)
 		Expect(err).NotTo(HaveOccurred())
 
-		By("generating certificates")
-		certs, err := provisioner.CreateCertBundle(ctx, "lifecycle", work)
-		Expect(err).NotTo(HaveOccurred())
-
 		By("fetching provisioner connection details")
 		addr, port, err := provisioner.ConnectionDetails(ctx)
 		Expect(err).NotTo(HaveOccurred())
@@ -42,7 +38,7 @@ var _ = Describe("Command Resources", func() {
 		By("configuring the provider")
 		err = util.ConfigureProvider(server).
 			WithProvisioner(addr, port).
-			WithCerts(certs).
+			WithCerts(provisioner.Ca(), clientCerts.Cert).
 			Configure()
 
 		Expect(err).NotTo(HaveOccurred())

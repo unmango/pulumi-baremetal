@@ -18,7 +18,7 @@ func LoadCertificates(caPath, certPath, keyPath string) (*tls.Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed reading ca file: %w", err)
 	}
-	if ok := ca.AppendCertsFromPEM(caData); ok {
+	if ok := ca.AppendCertsFromPEM(caData); !ok {
 		return nil, fmt.Errorf("unable to append ca data from file %s", caPath)
 	}
 

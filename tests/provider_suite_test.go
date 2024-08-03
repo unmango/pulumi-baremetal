@@ -14,6 +14,7 @@ import (
 var (
 	provisioner util.TestProvisioner
 	sshServer   util.SshServer
+	clientCerts *util.CertBundle
 )
 
 func TestProvider(t *testing.T) {
@@ -22,8 +23,14 @@ func TestProvider(t *testing.T) {
 }
 
 var _ = BeforeSuite(func(ctx context.Context) {
+	var err error
+
+	By("generating client certs")
+	clientCerts, err = util.NewCertBundle("ca", "pulumi")
+	Expect(err).NotTo(HaveOccurred())
+
 	By("creating a provisioner")
-	prov, err := util.NewProvisioner("6969", os.Stdout)
+	prov, err := util.NewProvisioner("6969", clientCerts.Ca, os.Stdout)
 	Expect(err).NotTo(HaveOccurred())
 
 	By("starting the provisioner")

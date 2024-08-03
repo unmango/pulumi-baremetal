@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/blang/semver"
+	"github.com/mdelapenya/tlscert"
 	p "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/integration"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/resource"
@@ -17,7 +18,7 @@ import (
 type ProviderBuilder interface {
 	Configure() error
 	WithProvisioner(address, port string) ProviderBuilder
-	WithCerts(*HostCerts) ProviderBuilder
+	WithCerts(*tlscert.Certificate, *tlscert.Certificate) ProviderBuilder
 }
 
 func NewServer() integration.Server {
@@ -61,12 +62,12 @@ func (c *configureBuilder) Configure() error {
 }
 
 // WithCerts implements ProviderBuilder.
-func (c *configureBuilder) WithCerts(certs *HostCerts) ProviderBuilder {
+func (c *configureBuilder) WithCerts(ca *tlscert.Certificate, cert *tlscert.Certificate) ProviderBuilder {
 	args := c.Args.Mappable()
 	maps.Copy(args, map[string]interface{}{
-		"caPath":   certs.CaPath,
-		"certPath": certs.CertPath,
-		"keyPath":  certs.KeyPath,
+		"caPem":   string(ca.Bytes),
+		"certPem": string(cert.Bytes),
+		"keyPem":  string(cert.KeyBytes),
 	})
 
 	c.Args = resource.NewPropertyMapFromMap(args)
