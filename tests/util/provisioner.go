@@ -52,6 +52,7 @@ func NewProvisioner(
 	keyPath := path.Join(certDir, "key.pem")
 
 	req := tc.GenericContainerRequest{
+		Logger: NewLogger(logger),
 		ContainerRequest: tc.ContainerRequest{
 			FromDockerfile: tc.FromDockerfile{
 				Context:    path.Clean(path.Join(cwd, "..")),

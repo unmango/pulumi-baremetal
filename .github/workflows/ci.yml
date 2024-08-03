@@ -315,6 +315,8 @@ jobs:
 
       - name: Test
         run: make test_provider
+        env:
+          GINKGO: go run github.com/onsi/ginkgo/v2/ginkgo --github-output
 
   install-sh:
     if: needs.setup.outputs.install-sh == 'true'

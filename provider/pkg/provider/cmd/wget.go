@@ -10,20 +10,21 @@ import (
 )
 
 type WgetArgs struct {
-	AppendOutput       string   `pulumi:"appendOutput,optional"`
-	Background         bool     `pulumi:"background,optional"`
-	Base               string   `pulumi:"base,optional"`
-	CaCertificateFile  string   `pulumi:"caCertificateFile,optional"`
-	CaDirectory        string   `pulumi:"caDirectory,optional"`
-	Certificate        string   `pulumi:"certificate,optional"`
-	CertificateType    string   `pulumi:"certificateType,optional"`
-	Config             string   `pulumi:"config,optional"`
-	Continue           bool     `pulumi:"continue,optional"`
-	CrlFile            string   `pulumi:"crlFile,optional"`
-	CutDirs            int      `pulumi:"cutDirs,optional"`
-	Debug              bool     `pulumi:"debug,optional"`
-	DirectoryPrefix    string   `pulumi:"directoryPrefix,optional"`
-	Execute            []string `pulumi:"execute,optional"`
+	AppendOutput      string   `pulumi:"appendOutput,optional"`
+	Background        bool     `pulumi:"background,optional"`
+	Base              string   `pulumi:"base,optional"`
+	CaCertificateFile string   `pulumi:"caCertificateFile,optional"`
+	CaDirectory       string   `pulumi:"caDirectory,optional"`
+	Certificate       string   `pulumi:"certificate,optional"`
+	CertificateType   string   `pulumi:"certificateType,optional"`
+	Config            string   `pulumi:"config,optional"`
+	Continue          bool     `pulumi:"continue,optional"`
+	CrlFile           string   `pulumi:"crlFile,optional"`
+	CutDirs           int      `pulumi:"cutDirs,optional"`
+	Debug             bool     `pulumi:"debug,optional"`
+	DirectoryPrefix   string   `pulumi:"directoryPrefix,optional"`
+	Execute           []string `pulumi:"execute,optional"`
+	// ExpectedFiles      []string `pulumi:"expectedFiles,optional"`
 	ForceDirectories   bool     `pulumi:"forceDirectories,optional"`
 	ForceHtml          bool     `pulumi:"forceHtml,optional"`
 	Help               bool     `pulumi:"help,optional"`

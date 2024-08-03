@@ -41,6 +41,8 @@ GO_GRPC_SRC  := $(PROTO_SRC:proto/%.proto=gen/go/%_grpc.pb.go)
 GO_PB_SRC    := $(PROTO_SRC:proto/%.proto=gen/go/%.pb.go)
 GEN_SRC      := $(GO_GRPC_SRC) $(GO_PB_SRC)
 
+GINKGO ?= go run github.com/onsi/ginkgo/v2/ginkgo
+
 default:: provider provisioner
 
 ensure:: $(GO_MODULES:%=.make/tidy/%)
@@ -224,7 +226,7 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 	@touch $@
 
 .test/provider: provisioner .make/provisioner_docker_build
-	go -C tests test -short -v -count=1 -cover -timeout 5m ./.
+	cd tests && $(GINKGO) run -v --silence-skips
 
 .test/sdks: $(SUPPORTED_SDKS:%=.test/sdk_%)
 .test/sdk_%: tests/sdk/%/*.go sdk/%/**

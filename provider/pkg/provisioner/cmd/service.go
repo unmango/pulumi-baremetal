@@ -15,11 +15,12 @@ import (
 
 type service struct {
 	pb.UnimplementedCommandServiceServer
-	*internal.State
+	internal.State
 }
 
-func NewServer(state *internal.State) pb.CommandServiceServer {
-	return &service{State: state}
+func NewServer(state internal.State) pb.CommandServiceServer {
+	log := state.Log.With("service", "command")
+	return &service{State: state.WithLogger(log)}
 }
 
 func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateResponse, error) {

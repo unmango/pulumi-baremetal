@@ -184,6 +184,7 @@ var _ = Describe("Command Resources", func() {
 						"directoryPrefix": dir,
 						"urls":            []string{url},
 
+						// Defaults
 						"wait":               "",
 						"config":             "",
 						"inputFile":          "",

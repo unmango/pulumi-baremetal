@@ -26,16 +26,9 @@ type Provisioner interface {
 }
 
 type provisioner struct {
-	*internal.State
+	internal.State
 	listener net.Listener
 	server   *grpc.Server
-}
-
-// Serve implements Provisioner.
-func (p *provisioner) Serve() error {
-	p.registerCommandService(cmd.NewServer(p.State))
-
-	return p.server.Serve(p.listener)
 }
 
 func New(lis net.Listener, o ...opt) Provisioner {
@@ -86,12 +79,20 @@ func WithOptionalCertificates(caFile, certFile, keyFile string) opt {
 	})
 }
 
+// Serve implements Provisioner.
+func (p *provisioner) Serve() error {
+	p.Log.Debug("registering command server")
+	p.registerCommandService(cmd.NewServer(p.State))
+
+	return p.server.Serve(p.listener)
+}
+
 func Serve(lis net.Listener) error {
 	return New(lis).Serve()
 }
 
-func (o *Options) state() *internal.State {
-	return &internal.State{Log: o.logger}
+func (o *Options) state() internal.State {
+	return internal.State{Log: o.logger}
 }
 
 func (o *Options) grpcOption(opt grpc.ServerOption) {
