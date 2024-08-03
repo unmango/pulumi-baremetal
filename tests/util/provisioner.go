@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -19,12 +20,14 @@ const (
 type TestProvisioner interface {
 	TestHost
 
+	CertBundle() *CertBundle
 	ConnectionDetails(context.Context) (address, port string, err error)
 }
 
 type provisioner struct {
 	host
-	port string
+	port   string
+	bundle *CertBundle
 }
 
 func NewProvisioner(port string, logger io.Writer) (TestProvisioner, error) {
@@ -33,15 +36,42 @@ func NewProvisioner(port string, logger io.Writer) (TestProvisioner, error) {
 		return nil, err
 	}
 
+	certs, err := NewCertBundle("ca", "provisioner")
+	if err != nil {
+		return nil, err
+	}
+
+	certDir := "/etc/baremetal/pki"
+	caPath := path.Join(certDir, "ca.pem")
+	certPath := path.Join(certDir, "cert.pem")
+	keyPath := path.Join(certDir, "key.pem")
+
 	req := tc.GenericContainerRequest{
 		ContainerRequest: tc.ContainerRequest{
 			FromDockerfile: tc.FromDockerfile{
 				Context:    path.Clean(path.Join(cwd, "..")),
 				Dockerfile: path.Join("provider", "cmd", "provisioner", "Dockerfile"),
 			},
+			Files: []tc.ContainerFile{
+				{
+					ContainerFilePath: caPath,
+					Reader:            bytes.NewReader(certs.Ca.Bytes),
+				},
+				{
+					ContainerFilePath: certPath,
+					Reader:            bytes.NewReader(certs.Cert.Bytes),
+				},
+				{
+					ContainerFilePath: keyPath,
+					Reader:            bytes.NewReader(certs.Cert.KeyBytes),
+				},
+			},
 			Cmd: []string{
 				"--network", defaultProtocol,
 				"--address", fmt.Sprintf("%s:%s", "0.0.0.0", port),
+				"--ca-file", caPath, // TODO: This needs to be the client CA
+				"--cert-file", certPath,
+				"--key-file", keyPath,
 				"--verbose",
 			},
 			ExposedPorts: []string{port},
@@ -52,7 +82,12 @@ func NewProvisioner(port string, logger io.Writer) (TestProvisioner, error) {
 		},
 	}
 
-	return &provisioner{host{req, nil}, port}, nil
+	return &provisioner{host{req, nil}, port, certs}, nil
+}
+
+// CertBundle implements TestProvisioner.
+func (p *provisioner) CertBundle() *CertBundle {
+	return p.bundle
 }
 
 // ConnectionDetails implements TestProvisioner.

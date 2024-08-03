@@ -38,7 +38,7 @@ var _ = Describe("Command Resources", func() {
 		By("configuring the provider")
 		err = util.ConfigureProvider(server).
 			WithProvisioner(addr, port).
-			WithCerts(pcerts).
+			WithCerts(provisioner.CertBundle()).
 			Configure()
 
 		Expect(err).NotTo(HaveOccurred())

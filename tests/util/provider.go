@@ -17,7 +17,7 @@ import (
 type ProviderBuilder interface {
 	Configure() error
 	WithProvisioner(address, port string) ProviderBuilder
-	WithCerts(*HostCerts) ProviderBuilder
+	WithCerts(*CertBundle) ProviderBuilder
 }
 
 func NewServer() integration.Server {
@@ -61,12 +61,12 @@ func (c *configureBuilder) Configure() error {
 }
 
 // WithCerts implements ProviderBuilder.
-func (c *configureBuilder) WithCerts(certs *HostCerts) ProviderBuilder {
+func (c *configureBuilder) WithCerts(certs *CertBundle) ProviderBuilder {
 	args := c.Args.Mappable()
 	maps.Copy(args, map[string]interface{}{
-		"caPath":   certs.CaPath,
-		"certPath": certs.CertPath,
-		"keyPath":  certs.KeyPath,
+		"caPem":   string(certs.Ca.Bytes), // TODO: This needs to be the provisioner ca
+		"certPem": string(certs.Cert.Bytes),
+		"keyPem":  string(certs.Cert.KeyBytes),
 	})
 
 	c.Args = resource.NewPropertyMapFromMap(args)
