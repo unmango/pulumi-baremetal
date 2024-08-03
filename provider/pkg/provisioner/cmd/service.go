@@ -24,29 +24,32 @@ func NewServer(state internal.State) pb.CommandServiceServer {
 }
 
 func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.CreateResponse, err error) {
-	log := s.Log.With("op", "create", "bin", req.Command.Bin.String(), "args", req.Command.Args)
+	log := s.Log.With("op", "create")
 	if req.Command == nil {
 		log.Error("no command found in request")
 		return nil, fmt.Errorf("no command found in request")
 	}
 
-	bin, err := bin(req.Command.Bin)
+	args := req.Command.Args
+	bin, err := binPath(req.Command.Bin)
 	if err != nil {
 		log.Error("unable to map bin", "err", err)
 		return nil, fmt.Errorf("mapping bin: %w", err)
 	}
 
+	log = log.With("bin", bin, "args", args)
 	log.DebugContext(ctx, "building command")
-	cmd := exec.CommandContext(ctx, bin, req.Command.Args...)
+	cmd := exec.CommandContext(ctx, bin, args...)
 	cmd.Stdin = stdinReader(req.Command.Stdin)
+
+	if cmd.Err != nil {
+		log.ErrorContext(ctx, "failed building command", "err", cmd.Err)
+		return nil, fmt.Errorf("failed building command: %w", cmd.Err)
+	}
 
 	createdFiles := make([]string, len(req.ExpectFiles))
 	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
 	cmd.Stdout, cmd.Stderr = stdout, stderr
-
-	if cmd.Err != nil {
-		return nil, fmt.Errorf("command had an error: %w", err)
-	}
 
 	log.DebugContext(ctx, "running command", "cmd", cmd.String())
 	if err = cmd.Run(); err != nil {
@@ -61,31 +64,11 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.Cr
 		}
 	}
 
-	defer func() {
-		if wtf := recover(); wtf != nil {
-			err = fmt.Errorf("WTF is happening: %s", wtf)
-			res = &pb.CreateResponse{Result: &pb.Result{}}
-		}
-	}()
-
-	nilBefore := cmd.ProcessState == nil
-	exitCode := cmd.ProcessState.ExitCode()
-
-	if exitCode == -1 {
-		log = log.With("exit_code", exitCode)
-		if cmd.ProcessState == nil {
-			return nil, fmt.Errorf("WTF man why is the process state nil: %v", nilBefore)
-		}
-
-		if cmd.ProcessState.Exited() {
-			log.ErrorContext(ctx, "process was cancelled")
-			return nil, errors.New("process was cancelled")
-		} else {
-			log.ErrorContext(ctx, "process hasn't exited")
-			return nil, errors.New("process hasn't exited")
-		}
+	if cmd.ProcessState == nil {
+		return nil, errors.New("failed to start command")
 	}
 
+	exitCode := cmd.ProcessState.ExitCode()
 	log.InfoContext(ctx, "finished executing command", "cmd", cmd.String(), "created", createdFiles)
 	return &pb.CreateResponse{
 		Files: createdFiles,
@@ -169,7 +152,7 @@ func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.Delete
 	return &pb.DeleteResponse{Op: op}, nil
 }
 
-func bin(b pb.Bin) (string, error) {
+func binPath(b pb.Bin) (string, error) {
 	switch b {
 	case pb.Bin_BIN_RM:
 		return "rm", nil
