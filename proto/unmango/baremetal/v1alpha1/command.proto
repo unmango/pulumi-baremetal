@@ -60,4 +60,5 @@ enum Bin {
   BIN_UNSPECIFIED = 0;
   BIN_TEE = 1;
   BIN_RM = 2;
+  BIN_WGET = 3;
 }
