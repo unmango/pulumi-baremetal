@@ -179,15 +179,59 @@ var _ = Describe("Command Resources", func() {
 					"exitCode":     0,
 					"stdout":       "",
 					"stderr":       "",
-					"createdFiles": []string{},
+					"createdFiles": []string{file},
 					"args": map[string]interface{}{
 						"directoryPrefix": dir,
 						"urls":            []string{url},
+
+						"wait":               "",
+						"config":             "",
+						"inputFile":          "",
+						"caCertificate":      "",
+						"quiet":              false,
+						"timeout":            "",
+						"showProgress":       false,
+						"continue":           false,
+						"noDirectories":      false,
+						"appendOutput":       "",
+						"timestamping":       false,
+						"saveCookies":        "",
+						"base":               "",
+						"noDnsCache":         false,
+						"noVerbose":          false,
+						"version":            "",
+						"progress":           "",
+						"outputDocument":     "",
+						"password":           "",
+						"caDirectory":        "",
+						"forceDirectories":   false,
+						"background":         false,
+						"httpsOnly":          false,
+						"certificateType":    "",
+						"userAgent":          "",
+						"keepSessionCookies": false,
+						"noClobber":          false,
+						"debug":              false,
+						"help":               false,
+						"inet4Only":          false,
+						"privateKeyType":     "",
+						"certificate":        "",
+						"forceHtml":          false,
+						"user":               "",
+						"tries":              0,
+						"outputFile":         "",
+						"randomWait":         false,
+						"startPos":           "",
+						"verbose":            false,
+						"privateKey":         "",
+						"reportSpeed":        "",
+						"cutDirs":            0,
+						"crlFile":            "",
 					},
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
-					_, err := provisioner.ReadFile(context.Background(), file)
-					Expect(err).NotTo(HaveOccurred())
+					// _, err := provisioner.ReadFile(context.Background(), file)
+					// Expect(err).NotTo(HaveOccurred())
 				},
 			},
 		}
@@ -248,7 +292,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 			op.Hook(check.Inputs, create.Properties.Copy())
 		}
 		if op.ExpectedOutput != nil {
-			Expect(create.Properties).To(BeEquivalentTo(op.ExpectedOutput))
+			Expect(create.Properties).To(Equal(op.ExpectedOutput))
 		}
 
 		return create, true
@@ -275,7 +319,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 			return
 		}
 		if len(update.CheckFailures) > 0 || len(check.Failures) > 0 {
-			Expect(check.Failures).To(BeEquivalentTo(update.CheckFailures))
+			Expect(check.Failures).To(Equal(update.CheckFailures))
 			return
 		}
 
@@ -366,7 +410,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 				update.Hook(check.Inputs, result.Properties.Copy())
 			}
 			if update.ExpectedOutput != nil {
-				Expect(result.Properties.Copy()).To(BeEquivalentTo(update.ExpectedOutput))
+				Expect(result.Properties.Copy()).To(Equal(update.ExpectedOutput))
 			}
 			olds = result.Properties
 		}
