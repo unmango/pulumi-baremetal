@@ -53,6 +53,7 @@ jobs:
         with:
           files: |
             .github/workflows/**
+            provider/pkg/provider/**
             sdk/**
 
       - name: Provider triggers
