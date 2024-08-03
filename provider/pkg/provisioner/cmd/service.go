@@ -141,8 +141,12 @@ func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.Delete
 
 func bin(b pb.Bin) (string, error) {
 	switch b {
+	case pb.Bin_BIN_RM:
+		return "rm", nil
 	case pb.Bin_BIN_TEE:
 		return "tee", nil
+	case pb.Bin_BIN_WGET:
+		return "wget", nil
 	}
 
 	return "", fmt.Errorf("unrecognized bin: %s", b)
