@@ -16,8 +16,9 @@ import (
 
 const work = "/tmp/lifecycle"
 
-func containerPath(name string) string {
-	return path.Join(work, name)
+func containerPath(elem ...string) string {
+	parts := append([]string{work}, elem...)
+	return path.Join(parts...)
 }
 
 var _ = Describe("Command Resources", func() {
@@ -159,6 +160,42 @@ var _ = Describe("Command Resources", func() {
 
 			Expect(provisioner).NotTo(ContainFile(ctx, file))
 			Expect(provisioner).NotTo(ContainFile(ctx, newFile))
+		})
+	})
+
+	Describe("Wget", Ordered, func() {
+		dir := containerPath("wget")
+		url := "https://raw.githubusercontent.com/unmango/pulumi-baremetal/main/README.md"
+		file := path.Join(dir, "README.md")
+
+		test := integration.LifeCycleTest{
+			Resource: "baremetal:cmd:Wget",
+			Create: integration.Operation{
+				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"directoryPrefix": dir,
+					"urls":            []string{url},
+				}),
+				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"exitCode":     0,
+					"stdout":       "",
+					"stderr":       "",
+					"createdFiles": []string{},
+					"args": map[string]interface{}{
+						"directoryPrefix": dir,
+						"urls":            []string{url},
+					},
+				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					_, err := provisioner.ReadFile(context.Background(), file)
+					Expect(err).NotTo(HaveOccurred())
+				},
+			},
+		}
+
+		It("should complete a full lifecycle", func(ctx context.Context) {
+			run(server, test)
+
+			Expect(provisioner).NotTo(ContainFile(ctx, file))
 		})
 	})
 })
