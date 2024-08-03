@@ -52,7 +52,7 @@ func (c Config) TransportCredentials() (credentials.TransportCredentials, error)
 		}
 
 		return credentials.NewTLS(&tls.Config{
-			ServerName:   "pulumi-baremetal",
+			ServerName:   "provisioner",
 			Certificates: []tls.Certificate{cert},
 			RootCAs:      ca,
 		}), nil

@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/mdelapenya/tlscert"
 	tc "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 )
@@ -20,7 +21,7 @@ const (
 type TestProvisioner interface {
 	TestHost
 
-	CertBundle() *CertBundle
+	Ca() *tlscert.Certificate
 	ConnectionDetails(context.Context) (address, port string, err error)
 }
 
@@ -30,7 +31,11 @@ type provisioner struct {
 	bundle *CertBundle
 }
 
-func NewProvisioner(port string, logger io.Writer) (TestProvisioner, error) {
+func NewProvisioner(
+	port string,
+	clientCa *tlscert.Certificate,
+	logger io.Writer,
+) (TestProvisioner, error) {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return nil, err
@@ -55,7 +60,7 @@ func NewProvisioner(port string, logger io.Writer) (TestProvisioner, error) {
 			Files: []tc.ContainerFile{
 				{
 					ContainerFilePath: caPath,
-					Reader:            bytes.NewReader(certs.Ca.Bytes),
+					Reader:            bytes.NewReader(clientCa.Bytes),
 				},
 				{
 					ContainerFilePath: certPath,
@@ -69,7 +74,7 @@ func NewProvisioner(port string, logger io.Writer) (TestProvisioner, error) {
 			Cmd: []string{
 				"--network", defaultProtocol,
 				"--address", fmt.Sprintf("%s:%s", "0.0.0.0", port),
-				"--ca-file", caPath, // TODO: This needs to be the client CA
+				"--ca-file", caPath, // TODO: Rename this
 				"--cert-file", certPath,
 				"--key-file", keyPath,
 				"--verbose",
@@ -86,8 +91,8 @@ func NewProvisioner(port string, logger io.Writer) (TestProvisioner, error) {
 }
 
 // CertBundle implements TestProvisioner.
-func (p *provisioner) CertBundle() *CertBundle {
-	return p.bundle
+func (p *provisioner) Ca() *tlscert.Certificate {
+	return p.bundle.Ca
 }
 
 // ConnectionDetails implements TestProvisioner.
