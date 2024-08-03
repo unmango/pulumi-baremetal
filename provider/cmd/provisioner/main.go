@@ -11,12 +11,12 @@ import (
 )
 
 var (
-	address  string
-	network  string
-	caFile   string
-	certFile string
-	keyFile  string
-	verbose  bool
+	address      string
+	network      string
+	clientCaFile string
+	certFile     string
+	keyFile      string
+	verbose      bool
 )
 
 var rootCmd = &cobra.Command{
@@ -41,14 +41,14 @@ var rootCmd = &cobra.Command{
 		log.Debug("creating provisioner")
 		provisioner := p.New(lis,
 			p.WithLogger(log),
-			p.WithOptionalCertificates(caFile, certFile, keyFile),
+			p.WithOptionalCertificates(clientCaFile, certFile, keyFile),
 		)
 
 		log.Info("serving",
 			"network", network,
 			"address", address,
 			"verbose", verbose,
-			"caFile", caFile,
+			"clientCaFile", clientCaFile,
 			"certFile", certFile,
 			"keyFile", keyFile,
 		)
@@ -62,10 +62,10 @@ func main() {
 	rootCmd.Flags().StringVar(&network, "network", "tcp", "Must be a valid `net.Listen()` network. i.e. \"tcp\", \"tcp4\", \"tcp6\", \"unix\" or \"unixpacket\"")
 	rootCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Log verbosity")
 
-	rootCmd.Flags().StringVar(&caFile, "ca-file", "", "The path to the certificate authority file")
+	rootCmd.Flags().StringVar(&clientCaFile, "client-ca-file", "", "The path to the certificate authority file")
 	rootCmd.Flags().StringVar(&certFile, "cert-file", "", "The path to the server certificate file")
 	rootCmd.Flags().StringVar(&keyFile, "key-file", "", "The path to the server private key file")
-	rootCmd.MarkFlagsRequiredTogether("ca-file", "cert-file", "key-file")
+	rootCmd.MarkFlagsRequiredTogether("client-ca-file", "cert-file", "key-file")
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Printf("failed to execute: %s\n", err)

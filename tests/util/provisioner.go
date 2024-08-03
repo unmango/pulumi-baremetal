@@ -47,7 +47,7 @@ func NewProvisioner(
 	}
 
 	certDir := "/etc/baremetal/pki"
-	caPath := path.Join(certDir, "ca.pem")
+	clientCaPath := path.Join(certDir, "client-ca.pem")
 	certPath := path.Join(certDir, "cert.pem")
 	keyPath := path.Join(certDir, "key.pem")
 
@@ -59,7 +59,7 @@ func NewProvisioner(
 			},
 			Files: []tc.ContainerFile{
 				{
-					ContainerFilePath: caPath,
+					ContainerFilePath: clientCaPath,
 					Reader:            bytes.NewReader(clientCa.Bytes),
 				},
 				{
@@ -74,7 +74,7 @@ func NewProvisioner(
 			Cmd: []string{
 				"--network", defaultProtocol,
 				"--address", fmt.Sprintf("%s:%s", "0.0.0.0", port),
-				"--ca-file", caPath, // TODO: Rename this
+				"--client-ca-file", clientCaPath,
 				"--cert-file", certPath,
 				"--key-file", keyPath,
 				"--verbose",
