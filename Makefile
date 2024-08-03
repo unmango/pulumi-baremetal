@@ -228,6 +228,9 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 .test/provider: provisioner .make/provisioner_docker_build
 	cd tests && $(GINKGO) run -v --silence-skips
 
+.test/pkg: $(PKG_SRC)
+	cd provider && $(GINKGO) run -v -r
+
 .test/sdks: $(SUPPORTED_SDKS:%=.test/sdk_%)
 .test/sdk_%: tests/sdk/%/*.go sdk/%/**
 	go -C tests/sdk/$* test -v -count=1 -cover -timeout 15m ./...
