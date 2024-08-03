@@ -16,7 +16,7 @@ type Config struct {
 	Port    string `pulumi:"port,optional"`
 	CaPem   string `pulumi:"caPem,optional"`
 	CertPem string `pulumi:"certPem,optional"`
-	KeyPem  string `pulumi:"keyPem,optional"`
+	KeyPem  string `pulumi:"keyPem,optional" provider:"secret"`
 }
 
 func (c Config) NewGrpcClient() (*grpc.ClientConn, error) {
