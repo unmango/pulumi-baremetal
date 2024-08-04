@@ -48,7 +48,7 @@ type RmState = CommandState[RmArgs]
 func (Rm) Create(ctx context.Context, name string, inputs RmArgs, preview bool) (id string, output RmState, err error) {
 	state := RmState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
-		return name, state, fmt.Errorf("wget: %w", err)
+		return name, state, fmt.Errorf("rm: %w", err)
 	}
 
 	return name, state, nil
@@ -58,7 +58,7 @@ func (Rm) Create(ctx context.Context, name string, inputs RmArgs, preview bool) 
 func (Rm) Update(ctx context.Context, id string, olds RmState, news RmArgs, preview bool) (RmState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
-		return olds, fmt.Errorf("wget: %w", err)
+		return olds, fmt.Errorf("rm: %w", err)
 	}
 
 	return state, nil
@@ -67,7 +67,7 @@ func (Rm) Update(ctx context.Context, id string, olds RmState, news RmArgs, prev
 // Delete implements infer.CustomDelete.
 func (Rm) Delete(ctx context.Context, id string, props RmState) error {
 	if err := props.Delete(ctx); err != nil {
-		return fmt.Errorf("wget: %w", err)
+		return fmt.Errorf("rm: %w", err)
 	}
 
 	return nil
