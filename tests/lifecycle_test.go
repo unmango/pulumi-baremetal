@@ -45,6 +45,51 @@ var _ = Describe("Command Resources", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
+	Describe("Rm", Ordered, func() {
+		file := containerPath("rm.txt")
+
+		test := integration.LifeCycleTest{
+			Resource: "baremetal:cmd:Rm",
+			Create: integration.Operation{
+				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"files": []string{file},
+				}),
+				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"exitCode":     0,
+					"stdout":       "",
+					"stderr":       "",
+					"createdFiles": []string{},
+					"args": map[string]interface{}{
+						"files": []string{file},
+
+						// Defaults
+						"force":         false,
+						"help":          false,
+						"oneFileSystem": false,
+						"recursive":     false,
+						"verbose":       false,
+						"dir":           false,
+					},
+				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
+				},
+			},
+		}
+
+		BeforeAll(func(ctx context.Context) {
+			By("creating a file to be removed")
+			err := provisioner.WriteFile(ctx, file, []byte("some text"))
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("should complete a full lifecycle", func(ctx context.Context) {
+			run(server, test)
+
+			Expect(provisioner).NotTo(ContainFile(ctx, file))
+		})
+	})
+
 	Describe("Tee", Ordered, func() {
 		stdin := "Test lifecycle stdin"
 		newStdin := "Updated stdin"

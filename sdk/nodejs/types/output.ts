@@ -6,6 +6,16 @@ import * as inputs from "../types/input";
 import * as outputs from "../types/output";
 
 export namespace cmd {
+    export interface RmArgs {
+        dir?: boolean;
+        files: string[];
+        force?: boolean;
+        help?: boolean;
+        oneFileSystem?: boolean;
+        recursive?: boolean;
+        verbose?: boolean;
+    }
+
     export interface TeeArgs {
         append?: boolean;
         content: string;

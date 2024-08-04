@@ -46,6 +46,7 @@ func Provider() p.Provider {
 		},
 		Config: infer.Config[provider.Config](),
 		Resources: []infer.InferredResource{
+			infer.Resource[cmd.Rm](),
 			infer.Resource[cmd.Tee](),
 			infer.Resource[cmd.Wget](),
 		},

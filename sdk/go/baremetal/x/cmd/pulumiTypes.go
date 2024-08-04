@@ -14,6 +14,65 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
+type RmArgsType struct {
+	Dir           *bool    `pulumi:"dir"`
+	Files         []string `pulumi:"files"`
+	Force         *bool    `pulumi:"force"`
+	Help          *bool    `pulumi:"help"`
+	OneFileSystem *bool    `pulumi:"oneFileSystem"`
+	Recursive     *bool    `pulumi:"recursive"`
+	Verbose       *bool    `pulumi:"verbose"`
+}
+
+type RmArgsTypeOutput struct{ *pulumi.OutputState }
+
+func (RmArgsTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*RmArgsType)(nil)).Elem()
+}
+
+func (o RmArgsTypeOutput) ToRmArgsTypeOutput() RmArgsTypeOutput {
+	return o
+}
+
+func (o RmArgsTypeOutput) ToRmArgsTypeOutputWithContext(ctx context.Context) RmArgsTypeOutput {
+	return o
+}
+
+func (o RmArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[RmArgsType] {
+	return pulumix.Output[RmArgsType]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o RmArgsTypeOutput) Dir() pulumix.Output[*bool] {
+	return pulumix.Apply[RmArgsType](o, func(v RmArgsType) *bool { return v.Dir })
+}
+
+func (o RmArgsTypeOutput) Files() pulumix.ArrayOutput[string] {
+	value := pulumix.Apply[RmArgsType](o, func(v RmArgsType) []string { return v.Files })
+	return pulumix.ArrayOutput[string]{OutputState: value.OutputState}
+}
+
+func (o RmArgsTypeOutput) Force() pulumix.Output[*bool] {
+	return pulumix.Apply[RmArgsType](o, func(v RmArgsType) *bool { return v.Force })
+}
+
+func (o RmArgsTypeOutput) Help() pulumix.Output[*bool] {
+	return pulumix.Apply[RmArgsType](o, func(v RmArgsType) *bool { return v.Help })
+}
+
+func (o RmArgsTypeOutput) OneFileSystem() pulumix.Output[*bool] {
+	return pulumix.Apply[RmArgsType](o, func(v RmArgsType) *bool { return v.OneFileSystem })
+}
+
+func (o RmArgsTypeOutput) Recursive() pulumix.Output[*bool] {
+	return pulumix.Apply[RmArgsType](o, func(v RmArgsType) *bool { return v.Recursive })
+}
+
+func (o RmArgsTypeOutput) Verbose() pulumix.Output[*bool] {
+	return pulumix.Apply[RmArgsType](o, func(v RmArgsType) *bool { return v.Verbose })
+}
+
 type TeeArgsType struct {
 	Append  *bool    `pulumi:"append"`
 	Content string   `pulumi:"content"`
@@ -309,6 +368,7 @@ func (o WgetArgsTypeOutput) Wait() pulumix.Output[*string] {
 }
 
 func init() {
+	pulumi.RegisterOutputType(RmArgsTypeOutput{})
 	pulumi.RegisterOutputType(TeeArgsTypeOutput{})
 	pulumi.RegisterOutputType(WgetArgsTypeOutput{})
 }

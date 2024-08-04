@@ -5,6 +5,11 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "../utilities";
 
 // Export members:
+export { RmArgs } from "./rm";
+export type Rm = import("./rm").Rm;
+export const Rm: typeof import("./rm").Rm = null as any;
+utilities.lazyLoad(exports, ["Rm"], () => require("./rm"));
+
 export { TeeArgs } from "./tee";
 export type Tee = import("./tee").Tee;
 export const Tee: typeof import("./tee").Tee = null as any;
@@ -20,6 +25,8 @@ const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {
         switch (type) {
+            case "baremetal:cmd:Rm":
+                return new Rm(name, <any>undefined, { urn })
             case "baremetal:cmd:Tee":
                 return new Tee(name, <any>undefined, { urn })
             case "baremetal:cmd:Wget":

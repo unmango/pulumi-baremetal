@@ -14,6 +14,64 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
+type RmArgsType struct {
+	Dir           *bool    `pulumi:"dir"`
+	Files         []string `pulumi:"files"`
+	Force         *bool    `pulumi:"force"`
+	Help          *bool    `pulumi:"help"`
+	OneFileSystem *bool    `pulumi:"oneFileSystem"`
+	Recursive     *bool    `pulumi:"recursive"`
+	Verbose       *bool    `pulumi:"verbose"`
+}
+
+type RmArgsTypeOutput struct{ *pulumi.OutputState }
+
+func (RmArgsTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*RmArgsType)(nil)).Elem()
+}
+
+func (o RmArgsTypeOutput) ToRmArgsTypeOutput() RmArgsTypeOutput {
+	return o
+}
+
+func (o RmArgsTypeOutput) ToRmArgsTypeOutputWithContext(ctx context.Context) RmArgsTypeOutput {
+	return o
+}
+
+func (o RmArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[RmArgsType] {
+	return pulumix.Output[RmArgsType]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o RmArgsTypeOutput) Dir() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v RmArgsType) *bool { return v.Dir }).(pulumi.BoolPtrOutput)
+}
+
+func (o RmArgsTypeOutput) Files() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v RmArgsType) []string { return v.Files }).(pulumi.StringArrayOutput)
+}
+
+func (o RmArgsTypeOutput) Force() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v RmArgsType) *bool { return v.Force }).(pulumi.BoolPtrOutput)
+}
+
+func (o RmArgsTypeOutput) Help() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v RmArgsType) *bool { return v.Help }).(pulumi.BoolPtrOutput)
+}
+
+func (o RmArgsTypeOutput) OneFileSystem() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v RmArgsType) *bool { return v.OneFileSystem }).(pulumi.BoolPtrOutput)
+}
+
+func (o RmArgsTypeOutput) Recursive() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v RmArgsType) *bool { return v.Recursive }).(pulumi.BoolPtrOutput)
+}
+
+func (o RmArgsTypeOutput) Verbose() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v RmArgsType) *bool { return v.Verbose }).(pulumi.BoolPtrOutput)
+}
+
 type TeeArgsType struct {
 	Append  *bool    `pulumi:"append"`
 	Content string   `pulumi:"content"`
@@ -306,6 +364,7 @@ func (o WgetArgsTypeOutput) Wait() pulumi.StringPtrOutput {
 }
 
 func init() {
+	pulumi.RegisterOutputType(RmArgsTypeOutput{})
 	pulumi.RegisterOutputType(TeeArgsTypeOutput{})
 	pulumi.RegisterOutputType(WgetArgsTypeOutput{})
 }

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
@@ -37,13 +36,6 @@ func (s *CommandState[T]) Create(ctx context.Context, inputs T, preview bool) er
 		return fmt.Errorf("creating provisioner: %w", err)
 	}
 
-	temp, err := json.Marshal(inputs.ExpectedFiles())
-	if err != nil {
-		return fmt.Errorf("failed marshalling json: %w", err)
-	}
-
-	log.Info(string(temp))
-
 	log.Debug("sending create request")
 	res, err := p.Create(ctx, &pb.CreateRequest{
 		Command:     inputs.Cmd(),
@@ -51,6 +43,11 @@ func (s *CommandState[T]) Create(ctx context.Context, inputs T, preview bool) er
 	})
 	if err != nil {
 		return fmt.Errorf("sending create request: %w", err)
+	}
+
+	if res.Files == nil {
+		log.Debug("files was empty, this is probably a bug somewhere else")
+		res.Files = []string{}
 	}
 
 	s.Args = inputs
