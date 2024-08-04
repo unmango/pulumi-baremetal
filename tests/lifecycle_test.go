@@ -45,8 +45,69 @@ var _ = Describe("Command Resources", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
+	Describe("Mv", Ordered, func() {
+		file := containerPath("mv.txt")
+		newFile := containerPath("mv-new.txt")
+
+		BeforeAll(func(ctx context.Context) {
+			By("creating a file to be moved")
+			err := provisioner.WriteFile(ctx, file, []byte("some text"))
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		test := integration.LifeCycleTest{
+			Resource: "baremetal:cmd:Mv",
+			Create: integration.Operation{
+				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"source":      []string{file},
+					"destination": newFile,
+				}),
+				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"exitCode":     0,
+					"stdout":       "",
+					"stderr":       "",
+					"createdFiles": []string{newFile},
+					"args": map[string]interface{}{
+						"source":      []string{file},
+						"destination": newFile,
+
+						// Defaults
+						"directory":            "",
+						"force":                false,
+						"help":                 false,
+						"noClobber":            false,
+						"noTargetDirectory":    false,
+						"stripTrailingSlashes": false,
+						"suffix":               "",
+						"targetDirectory":      "",
+						"update":               false,
+						"version":              false,
+						"verbose":              false,
+					},
+				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
+					Expect(provisioner).To(ContainFile(context.Background(), newFile))
+				},
+			},
+		}
+
+		It("should complete a full lifecycle", func(ctx context.Context) {
+			run(server, test)
+
+			Expect(provisioner).NotTo(ContainFile(ctx, file))
+			Expect(provisioner).NotTo(ContainFile(ctx, newFile))
+		})
+	})
+
 	Describe("Rm", Ordered, func() {
 		file := containerPath("rm.txt")
+
+		BeforeAll(func(ctx context.Context) {
+			By("creating a file to be removed")
+			err := provisioner.WriteFile(ctx, file, []byte("some text"))
+			Expect(err).NotTo(HaveOccurred())
+		})
 
 		test := integration.LifeCycleTest{
 			Resource: "baremetal:cmd:Rm",
@@ -76,12 +137,6 @@ var _ = Describe("Command Resources", func() {
 				},
 			},
 		}
-
-		BeforeAll(func(ctx context.Context) {
-			By("creating a file to be removed")
-			err := provisioner.WriteFile(ctx, file, []byte("some text"))
-			Expect(err).NotTo(HaveOccurred())
-		})
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			run(server, test)
@@ -213,6 +268,12 @@ var _ = Describe("Command Resources", func() {
 		url := "https://raw.githubusercontent.com/unmango/pulumi-baremetal/main/README.md"
 		file := path.Join(dir, "README.md")
 
+		BeforeAll(func(ctx context.Context) {
+			By("creating a workspace for wget in the container")
+			_, err := provisioner.Exec(ctx, "mkdir", "-p", dir)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
 		test := integration.LifeCycleTest{
 			Resource: "baremetal:cmd:Wget",
 			Create: integration.Operation{
@@ -282,12 +343,6 @@ var _ = Describe("Command Resources", func() {
 				},
 			},
 		}
-
-		BeforeAll(func(ctx context.Context) {
-			By("creating a workspace for wget in the container")
-			_, err := provisioner.Exec(ctx, "mkdir", "-p", dir)
-			Expect(err).NotTo(HaveOccurred())
-		})
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			run(server, test)
