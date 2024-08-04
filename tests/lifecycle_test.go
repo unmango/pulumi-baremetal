@@ -62,6 +62,11 @@ var _ = Describe("Command Resources", func() {
 					"source":      []string{file},
 					"destination": newFile,
 				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
+					Expect(provisioner).To(ContainFile(context.Background(), newFile))
+				},
 				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 					"exitCode":     0,
 					"stdout":       "",
@@ -72,6 +77,7 @@ var _ = Describe("Command Resources", func() {
 						"destination": newFile,
 
 						// Defaults
+						"backup":               "",
 						"directory":            "",
 						"force":                false,
 						"help":                 false,
@@ -85,10 +91,6 @@ var _ = Describe("Command Resources", func() {
 						"verbose":              false,
 					},
 				}),
-				Hook: func(inputs, output resource.PropertyMap) {
-					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
-					Expect(provisioner).To(ContainFile(context.Background(), newFile))
-				},
 			},
 		}
 
@@ -115,6 +117,10 @@ var _ = Describe("Command Resources", func() {
 				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
 					"files": []string{file},
 				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
+				},
 				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 					"exitCode":     0,
 					"stdout":       "",
@@ -132,9 +138,6 @@ var _ = Describe("Command Resources", func() {
 						"dir":           false,
 					},
 				}),
-				Hook: func(inputs, output resource.PropertyMap) {
-					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
-				},
 			},
 		}
 
@@ -158,6 +161,12 @@ var _ = Describe("Command Resources", func() {
 					"content": stdin,
 					"files":   []string{file},
 				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+					data, err := provisioner.ReadFile(context.Background(), file)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(string(data)).To(Equal(stdin))
+				},
 				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 					"exitCode":     0,
 					"stdout":       stdin,
@@ -169,11 +178,6 @@ var _ = Describe("Command Resources", func() {
 						"files":   []string{file},
 					},
 				}),
-				Hook: func(inputs, output resource.PropertyMap) {
-					data, err := provisioner.ReadFile(context.Background(), file)
-					Expect(err).NotTo(HaveOccurred())
-					Expect(string(data)).To(Equal(stdin))
-				},
 			},
 			Updates: []integration.Operation{
 				{
@@ -181,6 +185,14 @@ var _ = Describe("Command Resources", func() {
 						"content": stdin,
 						"files":   []string{newFile},
 					}),
+					Hook: func(inputs, output resource.PropertyMap) {
+						ctx := context.Background()
+						Expect(provisioner).NotTo(ContainFile(ctx, file))
+
+						data, err := provisioner.ReadFile(ctx, newFile)
+						Expect(err).NotTo(HaveOccurred())
+						Expect(string(data)).To(Equal(stdin))
+					},
 					ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 						"exitCode":     0,
 						"stdout":       stdin,
@@ -192,20 +204,19 @@ var _ = Describe("Command Resources", func() {
 							"files":   []string{newFile},
 						},
 					}),
-					Hook: func(inputs, output resource.PropertyMap) {
-						ctx := context.Background()
-						Expect(provisioner).NotTo(ContainFile(ctx, file))
-
-						data, err := provisioner.ReadFile(ctx, newFile)
-						Expect(err).NotTo(HaveOccurred())
-						Expect(string(data)).To(Equal(stdin))
-					},
 				},
 				{
 					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
 						"content": newStdin,
 						"files":   []string{newFile},
 					}),
+					Hook: func(inputs, output resource.PropertyMap) {
+						Expect(output["stderr"]).To(HavePropertyValue(""))
+						ctx := context.Background()
+						data, err := provisioner.ReadFile(ctx, newFile)
+						Expect(err).NotTo(HaveOccurred())
+						Expect(string(data)).To(Equal(newStdin))
+					},
 					ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 						"exitCode":     0,
 						"stdout":       newStdin,
@@ -217,18 +228,24 @@ var _ = Describe("Command Resources", func() {
 							"files":   []string{newFile},
 						},
 					}),
-					Hook: func(inputs, output resource.PropertyMap) {
-						ctx := context.Background()
-						data, err := provisioner.ReadFile(ctx, newFile)
-						Expect(err).NotTo(HaveOccurred())
-						Expect(string(data)).To(Equal(newStdin))
-					},
 				},
 				{
 					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
 						"content": newStdin,
 						"files":   []string{file, newFile},
 					}),
+					Hook: func(inputs, output resource.PropertyMap) {
+						Expect(output["stderr"]).To(HavePropertyValue(""))
+
+						ctx := context.Background()
+						data, err := provisioner.ReadFile(ctx, file)
+						Expect(err).NotTo(HaveOccurred())
+						Expect(string(data)).To(Equal(newStdin))
+
+						data, err = provisioner.ReadFile(ctx, newFile)
+						Expect(err).NotTo(HaveOccurred())
+						Expect(string(data)).To(Equal(newStdin))
+					},
 					ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 						"exitCode":     0,
 						"stdout":       newStdin,
@@ -240,17 +257,6 @@ var _ = Describe("Command Resources", func() {
 							"files":   []string{file, newFile},
 						},
 					}),
-					Hook: func(inputs, output resource.PropertyMap) {
-						ctx := context.Background()
-
-						data, err := provisioner.ReadFile(ctx, file)
-						Expect(err).NotTo(HaveOccurred())
-						Expect(string(data)).To(Equal(newStdin))
-
-						data, err = provisioner.ReadFile(ctx, newFile)
-						Expect(err).NotTo(HaveOccurred())
-						Expect(string(data)).To(Equal(newStdin))
-					},
 				},
 			},
 		}
@@ -282,6 +288,10 @@ var _ = Describe("Command Resources", func() {
 					"urls":            []string{url},
 					"quiet":           true,
 				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					_, err := provisioner.ReadFile(context.Background(), file)
+					Expect(err).NotTo(HaveOccurred())
+				},
 				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 					"exitCode":     0,
 					"stdout":       "",
@@ -337,10 +347,6 @@ var _ = Describe("Command Resources", func() {
 						"crlFile":            "",
 					},
 				}),
-				Hook: func(inputs, output resource.PropertyMap) {
-					_, err := provisioner.ReadFile(context.Background(), file)
-					Expect(err).NotTo(HaveOccurred())
-				},
 			},
 		}
 
