@@ -33,6 +33,48 @@ export namespace cmd {
         verbose?: boolean;
     }
 
+    export interface TarArgs {
+        append?: boolean;
+        args?: string[];
+        bzip2?: boolean;
+        create?: boolean;
+        delete?: boolean;
+        diff?: boolean;
+        directory?: string;
+        exclude?: string;
+        excludeFrom?: string;
+        excludeVcs?: boolean;
+        excludeVcsIgnores?: boolean;
+        extract?: boolean;
+        file?: string;
+        gzip?: boolean;
+        ignoreCommandError?: boolean;
+        keepDirectorySymlink?: boolean;
+        keepNewerFiles?: boolean;
+        keepOldfiles?: boolean;
+        list?: boolean;
+        lzip?: boolean;
+        lzma?: boolean;
+        lzop?: boolean;
+        noOverwriteDir?: boolean;
+        noSeek?: boolean;
+        overwrite?: boolean;
+        overwriteDir?: boolean;
+        removeFiles?: boolean;
+        skipOldFiles?: boolean;
+        sparse?: boolean;
+        stripComponents?: number;
+        suffix?: string;
+        toStdout?: boolean;
+        transform?: string;
+        unlinkFirst?: boolean;
+        update?: boolean;
+        verbose?: boolean;
+        verify?: boolean;
+        xz?: boolean;
+        zstd?: boolean;
+    }
+
     export interface TeeArgs {
         append?: boolean;
         content: string;

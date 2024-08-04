@@ -167,6 +167,225 @@ func (o RmArgsTypeOutput) Verbose() pulumix.Output[*bool] {
 	return pulumix.Apply[RmArgsType](o, func(v RmArgsType) *bool { return v.Verbose })
 }
 
+type TarArgsType struct {
+	Append               *bool    `pulumi:"append"`
+	Args                 []string `pulumi:"args"`
+	Bzip2                *bool    `pulumi:"bzip2"`
+	Create               *bool    `pulumi:"create"`
+	Delete               *bool    `pulumi:"delete"`
+	Diff                 *bool    `pulumi:"diff"`
+	Directory            *string  `pulumi:"directory"`
+	Exclude              *string  `pulumi:"exclude"`
+	ExcludeFrom          *string  `pulumi:"excludeFrom"`
+	ExcludeVcs           *bool    `pulumi:"excludeVcs"`
+	ExcludeVcsIgnores    *bool    `pulumi:"excludeVcsIgnores"`
+	Extract              *bool    `pulumi:"extract"`
+	File                 *string  `pulumi:"file"`
+	Gzip                 *bool    `pulumi:"gzip"`
+	IgnoreCommandError   *bool    `pulumi:"ignoreCommandError"`
+	KeepDirectorySymlink *bool    `pulumi:"keepDirectorySymlink"`
+	KeepNewerFiles       *bool    `pulumi:"keepNewerFiles"`
+	KeepOldfiles         *bool    `pulumi:"keepOldfiles"`
+	List                 *bool    `pulumi:"list"`
+	Lzip                 *bool    `pulumi:"lzip"`
+	Lzma                 *bool    `pulumi:"lzma"`
+	Lzop                 *bool    `pulumi:"lzop"`
+	NoOverwriteDir       *bool    `pulumi:"noOverwriteDir"`
+	NoSeek               *bool    `pulumi:"noSeek"`
+	Overwrite            *bool    `pulumi:"overwrite"`
+	OverwriteDir         *bool    `pulumi:"overwriteDir"`
+	RemoveFiles          *bool    `pulumi:"removeFiles"`
+	SkipOldFiles         *bool    `pulumi:"skipOldFiles"`
+	Sparse               *bool    `pulumi:"sparse"`
+	StripComponents      *int     `pulumi:"stripComponents"`
+	Suffix               *string  `pulumi:"suffix"`
+	ToStdout             *bool    `pulumi:"toStdout"`
+	Transform            *string  `pulumi:"transform"`
+	UnlinkFirst          *bool    `pulumi:"unlinkFirst"`
+	Update               *bool    `pulumi:"update"`
+	Verbose              *bool    `pulumi:"verbose"`
+	Verify               *bool    `pulumi:"verify"`
+	Xz                   *bool    `pulumi:"xz"`
+	Zstd                 *bool    `pulumi:"zstd"`
+}
+
+type TarArgsTypeOutput struct{ *pulumi.OutputState }
+
+func (TarArgsTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*TarArgsType)(nil)).Elem()
+}
+
+func (o TarArgsTypeOutput) ToTarArgsTypeOutput() TarArgsTypeOutput {
+	return o
+}
+
+func (o TarArgsTypeOutput) ToTarArgsTypeOutputWithContext(ctx context.Context) TarArgsTypeOutput {
+	return o
+}
+
+func (o TarArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[TarArgsType] {
+	return pulumix.Output[TarArgsType]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o TarArgsTypeOutput) Append() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Append })
+}
+
+func (o TarArgsTypeOutput) Args() pulumix.ArrayOutput[string] {
+	value := pulumix.Apply[TarArgsType](o, func(v TarArgsType) []string { return v.Args })
+	return pulumix.ArrayOutput[string]{OutputState: value.OutputState}
+}
+
+func (o TarArgsTypeOutput) Bzip2() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Bzip2 })
+}
+
+func (o TarArgsTypeOutput) Create() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Create })
+}
+
+func (o TarArgsTypeOutput) Delete() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Delete })
+}
+
+func (o TarArgsTypeOutput) Diff() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Diff })
+}
+
+func (o TarArgsTypeOutput) Directory() pulumix.Output[*string] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *string { return v.Directory })
+}
+
+func (o TarArgsTypeOutput) Exclude() pulumix.Output[*string] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *string { return v.Exclude })
+}
+
+func (o TarArgsTypeOutput) ExcludeFrom() pulumix.Output[*string] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *string { return v.ExcludeFrom })
+}
+
+func (o TarArgsTypeOutput) ExcludeVcs() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.ExcludeVcs })
+}
+
+func (o TarArgsTypeOutput) ExcludeVcsIgnores() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.ExcludeVcsIgnores })
+}
+
+func (o TarArgsTypeOutput) Extract() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Extract })
+}
+
+func (o TarArgsTypeOutput) File() pulumix.Output[*string] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *string { return v.File })
+}
+
+func (o TarArgsTypeOutput) Gzip() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Gzip })
+}
+
+func (o TarArgsTypeOutput) IgnoreCommandError() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.IgnoreCommandError })
+}
+
+func (o TarArgsTypeOutput) KeepDirectorySymlink() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.KeepDirectorySymlink })
+}
+
+func (o TarArgsTypeOutput) KeepNewerFiles() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.KeepNewerFiles })
+}
+
+func (o TarArgsTypeOutput) KeepOldfiles() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.KeepOldfiles })
+}
+
+func (o TarArgsTypeOutput) List() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.List })
+}
+
+func (o TarArgsTypeOutput) Lzip() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Lzip })
+}
+
+func (o TarArgsTypeOutput) Lzma() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Lzma })
+}
+
+func (o TarArgsTypeOutput) Lzop() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Lzop })
+}
+
+func (o TarArgsTypeOutput) NoOverwriteDir() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.NoOverwriteDir })
+}
+
+func (o TarArgsTypeOutput) NoSeek() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.NoSeek })
+}
+
+func (o TarArgsTypeOutput) Overwrite() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Overwrite })
+}
+
+func (o TarArgsTypeOutput) OverwriteDir() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.OverwriteDir })
+}
+
+func (o TarArgsTypeOutput) RemoveFiles() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.RemoveFiles })
+}
+
+func (o TarArgsTypeOutput) SkipOldFiles() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.SkipOldFiles })
+}
+
+func (o TarArgsTypeOutput) Sparse() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Sparse })
+}
+
+func (o TarArgsTypeOutput) StripComponents() pulumix.Output[*int] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *int { return v.StripComponents })
+}
+
+func (o TarArgsTypeOutput) Suffix() pulumix.Output[*string] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *string { return v.Suffix })
+}
+
+func (o TarArgsTypeOutput) ToStdout() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.ToStdout })
+}
+
+func (o TarArgsTypeOutput) Transform() pulumix.Output[*string] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *string { return v.Transform })
+}
+
+func (o TarArgsTypeOutput) UnlinkFirst() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.UnlinkFirst })
+}
+
+func (o TarArgsTypeOutput) Update() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Update })
+}
+
+func (o TarArgsTypeOutput) Verbose() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Verbose })
+}
+
+func (o TarArgsTypeOutput) Verify() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Verify })
+}
+
+func (o TarArgsTypeOutput) Xz() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Xz })
+}
+
+func (o TarArgsTypeOutput) Zstd() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Zstd })
+}
+
 type TeeArgsType struct {
 	Append  *bool    `pulumi:"append"`
 	Content string   `pulumi:"content"`
@@ -464,6 +683,7 @@ func (o WgetArgsTypeOutput) Wait() pulumix.Output[*string] {
 func init() {
 	pulumi.RegisterOutputType(MvArgsTypeOutput{})
 	pulumi.RegisterOutputType(RmArgsTypeOutput{})
+	pulumi.RegisterOutputType(TarArgsTypeOutput{})
 	pulumi.RegisterOutputType(TeeArgsTypeOutput{})
 	pulumi.RegisterOutputType(WgetArgsTypeOutput{})
 }

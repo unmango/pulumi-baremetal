@@ -25,6 +25,8 @@ func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi
 		r = &Mv{}
 	case "baremetal:cmd:Rm":
 		r = &Rm{}
+	case "baremetal:cmd:Tar":
+		r = &Tar{}
 	case "baremetal:cmd:Tee":
 		r = &Tee{}
 	case "baremetal:cmd:Wget":

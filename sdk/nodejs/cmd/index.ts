@@ -15,6 +15,11 @@ export type Rm = import("./rm").Rm;
 export const Rm: typeof import("./rm").Rm = null as any;
 utilities.lazyLoad(exports, ["Rm"], () => require("./rm"));
 
+export { TarArgs } from "./tar";
+export type Tar = import("./tar").Tar;
+export const Tar: typeof import("./tar").Tar = null as any;
+utilities.lazyLoad(exports, ["Tar"], () => require("./tar"));
+
 export { TeeArgs } from "./tee";
 export type Tee = import("./tee").Tee;
 export const Tee: typeof import("./tee").Tee = null as any;
@@ -34,6 +39,8 @@ const _module = {
                 return new Mv(name, <any>undefined, { urn })
             case "baremetal:cmd:Rm":
                 return new Rm(name, <any>undefined, { urn })
+            case "baremetal:cmd:Tar":
+                return new Tar(name, <any>undefined, { urn })
             case "baremetal:cmd:Tee":
                 return new Tee(name, <any>undefined, { urn })
             case "baremetal:cmd:Wget":

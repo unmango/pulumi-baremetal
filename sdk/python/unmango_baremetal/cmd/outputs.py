@@ -12,6 +12,7 @@ from .. import _utilities
 __all__ = [
     'MvArgs',
     'RmArgs',
+    'TarArgs',
     'TeeArgs',
     'WgetArgs',
 ]
@@ -230,6 +231,368 @@ class RmArgs(dict):
     @pulumi.getter
     def verbose(self) -> Optional[bool]:
         return pulumi.get(self, "verbose")
+
+
+@pulumi.output_type
+class TarArgs(dict):
+    @staticmethod
+    def __key_warning(key: str):
+        suggest = None
+        if key == "excludeFrom":
+            suggest = "exclude_from"
+        elif key == "excludeVcs":
+            suggest = "exclude_vcs"
+        elif key == "excludeVcsIgnores":
+            suggest = "exclude_vcs_ignores"
+        elif key == "ignoreCommandError":
+            suggest = "ignore_command_error"
+        elif key == "keepDirectorySymlink":
+            suggest = "keep_directory_symlink"
+        elif key == "keepNewerFiles":
+            suggest = "keep_newer_files"
+        elif key == "keepOldfiles":
+            suggest = "keep_oldfiles"
+        elif key == "noOverwriteDir":
+            suggest = "no_overwrite_dir"
+        elif key == "noSeek":
+            suggest = "no_seek"
+        elif key == "overwriteDir":
+            suggest = "overwrite_dir"
+        elif key == "removeFiles":
+            suggest = "remove_files"
+        elif key == "skipOldFiles":
+            suggest = "skip_old_files"
+        elif key == "stripComponents":
+            suggest = "strip_components"
+        elif key == "toStdout":
+            suggest = "to_stdout"
+        elif key == "unlinkFirst":
+            suggest = "unlink_first"
+
+        if suggest:
+            pulumi.log.warn(f"Key '{key}' not found in TarArgs. Access the value via the '{suggest}' property getter instead.")
+
+    def __getitem__(self, key: str) -> Any:
+        TarArgs.__key_warning(key)
+        return super().__getitem__(key)
+
+    def get(self, key: str, default = None) -> Any:
+        TarArgs.__key_warning(key)
+        return super().get(key, default)
+
+    def __init__(__self__, *,
+                 append: Optional[bool] = None,
+                 args: Optional[Sequence[str]] = None,
+                 bzip2: Optional[bool] = None,
+                 create: Optional[bool] = None,
+                 delete: Optional[bool] = None,
+                 diff: Optional[bool] = None,
+                 directory: Optional[str] = None,
+                 exclude: Optional[str] = None,
+                 exclude_from: Optional[str] = None,
+                 exclude_vcs: Optional[bool] = None,
+                 exclude_vcs_ignores: Optional[bool] = None,
+                 extract: Optional[bool] = None,
+                 file: Optional[str] = None,
+                 gzip: Optional[bool] = None,
+                 ignore_command_error: Optional[bool] = None,
+                 keep_directory_symlink: Optional[bool] = None,
+                 keep_newer_files: Optional[bool] = None,
+                 keep_oldfiles: Optional[bool] = None,
+                 list: Optional[bool] = None,
+                 lzip: Optional[bool] = None,
+                 lzma: Optional[bool] = None,
+                 lzop: Optional[bool] = None,
+                 no_overwrite_dir: Optional[bool] = None,
+                 no_seek: Optional[bool] = None,
+                 overwrite: Optional[bool] = None,
+                 overwrite_dir: Optional[bool] = None,
+                 remove_files: Optional[bool] = None,
+                 skip_old_files: Optional[bool] = None,
+                 sparse: Optional[bool] = None,
+                 strip_components: Optional[int] = None,
+                 suffix: Optional[str] = None,
+                 to_stdout: Optional[bool] = None,
+                 transform: Optional[str] = None,
+                 unlink_first: Optional[bool] = None,
+                 update: Optional[bool] = None,
+                 verbose: Optional[bool] = None,
+                 verify: Optional[bool] = None,
+                 xz: Optional[bool] = None,
+                 zstd: Optional[bool] = None):
+        if append is not None:
+            pulumi.set(__self__, "append", append)
+        if args is not None:
+            pulumi.set(__self__, "args", args)
+        if bzip2 is not None:
+            pulumi.set(__self__, "bzip2", bzip2)
+        if create is not None:
+            pulumi.set(__self__, "create", create)
+        if delete is not None:
+            pulumi.set(__self__, "delete", delete)
+        if diff is not None:
+            pulumi.set(__self__, "diff", diff)
+        if directory is not None:
+            pulumi.set(__self__, "directory", directory)
+        if exclude is not None:
+            pulumi.set(__self__, "exclude", exclude)
+        if exclude_from is not None:
+            pulumi.set(__self__, "exclude_from", exclude_from)
+        if exclude_vcs is not None:
+            pulumi.set(__self__, "exclude_vcs", exclude_vcs)
+        if exclude_vcs_ignores is not None:
+            pulumi.set(__self__, "exclude_vcs_ignores", exclude_vcs_ignores)
+        if extract is not None:
+            pulumi.set(__self__, "extract", extract)
+        if file is not None:
+            pulumi.set(__self__, "file", file)
+        if gzip is not None:
+            pulumi.set(__self__, "gzip", gzip)
+        if ignore_command_error is not None:
+            pulumi.set(__self__, "ignore_command_error", ignore_command_error)
+        if keep_directory_symlink is not None:
+            pulumi.set(__self__, "keep_directory_symlink", keep_directory_symlink)
+        if keep_newer_files is not None:
+            pulumi.set(__self__, "keep_newer_files", keep_newer_files)
+        if keep_oldfiles is not None:
+            pulumi.set(__self__, "keep_oldfiles", keep_oldfiles)
+        if list is not None:
+            pulumi.set(__self__, "list", list)
+        if lzip is not None:
+            pulumi.set(__self__, "lzip", lzip)
+        if lzma is not None:
+            pulumi.set(__self__, "lzma", lzma)
+        if lzop is not None:
+            pulumi.set(__self__, "lzop", lzop)
+        if no_overwrite_dir is not None:
+            pulumi.set(__self__, "no_overwrite_dir", no_overwrite_dir)
+        if no_seek is not None:
+            pulumi.set(__self__, "no_seek", no_seek)
+        if overwrite is not None:
+            pulumi.set(__self__, "overwrite", overwrite)
+        if overwrite_dir is not None:
+            pulumi.set(__self__, "overwrite_dir", overwrite_dir)
+        if remove_files is not None:
+            pulumi.set(__self__, "remove_files", remove_files)
+        if skip_old_files is not None:
+            pulumi.set(__self__, "skip_old_files", skip_old_files)
+        if sparse is not None:
+            pulumi.set(__self__, "sparse", sparse)
+        if strip_components is not None:
+            pulumi.set(__self__, "strip_components", strip_components)
+        if suffix is not None:
+            pulumi.set(__self__, "suffix", suffix)
+        if to_stdout is not None:
+            pulumi.set(__self__, "to_stdout", to_stdout)
+        if transform is not None:
+            pulumi.set(__self__, "transform", transform)
+        if unlink_first is not None:
+            pulumi.set(__self__, "unlink_first", unlink_first)
+        if update is not None:
+            pulumi.set(__self__, "update", update)
+        if verbose is not None:
+            pulumi.set(__self__, "verbose", verbose)
+        if verify is not None:
+            pulumi.set(__self__, "verify", verify)
+        if xz is not None:
+            pulumi.set(__self__, "xz", xz)
+        if zstd is not None:
+            pulumi.set(__self__, "zstd", zstd)
+
+    @property
+    @pulumi.getter
+    def append(self) -> Optional[bool]:
+        return pulumi.get(self, "append")
+
+    @property
+    @pulumi.getter
+    def args(self) -> Optional[Sequence[str]]:
+        return pulumi.get(self, "args")
+
+    @property
+    @pulumi.getter
+    def bzip2(self) -> Optional[bool]:
+        return pulumi.get(self, "bzip2")
+
+    @property
+    @pulumi.getter
+    def create(self) -> Optional[bool]:
+        return pulumi.get(self, "create")
+
+    @property
+    @pulumi.getter
+    def delete(self) -> Optional[bool]:
+        return pulumi.get(self, "delete")
+
+    @property
+    @pulumi.getter
+    def diff(self) -> Optional[bool]:
+        return pulumi.get(self, "diff")
+
+    @property
+    @pulumi.getter
+    def directory(self) -> Optional[str]:
+        return pulumi.get(self, "directory")
+
+    @property
+    @pulumi.getter
+    def exclude(self) -> Optional[str]:
+        return pulumi.get(self, "exclude")
+
+    @property
+    @pulumi.getter(name="excludeFrom")
+    def exclude_from(self) -> Optional[str]:
+        return pulumi.get(self, "exclude_from")
+
+    @property
+    @pulumi.getter(name="excludeVcs")
+    def exclude_vcs(self) -> Optional[bool]:
+        return pulumi.get(self, "exclude_vcs")
+
+    @property
+    @pulumi.getter(name="excludeVcsIgnores")
+    def exclude_vcs_ignores(self) -> Optional[bool]:
+        return pulumi.get(self, "exclude_vcs_ignores")
+
+    @property
+    @pulumi.getter
+    def extract(self) -> Optional[bool]:
+        return pulumi.get(self, "extract")
+
+    @property
+    @pulumi.getter
+    def file(self) -> Optional[str]:
+        return pulumi.get(self, "file")
+
+    @property
+    @pulumi.getter
+    def gzip(self) -> Optional[bool]:
+        return pulumi.get(self, "gzip")
+
+    @property
+    @pulumi.getter(name="ignoreCommandError")
+    def ignore_command_error(self) -> Optional[bool]:
+        return pulumi.get(self, "ignore_command_error")
+
+    @property
+    @pulumi.getter(name="keepDirectorySymlink")
+    def keep_directory_symlink(self) -> Optional[bool]:
+        return pulumi.get(self, "keep_directory_symlink")
+
+    @property
+    @pulumi.getter(name="keepNewerFiles")
+    def keep_newer_files(self) -> Optional[bool]:
+        return pulumi.get(self, "keep_newer_files")
+
+    @property
+    @pulumi.getter(name="keepOldfiles")
+    def keep_oldfiles(self) -> Optional[bool]:
+        return pulumi.get(self, "keep_oldfiles")
+
+    @property
+    @pulumi.getter
+    def list(self) -> Optional[bool]:
+        return pulumi.get(self, "list")
+
+    @property
+    @pulumi.getter
+    def lzip(self) -> Optional[bool]:
+        return pulumi.get(self, "lzip")
+
+    @property
+    @pulumi.getter
+    def lzma(self) -> Optional[bool]:
+        return pulumi.get(self, "lzma")
+
+    @property
+    @pulumi.getter
+    def lzop(self) -> Optional[bool]:
+        return pulumi.get(self, "lzop")
+
+    @property
+    @pulumi.getter(name="noOverwriteDir")
+    def no_overwrite_dir(self) -> Optional[bool]:
+        return pulumi.get(self, "no_overwrite_dir")
+
+    @property
+    @pulumi.getter(name="noSeek")
+    def no_seek(self) -> Optional[bool]:
+        return pulumi.get(self, "no_seek")
+
+    @property
+    @pulumi.getter
+    def overwrite(self) -> Optional[bool]:
+        return pulumi.get(self, "overwrite")
+
+    @property
+    @pulumi.getter(name="overwriteDir")
+    def overwrite_dir(self) -> Optional[bool]:
+        return pulumi.get(self, "overwrite_dir")
+
+    @property
+    @pulumi.getter(name="removeFiles")
+    def remove_files(self) -> Optional[bool]:
+        return pulumi.get(self, "remove_files")
+
+    @property
+    @pulumi.getter(name="skipOldFiles")
+    def skip_old_files(self) -> Optional[bool]:
+        return pulumi.get(self, "skip_old_files")
+
+    @property
+    @pulumi.getter
+    def sparse(self) -> Optional[bool]:
+        return pulumi.get(self, "sparse")
+
+    @property
+    @pulumi.getter(name="stripComponents")
+    def strip_components(self) -> Optional[int]:
+        return pulumi.get(self, "strip_components")
+
+    @property
+    @pulumi.getter
+    def suffix(self) -> Optional[str]:
+        return pulumi.get(self, "suffix")
+
+    @property
+    @pulumi.getter(name="toStdout")
+    def to_stdout(self) -> Optional[bool]:
+        return pulumi.get(self, "to_stdout")
+
+    @property
+    @pulumi.getter
+    def transform(self) -> Optional[str]:
+        return pulumi.get(self, "transform")
+
+    @property
+    @pulumi.getter(name="unlinkFirst")
+    def unlink_first(self) -> Optional[bool]:
+        return pulumi.get(self, "unlink_first")
+
+    @property
+    @pulumi.getter
+    def update(self) -> Optional[bool]:
+        return pulumi.get(self, "update")
+
+    @property
+    @pulumi.getter
+    def verbose(self) -> Optional[bool]:
+        return pulumi.get(self, "verbose")
+
+    @property
+    @pulumi.getter
+    def verify(self) -> Optional[bool]:
+        return pulumi.get(self, "verify")
+
+    @property
+    @pulumi.getter
+    def xz(self) -> Optional[bool]:
+        return pulumi.get(self, "xz")
+
+    @property
+    @pulumi.getter
+    def zstd(self) -> Optional[bool]:
+        return pulumi.get(self, "zstd")
 
 
 @pulumi.output_type

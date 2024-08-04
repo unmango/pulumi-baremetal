@@ -16,6 +16,7 @@
         "cmd/index.ts",
         "cmd/mv.ts",
         "cmd/rm.ts",
+        "cmd/tar.ts",
         "cmd/tee.ts",
         "cmd/wget.ts",
         "config/index.ts",

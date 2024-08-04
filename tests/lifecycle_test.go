@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"bytes"
 	"context"
 	"path"
 
@@ -14,10 +15,10 @@ import (
 	"github.com/unmango/pulumi-baremetal/tests/util"
 )
 
-const work = "/tmp/lifecycle"
+const workRoot = "/tmp/lifecycle"
 
 func containerPath(elem ...string) string {
-	parts := append([]string{work}, elem...)
+	parts := append([]string{workRoot}, elem...)
 	return path.Join(parts...)
 }
 
@@ -29,7 +30,7 @@ var _ = Describe("Command Resources", func() {
 		server = util.NewServer()
 
 		By("creating a workspace in the container")
-		_, err := provisioner.Exec(ctx, "mkdir", "-p", work)
+		_, err := provisioner.Exec(ctx, "mkdir", "-p", workRoot)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("fetching provisioner connection details")
@@ -147,6 +148,105 @@ var _ = Describe("Command Resources", func() {
 			run(server, test)
 
 			Expect(provisioner).NotTo(ContainFile(ctx, file))
+		})
+	})
+
+	Describe("Tar", Ordered, func() {
+		work := containerPath("tar")
+		fileName := "someFile.txt"
+		contents := "Some text that really doesn't matter"
+		archive := containerPath("tar", "test-archive.tar.gz")
+		dest := containerPath("tar", "destination")
+		expectedFile := containerPath("tar", "destination", fileName)
+
+		BeforeAll(func(ctx context.Context) {
+			By("ensuring container directories exist")
+			_, err := provisioner.Exec(ctx, "mkdir", "-p", work, dest)
+			Expect(err).NotTo(HaveOccurred())
+
+			By("creating an archive to operate on")
+			buf := &bytes.Buffer{}
+			err = util.CreateTarArchive(buf, map[string]string{
+				fileName: contents,
+			})
+			Expect(err).NotTo(HaveOccurred())
+
+			By("writing the archive to the container")
+			err = provisioner.WriteFile(ctx, archive, buf.Bytes())
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		test := integration.LifeCycleTest{
+			Resource: "baremetal:cmd:Tar",
+			Create: integration.Operation{
+				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"extract":   true,
+					"file":      archive,
+					"directory": dest,
+					"args":      []string{fileName},
+				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(provisioner).To(ContainFile(context.Background(), expectedFile))
+				},
+				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"exitCode":     0,
+					"stdout":       "",
+					"stderr":       "",
+					"createdFiles": []string{expectedFile},
+					"movedFiles":   map[string]string{},
+					"args": map[string]interface{}{
+						"extract":   true,
+						"file":      archive,
+						"directory": dest,
+						"args":      []string{fileName},
+
+						// Defaults
+						"gzip":                 false,
+						"keepDirectorySymlink": false,
+						"unlinkFirst":          false,
+						"xz":                   false,
+						"list":                 false,
+						"ignoreCommandError":   false,
+						"excludeFrom":          "",
+						"lzop":                 false,
+						"append":               false,
+						"update":               false,
+						"delete":               false,
+						"excludeVcs":           false,
+						"verbose":              false,
+						"lzip":                 false,
+						"overwriteDir":         false,
+						"transform":            "",
+						"create":               false,
+						"skipOldFiles":         false,
+						"excludeVcsIgnores":    false,
+						"verify":               false,
+						"suffix":               "",
+						"diff":                 false,
+						"exclude":              "",
+						"stripComponents":      0,
+						"bzip2":                false,
+						"keepNewerFiles":       false,
+						"removeFiles":          false,
+						"noSeek":               false,
+						"zstd":                 false,
+						"overwrite":            false,
+						"sparse":               false,
+						"toStdout":             false,
+						"lzma":                 false,
+						"keepOldfiles":         false,
+						"noOverwriteDir":       false,
+					},
+				}),
+			},
+		}
+
+		It("should complete a full lifecycle", func(ctx context.Context) {
+			run(server, test)
+
+			Expect(provisioner).To(ContainFile(ctx, archive))
+			Expect(provisioner).NotTo(ContainFile(ctx, expectedFile))
 		})
 	})
 
