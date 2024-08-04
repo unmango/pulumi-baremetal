@@ -42,10 +42,12 @@ export class Provider extends pulumi.ProviderResource {
             resourceInputs["address"] = args ? args.address : undefined;
             resourceInputs["caPem"] = args ? args.caPem : undefined;
             resourceInputs["certPem"] = args ? args.certPem : undefined;
-            resourceInputs["keyPem"] = args ? args.keyPem : undefined;
+            resourceInputs["keyPem"] = args?.keyPem ? pulumi.secret(args.keyPem) : undefined;
             resourceInputs["port"] = args ? args.port : undefined;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
+        const secretOpts = { additionalSecretOutputs: ["keyPem"] };
+        opts = pulumi.mergeOptions(opts, secretOpts);
         super(Provider.__pulumiType, name, resourceInputs, opts);
     }
 }

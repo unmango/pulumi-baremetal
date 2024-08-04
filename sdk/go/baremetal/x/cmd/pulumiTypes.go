@@ -53,6 +53,262 @@ func (o TeeArgsTypeOutput) Files() pulumix.ArrayOutput[string] {
 	return pulumix.ArrayOutput[string]{OutputState: value.OutputState}
 }
 
+type WgetArgsType struct {
+	AppendOutput       *string  `pulumi:"appendOutput"`
+	Background         *bool    `pulumi:"background"`
+	Base               *string  `pulumi:"base"`
+	CaCertificateFile  *string  `pulumi:"caCertificateFile"`
+	CaDirectory        *string  `pulumi:"caDirectory"`
+	Certificate        *string  `pulumi:"certificate"`
+	CertificateType    *string  `pulumi:"certificateType"`
+	Config             *string  `pulumi:"config"`
+	Continue           *bool    `pulumi:"continue"`
+	CrlFile            *string  `pulumi:"crlFile"`
+	CutDirs            *int     `pulumi:"cutDirs"`
+	Debug              *bool    `pulumi:"debug"`
+	DirectoryPrefix    *string  `pulumi:"directoryPrefix"`
+	Execute            []string `pulumi:"execute"`
+	ForceDirectories   *bool    `pulumi:"forceDirectories"`
+	ForceHtml          *bool    `pulumi:"forceHtml"`
+	Help               *bool    `pulumi:"help"`
+	HttpsOnly          *bool    `pulumi:"httpsOnly"`
+	Inet4Only          *bool    `pulumi:"inet4Only"`
+	InputFile          *string  `pulumi:"inputFile"`
+	KeepSessionCookies *bool    `pulumi:"keepSessionCookies"`
+	NoClobber          *bool    `pulumi:"noClobber"`
+	NoDirectories      *bool    `pulumi:"noDirectories"`
+	NoDnsCache         *bool    `pulumi:"noDnsCache"`
+	NoVerbose          *bool    `pulumi:"noVerbose"`
+	OutputDocument     *string  `pulumi:"outputDocument"`
+	OutputFile         *string  `pulumi:"outputFile"`
+	Password           *string  `pulumi:"password"`
+	PrivateKey         *string  `pulumi:"privateKey"`
+	PrivateKeyType     *string  `pulumi:"privateKeyType"`
+	Progress           *string  `pulumi:"progress"`
+	Quiet              *bool    `pulumi:"quiet"`
+	RandomWait         *bool    `pulumi:"randomWait"`
+	ReportSpeed        *string  `pulumi:"reportSpeed"`
+	SaveCookies        *string  `pulumi:"saveCookies"`
+	ShowProgress       *bool    `pulumi:"showProgress"`
+	StartPos           *string  `pulumi:"startPos"`
+	Timeout            *string  `pulumi:"timeout"`
+	Timestamping       *bool    `pulumi:"timestamping"`
+	Tries              *int     `pulumi:"tries"`
+	Urls               []string `pulumi:"urls"`
+	User               *string  `pulumi:"user"`
+	UserAgent          *string  `pulumi:"userAgent"`
+	Verbose            *bool    `pulumi:"verbose"`
+	Version            *string  `pulumi:"version"`
+	Wait               *string  `pulumi:"wait"`
+}
+
+type WgetArgsTypeOutput struct{ *pulumi.OutputState }
+
+func (WgetArgsTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*WgetArgsType)(nil)).Elem()
+}
+
+func (o WgetArgsTypeOutput) ToWgetArgsTypeOutput() WgetArgsTypeOutput {
+	return o
+}
+
+func (o WgetArgsTypeOutput) ToWgetArgsTypeOutputWithContext(ctx context.Context) WgetArgsTypeOutput {
+	return o
+}
+
+func (o WgetArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[WgetArgsType] {
+	return pulumix.Output[WgetArgsType]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o WgetArgsTypeOutput) AppendOutput() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.AppendOutput })
+}
+
+func (o WgetArgsTypeOutput) Background() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.Background })
+}
+
+func (o WgetArgsTypeOutput) Base() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.Base })
+}
+
+func (o WgetArgsTypeOutput) CaCertificateFile() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.CaCertificateFile })
+}
+
+func (o WgetArgsTypeOutput) CaDirectory() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.CaDirectory })
+}
+
+func (o WgetArgsTypeOutput) Certificate() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.Certificate })
+}
+
+func (o WgetArgsTypeOutput) CertificateType() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.CertificateType })
+}
+
+func (o WgetArgsTypeOutput) Config() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.Config })
+}
+
+func (o WgetArgsTypeOutput) Continue() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.Continue })
+}
+
+func (o WgetArgsTypeOutput) CrlFile() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.CrlFile })
+}
+
+func (o WgetArgsTypeOutput) CutDirs() pulumix.Output[*int] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *int { return v.CutDirs })
+}
+
+func (o WgetArgsTypeOutput) Debug() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.Debug })
+}
+
+func (o WgetArgsTypeOutput) DirectoryPrefix() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.DirectoryPrefix })
+}
+
+func (o WgetArgsTypeOutput) Execute() pulumix.ArrayOutput[string] {
+	value := pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) []string { return v.Execute })
+	return pulumix.ArrayOutput[string]{OutputState: value.OutputState}
+}
+
+func (o WgetArgsTypeOutput) ForceDirectories() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.ForceDirectories })
+}
+
+func (o WgetArgsTypeOutput) ForceHtml() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.ForceHtml })
+}
+
+func (o WgetArgsTypeOutput) Help() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.Help })
+}
+
+func (o WgetArgsTypeOutput) HttpsOnly() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.HttpsOnly })
+}
+
+func (o WgetArgsTypeOutput) Inet4Only() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.Inet4Only })
+}
+
+func (o WgetArgsTypeOutput) InputFile() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.InputFile })
+}
+
+func (o WgetArgsTypeOutput) KeepSessionCookies() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.KeepSessionCookies })
+}
+
+func (o WgetArgsTypeOutput) NoClobber() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.NoClobber })
+}
+
+func (o WgetArgsTypeOutput) NoDirectories() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.NoDirectories })
+}
+
+func (o WgetArgsTypeOutput) NoDnsCache() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.NoDnsCache })
+}
+
+func (o WgetArgsTypeOutput) NoVerbose() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.NoVerbose })
+}
+
+func (o WgetArgsTypeOutput) OutputDocument() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.OutputDocument })
+}
+
+func (o WgetArgsTypeOutput) OutputFile() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.OutputFile })
+}
+
+func (o WgetArgsTypeOutput) Password() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.Password })
+}
+
+func (o WgetArgsTypeOutput) PrivateKey() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.PrivateKey })
+}
+
+func (o WgetArgsTypeOutput) PrivateKeyType() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.PrivateKeyType })
+}
+
+func (o WgetArgsTypeOutput) Progress() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.Progress })
+}
+
+func (o WgetArgsTypeOutput) Quiet() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.Quiet })
+}
+
+func (o WgetArgsTypeOutput) RandomWait() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.RandomWait })
+}
+
+func (o WgetArgsTypeOutput) ReportSpeed() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.ReportSpeed })
+}
+
+func (o WgetArgsTypeOutput) SaveCookies() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.SaveCookies })
+}
+
+func (o WgetArgsTypeOutput) ShowProgress() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.ShowProgress })
+}
+
+func (o WgetArgsTypeOutput) StartPos() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.StartPos })
+}
+
+func (o WgetArgsTypeOutput) Timeout() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.Timeout })
+}
+
+func (o WgetArgsTypeOutput) Timestamping() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.Timestamping })
+}
+
+func (o WgetArgsTypeOutput) Tries() pulumix.Output[*int] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *int { return v.Tries })
+}
+
+func (o WgetArgsTypeOutput) Urls() pulumix.ArrayOutput[string] {
+	value := pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) []string { return v.Urls })
+	return pulumix.ArrayOutput[string]{OutputState: value.OutputState}
+}
+
+func (o WgetArgsTypeOutput) User() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.User })
+}
+
+func (o WgetArgsTypeOutput) UserAgent() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.UserAgent })
+}
+
+func (o WgetArgsTypeOutput) Verbose() pulumix.Output[*bool] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *bool { return v.Verbose })
+}
+
+func (o WgetArgsTypeOutput) Version() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.Version })
+}
+
+func (o WgetArgsTypeOutput) Wait() pulumix.Output[*string] {
+	return pulumix.Apply[WgetArgsType](o, func(v WgetArgsType) *string { return v.Wait })
+}
+
 func init() {
 	pulumi.RegisterOutputType(TeeArgsTypeOutput{})
+	pulumi.RegisterOutputType(WgetArgsTypeOutput{})
 }

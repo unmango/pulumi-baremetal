@@ -136,8 +136,10 @@ class Provider(pulumi.ProviderResource):
             __props__.__dict__["address"] = address
             __props__.__dict__["ca_pem"] = ca_pem
             __props__.__dict__["cert_pem"] = cert_pem
-            __props__.__dict__["key_pem"] = key_pem
+            __props__.__dict__["key_pem"] = None if key_pem is None else pulumi.Output.secret(key_pem)
             __props__.__dict__["port"] = port
+        secret_opts = pulumi.ResourceOptions(additional_secret_outputs=["keyPem"])
+        opts = pulumi.ResourceOptions.merge(opts, secret_opts)
         super(Provider, __self__).__init__(
             'baremetal',
             resource_name,

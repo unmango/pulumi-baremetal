@@ -6,4 +6,5 @@ from .. import _utilities
 import typing
 # Export this package's modules as members:
 from .tee import *
+from .wget import *
 from . import outputs

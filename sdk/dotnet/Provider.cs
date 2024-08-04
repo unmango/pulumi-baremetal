@@ -47,6 +47,10 @@ namespace UnMango.Baremetal
             {
                 Version = Utilities.Version,
                 PluginDownloadURL = "github://api.github.com/unmango",
+                AdditionalSecretOutputs =
+                {
+                    "keyPem",
+                },
             };
             var merged = CustomResourceOptions.Merge(defaultOptions, options);
             // Override the ID if one was specified for consistency with other language SDKs.
@@ -67,7 +71,16 @@ namespace UnMango.Baremetal
         public Input<string>? CertPem { get; set; }
 
         [Input("keyPem")]
-        public Input<string>? KeyPem { get; set; }
+        private Input<string>? _keyPem;
+        public Input<string>? KeyPem
+        {
+            get => _keyPem;
+            set
+            {
+                var emptySecret = Output.CreateSecret(0);
+                _keyPem = Output.Tuple<Input<string>?, int>(value, emptySecret).Apply(t => t.Item1);
+            }
+        }
 
         [Input("port")]
         public Input<string>? Port { get; set; }

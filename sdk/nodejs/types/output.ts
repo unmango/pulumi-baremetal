@@ -12,4 +12,53 @@ export namespace cmd {
         files: string[];
     }
 
+    export interface WgetArgs {
+        appendOutput?: string;
+        background?: boolean;
+        base?: string;
+        caCertificateFile?: string;
+        caDirectory?: string;
+        certificate?: string;
+        certificateType?: string;
+        config?: string;
+        continue?: boolean;
+        crlFile?: string;
+        cutDirs?: number;
+        debug?: boolean;
+        directoryPrefix?: string;
+        execute?: string[];
+        forceDirectories?: boolean;
+        forceHtml?: boolean;
+        help?: boolean;
+        httpsOnly?: boolean;
+        inet4Only?: boolean;
+        inputFile?: string;
+        keepSessionCookies?: boolean;
+        noClobber?: boolean;
+        noDirectories?: boolean;
+        noDnsCache?: boolean;
+        noVerbose?: boolean;
+        outputDocument?: string;
+        outputFile?: string;
+        password?: string;
+        privateKey?: string;
+        privateKeyType?: string;
+        progress?: string;
+        quiet?: boolean;
+        randomWait?: boolean;
+        reportSpeed?: string;
+        saveCookies?: string;
+        showProgress?: boolean;
+        startPos?: string;
+        timeout?: string;
+        timestamping?: boolean;
+        tries?: number;
+        urls: string[];
+        user?: string;
+        userAgent?: string;
+        verbose?: boolean;
+        version?: string;
+        wait?: string;
+    }
+
 }
