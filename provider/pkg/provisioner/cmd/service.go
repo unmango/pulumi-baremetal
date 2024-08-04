@@ -215,6 +215,8 @@ func binPath(b pb.Bin) (string, error) {
 		return "mv", nil
 	case pb.Bin_BIN_RM:
 		return "rm", nil
+	case pb.Bin_BIN_TAR:
+		return "tar", nil
 	case pb.Bin_BIN_TEE:
 		return "tee", nil
 	case pb.Bin_BIN_WGET:
