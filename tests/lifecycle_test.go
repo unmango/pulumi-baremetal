@@ -183,10 +183,10 @@ var _ = Describe("Command Resources", func() {
 					"extract":   true,
 					"file":      archive,
 					"directory": dest,
+					"args":      []string{fileName},
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
-					Expect(output["createdFiles"].V).To(ContainElement(expectedFile))
 					Expect(provisioner).To(ContainFile(context.Background(), expectedFile))
 				},
 				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
@@ -199,6 +199,7 @@ var _ = Describe("Command Resources", func() {
 						"extract":   true,
 						"file":      archive,
 						"directory": dest,
+						"args":      []string{fileName},
 
 						// Defaults
 						"gzip":                 false,
