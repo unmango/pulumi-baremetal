@@ -113,6 +113,16 @@ func (s *CommandState[T]) Update(ctx context.Context, inputs T, preview bool) (C
 		return result, fmt.Errorf("sending update request: %w", err)
 	}
 
+	if res.CreatedFiles == nil {
+		log.Debugf("%#v was empty, this is probably a bug somewhere else", res.CreatedFiles)
+		res.CreatedFiles = []string{}
+	}
+
+	if res.MovedFiles == nil {
+		log.Debugf("%#v was empty, this is probably a bug somewhere else", res.MovedFiles)
+		res.MovedFiles = map[string]string{}
+	}
+
 	result.Args = inputs
 	result.ExitCode = int(res.Result.ExitCode)
 	result.Stdout = res.Result.Stdout
