@@ -10,6 +10,7 @@ import (
 )
 
 type WgetArgs struct {
+	DefaultFileManipulator
 	AppendOutput      string   `pulumi:"appendOutput,optional"`
 	Background        bool     `pulumi:"background,optional"`
 	Base              string   `pulumi:"base,optional"`
@@ -115,8 +116,8 @@ func (w WgetArgs) Cmd() *pb.Command {
 	}
 }
 
-// ExpectedFiles implements CommandArgs.
-func (w WgetArgs) ExpectedFiles() []string {
+// ExpectCreated implements FileManipulator.
+func (w WgetArgs) ExpectCreated() []string {
 	files := []string{}
 	if w.AppendOutput != "" {
 		files = append(files, w.AppendOutput)

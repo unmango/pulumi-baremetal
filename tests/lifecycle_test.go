@@ -71,7 +71,8 @@ var _ = Describe("Command Resources", func() {
 					"exitCode":     0,
 					"stdout":       "",
 					"stderr":       "",
-					"createdFiles": []string{newFile},
+					"createdFiles": []string{},
+					"movedFiles":   map[string]string{file: newFile},
 					"args": map[string]interface{}{
 						"source":      []string{file},
 						"destination": newFile,
@@ -97,7 +98,7 @@ var _ = Describe("Command Resources", func() {
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			run(server, test)
 
-			Expect(provisioner).NotTo(ContainFile(ctx, file))
+			Expect(provisioner).To(ContainFile(ctx, file))
 			Expect(provisioner).NotTo(ContainFile(ctx, newFile))
 		})
 	})
@@ -126,6 +127,7 @@ var _ = Describe("Command Resources", func() {
 					"stdout":       "",
 					"stderr":       "",
 					"createdFiles": []string{},
+					"movedFiles":   map[string]string{},
 					"args": map[string]interface{}{
 						"files": []string{file},
 
@@ -172,6 +174,7 @@ var _ = Describe("Command Resources", func() {
 					"stdout":       stdin,
 					"stderr":       "",
 					"createdFiles": []string{file},
+					"movedFiles":   map[string]string{},
 					"args": map[string]interface{}{
 						"append":  false,
 						"content": stdin,
@@ -198,6 +201,7 @@ var _ = Describe("Command Resources", func() {
 						"stdout":       stdin,
 						"stderr":       "",
 						"createdFiles": []string{newFile},
+						"movedFiles":   map[string]string{},
 						"args": map[string]interface{}{
 							"append":  false,
 							"content": stdin,
@@ -222,6 +226,7 @@ var _ = Describe("Command Resources", func() {
 						"stdout":       newStdin,
 						"stderr":       "",
 						"createdFiles": []string{newFile},
+						"movedFiles":   map[string]string{},
 						"args": map[string]interface{}{
 							"append":  false,
 							"content": newStdin,
@@ -251,6 +256,7 @@ var _ = Describe("Command Resources", func() {
 						"stdout":       newStdin,
 						"stderr":       "",
 						"createdFiles": []string{file, newFile},
+						"movedFiles":   map[string]string{},
 						"args": map[string]interface{}{
 							"append":  false,
 							"content": newStdin,
@@ -297,6 +303,7 @@ var _ = Describe("Command Resources", func() {
 					"stdout":       "",
 					"stderr":       "",
 					"createdFiles": []string{file},
+					"movedFiles":   map[string]string{},
 					"args": map[string]interface{}{
 						"directoryPrefix": dir,
 						"urls":            []string{url},
