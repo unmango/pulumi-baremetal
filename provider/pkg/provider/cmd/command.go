@@ -38,23 +38,23 @@ func (s *CommandState[T]) Create(ctx context.Context, inputs T, preview bool) er
 
 	log.Debug("sending create request")
 	res, err := p.Create(ctx, &pb.CreateRequest{
-		Command:     inputs.Cmd(),
-		ExpectFiles: inputs.ExpectedFiles(),
+		Command:       inputs.Cmd(),
+		ExpectCreated: inputs.ExpectedFiles(),
 	})
 	if err != nil {
 		return fmt.Errorf("sending create request: %w", err)
 	}
 
-	if res.Files == nil {
+	if res.CreatedFiles == nil {
 		log.Debug("files was empty, this is probably a bug somewhere else")
-		res.Files = []string{}
+		res.CreatedFiles = []string{}
 	}
 
 	s.Args = inputs
 	s.ExitCode = int(res.Result.ExitCode)
 	s.Stdout = res.Result.Stdout
 	s.Stderr = res.Result.Stderr
-	s.CreatedFiles = res.Files
+	s.CreatedFiles = res.CreatedFiles
 
 	log.Info("create success")
 	return nil
@@ -72,11 +72,11 @@ func (s *CommandState[T]) Update(ctx context.Context, inputs T, preview bool) (C
 
 	log.Debug("sending update request")
 	res, err := p.Update(ctx, &pb.UpdateRequest{
-		Command:     inputs.Cmd(),
-		ExpectFiles: inputs.ExpectedFiles(),
+		Command:       inputs.Cmd(),
+		ExpectCreated: inputs.ExpectedFiles(),
 		Create: &pb.Operation{
-			Files:   s.CreatedFiles,
-			Command: s.Args.Cmd(),
+			CreatedFiles: s.CreatedFiles,
+			Command:      s.Args.Cmd(),
 			Result: &pb.Result{
 				ExitCode: int32(s.ExitCode),
 				Stdout:   s.Stdout,
@@ -92,7 +92,7 @@ func (s *CommandState[T]) Update(ctx context.Context, inputs T, preview bool) (C
 	result.ExitCode = int(res.Result.ExitCode)
 	result.Stdout = res.Result.Stdout
 	result.Stderr = res.Result.Stderr
-	result.CreatedFiles = res.Files
+	result.CreatedFiles = res.CreatedFiles
 
 	log.Info("update success")
 	return result, nil
@@ -109,8 +109,8 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 	log.Debug("sending delete request")
 	res, err := p.Delete(ctx, &pb.DeleteRequest{
 		Create: &pb.Operation{
-			Files:   s.CreatedFiles,
-			Command: s.Args.Cmd(),
+			CreatedFiles: s.CreatedFiles,
+			Command:      s.Args.Cmd(),
 			Result: &pb.Result{
 				ExitCode: int32(s.ExitCode),
 				Stdout:   s.Stdout,
@@ -122,14 +122,14 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 		return fmt.Errorf("sending delete request: %w", err)
 	}
 
-	if res.Op == nil {
+	if res.Command == nil {
 		log.Info("provisioner did not perform any operations")
 		return nil
 	}
 
-	if res.Op.Result.ExitCode > 0 {
+	if res.Result.ExitCode > 0 {
 		log.Error("provisioner returned a non-success status code")
-		return fmt.Errorf("delete operation failed exit code: %d", res.Op.Result.ExitCode)
+		return fmt.Errorf("delete operation failed exit code: %d", res.Result.ExitCode)
 	}
 
 	log.Info("delete success")

@@ -25,6 +25,7 @@ _utilities.register(
   "mod": "cmd",
   "fqn": "unmango_baremetal.cmd",
   "classes": {
+   "baremetal:cmd:Mv": "Mv",
    "baremetal:cmd:Rm": "Rm",
    "baremetal:cmd:Tee": "Tee",
    "baremetal:cmd:Wget": "Wget"

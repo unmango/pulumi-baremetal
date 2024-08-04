@@ -10,10 +10,150 @@ from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 
 __all__ = [
+    'MvArgs',
     'RmArgs',
     'TeeArgs',
     'WgetArgs',
 ]
+
+@pulumi.output_type
+class MvArgs(dict):
+    @staticmethod
+    def __key_warning(key: str):
+        suggest = None
+        if key == "noClobber":
+            suggest = "no_clobber"
+        elif key == "noTargetDirectory":
+            suggest = "no_target_directory"
+        elif key == "stripTrailingSlashes":
+            suggest = "strip_trailing_slashes"
+        elif key == "targetDirectory":
+            suggest = "target_directory"
+
+        if suggest:
+            pulumi.log.warn(f"Key '{key}' not found in MvArgs. Access the value via the '{suggest}' property getter instead.")
+
+    def __getitem__(self, key: str) -> Any:
+        MvArgs.__key_warning(key)
+        return super().__getitem__(key)
+
+    def get(self, key: str, default = None) -> Any:
+        MvArgs.__key_warning(key)
+        return super().get(key, default)
+
+    def __init__(__self__, *,
+                 source: Sequence[str],
+                 backup: Optional[str] = None,
+                 destination: Optional[str] = None,
+                 directory: Optional[str] = None,
+                 force: Optional[bool] = None,
+                 help: Optional[bool] = None,
+                 no_clobber: Optional[bool] = None,
+                 no_target_directory: Optional[bool] = None,
+                 strip_trailing_slashes: Optional[bool] = None,
+                 suffix: Optional[str] = None,
+                 target_directory: Optional[str] = None,
+                 update: Optional[bool] = None,
+                 verbose: Optional[bool] = None,
+                 version: Optional[bool] = None):
+        pulumi.set(__self__, "source", source)
+        if backup is not None:
+            pulumi.set(__self__, "backup", backup)
+        if destination is not None:
+            pulumi.set(__self__, "destination", destination)
+        if directory is not None:
+            pulumi.set(__self__, "directory", directory)
+        if force is not None:
+            pulumi.set(__self__, "force", force)
+        if help is not None:
+            pulumi.set(__self__, "help", help)
+        if no_clobber is not None:
+            pulumi.set(__self__, "no_clobber", no_clobber)
+        if no_target_directory is not None:
+            pulumi.set(__self__, "no_target_directory", no_target_directory)
+        if strip_trailing_slashes is not None:
+            pulumi.set(__self__, "strip_trailing_slashes", strip_trailing_slashes)
+        if suffix is not None:
+            pulumi.set(__self__, "suffix", suffix)
+        if target_directory is not None:
+            pulumi.set(__self__, "target_directory", target_directory)
+        if update is not None:
+            pulumi.set(__self__, "update", update)
+        if verbose is not None:
+            pulumi.set(__self__, "verbose", verbose)
+        if version is not None:
+            pulumi.set(__self__, "version", version)
+
+    @property
+    @pulumi.getter
+    def source(self) -> Sequence[str]:
+        return pulumi.get(self, "source")
+
+    @property
+    @pulumi.getter
+    def backup(self) -> Optional[str]:
+        return pulumi.get(self, "backup")
+
+    @property
+    @pulumi.getter
+    def destination(self) -> Optional[str]:
+        return pulumi.get(self, "destination")
+
+    @property
+    @pulumi.getter
+    def directory(self) -> Optional[str]:
+        return pulumi.get(self, "directory")
+
+    @property
+    @pulumi.getter
+    def force(self) -> Optional[bool]:
+        return pulumi.get(self, "force")
+
+    @property
+    @pulumi.getter
+    def help(self) -> Optional[bool]:
+        return pulumi.get(self, "help")
+
+    @property
+    @pulumi.getter(name="noClobber")
+    def no_clobber(self) -> Optional[bool]:
+        return pulumi.get(self, "no_clobber")
+
+    @property
+    @pulumi.getter(name="noTargetDirectory")
+    def no_target_directory(self) -> Optional[bool]:
+        return pulumi.get(self, "no_target_directory")
+
+    @property
+    @pulumi.getter(name="stripTrailingSlashes")
+    def strip_trailing_slashes(self) -> Optional[bool]:
+        return pulumi.get(self, "strip_trailing_slashes")
+
+    @property
+    @pulumi.getter
+    def suffix(self) -> Optional[str]:
+        return pulumi.get(self, "suffix")
+
+    @property
+    @pulumi.getter(name="targetDirectory")
+    def target_directory(self) -> Optional[str]:
+        return pulumi.get(self, "target_directory")
+
+    @property
+    @pulumi.getter
+    def update(self) -> Optional[bool]:
+        return pulumi.get(self, "update")
+
+    @property
+    @pulumi.getter
+    def verbose(self) -> Optional[bool]:
+        return pulumi.get(self, "verbose")
+
+    @property
+    @pulumi.getter
+    def version(self) -> Optional[bool]:
+        return pulumi.get(self, "version")
+
 
 @pulumi.output_type
 class RmArgs(dict):

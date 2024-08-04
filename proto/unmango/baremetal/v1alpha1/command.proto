@@ -10,38 +10,47 @@ service CommandService {
 
 message CreateRequest {
   Command command = 1;
-  repeated string expect_files = 2;
+  repeated string expect_created = 2;
+  map<string, string> expect_moved = 3;
 }
 
 message CreateResponse {
   Result result = 1;
-  repeated string files = 2;
+  repeated string created_files = 2;
+  map<string, string> moved_files = 3;
 }
 
 message UpdateRequest {
   Command command = 1;
-  repeated string expect_files = 2;
-  Operation create = 3;
+  repeated string expect_created = 2;
+  map<string, string> expect_moved = 3;
+  Operation create = 4;
 }
 
 message UpdateResponse {
   Result result = 1;
-  repeated string files = 2;
-  optional Operation delete = 3;
+  repeated string created_files = 2;
+  map<string, string> moved_files = 3;
+  optional Operation delete = 4;
 }
 
 message DeleteRequest {
   Operation create = 1;
+  repeated Operation updates = 2;
 }
 
 message DeleteResponse {
-  optional Operation op = 1;
+  optional Result result = 1;
+  optional Command command = 2;
+  repeated string created_files = 3;
+  map<string, string> moved_files = 4;
 }
 
 message Operation {
   Result result = 1;
   Command command = 2;
-  repeated string files = 3;
+  repeated string created_files = 3;
+  map<string, string> moved_files = 4;
 }
 
 message Command {
@@ -61,4 +70,5 @@ enum Bin {
   BIN_TEE = 1;
   BIN_RM = 2;
   BIN_WGET = 3;
+  BIN_MV = 4;
 }

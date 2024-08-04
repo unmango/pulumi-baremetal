@@ -45,8 +45,71 @@ var _ = Describe("Command Resources", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
+	Describe("Mv", Ordered, func() {
+		file := containerPath("mv.txt")
+		newFile := containerPath("mv-new.txt")
+
+		BeforeAll(func(ctx context.Context) {
+			By("creating a file to be moved")
+			err := provisioner.WriteFile(ctx, file, []byte("some text"))
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		test := integration.LifeCycleTest{
+			Resource: "baremetal:cmd:Mv",
+			Create: integration.Operation{
+				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"source":      []string{file},
+					"destination": newFile,
+				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
+					Expect(provisioner).To(ContainFile(context.Background(), newFile))
+				},
+				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"exitCode":     0,
+					"stdout":       "",
+					"stderr":       "",
+					"createdFiles": []string{newFile},
+					"args": map[string]interface{}{
+						"source":      []string{file},
+						"destination": newFile,
+
+						// Defaults
+						"backup":               "",
+						"directory":            "",
+						"force":                false,
+						"help":                 false,
+						"noClobber":            false,
+						"noTargetDirectory":    false,
+						"stripTrailingSlashes": false,
+						"suffix":               "",
+						"targetDirectory":      "",
+						"update":               false,
+						"version":              false,
+						"verbose":              false,
+					},
+				}),
+			},
+		}
+
+		It("should complete a full lifecycle", func(ctx context.Context) {
+			run(server, test)
+
+			Expect(provisioner).NotTo(ContainFile(ctx, file))
+			Expect(provisioner).NotTo(ContainFile(ctx, newFile))
+		})
+	})
+
 	Describe("Rm", Ordered, func() {
 		file := containerPath("rm.txt")
+
+		BeforeAll(func(ctx context.Context) {
+			By("creating a file to be removed")
+			err := provisioner.WriteFile(ctx, file, []byte("some text"))
+			Expect(err).NotTo(HaveOccurred())
+		})
 
 		test := integration.LifeCycleTest{
 			Resource: "baremetal:cmd:Rm",
@@ -54,6 +117,10 @@ var _ = Describe("Command Resources", func() {
 				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
 					"files": []string{file},
 				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
+				},
 				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 					"exitCode":     0,
 					"stdout":       "",
@@ -71,17 +138,8 @@ var _ = Describe("Command Resources", func() {
 						"dir":           false,
 					},
 				}),
-				Hook: func(inputs, output resource.PropertyMap) {
-					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
-				},
 			},
 		}
-
-		BeforeAll(func(ctx context.Context) {
-			By("creating a file to be removed")
-			err := provisioner.WriteFile(ctx, file, []byte("some text"))
-			Expect(err).NotTo(HaveOccurred())
-		})
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			run(server, test)
@@ -103,6 +161,12 @@ var _ = Describe("Command Resources", func() {
 					"content": stdin,
 					"files":   []string{file},
 				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+					data, err := provisioner.ReadFile(context.Background(), file)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(string(data)).To(Equal(stdin))
+				},
 				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 					"exitCode":     0,
 					"stdout":       stdin,
@@ -114,11 +178,6 @@ var _ = Describe("Command Resources", func() {
 						"files":   []string{file},
 					},
 				}),
-				Hook: func(inputs, output resource.PropertyMap) {
-					data, err := provisioner.ReadFile(context.Background(), file)
-					Expect(err).NotTo(HaveOccurred())
-					Expect(string(data)).To(Equal(stdin))
-				},
 			},
 			Updates: []integration.Operation{
 				{
@@ -126,6 +185,14 @@ var _ = Describe("Command Resources", func() {
 						"content": stdin,
 						"files":   []string{newFile},
 					}),
+					Hook: func(inputs, output resource.PropertyMap) {
+						ctx := context.Background()
+						Expect(provisioner).NotTo(ContainFile(ctx, file))
+
+						data, err := provisioner.ReadFile(ctx, newFile)
+						Expect(err).NotTo(HaveOccurred())
+						Expect(string(data)).To(Equal(stdin))
+					},
 					ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 						"exitCode":     0,
 						"stdout":       stdin,
@@ -137,20 +204,19 @@ var _ = Describe("Command Resources", func() {
 							"files":   []string{newFile},
 						},
 					}),
-					Hook: func(inputs, output resource.PropertyMap) {
-						ctx := context.Background()
-						Expect(provisioner).NotTo(ContainFile(ctx, file))
-
-						data, err := provisioner.ReadFile(ctx, newFile)
-						Expect(err).NotTo(HaveOccurred())
-						Expect(string(data)).To(Equal(stdin))
-					},
 				},
 				{
 					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
 						"content": newStdin,
 						"files":   []string{newFile},
 					}),
+					Hook: func(inputs, output resource.PropertyMap) {
+						Expect(output["stderr"]).To(HavePropertyValue(""))
+						ctx := context.Background()
+						data, err := provisioner.ReadFile(ctx, newFile)
+						Expect(err).NotTo(HaveOccurred())
+						Expect(string(data)).To(Equal(newStdin))
+					},
 					ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 						"exitCode":     0,
 						"stdout":       newStdin,
@@ -162,18 +228,24 @@ var _ = Describe("Command Resources", func() {
 							"files":   []string{newFile},
 						},
 					}),
-					Hook: func(inputs, output resource.PropertyMap) {
-						ctx := context.Background()
-						data, err := provisioner.ReadFile(ctx, newFile)
-						Expect(err).NotTo(HaveOccurred())
-						Expect(string(data)).To(Equal(newStdin))
-					},
 				},
 				{
 					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
 						"content": newStdin,
 						"files":   []string{file, newFile},
 					}),
+					Hook: func(inputs, output resource.PropertyMap) {
+						Expect(output["stderr"]).To(HavePropertyValue(""))
+
+						ctx := context.Background()
+						data, err := provisioner.ReadFile(ctx, file)
+						Expect(err).NotTo(HaveOccurred())
+						Expect(string(data)).To(Equal(newStdin))
+
+						data, err = provisioner.ReadFile(ctx, newFile)
+						Expect(err).NotTo(HaveOccurred())
+						Expect(string(data)).To(Equal(newStdin))
+					},
 					ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 						"exitCode":     0,
 						"stdout":       newStdin,
@@ -185,17 +257,6 @@ var _ = Describe("Command Resources", func() {
 							"files":   []string{file, newFile},
 						},
 					}),
-					Hook: func(inputs, output resource.PropertyMap) {
-						ctx := context.Background()
-
-						data, err := provisioner.ReadFile(ctx, file)
-						Expect(err).NotTo(HaveOccurred())
-						Expect(string(data)).To(Equal(newStdin))
-
-						data, err = provisioner.ReadFile(ctx, newFile)
-						Expect(err).NotTo(HaveOccurred())
-						Expect(string(data)).To(Equal(newStdin))
-					},
 				},
 			},
 		}
@@ -213,6 +274,12 @@ var _ = Describe("Command Resources", func() {
 		url := "https://raw.githubusercontent.com/unmango/pulumi-baremetal/main/README.md"
 		file := path.Join(dir, "README.md")
 
+		BeforeAll(func(ctx context.Context) {
+			By("creating a workspace for wget in the container")
+			_, err := provisioner.Exec(ctx, "mkdir", "-p", dir)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
 		test := integration.LifeCycleTest{
 			Resource: "baremetal:cmd:Wget",
 			Create: integration.Operation{
@@ -221,6 +288,10 @@ var _ = Describe("Command Resources", func() {
 					"urls":            []string{url},
 					"quiet":           true,
 				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					_, err := provisioner.ReadFile(context.Background(), file)
+					Expect(err).NotTo(HaveOccurred())
+				},
 				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 					"exitCode":     0,
 					"stdout":       "",
@@ -276,18 +347,8 @@ var _ = Describe("Command Resources", func() {
 						"crlFile":            "",
 					},
 				}),
-				Hook: func(inputs, output resource.PropertyMap) {
-					_, err := provisioner.ReadFile(context.Background(), file)
-					Expect(err).NotTo(HaveOccurred())
-				},
 			},
 		}
-
-		BeforeAll(func(ctx context.Context) {
-			By("creating a workspace for wget in the container")
-			_, err := provisioner.Exec(ctx, "mkdir", "-p", dir)
-			Expect(err).NotTo(HaveOccurred())
-		})
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			run(server, test)

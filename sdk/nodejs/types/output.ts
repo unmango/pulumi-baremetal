@@ -6,6 +6,23 @@ import * as inputs from "../types/input";
 import * as outputs from "../types/output";
 
 export namespace cmd {
+    export interface MvArgs {
+        backup?: string;
+        destination?: string;
+        directory?: string;
+        force?: boolean;
+        help?: boolean;
+        noClobber?: boolean;
+        noTargetDirectory?: boolean;
+        source: string[];
+        stripTrailingSlashes?: boolean;
+        suffix?: string;
+        targetDirectory?: string;
+        update?: boolean;
+        verbose?: boolean;
+        version?: boolean;
+    }
+
     export interface RmArgs {
         dir?: boolean;
         files: string[];
