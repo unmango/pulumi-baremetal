@@ -88,6 +88,7 @@ type Tee struct {
 	Args         pulumix.GPtrOutput[TeeArgsType, TeeArgsTypeOutput] `pulumi:"args"`
 	CreatedFiles pulumix.ArrayOutput[string]                        `pulumi:"createdFiles"`
 	ExitCode     pulumix.Output[int]                                `pulumi:"exitCode"`
+	MovedFiles   pulumix.MapOutput[string]                          `pulumi:"movedFiles"`
 	Stderr       pulumix.Output[string]                             `pulumi:"stderr"`
 	Stdout       pulumix.Output[string]                             `pulumi:"stdout"`
 }
@@ -189,6 +190,12 @@ func (o TeeOutput) CreatedFiles() pulumix.ArrayOutput[string] {
 func (o TeeOutput) ExitCode() pulumix.Output[int] {
 	value := pulumix.Apply[Tee](o, func(v Tee) pulumix.Output[int] { return v.ExitCode })
 	return pulumix.Flatten[int, pulumix.Output[int]](value)
+}
+
+func (o TeeOutput) MovedFiles() pulumix.MapOutput[string] {
+	value := pulumix.Apply[Tee](o, func(v Tee) pulumix.MapOutput[string] { return v.MovedFiles })
+	unwrapped := pulumix.Flatten[map[string]string, pulumix.MapOutput[string]](value)
+	return pulumix.MapOutput[string]{OutputState: unwrapped.OutputState}
 }
 
 func (o TeeOutput) Stderr() pulumix.Output[string] {

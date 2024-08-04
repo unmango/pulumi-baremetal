@@ -10,6 +10,7 @@ import (
 )
 
 type MvArgs struct {
+	DefaultFileManipulator
 	Backup               string   `pulumi:"backup,optional"`
 	Destination          string   `pulumi:"destination,optional"`
 	Directory            string   `pulumi:"directory,optional"`
@@ -50,19 +51,17 @@ func (m MvArgs) Cmd() *pb.Command {
 	}
 }
 
-// ExpectedFiles implements CommandArgs.
-func (m MvArgs) ExpectedFiles() []string {
-	files := []string{}
-
+// ExpectMoved implements FileManipulator.
+func (m MvArgs) ExpectMoved() map[string]string {
+	files := map[string]string{}
 	mvSrc := func(d string) {
 		for _, f := range m.Source {
-			t := path.Join(d, path.Base(f))
-			files = append(files, t)
+			files[f] = path.Join(d, path.Base(f))
 		}
 	}
 
-	if m.Destination != "" {
-		files = append(files, m.Destination)
+	if m.Destination != "" && len(m.Source) == 1 {
+		files[m.Source[0]] = m.Destination
 	} else if m.Directory != "" {
 		mvSrc(m.Directory)
 	} else if m.TargetDirectory != "" {

@@ -107,8 +107,12 @@ func (s *service) Update(ctx context.Context, req *pb.UpdateRequest) (res *pb.Up
 
 	var delete *pb.DeleteResponse
 	toDelete := req.Create.CreatedFiles
-	if len(toDelete) > 0 {
-		delete, err = s.Delete(ctx, &pb.DeleteRequest{Create: req.Create})
+	toMove := req.Create.MovedFiles
+	if len(toDelete) > 0 || len(toMove) > 0 {
+		delete, err = s.Delete(ctx, &pb.DeleteRequest{
+			Create:  req.Create,
+			Updates: []*pb.Operation{}, // TODO
+		})
 	} else {
 		log.InfoContext(ctx, "nothing to delete")
 	}
@@ -120,6 +124,7 @@ func (s *service) Update(ctx context.Context, req *pb.UpdateRequest) (res *pb.Up
 	create, err := s.Create(ctx, &pb.CreateRequest{
 		Command:       req.Command,
 		ExpectCreated: req.ExpectCreated,
+		ExpectMoved:   req.ExpectMoved,
 	})
 	if err != nil {
 		log.ErrorContext(ctx, "failed performing create", "err", err)
@@ -129,6 +134,7 @@ func (s *service) Update(ctx context.Context, req *pb.UpdateRequest) (res *pb.Up
 	return &pb.UpdateResponse{
 		Result:       create.Result,
 		CreatedFiles: create.CreatedFiles,
+		MovedFiles:   create.MovedFiles,
 		Deletes:      delete.Commands,
 	}, nil
 }
@@ -196,9 +202,7 @@ func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.Delete
 				Stderr:   stderr.String(),
 			},
 			CreatedFiles: []string{},
-			MovedFiles: map[string]string{
-				dest: src,
-			},
+			MovedFiles:   map[string]string{dest: src},
 		})
 	}
 

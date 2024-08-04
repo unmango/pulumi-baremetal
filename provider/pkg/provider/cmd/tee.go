@@ -10,6 +10,7 @@ import (
 )
 
 type TeeArgs struct {
+	DefaultFileManipulator
 	Append  bool     `pulumi:"append,optional"`
 	Content string   `pulumi:"content"`
 	Files   []string `pulumi:"files"`
@@ -28,17 +29,18 @@ func (o TeeArgs) Cmd() *pb.Command {
 	}
 }
 
-func (o TeeArgs) ExpectedFiles() []string {
+// ExpectCreated implements FileManipulator.
+func (o TeeArgs) ExpectCreated() []string {
 	return o.Files
 }
 
 //go:embed tee.man
-var resourceDoc string
+var teeMan string
 
 type Tee struct{}
 
 func (t *Tee) Annotate(a infer.Annotator) {
-	a.Describe(&t, resourceDoc)
+	a.Describe(&t, teeMan)
 }
 
 type TeeState = CommandState[TeeArgs]

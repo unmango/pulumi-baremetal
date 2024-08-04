@@ -36,6 +36,7 @@ export class Rm extends pulumi.CustomResource {
     public /*out*/ readonly args!: pulumi.Output<outputs.cmd.RmArgs>;
     public /*out*/ readonly createdFiles!: pulumi.Output<string[]>;
     public /*out*/ readonly exitCode!: pulumi.Output<number>;
+    public /*out*/ readonly movedFiles!: pulumi.Output<{[key: string]: string}>;
     public /*out*/ readonly stderr!: pulumi.Output<string>;
     public /*out*/ readonly stdout!: pulumi.Output<string>;
 
@@ -63,12 +64,14 @@ export class Rm extends pulumi.CustomResource {
             resourceInputs["args"] = undefined /*out*/;
             resourceInputs["createdFiles"] = undefined /*out*/;
             resourceInputs["exitCode"] = undefined /*out*/;
+            resourceInputs["movedFiles"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
         } else {
             resourceInputs["args"] = undefined /*out*/;
             resourceInputs["createdFiles"] = undefined /*out*/;
             resourceInputs["exitCode"] = undefined /*out*/;
+            resourceInputs["movedFiles"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
         }

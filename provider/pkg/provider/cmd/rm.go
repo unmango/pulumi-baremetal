@@ -9,6 +9,7 @@ import (
 )
 
 type RmArgs struct {
+	DefaultFileManipulator
 	Dir           bool     `pulumi:"dir,optional"`
 	Files         []string `pulumi:"files"`
 	Force         bool     `pulumi:"force,optional"`
@@ -31,11 +32,6 @@ func (r RmArgs) Cmd() *pb.Command {
 		Bin:  pb.Bin_BIN_RM,
 		Args: b.args,
 	}
-}
-
-// ExpectedFiles implements CommandArgs.
-func (r RmArgs) ExpectedFiles() []string {
-	return []string{}
 }
 
 var _ CommandArgs = RmArgs{}

@@ -9,17 +9,33 @@ import (
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
 
+type FileManipulator interface {
+	ExpectCreated() []string
+	ExpectMoved() map[string]string
+}
+
+type DefaultFileManipulator struct{}
+
+func (m DefaultFileManipulator) ExpectCreated() []string {
+	return []string{}
+}
+
+func (m DefaultFileManipulator) ExpectMoved() map[string]string {
+	return map[string]string{}
+}
+
 type CommandArgs interface {
+	FileManipulator
 	Cmd() *pb.Command
-	ExpectedFiles() []string
 }
 
 type CommandState[T CommandArgs] struct {
-	Args         T        `pulumi:"args"`
-	ExitCode     int      `pulumi:"exitCode"`
-	Stderr       string   `pulumi:"stderr"`
-	Stdout       string   `pulumi:"stdout"`
-	CreatedFiles []string `pulumi:"createdFiles"`
+	Args         T                 `pulumi:"args"`
+	ExitCode     int               `pulumi:"exitCode"`
+	Stderr       string            `pulumi:"stderr"`
+	Stdout       string            `pulumi:"stdout"`
+	CreatedFiles []string          `pulumi:"createdFiles"`
+	MovedFiles   map[string]string `pulumi:"movedFiles"`
 }
 
 func (s *CommandState[T]) Create(ctx context.Context, inputs T, preview bool) error {
@@ -39,15 +55,21 @@ func (s *CommandState[T]) Create(ctx context.Context, inputs T, preview bool) er
 	log.Debug("sending create request")
 	res, err := p.Create(ctx, &pb.CreateRequest{
 		Command:       inputs.Cmd(),
-		ExpectCreated: inputs.ExpectedFiles(),
+		ExpectCreated: inputs.ExpectCreated(),
+		ExpectMoved:   inputs.ExpectMoved(),
 	})
 	if err != nil {
 		return fmt.Errorf("sending create request: %w", err)
 	}
 
 	if res.CreatedFiles == nil {
-		log.Debug("files was empty, this is probably a bug somewhere else")
+		log.Debugf("%#v was empty, this is probably a bug somewhere else", res.CreatedFiles)
 		res.CreatedFiles = []string{}
+	}
+
+	if res.MovedFiles == nil {
+		log.Debugf("%#v was empty, this is probably a bug somewhere else", res.MovedFiles)
+		res.MovedFiles = map[string]string{}
 	}
 
 	s.Args = inputs
@@ -55,6 +77,7 @@ func (s *CommandState[T]) Create(ctx context.Context, inputs T, preview bool) er
 	s.Stdout = res.Result.Stdout
 	s.Stderr = res.Result.Stderr
 	s.CreatedFiles = res.CreatedFiles
+	s.MovedFiles = res.MovedFiles
 
 	log.Info("create success")
 	return nil
@@ -73,10 +96,12 @@ func (s *CommandState[T]) Update(ctx context.Context, inputs T, preview bool) (C
 	log.Debug("sending update request")
 	res, err := p.Update(ctx, &pb.UpdateRequest{
 		Command:       inputs.Cmd(),
-		ExpectCreated: inputs.ExpectedFiles(),
+		ExpectCreated: inputs.ExpectCreated(),
+		ExpectMoved:   inputs.ExpectMoved(),
 		Create: &pb.Operation{
-			CreatedFiles: s.CreatedFiles,
 			Command:      s.Args.Cmd(),
+			CreatedFiles: s.CreatedFiles,
+			MovedFiles:   s.MovedFiles,
 			Result: &pb.Result{
 				ExitCode: int32(s.ExitCode),
 				Stdout:   s.Stdout,
@@ -88,11 +113,22 @@ func (s *CommandState[T]) Update(ctx context.Context, inputs T, preview bool) (C
 		return result, fmt.Errorf("sending update request: %w", err)
 	}
 
+	if res.CreatedFiles == nil {
+		log.Debugf("%#v was empty, this is probably a bug somewhere else", res.CreatedFiles)
+		res.CreatedFiles = []string{}
+	}
+
+	if res.MovedFiles == nil {
+		log.Debugf("%#v was empty, this is probably a bug somewhere else", res.MovedFiles)
+		res.MovedFiles = map[string]string{}
+	}
+
 	result.Args = inputs
 	result.ExitCode = int(res.Result.ExitCode)
 	result.Stdout = res.Result.Stdout
 	result.Stderr = res.Result.Stderr
 	result.CreatedFiles = res.CreatedFiles
+	result.MovedFiles = res.MovedFiles
 
 	log.Info("update success")
 	return result, nil
@@ -109,8 +145,9 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 	log.Debug("sending delete request")
 	res, err := p.Delete(ctx, &pb.DeleteRequest{
 		Create: &pb.Operation{
-			CreatedFiles: s.CreatedFiles,
 			Command:      s.Args.Cmd(),
+			CreatedFiles: s.CreatedFiles,
+			MovedFiles:   s.MovedFiles,
 			Result: &pb.Result{
 				ExitCode: int32(s.ExitCode),
 				Stdout:   s.Stdout,
@@ -150,5 +187,6 @@ func (s *CommandState[T]) Copy() CommandState[T] {
 		Stderr:       s.Stderr,
 		Stdout:       s.Stdout,
 		CreatedFiles: s.CreatedFiles,
+		MovedFiles:   s.MovedFiles,
 	}
 }
