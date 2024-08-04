@@ -163,7 +163,7 @@ var _ = Describe("Command Resources", func() {
 		})
 	})
 
-	FDescribe("Wget", Ordered, func() {
+	Describe("Wget", Ordered, func() {
 		dir := containerPath("wget")
 		url := "https://raw.githubusercontent.com/unmango/pulumi-baremetal/main/README.md"
 		file := path.Join(dir, "README.md")
@@ -234,9 +234,6 @@ var _ = Describe("Command Resources", func() {
 				Hook: func(inputs, output resource.PropertyMap) {
 					_, err := provisioner.ReadFile(context.Background(), file)
 					Expect(err).NotTo(HaveOccurred())
-
-					// diff := inputs.Diff(output)
-					// Expect(diff).To(BeNil())
 				},
 			},
 		}

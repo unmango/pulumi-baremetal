@@ -225,8 +225,10 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 		--out ${WORKING_DIR}/examples/$*
 	@touch $@
 
+TEST_FLAGS ?=
+
 .test/provider: provisioner .make/provisioner_docker_build
-	cd tests && $(GINKGO) run -v --silence-skips
+	cd tests && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}
 
 .test/pkg: $(PKG_SRC)
 	cd provider && $(GINKGO) run -v -r
