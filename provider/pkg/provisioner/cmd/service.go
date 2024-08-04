@@ -48,6 +48,7 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.Cr
 	}
 
 	createdFiles := make([]string, len(req.ExpectCreated))
+	movedFiles := make(map[string]string, len(req.ExpectMoved))
 	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
 	cmd.Stdout, cmd.Stderr = stdout, stderr
 
@@ -62,6 +63,20 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.Cr
 				createdFiles[i] = file
 			}
 		}
+		for src, dest := range req.ExpectMoved {
+			srcExists, destExists := false, true
+			if _, err = os.Stat(src); !errors.Is(err, os.ErrNotExist) {
+				log.ErrorContext(ctx, "expected file not to exist", "file", src, "err", err)
+				srcExists = true
+			}
+			if _, err = os.Stat(dest); err != nil {
+				log.ErrorContext(ctx, "expected file did not exist", "file", dest, "err", err)
+				destExists = false
+			}
+			if !srcExists && destExists {
+				movedFiles[src] = dest
+			}
+		}
 	}
 
 	if cmd.ProcessState == nil {
@@ -69,9 +84,16 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.Cr
 	}
 
 	exitCode := cmd.ProcessState.ExitCode()
-	log.InfoContext(ctx, "finished executing command", "cmd", cmd.String(), "created", createdFiles)
+	log.InfoContext(ctx, "finished executing command",
+		"cmd", cmd.String(),
+		"exit_code", exitCode,
+		"created", createdFiles,
+		"moved", movedFiles,
+	)
+
 	return &pb.CreateResponse{
 		CreatedFiles: createdFiles,
+		MovedFiles:   movedFiles,
 		Result: &pb.Result{
 			ExitCode: int32(exitCode),
 			Stdout:   stdout.String(),
