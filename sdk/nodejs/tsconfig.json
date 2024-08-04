@@ -14,6 +14,7 @@
     },
     "files": [
         "cmd/index.ts",
+        "cmd/rm.ts",
         "cmd/tee.ts",
         "cmd/wget.ts",
         "config/index.ts",

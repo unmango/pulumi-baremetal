@@ -10,9 +10,87 @@ from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 
 __all__ = [
+    'RmArgs',
     'TeeArgs',
     'WgetArgs',
 ]
+
+@pulumi.output_type
+class RmArgs(dict):
+    @staticmethod
+    def __key_warning(key: str):
+        suggest = None
+        if key == "oneFileSystem":
+            suggest = "one_file_system"
+
+        if suggest:
+            pulumi.log.warn(f"Key '{key}' not found in RmArgs. Access the value via the '{suggest}' property getter instead.")
+
+    def __getitem__(self, key: str) -> Any:
+        RmArgs.__key_warning(key)
+        return super().__getitem__(key)
+
+    def get(self, key: str, default = None) -> Any:
+        RmArgs.__key_warning(key)
+        return super().get(key, default)
+
+    def __init__(__self__, *,
+                 files: Sequence[str],
+                 dir: Optional[bool] = None,
+                 force: Optional[bool] = None,
+                 help: Optional[bool] = None,
+                 one_file_system: Optional[bool] = None,
+                 recursive: Optional[bool] = None,
+                 verbose: Optional[bool] = None):
+        pulumi.set(__self__, "files", files)
+        if dir is not None:
+            pulumi.set(__self__, "dir", dir)
+        if force is not None:
+            pulumi.set(__self__, "force", force)
+        if help is not None:
+            pulumi.set(__self__, "help", help)
+        if one_file_system is not None:
+            pulumi.set(__self__, "one_file_system", one_file_system)
+        if recursive is not None:
+            pulumi.set(__self__, "recursive", recursive)
+        if verbose is not None:
+            pulumi.set(__self__, "verbose", verbose)
+
+    @property
+    @pulumi.getter
+    def files(self) -> Sequence[str]:
+        return pulumi.get(self, "files")
+
+    @property
+    @pulumi.getter
+    def dir(self) -> Optional[bool]:
+        return pulumi.get(self, "dir")
+
+    @property
+    @pulumi.getter
+    def force(self) -> Optional[bool]:
+        return pulumi.get(self, "force")
+
+    @property
+    @pulumi.getter
+    def help(self) -> Optional[bool]:
+        return pulumi.get(self, "help")
+
+    @property
+    @pulumi.getter(name="oneFileSystem")
+    def one_file_system(self) -> Optional[bool]:
+        return pulumi.get(self, "one_file_system")
+
+    @property
+    @pulumi.getter
+    def recursive(self) -> Optional[bool]:
+        return pulumi.get(self, "recursive")
+
+    @property
+    @pulumi.getter
+    def verbose(self) -> Optional[bool]:
+        return pulumi.get(self, "verbose")
+
 
 @pulumi.output_type
 class TeeArgs(dict):
