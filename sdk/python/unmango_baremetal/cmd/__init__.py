@@ -7,6 +7,7 @@ import typing
 # Export this package's modules as members:
 from .mv import *
 from .rm import *
+from .tar import *
 from .tee import *
 from .wget import *
 from . import outputs

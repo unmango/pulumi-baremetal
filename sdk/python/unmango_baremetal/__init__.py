@@ -27,6 +27,7 @@ _utilities.register(
   "classes": {
    "baremetal:cmd:Mv": "Mv",
    "baremetal:cmd:Rm": "Rm",
+   "baremetal:cmd:Tar": "Tar",
    "baremetal:cmd:Tee": "Tee",
    "baremetal:cmd:Wget": "Wget"
   }
