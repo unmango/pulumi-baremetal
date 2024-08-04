@@ -4,6 +4,10 @@ type builder struct {
 	args []string
 }
 
+func (b *builder) arg(value string) {
+	b.args = append(b.args, value)
+}
+
 func (b *builder) op(input bool, name string) {
 	if input {
 		b.add(name)
