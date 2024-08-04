@@ -14,6 +14,90 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
+type MvArgsType struct {
+	Destination          *string  `pulumi:"destination"`
+	Directory            *string  `pulumi:"directory"`
+	Force                *bool    `pulumi:"force"`
+	NoClobber            *bool    `pulumi:"noClobber"`
+	NoTargetDirectory    *bool    `pulumi:"noTargetDirectory"`
+	Source               []string `pulumi:"source"`
+	StripTrailingSlashes *bool    `pulumi:"stripTrailingSlashes"`
+	Suffix               *string  `pulumi:"suffix"`
+	TargetDirectory      *string  `pulumi:"targetDirectory"`
+	Update               *bool    `pulumi:"update"`
+	Verbose              *bool    `pulumi:"verbose"`
+	Version              *bool    `pulumi:"version"`
+}
+
+type MvArgsTypeOutput struct{ *pulumi.OutputState }
+
+func (MvArgsTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*MvArgsType)(nil)).Elem()
+}
+
+func (o MvArgsTypeOutput) ToMvArgsTypeOutput() MvArgsTypeOutput {
+	return o
+}
+
+func (o MvArgsTypeOutput) ToMvArgsTypeOutputWithContext(ctx context.Context) MvArgsTypeOutput {
+	return o
+}
+
+func (o MvArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[MvArgsType] {
+	return pulumix.Output[MvArgsType]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o MvArgsTypeOutput) Destination() pulumix.Output[*string] {
+	return pulumix.Apply[MvArgsType](o, func(v MvArgsType) *string { return v.Destination })
+}
+
+func (o MvArgsTypeOutput) Directory() pulumix.Output[*string] {
+	return pulumix.Apply[MvArgsType](o, func(v MvArgsType) *string { return v.Directory })
+}
+
+func (o MvArgsTypeOutput) Force() pulumix.Output[*bool] {
+	return pulumix.Apply[MvArgsType](o, func(v MvArgsType) *bool { return v.Force })
+}
+
+func (o MvArgsTypeOutput) NoClobber() pulumix.Output[*bool] {
+	return pulumix.Apply[MvArgsType](o, func(v MvArgsType) *bool { return v.NoClobber })
+}
+
+func (o MvArgsTypeOutput) NoTargetDirectory() pulumix.Output[*bool] {
+	return pulumix.Apply[MvArgsType](o, func(v MvArgsType) *bool { return v.NoTargetDirectory })
+}
+
+func (o MvArgsTypeOutput) Source() pulumix.ArrayOutput[string] {
+	value := pulumix.Apply[MvArgsType](o, func(v MvArgsType) []string { return v.Source })
+	return pulumix.ArrayOutput[string]{OutputState: value.OutputState}
+}
+
+func (o MvArgsTypeOutput) StripTrailingSlashes() pulumix.Output[*bool] {
+	return pulumix.Apply[MvArgsType](o, func(v MvArgsType) *bool { return v.StripTrailingSlashes })
+}
+
+func (o MvArgsTypeOutput) Suffix() pulumix.Output[*string] {
+	return pulumix.Apply[MvArgsType](o, func(v MvArgsType) *string { return v.Suffix })
+}
+
+func (o MvArgsTypeOutput) TargetDirectory() pulumix.Output[*string] {
+	return pulumix.Apply[MvArgsType](o, func(v MvArgsType) *string { return v.TargetDirectory })
+}
+
+func (o MvArgsTypeOutput) Update() pulumix.Output[*bool] {
+	return pulumix.Apply[MvArgsType](o, func(v MvArgsType) *bool { return v.Update })
+}
+
+func (o MvArgsTypeOutput) Verbose() pulumix.Output[*bool] {
+	return pulumix.Apply[MvArgsType](o, func(v MvArgsType) *bool { return v.Verbose })
+}
+
+func (o MvArgsTypeOutput) Version() pulumix.Output[*bool] {
+	return pulumix.Apply[MvArgsType](o, func(v MvArgsType) *bool { return v.Version })
+}
+
 type RmArgsType struct {
 	Dir           *bool    `pulumi:"dir"`
 	Files         []string `pulumi:"files"`
@@ -368,6 +452,7 @@ func (o WgetArgsTypeOutput) Wait() pulumix.Output[*string] {
 }
 
 func init() {
+	pulumi.RegisterOutputType(MvArgsTypeOutput{})
 	pulumi.RegisterOutputType(RmArgsTypeOutput{})
 	pulumi.RegisterOutputType(TeeArgsTypeOutput{})
 	pulumi.RegisterOutputType(WgetArgsTypeOutput{})
