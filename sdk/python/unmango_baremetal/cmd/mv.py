@@ -16,9 +16,11 @@ __all__ = ['MvArgs', 'Mv']
 class MvArgs:
     def __init__(__self__, *,
                  source: pulumi.Input[Sequence[pulumi.Input[str]]],
+                 backup: Optional[pulumi.Input[str]] = None,
                  destination: Optional[pulumi.Input[str]] = None,
                  directory: Optional[pulumi.Input[str]] = None,
                  force: Optional[pulumi.Input[bool]] = None,
+                 help: Optional[pulumi.Input[bool]] = None,
                  no_clobber: Optional[pulumi.Input[bool]] = None,
                  no_target_directory: Optional[pulumi.Input[bool]] = None,
                  strip_trailing_slashes: Optional[pulumi.Input[bool]] = None,
@@ -31,12 +33,16 @@ class MvArgs:
         The set of arguments for constructing a Mv resource.
         """
         pulumi.set(__self__, "source", source)
+        if backup is not None:
+            pulumi.set(__self__, "backup", backup)
         if destination is not None:
             pulumi.set(__self__, "destination", destination)
         if directory is not None:
             pulumi.set(__self__, "directory", directory)
         if force is not None:
             pulumi.set(__self__, "force", force)
+        if help is not None:
+            pulumi.set(__self__, "help", help)
         if no_clobber is not None:
             pulumi.set(__self__, "no_clobber", no_clobber)
         if no_target_directory is not None:
@@ -65,6 +71,15 @@ class MvArgs:
 
     @property
     @pulumi.getter
+    def backup(self) -> Optional[pulumi.Input[str]]:
+        return pulumi.get(self, "backup")
+
+    @backup.setter
+    def backup(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "backup", value)
+
+    @property
+    @pulumi.getter
     def destination(self) -> Optional[pulumi.Input[str]]:
         return pulumi.get(self, "destination")
 
@@ -89,6 +104,15 @@ class MvArgs:
     @force.setter
     def force(self, value: Optional[pulumi.Input[bool]]):
         pulumi.set(self, "force", value)
+
+    @property
+    @pulumi.getter
+    def help(self) -> Optional[pulumi.Input[bool]]:
+        return pulumi.get(self, "help")
+
+    @help.setter
+    def help(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "help", value)
 
     @property
     @pulumi.getter(name="noClobber")
@@ -168,9 +192,11 @@ class Mv(pulumi.CustomResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 backup: Optional[pulumi.Input[str]] = None,
                  destination: Optional[pulumi.Input[str]] = None,
                  directory: Optional[pulumi.Input[str]] = None,
                  force: Optional[pulumi.Input[bool]] = None,
+                 help: Optional[pulumi.Input[bool]] = None,
                  no_clobber: Optional[pulumi.Input[bool]] = None,
                  no_target_directory: Optional[pulumi.Input[bool]] = None,
                  source: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -209,9 +235,11 @@ class Mv(pulumi.CustomResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 backup: Optional[pulumi.Input[str]] = None,
                  destination: Optional[pulumi.Input[str]] = None,
                  directory: Optional[pulumi.Input[str]] = None,
                  force: Optional[pulumi.Input[bool]] = None,
+                 help: Optional[pulumi.Input[bool]] = None,
                  no_clobber: Optional[pulumi.Input[bool]] = None,
                  no_target_directory: Optional[pulumi.Input[bool]] = None,
                  source: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -230,9 +258,11 @@ class Mv(pulumi.CustomResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = MvArgs.__new__(MvArgs)
 
+            __props__.__dict__["backup"] = backup
             __props__.__dict__["destination"] = destination
             __props__.__dict__["directory"] = directory
             __props__.__dict__["force"] = force
+            __props__.__dict__["help"] = help
             __props__.__dict__["no_clobber"] = no_clobber
             __props__.__dict__["no_target_directory"] = no_target_directory
             if source is None and not opts.urn:

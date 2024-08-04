@@ -14,9 +14,11 @@ namespace UnMango.Baremetal.Cmd.Outputs
     [OutputType]
     public sealed class MvArgs
     {
+        public readonly string? Backup;
         public readonly string? Destination;
         public readonly string? Directory;
         public readonly bool? Force;
+        public readonly bool? Help;
         public readonly bool? NoClobber;
         public readonly bool? NoTargetDirectory;
         public readonly ImmutableArray<string> Source;
@@ -29,11 +31,15 @@ namespace UnMango.Baremetal.Cmd.Outputs
 
         [OutputConstructor]
         private MvArgs(
+            string? backup,
+
             string? destination,
 
             string? directory,
 
             bool? force,
+
+            bool? help,
 
             bool? noClobber,
 
@@ -53,9 +59,11 @@ namespace UnMango.Baremetal.Cmd.Outputs
 
             bool? version)
         {
+            Backup = backup;
             Destination = destination;
             Directory = directory;
             Force = force;
+            Help = help;
             NoClobber = noClobber;
             NoTargetDirectory = noTargetDirectory;
             Source = source;

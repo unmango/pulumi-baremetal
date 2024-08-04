@@ -15,9 +15,11 @@ import (
 var _ = internal.GetEnvOrDefault
 
 type MvArgsType struct {
+	Backup               *string  `pulumi:"backup"`
 	Destination          *string  `pulumi:"destination"`
 	Directory            *string  `pulumi:"directory"`
 	Force                *bool    `pulumi:"force"`
+	Help                 *bool    `pulumi:"help"`
 	NoClobber            *bool    `pulumi:"noClobber"`
 	NoTargetDirectory    *bool    `pulumi:"noTargetDirectory"`
 	Source               []string `pulumi:"source"`
@@ -49,6 +51,10 @@ func (o MvArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[MvArgsTyp
 	}
 }
 
+func (o MvArgsTypeOutput) Backup() pulumix.Output[*string] {
+	return pulumix.Apply[MvArgsType](o, func(v MvArgsType) *string { return v.Backup })
+}
+
 func (o MvArgsTypeOutput) Destination() pulumix.Output[*string] {
 	return pulumix.Apply[MvArgsType](o, func(v MvArgsType) *string { return v.Destination })
 }
@@ -59,6 +65,10 @@ func (o MvArgsTypeOutput) Directory() pulumix.Output[*string] {
 
 func (o MvArgsTypeOutput) Force() pulumix.Output[*bool] {
 	return pulumix.Apply[MvArgsType](o, func(v MvArgsType) *bool { return v.Force })
+}
+
+func (o MvArgsTypeOutput) Help() pulumix.Output[*bool] {
+	return pulumix.Apply[MvArgsType](o, func(v MvArgsType) *bool { return v.Help })
 }
 
 func (o MvArgsTypeOutput) NoClobber() pulumix.Output[*bool] {

@@ -74,6 +74,9 @@ namespace UnMango.Baremetal.Cmd
 
     public sealed class MvArgs : global::Pulumi.ResourceArgs
     {
+        [Input("backup")]
+        public Input<string>? Backup { get; set; }
+
         [Input("destination")]
         public Input<string>? Destination { get; set; }
 
@@ -82,6 +85,9 @@ namespace UnMango.Baremetal.Cmd
 
         [Input("force")]
         public Input<bool>? Force { get; set; }
+
+        [Input("help")]
+        public Input<bool>? Help { get; set; }
 
         [Input("noClobber")]
         public Input<bool>? NoClobber { get; set; }

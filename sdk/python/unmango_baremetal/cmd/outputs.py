@@ -43,9 +43,11 @@ class MvArgs(dict):
 
     def __init__(__self__, *,
                  source: Sequence[str],
+                 backup: Optional[str] = None,
                  destination: Optional[str] = None,
                  directory: Optional[str] = None,
                  force: Optional[bool] = None,
+                 help: Optional[bool] = None,
                  no_clobber: Optional[bool] = None,
                  no_target_directory: Optional[bool] = None,
                  strip_trailing_slashes: Optional[bool] = None,
@@ -55,12 +57,16 @@ class MvArgs(dict):
                  verbose: Optional[bool] = None,
                  version: Optional[bool] = None):
         pulumi.set(__self__, "source", source)
+        if backup is not None:
+            pulumi.set(__self__, "backup", backup)
         if destination is not None:
             pulumi.set(__self__, "destination", destination)
         if directory is not None:
             pulumi.set(__self__, "directory", directory)
         if force is not None:
             pulumi.set(__self__, "force", force)
+        if help is not None:
+            pulumi.set(__self__, "help", help)
         if no_clobber is not None:
             pulumi.set(__self__, "no_clobber", no_clobber)
         if no_target_directory is not None:
@@ -85,6 +91,11 @@ class MvArgs(dict):
 
     @property
     @pulumi.getter
+    def backup(self) -> Optional[str]:
+        return pulumi.get(self, "backup")
+
+    @property
+    @pulumi.getter
     def destination(self) -> Optional[str]:
         return pulumi.get(self, "destination")
 
@@ -97,6 +108,11 @@ class MvArgs(dict):
     @pulumi.getter
     def force(self) -> Optional[bool]:
         return pulumi.get(self, "force")
+
+    @property
+    @pulumi.getter
+    def help(self) -> Optional[bool]:
+        return pulumi.get(self, "help")
 
     @property
     @pulumi.getter(name="noClobber")

@@ -53,9 +53,11 @@ export class Mv extends pulumi.CustomResource {
             if ((!args || args.source === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'source'");
             }
+            resourceInputs["backup"] = args ? args.backup : undefined;
             resourceInputs["destination"] = args ? args.destination : undefined;
             resourceInputs["directory"] = args ? args.directory : undefined;
             resourceInputs["force"] = args ? args.force : undefined;
+            resourceInputs["help"] = args ? args.help : undefined;
             resourceInputs["noClobber"] = args ? args.noClobber : undefined;
             resourceInputs["noTargetDirectory"] = args ? args.noTargetDirectory : undefined;
             resourceInputs["source"] = args ? args.source : undefined;
@@ -86,9 +88,11 @@ export class Mv extends pulumi.CustomResource {
  * The set of arguments for constructing a Mv resource.
  */
 export interface MvArgs {
+    backup?: pulumi.Input<string>;
     destination?: pulumi.Input<string>;
     directory?: pulumi.Input<string>;
     force?: pulumi.Input<boolean>;
+    help?: pulumi.Input<boolean>;
     noClobber?: pulumi.Input<boolean>;
     noTargetDirectory?: pulumi.Input<boolean>;
     source: pulumi.Input<pulumi.Input<string>[]>;

@@ -66,9 +66,11 @@ func (MvState) ElementType() reflect.Type {
 }
 
 type mvArgs struct {
+	Backup               *string  `pulumi:"backup"`
 	Destination          *string  `pulumi:"destination"`
 	Directory            *string  `pulumi:"directory"`
 	Force                *bool    `pulumi:"force"`
+	Help                 *bool    `pulumi:"help"`
 	NoClobber            *bool    `pulumi:"noClobber"`
 	NoTargetDirectory    *bool    `pulumi:"noTargetDirectory"`
 	Source               []string `pulumi:"source"`
@@ -82,9 +84,11 @@ type mvArgs struct {
 
 // The set of arguments for constructing a Mv resource.
 type MvArgs struct {
+	Backup               pulumix.Input[*string]
 	Destination          pulumix.Input[*string]
 	Directory            pulumix.Input[*string]
 	Force                pulumix.Input[*bool]
+	Help                 pulumix.Input[*bool]
 	NoClobber            pulumix.Input[*bool]
 	NoTargetDirectory    pulumix.Input[*bool]
 	Source               pulumix.Input[[]string]
