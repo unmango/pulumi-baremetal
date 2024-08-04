@@ -129,50 +129,80 @@ func (s *service) Update(ctx context.Context, req *pb.UpdateRequest) (res *pb.Up
 	return &pb.UpdateResponse{
 		Result:       create.Result,
 		CreatedFiles: create.CreatedFiles,
-		Delete: &pb.Operation{
-			Command:      delete.Command,
-			Result:       delete.Result,
-			CreatedFiles: delete.CreatedFiles,
-		},
+		Deletes:      delete.Commands,
 	}, nil
 }
 
 func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteResponse, error) {
 	log := s.Log.With("op", "delete", "create", req.Create)
-	bin := pb.Bin_BIN_RM
 
+	commands := []*pb.Operation{}
 	toDelete := req.Create.CreatedFiles
-	if len(toDelete) == 0 {
+	toMove := req.Create.MovedFiles
+	if len(toDelete) == 0 && len(toMove) == 0 {
 		log.InfoContext(ctx, "nothing to do")
-		return &pb.DeleteResponse{}, nil
+		return &pb.DeleteResponse{Commands: commands}, nil
 	}
 
-	// I think `rm` handles this these days but you can never be too sure
-	if slices.Contains(toDelete, "/") {
-		log.ErrorContext(ctx, "refusing to remove '/'", "remark", "nice try hackers")
-		return nil, errors.New("attempted to remove root")
+	if len(toDelete) > 0 {
+		// I think `rm` handles this these days but you can never be too sure
+		if slices.Contains(toDelete, "/") {
+			log.ErrorContext(ctx, "refusing to remove '/'", "remark", "nice try hackers")
+			return nil, errors.New("attempted to remove root")
+		}
+
+		log.DebugContext(ctx, "building command")
+		cmd := exec.CommandContext(ctx, "rm", prepend("-f", toDelete)...)
+		stderr, stdout := &bytes.Buffer{}, &bytes.Buffer{}
+		cmd.Stdout, cmd.Stderr = stdout, stderr
+
+		log.DebugContext(ctx, "running command", "cmd", cmd.String())
+		if err := cmd.Run(); err != nil {
+			log.ErrorContext(ctx, "command failed", "err", err)
+		}
+
+		log.InfoContext(ctx, "finished executing command", "cmd", cmd.String())
+		commands = append(commands, &pb.Operation{
+			Command: &pb.Command{Bin: pb.Bin_BIN_RM, Args: cmd.Args},
+			Result: &pb.Result{
+				ExitCode: int32(cmd.ProcessState.ExitCode()),
+				Stdout:   stdout.String(),
+				Stderr:   stderr.String(),
+			},
+		})
 	}
 
-	log.DebugContext(ctx, "building command")
-	cmd := exec.CommandContext(ctx, "rm", prepend("-f", toDelete)...)
-	stderr, stdout := &bytes.Buffer{}, &bytes.Buffer{}
-	cmd.Stdout, cmd.Stderr = stdout, stderr
+	for src, dest := range req.Create.MovedFiles {
+		log.DebugContext(ctx, "building command")
+		cmd := exec.CommandContext(ctx, "mv", dest, src)
+		stderr, stdout := &bytes.Buffer{}, &bytes.Buffer{}
+		cmd.Stdout, cmd.Stderr = stdout, stderr
 
-	log.DebugContext(ctx, "running command", "cmd", cmd.String())
-	if err := cmd.Run(); err != nil {
-		log.ErrorContext(ctx, "command failed", "err", err)
-		return &pb.DeleteResponse{}, nil
+		log.DebugContext(ctx, "running command", "cmd", cmd.String())
+		if err := cmd.Run(); err != nil {
+			log.ErrorContext(ctx, "command failed",
+				"err", err,
+				"stdout", stdout.String(),
+				"stderr", stderr.String(),
+			)
+		}
+
+		log.InfoContext(ctx, "finished executing command", "cmd", cmd.String())
+		commands = append(commands, &pb.Operation{
+			Command: &pb.Command{Bin: pb.Bin_BIN_MV, Args: cmd.Args},
+			Result: &pb.Result{
+				ExitCode: int32(cmd.ProcessState.ExitCode()),
+				Stdout:   stdout.String(),
+				Stderr:   stderr.String(),
+			},
+			CreatedFiles: []string{},
+			MovedFiles: map[string]string{
+				dest: src,
+			},
+		})
 	}
 
-	log.InfoContext(ctx, "finished executing command", "cmd", cmd.String())
-	return &pb.DeleteResponse{
-		Command: &pb.Command{Bin: bin, Args: cmd.Args},
-		Result: &pb.Result{
-			ExitCode: int32(cmd.ProcessState.ExitCode()),
-			Stdout:   stdout.String(),
-			Stderr:   stderr.String(),
-		},
-	}, nil
+	return &pb.DeleteResponse{Commands: commands}, nil
 }
 
 func binPath(b pb.Bin) (string, error) {

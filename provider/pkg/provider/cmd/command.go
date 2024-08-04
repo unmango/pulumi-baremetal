@@ -122,14 +122,21 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 		return fmt.Errorf("sending delete request: %w", err)
 	}
 
-	if res.Command == nil {
+	if len(res.Commands) == 0 {
 		log.Info("provisioner did not perform any operations")
-		return nil
-	}
+	} else {
+		failed := []*pb.Operation{}
+		for _, c := range res.Commands {
+			exitCode := c.Result.ExitCode
+			if exitCode != 0 {
+				log.Errorf("provisioner returned non-zero exit code: %d", exitCode)
+				failed = append(failed, c)
+			}
+		}
 
-	if res.Result.ExitCode > 0 {
-		log.Error("provisioner returned a non-success status code")
-		return fmt.Errorf("delete operation failed exit code: %d", res.Result.ExitCode)
+		if len(failed) > 0 {
+			return fmt.Errorf("a delete operation failed: %s", failed)
+		}
 	}
 
 	log.Info("delete success")
