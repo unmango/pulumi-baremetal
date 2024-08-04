@@ -68,4 +68,5 @@ enum Bin {
   BIN_RM = 2;
   BIN_WGET = 3;
   BIN_MV = 4;
+  BIN_TAR = 5;
 }
