@@ -174,6 +174,7 @@ var _ = Describe("Command Resources", func() {
 				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
 					"directoryPrefix": dir,
 					"urls":            []string{url},
+					"quiet":           true,
 				}),
 				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 					"exitCode":     0,
@@ -183,13 +184,13 @@ var _ = Describe("Command Resources", func() {
 					"args": map[string]interface{}{
 						"directoryPrefix": dir,
 						"urls":            []string{url},
+						"quiet":           true,
 
 						// Defaults
 						"wait":               "",
 						"config":             "",
 						"inputFile":          "",
-						"caCertificate":      "",
-						"quiet":              false,
+						"caCertificateFile":  "",
 						"timeout":            "",
 						"showProgress":       false,
 						"continue":           false,
@@ -231,8 +232,11 @@ var _ = Describe("Command Resources", func() {
 					},
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
-					// _, err := provisioner.ReadFile(context.Background(), file)
-					// Expect(err).NotTo(HaveOccurred())
+					_, err := provisioner.ReadFile(context.Background(), file)
+					Expect(err).NotTo(HaveOccurred())
+
+					// diff := inputs.Diff(output)
+					// Expect(diff).To(BeNil())
 				},
 			},
 		}
