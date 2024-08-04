@@ -19,6 +19,7 @@ type Rm struct {
 	Args         RmArgsTypeOutput         `pulumi:"args"`
 	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
 	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
+	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
 	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
 }
@@ -145,6 +146,10 @@ func (o RmOutput) CreatedFiles() pulumi.StringArrayOutput {
 
 func (o RmOutput) ExitCode() pulumi.IntOutput {
 	return o.ApplyT(func(v *Rm) pulumi.IntOutput { return v.ExitCode }).(pulumi.IntOutput)
+}
+
+func (o RmOutput) MovedFiles() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *Rm) pulumi.StringMapOutput { return v.MovedFiles }).(pulumi.StringMapOutput)
 }
 
 func (o RmOutput) Stderr() pulumi.StringOutput {

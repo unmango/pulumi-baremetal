@@ -19,6 +19,7 @@ type Wget struct {
 	Args         WgetArgsTypeOutput       `pulumi:"args"`
 	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
 	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
+	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
 	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
 }
@@ -232,6 +233,10 @@ func (o WgetOutput) CreatedFiles() pulumi.StringArrayOutput {
 
 func (o WgetOutput) ExitCode() pulumi.IntOutput {
 	return o.ApplyT(func(v *Wget) pulumi.IntOutput { return v.ExitCode }).(pulumi.IntOutput)
+}
+
+func (o WgetOutput) MovedFiles() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *Wget) pulumi.StringMapOutput { return v.MovedFiles }).(pulumi.StringMapOutput)
 }
 
 func (o WgetOutput) Stderr() pulumi.StringOutput {

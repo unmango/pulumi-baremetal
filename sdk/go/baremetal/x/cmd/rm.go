@@ -19,6 +19,7 @@ type Rm struct {
 	Args         pulumix.GPtrOutput[RmArgsType, RmArgsTypeOutput] `pulumi:"args"`
 	CreatedFiles pulumix.ArrayOutput[string]                      `pulumi:"createdFiles"`
 	ExitCode     pulumix.Output[int]                              `pulumi:"exitCode"`
+	MovedFiles   pulumix.MapOutput[string]                        `pulumi:"movedFiles"`
 	Stderr       pulumix.Output[string]                           `pulumi:"stderr"`
 	Stdout       pulumix.Output[string]                           `pulumi:"stdout"`
 }
@@ -125,6 +126,12 @@ func (o RmOutput) CreatedFiles() pulumix.ArrayOutput[string] {
 func (o RmOutput) ExitCode() pulumix.Output[int] {
 	value := pulumix.Apply[Rm](o, func(v Rm) pulumix.Output[int] { return v.ExitCode })
 	return pulumix.Flatten[int, pulumix.Output[int]](value)
+}
+
+func (o RmOutput) MovedFiles() pulumix.MapOutput[string] {
+	value := pulumix.Apply[Rm](o, func(v Rm) pulumix.MapOutput[string] { return v.MovedFiles })
+	unwrapped := pulumix.Flatten[map[string]string, pulumix.MapOutput[string]](value)
+	return pulumix.MapOutput[string]{OutputState: unwrapped.OutputState}
 }
 
 func (o RmOutput) Stderr() pulumix.Output[string] {

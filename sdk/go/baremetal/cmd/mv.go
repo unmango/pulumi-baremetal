@@ -19,6 +19,7 @@ type Mv struct {
 	Args         MvArgsTypeOutput         `pulumi:"args"`
 	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
 	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
+	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
 	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
 }
@@ -159,6 +160,10 @@ func (o MvOutput) CreatedFiles() pulumi.StringArrayOutput {
 
 func (o MvOutput) ExitCode() pulumi.IntOutput {
 	return o.ApplyT(func(v *Mv) pulumi.IntOutput { return v.ExitCode }).(pulumi.IntOutput)
+}
+
+func (o MvOutput) MovedFiles() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *Mv) pulumi.StringMapOutput { return v.MovedFiles }).(pulumi.StringMapOutput)
 }
 
 func (o MvOutput) Stderr() pulumi.StringOutput {

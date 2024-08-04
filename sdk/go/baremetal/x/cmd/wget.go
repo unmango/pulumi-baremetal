@@ -19,6 +19,7 @@ type Wget struct {
 	Args         pulumix.GPtrOutput[WgetArgsType, WgetArgsTypeOutput] `pulumi:"args"`
 	CreatedFiles pulumix.ArrayOutput[string]                          `pulumi:"createdFiles"`
 	ExitCode     pulumix.Output[int]                                  `pulumi:"exitCode"`
+	MovedFiles   pulumix.MapOutput[string]                            `pulumi:"movedFiles"`
 	Stderr       pulumix.Output[string]                               `pulumi:"stderr"`
 	Stdout       pulumix.Output[string]                               `pulumi:"stdout"`
 }
@@ -215,6 +216,12 @@ func (o WgetOutput) CreatedFiles() pulumix.ArrayOutput[string] {
 func (o WgetOutput) ExitCode() pulumix.Output[int] {
 	value := pulumix.Apply[Wget](o, func(v Wget) pulumix.Output[int] { return v.ExitCode })
 	return pulumix.Flatten[int, pulumix.Output[int]](value)
+}
+
+func (o WgetOutput) MovedFiles() pulumix.MapOutput[string] {
+	value := pulumix.Apply[Wget](o, func(v Wget) pulumix.MapOutput[string] { return v.MovedFiles })
+	unwrapped := pulumix.Flatten[map[string]string, pulumix.MapOutput[string]](value)
+	return pulumix.MapOutput[string]{OutputState: unwrapped.OutputState}
 }
 
 func (o WgetOutput) Stderr() pulumix.Output[string] {

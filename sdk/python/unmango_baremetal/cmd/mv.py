@@ -277,6 +277,7 @@ class Mv(pulumi.CustomResource):
             __props__.__dict__["args"] = None
             __props__.__dict__["created_files"] = None
             __props__.__dict__["exit_code"] = None
+            __props__.__dict__["moved_files"] = None
             __props__.__dict__["stderr"] = None
             __props__.__dict__["stdout"] = None
         super(Mv, __self__).__init__(
@@ -304,6 +305,7 @@ class Mv(pulumi.CustomResource):
         __props__.__dict__["args"] = None
         __props__.__dict__["created_files"] = None
         __props__.__dict__["exit_code"] = None
+        __props__.__dict__["moved_files"] = None
         __props__.__dict__["stderr"] = None
         __props__.__dict__["stdout"] = None
         return Mv(resource_name, opts=opts, __props__=__props__)
@@ -322,6 +324,11 @@ class Mv(pulumi.CustomResource):
     @pulumi.getter(name="exitCode")
     def exit_code(self) -> pulumi.Output[int]:
         return pulumi.get(self, "exit_code")
+
+    @property
+    @pulumi.getter(name="movedFiles")
+    def moved_files(self) -> pulumi.Output[Mapping[str, str]]:
+        return pulumi.get(self, "moved_files")
 
     @property
     @pulumi.getter

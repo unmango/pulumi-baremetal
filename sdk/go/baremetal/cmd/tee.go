@@ -88,6 +88,7 @@ type Tee struct {
 	Args         TeeArgsTypeOutput        `pulumi:"args"`
 	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
 	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
+	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
 	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
 }
@@ -209,6 +210,10 @@ func (o TeeOutput) CreatedFiles() pulumi.StringArrayOutput {
 
 func (o TeeOutput) ExitCode() pulumi.IntOutput {
 	return o.ApplyT(func(v *Tee) pulumi.IntOutput { return v.ExitCode }).(pulumi.IntOutput)
+}
+
+func (o TeeOutput) MovedFiles() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *Tee) pulumi.StringMapOutput { return v.MovedFiles }).(pulumi.StringMapOutput)
 }
 
 func (o TeeOutput) Stderr() pulumi.StringOutput {

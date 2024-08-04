@@ -86,6 +86,9 @@ namespace UnMango.Baremetal.Cmd
         [Output("exitCode")]
         public Output<int> ExitCode { get; private set; } = null!;
 
+        [Output("movedFiles")]
+        public Output<ImmutableDictionary<string, string>> MovedFiles { get; private set; } = null!;
+
         [Output("stderr")]
         public Output<string> Stderr { get; private set; } = null!;
 
