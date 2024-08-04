@@ -134,7 +134,9 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 			}
 		}
 
-		return fmt.Errorf("a delete operation failed: %s", failed)
+		if len(failed) > 0 {
+			return fmt.Errorf("a delete operation failed: %s", failed)
+		}
 	}
 
 	log.Info("delete success")
