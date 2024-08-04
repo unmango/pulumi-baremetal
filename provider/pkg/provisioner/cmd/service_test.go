@@ -51,7 +51,7 @@ var _ = Describe("Grpc Server", func() {
 						url,
 					},
 				},
-				ExpectFiles: []string{expectedPath},
+				ExpectCreated: []string{expectedPath},
 			})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -59,7 +59,7 @@ var _ = Describe("Grpc Server", func() {
 			Expect(res.Result.ExitCode).To(BeEquivalentTo(0))
 			Expect(res.Result.Stdout).To(BeEmpty())
 			Expect(res.Result.Stderr).To(ContainSubstring(url))
-			Expect(res.Files).To(ContainElement(expectedPath))
+			Expect(res.CreatedFiles).To(ContainElement(expectedPath))
 			Expect(expectedPath).To(BeARegularFile())
 		})
 

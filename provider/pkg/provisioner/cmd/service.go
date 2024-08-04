@@ -47,7 +47,7 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.Cr
 		return nil, fmt.Errorf("failed building command: %w", cmd.Err)
 	}
 
-	createdFiles := make([]string, len(req.ExpectFiles))
+	createdFiles := make([]string, len(req.ExpectCreated))
 	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
 	cmd.Stdout, cmd.Stderr = stdout, stderr
 
@@ -55,7 +55,7 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.Cr
 	if err = cmd.Run(); err != nil {
 		log.WarnContext(ctx, "command failed", "err", err)
 	} else {
-		for i, file := range req.ExpectFiles {
+		for i, file := range req.ExpectCreated {
 			if _, err := os.Stat(file); err != nil {
 				log.ErrorContext(ctx, "expected file did not exist", "file", file, "err", err)
 			} else {
@@ -71,7 +71,7 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.Cr
 	exitCode := cmd.ProcessState.ExitCode()
 	log.InfoContext(ctx, "finished executing command", "cmd", cmd.String(), "created", createdFiles)
 	return &pb.CreateResponse{
-		Files: createdFiles,
+		CreatedFiles: createdFiles,
 		Result: &pb.Result{
 			ExitCode: int32(exitCode),
 			Stdout:   stdout.String(),
@@ -84,7 +84,7 @@ func (s *service) Update(ctx context.Context, req *pb.UpdateRequest) (res *pb.Up
 	log := s.Log.With("op", "update", "create", req.Create)
 
 	var delete *pb.DeleteResponse
-	toDelete := req.Create.Files
+	toDelete := req.Create.CreatedFiles
 	if len(toDelete) > 0 {
 		delete, err = s.Delete(ctx, &pb.DeleteRequest{Create: req.Create})
 	} else {
@@ -96,8 +96,8 @@ func (s *service) Update(ctx context.Context, req *pb.UpdateRequest) (res *pb.Up
 	}
 
 	create, err := s.Create(ctx, &pb.CreateRequest{
-		Command:     req.Command,
-		ExpectFiles: req.ExpectFiles,
+		Command:       req.Command,
+		ExpectCreated: req.ExpectCreated,
 	})
 	if err != nil {
 		log.ErrorContext(ctx, "failed performing create", "err", err)
@@ -105,9 +105,13 @@ func (s *service) Update(ctx context.Context, req *pb.UpdateRequest) (res *pb.Up
 	}
 
 	return &pb.UpdateResponse{
-		Delete: delete.Op,
-		Result: create.Result,
-		Files:  create.Files,
+		Result:       create.Result,
+		CreatedFiles: create.CreatedFiles,
+		Delete: &pb.Operation{
+			Command:      delete.Command,
+			Result:       delete.Result,
+			CreatedFiles: delete.CreatedFiles,
+		},
 	}, nil
 }
 
@@ -115,7 +119,7 @@ func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.Delete
 	log := s.Log.With("op", "delete", "create", req.Create)
 	bin := pb.Bin_BIN_RM
 
-	toDelete := req.Create.Files
+	toDelete := req.Create.CreatedFiles
 	if len(toDelete) == 0 {
 		log.InfoContext(ctx, "nothing to do")
 		return &pb.DeleteResponse{}, nil
@@ -138,18 +142,15 @@ func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.Delete
 		return &pb.DeleteResponse{}, nil
 	}
 
-	log.DebugContext(ctx, "describing operation")
-	op := &pb.Operation{
+	log.InfoContext(ctx, "finished executing command", "cmd", cmd.String())
+	return &pb.DeleteResponse{
 		Command: &pb.Command{Bin: bin, Args: cmd.Args},
 		Result: &pb.Result{
 			ExitCode: int32(cmd.ProcessState.ExitCode()),
 			Stdout:   stdout.String(),
 			Stderr:   stderr.String(),
 		},
-	}
-
-	log.InfoContext(ctx, "finished executing command", "cmd", cmd.String())
-	return &pb.DeleteResponse{Op: op}, nil
+	}, nil
 }
 
 func binPath(b pb.Bin) (string, error) {
