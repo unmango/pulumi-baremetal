@@ -315,6 +315,8 @@ jobs:
 
       - name: Test
         run: make test_provider
+        env:
+          TEST_FLAGS: --github-output
 
   install-sh:
     if: needs.setup.outputs.install-sh == 'true'

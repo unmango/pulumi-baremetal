@@ -33,6 +33,14 @@ func NewProvider(ctx *pulumi.Context,
 	if args.Address == nil {
 		return nil, errors.New("invalid value for required argument 'Address'")
 	}
+	if args.KeyPem != nil {
+		untypedSecretValue := pulumi.ToSecret(args.KeyPem.ToOutput(ctx.Context()).Untyped())
+		args.KeyPem = pulumix.MustConvertTyped[*string](untypedSecretValue)
+	}
+	secrets := pulumi.AdditionalSecretOutputs([]string{
+		"keyPem",
+	})
+	opts = append(opts, secrets)
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Provider
 	err := ctx.RegisterResource("pulumi:providers:baremetal", name, args, &resource, opts...)

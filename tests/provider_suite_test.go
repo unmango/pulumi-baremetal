@@ -2,7 +2,6 @@ package tests
 
 import (
 	"context"
-	"os"
 	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -30,7 +29,7 @@ var _ = BeforeSuite(func(ctx context.Context) {
 	Expect(err).NotTo(HaveOccurred())
 
 	By("creating a provisioner")
-	prov, err := util.NewProvisioner("6969", clientCerts.Ca, os.Stdout)
+	prov, err := util.NewProvisioner("6969", clientCerts.Ca, GinkgoWriter)
 	Expect(err).NotTo(HaveOccurred())
 
 	By("starting the provisioner")

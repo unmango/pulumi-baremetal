@@ -23,6 +23,8 @@ func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi
 	switch typ {
 	case "baremetal:cmd:Tee":
 		r = &Tee{}
+	case "baremetal:cmd:Wget":
+		r = &Wget{}
 	default:
 		return nil, fmt.Errorf("unknown resource type: %s", typ)
 	}

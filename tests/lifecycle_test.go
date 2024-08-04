@@ -16,8 +16,9 @@ import (
 
 const work = "/tmp/lifecycle"
 
-func containerPath(name string) string {
-	return path.Join(work, name)
+func containerPath(elem ...string) string {
+	parts := append([]string{work}, elem...)
+	return path.Join(parts...)
 }
 
 var _ = Describe("Command Resources", func() {
@@ -161,6 +162,94 @@ var _ = Describe("Command Resources", func() {
 			Expect(provisioner).NotTo(ContainFile(ctx, newFile))
 		})
 	})
+
+	Describe("Wget", Ordered, func() {
+		dir := containerPath("wget")
+		url := "https://raw.githubusercontent.com/unmango/pulumi-baremetal/main/README.md"
+		file := path.Join(dir, "README.md")
+
+		test := integration.LifeCycleTest{
+			Resource: "baremetal:cmd:Wget",
+			Create: integration.Operation{
+				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"directoryPrefix": dir,
+					"urls":            []string{url},
+					"quiet":           true,
+				}),
+				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"exitCode":     0,
+					"stdout":       "",
+					"stderr":       "",
+					"createdFiles": []string{file},
+					"args": map[string]interface{}{
+						"directoryPrefix": dir,
+						"urls":            []string{url},
+						"quiet":           true,
+
+						// Defaults
+						"wait":               "",
+						"config":             "",
+						"inputFile":          "",
+						"caCertificateFile":  "",
+						"timeout":            "",
+						"showProgress":       false,
+						"continue":           false,
+						"noDirectories":      false,
+						"appendOutput":       "",
+						"timestamping":       false,
+						"saveCookies":        "",
+						"base":               "",
+						"noDnsCache":         false,
+						"noVerbose":          false,
+						"version":            "",
+						"progress":           "",
+						"outputDocument":     "",
+						"password":           "",
+						"caDirectory":        "",
+						"forceDirectories":   false,
+						"background":         false,
+						"httpsOnly":          false,
+						"certificateType":    "",
+						"userAgent":          "",
+						"keepSessionCookies": false,
+						"noClobber":          false,
+						"debug":              false,
+						"help":               false,
+						"inet4Only":          false,
+						"privateKeyType":     "",
+						"certificate":        "",
+						"forceHtml":          false,
+						"user":               "",
+						"tries":              0,
+						"outputFile":         "",
+						"randomWait":         false,
+						"startPos":           "",
+						"verbose":            false,
+						"privateKey":         "",
+						"reportSpeed":        "",
+						"cutDirs":            0,
+						"crlFile":            "",
+					},
+				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					_, err := provisioner.ReadFile(context.Background(), file)
+					Expect(err).NotTo(HaveOccurred())
+				},
+			},
+		}
+
+		BeforeAll(func(ctx context.Context) {
+			By("creating a workspace for wget in the container")
+			_, err := provisioner.Exec(ctx, "mkdir", "-p", dir)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("should complete a full lifecycle", func(ctx context.Context) {
+			run(server, test)
+
+			Expect(provisioner).NotTo(ContainFile(ctx, file))
+		})
+	})
 })
 
 // Based on https://github.com/pulumi/pulumi-go-provider/blob/main/integration/integration.go
@@ -211,7 +300,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 			op.Hook(check.Inputs, create.Properties.Copy())
 		}
 		if op.ExpectedOutput != nil {
-			Expect(create.Properties).To(BeEquivalentTo(op.ExpectedOutput))
+			Expect(create.Properties).To(Equal(op.ExpectedOutput))
 		}
 
 		return create, true
@@ -238,7 +327,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 			return
 		}
 		if len(update.CheckFailures) > 0 || len(check.Failures) > 0 {
-			Expect(check.Failures).To(BeEquivalentTo(update.CheckFailures))
+			Expect(check.Failures).To(Equal(update.CheckFailures))
 			return
 		}
 
@@ -329,7 +418,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 				update.Hook(check.Inputs, result.Properties.Copy())
 			}
 			if update.ExpectedOutput != nil {
-				Expect(result.Properties.Copy()).To(BeEquivalentTo(update.ExpectedOutput))
+				Expect(result.Properties.Copy()).To(Equal(update.ExpectedOutput))
 			}
 			olds = result.Properties
 		}

@@ -52,6 +52,260 @@ func (o TeeArgsTypeOutput) Files() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v TeeArgsType) []string { return v.Files }).(pulumi.StringArrayOutput)
 }
 
+type WgetArgsType struct {
+	AppendOutput       *string  `pulumi:"appendOutput"`
+	Background         *bool    `pulumi:"background"`
+	Base               *string  `pulumi:"base"`
+	CaCertificateFile  *string  `pulumi:"caCertificateFile"`
+	CaDirectory        *string  `pulumi:"caDirectory"`
+	Certificate        *string  `pulumi:"certificate"`
+	CertificateType    *string  `pulumi:"certificateType"`
+	Config             *string  `pulumi:"config"`
+	Continue           *bool    `pulumi:"continue"`
+	CrlFile            *string  `pulumi:"crlFile"`
+	CutDirs            *int     `pulumi:"cutDirs"`
+	Debug              *bool    `pulumi:"debug"`
+	DirectoryPrefix    *string  `pulumi:"directoryPrefix"`
+	Execute            []string `pulumi:"execute"`
+	ForceDirectories   *bool    `pulumi:"forceDirectories"`
+	ForceHtml          *bool    `pulumi:"forceHtml"`
+	Help               *bool    `pulumi:"help"`
+	HttpsOnly          *bool    `pulumi:"httpsOnly"`
+	Inet4Only          *bool    `pulumi:"inet4Only"`
+	InputFile          *string  `pulumi:"inputFile"`
+	KeepSessionCookies *bool    `pulumi:"keepSessionCookies"`
+	NoClobber          *bool    `pulumi:"noClobber"`
+	NoDirectories      *bool    `pulumi:"noDirectories"`
+	NoDnsCache         *bool    `pulumi:"noDnsCache"`
+	NoVerbose          *bool    `pulumi:"noVerbose"`
+	OutputDocument     *string  `pulumi:"outputDocument"`
+	OutputFile         *string  `pulumi:"outputFile"`
+	Password           *string  `pulumi:"password"`
+	PrivateKey         *string  `pulumi:"privateKey"`
+	PrivateKeyType     *string  `pulumi:"privateKeyType"`
+	Progress           *string  `pulumi:"progress"`
+	Quiet              *bool    `pulumi:"quiet"`
+	RandomWait         *bool    `pulumi:"randomWait"`
+	ReportSpeed        *string  `pulumi:"reportSpeed"`
+	SaveCookies        *string  `pulumi:"saveCookies"`
+	ShowProgress       *bool    `pulumi:"showProgress"`
+	StartPos           *string  `pulumi:"startPos"`
+	Timeout            *string  `pulumi:"timeout"`
+	Timestamping       *bool    `pulumi:"timestamping"`
+	Tries              *int     `pulumi:"tries"`
+	Urls               []string `pulumi:"urls"`
+	User               *string  `pulumi:"user"`
+	UserAgent          *string  `pulumi:"userAgent"`
+	Verbose            *bool    `pulumi:"verbose"`
+	Version            *string  `pulumi:"version"`
+	Wait               *string  `pulumi:"wait"`
+}
+
+type WgetArgsTypeOutput struct{ *pulumi.OutputState }
+
+func (WgetArgsTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*WgetArgsType)(nil)).Elem()
+}
+
+func (o WgetArgsTypeOutput) ToWgetArgsTypeOutput() WgetArgsTypeOutput {
+	return o
+}
+
+func (o WgetArgsTypeOutput) ToWgetArgsTypeOutputWithContext(ctx context.Context) WgetArgsTypeOutput {
+	return o
+}
+
+func (o WgetArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[WgetArgsType] {
+	return pulumix.Output[WgetArgsType]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o WgetArgsTypeOutput) AppendOutput() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.AppendOutput }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Background() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.Background }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Base() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.Base }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) CaCertificateFile() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.CaCertificateFile }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) CaDirectory() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.CaDirectory }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Certificate() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.Certificate }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) CertificateType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.CertificateType }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Config() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.Config }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Continue() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.Continue }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) CrlFile() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.CrlFile }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) CutDirs() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *int { return v.CutDirs }).(pulumi.IntPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Debug() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.Debug }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) DirectoryPrefix() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.DirectoryPrefix }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Execute() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v WgetArgsType) []string { return v.Execute }).(pulumi.StringArrayOutput)
+}
+
+func (o WgetArgsTypeOutput) ForceDirectories() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.ForceDirectories }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) ForceHtml() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.ForceHtml }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Help() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.Help }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) HttpsOnly() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.HttpsOnly }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Inet4Only() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.Inet4Only }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) InputFile() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.InputFile }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) KeepSessionCookies() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.KeepSessionCookies }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) NoClobber() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.NoClobber }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) NoDirectories() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.NoDirectories }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) NoDnsCache() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.NoDnsCache }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) NoVerbose() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.NoVerbose }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) OutputDocument() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.OutputDocument }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) OutputFile() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.OutputFile }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Password() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.Password }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) PrivateKey() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.PrivateKey }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) PrivateKeyType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.PrivateKeyType }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Progress() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.Progress }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Quiet() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.Quiet }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) RandomWait() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.RandomWait }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) ReportSpeed() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.ReportSpeed }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) SaveCookies() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.SaveCookies }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) ShowProgress() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.ShowProgress }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) StartPos() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.StartPos }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Timeout() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.Timeout }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Timestamping() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.Timestamping }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Tries() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *int { return v.Tries }).(pulumi.IntPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Urls() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v WgetArgsType) []string { return v.Urls }).(pulumi.StringArrayOutput)
+}
+
+func (o WgetArgsTypeOutput) User() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.User }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) UserAgent() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.UserAgent }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Verbose() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *bool { return v.Verbose }).(pulumi.BoolPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Version() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.Version }).(pulumi.StringPtrOutput)
+}
+
+func (o WgetArgsTypeOutput) Wait() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v WgetArgsType) *string { return v.Wait }).(pulumi.StringPtrOutput)
+}
+
 func init() {
 	pulumi.RegisterOutputType(TeeArgsTypeOutput{})
+	pulumi.RegisterOutputType(WgetArgsTypeOutput{})
 }

@@ -10,6 +10,11 @@ export type Tee = import("./tee").Tee;
 export const Tee: typeof import("./tee").Tee = null as any;
 utilities.lazyLoad(exports, ["Tee"], () => require("./tee"));
 
+export { WgetArgs } from "./wget";
+export type Wget = import("./wget").Wget;
+export const Wget: typeof import("./wget").Wget = null as any;
+utilities.lazyLoad(exports, ["Wget"], () => require("./wget"));
+
 
 const _module = {
     version: utilities.getVersion(),
@@ -17,6 +22,8 @@ const _module = {
         switch (type) {
             case "baremetal:cmd:Tee":
                 return new Tee(name, <any>undefined, { urn })
+            case "baremetal:cmd:Wget":
+                return new Wget(name, <any>undefined, { urn })
             default:
                 throw new Error(`unknown resource type ${type}`);
         }

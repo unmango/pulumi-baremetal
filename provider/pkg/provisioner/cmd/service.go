@@ -15,29 +15,37 @@ import (
 
 type service struct {
 	pb.UnimplementedCommandServiceServer
-	*internal.State
+	internal.State
 }
 
-func NewServer(state *internal.State) pb.CommandServiceServer {
-	return &service{State: state}
+func NewServer(state internal.State) pb.CommandServiceServer {
+	log := state.Log.With("service", "command")
+	return &service{State: state.WithLogger(log)}
 }
 
-func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (*pb.CreateResponse, error) {
-	log := s.Log.With("op", "create", "bin", req.Command.Bin.String(), "args", req.Command.Args)
+func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.CreateResponse, err error) {
+	log := s.Log.With("op", "create")
 	if req.Command == nil {
 		log.Error("no command found in request")
 		return nil, fmt.Errorf("no command found in request")
 	}
 
-	bin, err := bin(req.Command.Bin)
+	args := req.Command.Args
+	bin, err := binPath(req.Command.Bin)
 	if err != nil {
 		log.Error("unable to map bin", "err", err)
 		return nil, fmt.Errorf("mapping bin: %w", err)
 	}
 
+	log = log.With("bin", bin, "args", args)
 	log.DebugContext(ctx, "building command")
-	cmd := exec.CommandContext(ctx, bin, req.Command.Args...)
+	cmd := exec.CommandContext(ctx, bin, args...)
 	cmd.Stdin = stdinReader(req.Command.Stdin)
+
+	if cmd.Err != nil {
+		log.ErrorContext(ctx, "failed building command", "err", cmd.Err)
+		return nil, fmt.Errorf("failed building command: %w", cmd.Err)
+	}
 
 	createdFiles := make([]string, len(req.ExpectFiles))
 	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
@@ -56,11 +64,16 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (*pb.Create
 		}
 	}
 
+	if cmd.ProcessState == nil {
+		return nil, errors.New("failed to start command")
+	}
+
+	exitCode := cmd.ProcessState.ExitCode()
 	log.InfoContext(ctx, "finished executing command", "cmd", cmd.String(), "created", createdFiles)
 	return &pb.CreateResponse{
 		Files: createdFiles,
 		Result: &pb.Result{
-			ExitCode: int32(cmd.ProcessState.ExitCode()),
+			ExitCode: int32(exitCode),
 			Stdout:   stdout.String(),
 			Stderr:   stderr.String(),
 		},
@@ -139,10 +152,14 @@ func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.Delete
 	return &pb.DeleteResponse{Op: op}, nil
 }
 
-func bin(b pb.Bin) (string, error) {
+func binPath(b pb.Bin) (string, error) {
 	switch b {
+	case pb.Bin_BIN_RM:
+		return "rm", nil
 	case pb.Bin_BIN_TEE:
 		return "tee", nil
+	case pb.Bin_BIN_WGET:
+		return "wget", nil
 	}
 
 	return "", fmt.Errorf("unrecognized bin: %s", b)

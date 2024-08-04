@@ -21,10 +21,16 @@ func NewLogger(w io.Writer) tc.Logging {
 
 // Accept implements testcontainers.LogConsumer.
 func (w *writerConsumer) Accept(log tc.Log) {
-	_, _ = w.Write(log.Content)
+	_, err := w.Write(log.Content)
+	if err != nil {
+		panic("logs are borked")
+	}
 }
 
 // Printf implements testcontainers.Logging.
 func (w *writerConsumer) Printf(format string, v ...interface{}) {
-	_, _ = fmt.Fprintf(w, format, v...)
+	_, err := fmt.Fprintf(w, format+"\n", v...)
+	if err != nil {
+		panic("logs are borked")
+	}
 }
