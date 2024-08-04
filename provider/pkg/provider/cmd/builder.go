@@ -5,7 +5,9 @@ type builder struct {
 }
 
 func (b *builder) arg(value string) {
-	b.args = append(b.args, value)
+	if value != "" {
+		b.args = append(b.args, value)
+	}
 }
 
 func (b *builder) op(input bool, name string) {
