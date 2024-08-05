@@ -108,4 +108,3 @@ func (Mv) Delete(ctx context.Context, id string, props MvState) error {
 
 var _ = (infer.CustomCreate[MvArgs, MvState])((*Mv)(nil))
 var _ = (infer.CustomUpdate[MvArgs, MvState])((*Mv)(nil))
-var _ = (infer.CustomDelete[MvState])((*Mv)(nil))

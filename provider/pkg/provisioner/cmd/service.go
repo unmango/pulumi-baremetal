@@ -211,6 +211,8 @@ func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.Delete
 
 func binPath(b pb.Bin) (string, error) {
 	switch b {
+	case pb.Bin_BIN_CHMOD:
+		return "chmod", nil
 	case pb.Bin_BIN_MKDIR:
 		return "mkdir", nil
 	case pb.Bin_BIN_MKTEMP:

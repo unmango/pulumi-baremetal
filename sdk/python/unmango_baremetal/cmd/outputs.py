@@ -10,6 +10,7 @@ from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 
 __all__ = [
+    'ChmodArgs',
     'MkdirArgs',
     'MktempArgs',
     'MvArgs',
@@ -18,6 +19,127 @@ __all__ = [
     'TeeArgs',
     'WgetArgs',
 ]
+
+@pulumi.output_type
+class ChmodArgs(dict):
+    @staticmethod
+    def __key_warning(key: str):
+        suggest = None
+        if key == "noPreserveRoot":
+            suggest = "no_preserve_root"
+        elif key == "octalMode":
+            suggest = "octal_mode"
+        elif key == "preserveRoot":
+            suggest = "preserve_root"
+
+        if suggest:
+            pulumi.log.warn(f"Key '{key}' not found in ChmodArgs. Access the value via the '{suggest}' property getter instead.")
+
+    def __getitem__(self, key: str) -> Any:
+        ChmodArgs.__key_warning(key)
+        return super().__getitem__(key)
+
+    def get(self, key: str, default = None) -> Any:
+        ChmodArgs.__key_warning(key)
+        return super().get(key, default)
+
+    def __init__(__self__, *,
+                 files: Sequence[str],
+                 changes: Optional[bool] = None,
+                 help: Optional[bool] = None,
+                 mode: Optional[Sequence[str]] = None,
+                 no_preserve_root: Optional[bool] = None,
+                 octal_mode: Optional[str] = None,
+                 preserve_root: Optional[bool] = None,
+                 quiet: Optional[bool] = None,
+                 recursive: Optional[bool] = None,
+                 reference: Optional[str] = None,
+                 verbose: Optional[bool] = None,
+                 version: Optional[bool] = None):
+        pulumi.set(__self__, "files", files)
+        if changes is not None:
+            pulumi.set(__self__, "changes", changes)
+        if help is not None:
+            pulumi.set(__self__, "help", help)
+        if mode is not None:
+            pulumi.set(__self__, "mode", mode)
+        if no_preserve_root is not None:
+            pulumi.set(__self__, "no_preserve_root", no_preserve_root)
+        if octal_mode is not None:
+            pulumi.set(__self__, "octal_mode", octal_mode)
+        if preserve_root is not None:
+            pulumi.set(__self__, "preserve_root", preserve_root)
+        if quiet is not None:
+            pulumi.set(__self__, "quiet", quiet)
+        if recursive is not None:
+            pulumi.set(__self__, "recursive", recursive)
+        if reference is not None:
+            pulumi.set(__self__, "reference", reference)
+        if verbose is not None:
+            pulumi.set(__self__, "verbose", verbose)
+        if version is not None:
+            pulumi.set(__self__, "version", version)
+
+    @property
+    @pulumi.getter
+    def files(self) -> Sequence[str]:
+        return pulumi.get(self, "files")
+
+    @property
+    @pulumi.getter
+    def changes(self) -> Optional[bool]:
+        return pulumi.get(self, "changes")
+
+    @property
+    @pulumi.getter
+    def help(self) -> Optional[bool]:
+        return pulumi.get(self, "help")
+
+    @property
+    @pulumi.getter
+    def mode(self) -> Optional[Sequence[str]]:
+        return pulumi.get(self, "mode")
+
+    @property
+    @pulumi.getter(name="noPreserveRoot")
+    def no_preserve_root(self) -> Optional[bool]:
+        return pulumi.get(self, "no_preserve_root")
+
+    @property
+    @pulumi.getter(name="octalMode")
+    def octal_mode(self) -> Optional[str]:
+        return pulumi.get(self, "octal_mode")
+
+    @property
+    @pulumi.getter(name="preserveRoot")
+    def preserve_root(self) -> Optional[bool]:
+        return pulumi.get(self, "preserve_root")
+
+    @property
+    @pulumi.getter
+    def quiet(self) -> Optional[bool]:
+        return pulumi.get(self, "quiet")
+
+    @property
+    @pulumi.getter
+    def recursive(self) -> Optional[bool]:
+        return pulumi.get(self, "recursive")
+
+    @property
+    @pulumi.getter
+    def reference(self) -> Optional[str]:
+        return pulumi.get(self, "reference")
+
+    @property
+    @pulumi.getter
+    def verbose(self) -> Optional[bool]:
+        return pulumi.get(self, "verbose")
+
+    @property
+    @pulumi.getter
+    def version(self) -> Optional[bool]:
+        return pulumi.get(self, "version")
+
 
 @pulumi.output_type
 class MkdirArgs(dict):

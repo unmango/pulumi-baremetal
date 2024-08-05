@@ -71,4 +71,5 @@ enum Bin {
   BIN_TAR = 5;
   BIN_MKDIR = 6;
   BIN_MKTEMP = 7;
+  BIN_CHMOD = 8;
 }
