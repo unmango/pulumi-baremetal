@@ -33,12 +33,6 @@ func (m MkdirArgs) Cmd() *pb.Command {
 	}
 }
 
-// ExpectCreated implements CommandArgs.
-// Subtle: this method shadows the method (DefaultFileManipulator).ExpectCreated of MkdirArgs.DefaultFileManipulator.
-func (m MkdirArgs) ExpectCreated() []string {
-	return m.Directory
-}
-
 var _ CommandArgs = MkdirArgs{}
 
 type Mkdir struct{}

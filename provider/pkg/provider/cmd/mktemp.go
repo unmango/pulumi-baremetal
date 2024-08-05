@@ -10,7 +10,7 @@ import (
 
 type MktempArgs struct {
 	DefaultFileManipulator
-	Template  string `pulumi:"template"`
+	Template  string `pulumi:"template,optional"`
 	Directory bool   `pulumi:"directory,optional"`
 	DryRun    bool   `pulumi:"dryRun,optional"`
 	Quiet     bool   `pulumi:"quiet,optional"`
@@ -40,7 +40,7 @@ func (m MktempArgs) Cmd() *pb.Command {
 	}
 
 	return &pb.Command{
-		Bin:  pb.Bin_BIN_MKDIR,
+		Bin:  pb.Bin_BIN_MKTEMP,
 		Args: b.args,
 	}
 }
