@@ -21,7 +21,6 @@ builds:
       - windows
       - linux
     ldflags:
-      # The line below MUST align with the module in current provider/go.mod
       - -X github.com/unmango/pulumi-baremetal/provider.Version={{.Tag}}
     main: ./cmd/pulumi-resource-baremetal/
 
@@ -37,6 +36,8 @@ builds:
       - darwin
       - windows
       - linux
+    ldflags:
+      - -X github.com/unmango/pulumi-baremetal/provider.Version={{.Tag}}
     main: ./cmd/provisioner
 
 archives:

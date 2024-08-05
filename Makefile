@@ -173,7 +173,10 @@ bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC) $(PKG_SRC) provider/*go*
 		$(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
 bin/provisioner:: $(GEN_SRC) provider/cmd/provisioner/*.go $(PKG_SRC)
-	go -C provider build -o ${WORKING_DIR}/$@ $(PROJECT)/${PROVIDER_PATH}/cmd/provisioner
+	go -C provider build \
+		-o ${WORKING_DIR}/$@ \
+		-ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" \
+		$(PROJECT)/${PROVIDER_PATH}/cmd/provisioner
 
 gen/go/%.pb.go gen/go/%_grpc.pb.go &: $(BUF_CONFIG) proto/%.proto
 	buf generate --clean --path proto/$*.proto

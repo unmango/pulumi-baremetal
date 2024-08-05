@@ -9,9 +9,6 @@ import (
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/cmd"
 )
 
-// Version is initialized by the Go linker to contain the semver of this build.
-var Version string
-
 const Name string = "baremetal"
 
 func Provider() p.Provider {

@@ -120,7 +120,7 @@ function printVars() {
 
 function installProvisioner() {
 	BIN="$INSTALL_DIR/$BIN_NAME"
-	if [ -f "$BIN" ]; then
+	if [ -f "$BIN" ] && [ "$($BIN --version 2>/dev/null)" == "$VERSION" ]; then
 		log "$BIN"
 		echo "👻 Up to date"
 		return 0

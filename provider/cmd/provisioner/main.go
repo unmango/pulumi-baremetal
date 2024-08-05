@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/unmango/pulumi-baremetal/provider"
 	p "github.com/unmango/pulumi-baremetal/provider/pkg/provisioner"
 )
 
@@ -16,13 +17,20 @@ var (
 	clientCaFile string
 	certFile     string
 	keyFile      string
+	reflection   bool
 	verbose      bool
+	version      bool
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "provisioner",
 	Short: "The pulumi-baremetal provisioner",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if version {
+			_, err := fmt.Println(provider.Version)
+			return err
+		}
+
 		var level slog.Level
 		if verbose {
 			level = slog.LevelDebug
@@ -42,15 +50,17 @@ var rootCmd = &cobra.Command{
 		provisioner := p.New(lis,
 			p.WithLogger(log),
 			p.WithOptionalCertificates(clientCaFile, certFile, keyFile),
+			p.WithReflection(reflection),
 		)
 
 		log.Info("serving",
 			"network", network,
-			"address", address,
+			"address", lis.Addr().String(),
 			"verbose", verbose,
 			"clientCaFile", clientCaFile,
 			"certFile", certFile,
 			"keyFile", keyFile,
+			"reflection", reflection,
 		)
 
 		return provisioner.Serve()
@@ -58,9 +68,11 @@ var rootCmd = &cobra.Command{
 }
 
 func main() {
-	rootCmd.Flags().StringVar(&address, "address", "", "Must be a valid `net.Listen()` address")
-	rootCmd.Flags().StringVar(&network, "network", "tcp", "Must be a valid `net.Listen()` network. i.e. \"tcp\", \"tcp4\", \"tcp6\", \"unix\" or \"unixpacket\"")
+	rootCmd.Flags().StringVar(&address, "address", "", "Must be a valid 'net.Listen()' address")
+	rootCmd.Flags().StringVar(&network, "network", "tcp4", "Must be a valid 'net.Listen()' network. i.e. \"tcp\", \"tcp4\", \"tcp6\", \"unix\" or \"unixpacket\"")
+	rootCmd.Flags().BoolVar(&reflection, "reflection", false, "Enable gRPC reflection")
 	rootCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Log verbosity")
+	rootCmd.Flags().BoolVar(&version, "version", false, "Print version and exit")
 
 	rootCmd.Flags().StringVar(&clientCaFile, "client-ca-file", "", "The path to the certificate authority file")
 	rootCmd.Flags().StringVar(&certFile, "cert-file", "", "The path to the server certificate file")
@@ -71,6 +83,4 @@ func main() {
 		fmt.Printf("failed to execute: %s\n", err)
 		os.Exit(1)
 	}
-
-	fmt.Println("exiting gracefully")
 }
