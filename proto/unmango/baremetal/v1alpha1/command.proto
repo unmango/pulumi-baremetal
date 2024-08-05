@@ -69,4 +69,6 @@ enum Bin {
   BIN_WGET = 3;
   BIN_MV = 4;
   BIN_TAR = 5;
+  BIN_MKDIR = 6;
+  BIN_MKTEMP = 7;
 }

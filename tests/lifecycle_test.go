@@ -104,6 +104,71 @@ var _ = Describe("Command Resources", func() {
 		})
 	})
 
+	Describe("Mkdir", Ordered, func() {
+		expectedDir := containerPath("mkdir-test")
+
+		test := integration.LifeCycleTest{
+			Resource: "baremetal:cmd:Mkdir",
+			Create: integration.Operation{
+				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"directory": []string{expectedDir},
+				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+				},
+				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"exitCode":     0,
+					"stdout":       "",
+					"stderr":       "",
+					"createdFiles": []string{},
+					"movedFiles":   map[string]string{},
+					"args": map[string]interface{}{
+						"directory": []string{expectedDir},
+
+						// Defaults
+						"mode":    "",
+						"parents": false,
+						"help":    false,
+						"version": false,
+						"verbose": false,
+					},
+				}),
+			},
+		}
+
+		It("should complete a full lifecycle", func(ctx context.Context) {
+			run(server, test)
+
+			_, err := provisioner.Exec(ctx, "touch", "blah")
+			Expect(err).NotTo(HaveOccurred())
+		})
+	})
+
+	Describe("Mktemp", Ordered, func() {
+		test := integration.LifeCycleTest{
+			Resource: "baremetal:cmd:Mktemp",
+			Create: integration.Operation{
+				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"tmpdir": true,
+				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(output["stdout"].V).NotTo(BeEmpty())
+					Expect(output["exitCode"].V).To(BeEquivalentTo(0))
+					Expect(output["createdFiles"].V).To(BeEmpty())
+					Expect(output["movedFiles"].V).To(BeEmpty())
+				},
+			},
+		}
+
+		It("should complete a full lifecycle", func(ctx context.Context) {
+			run(server, test)
+
+			_, err := provisioner.Exec(ctx, "touch", "blah")
+			Expect(err).NotTo(HaveOccurred())
+		})
+	})
+
 	Describe("Rm", Ordered, func() {
 		file := containerPath("rm.txt")
 

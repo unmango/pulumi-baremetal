@@ -14,6 +14,133 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
+type MkdirArgsType struct {
+	Directory []string `pulumi:"directory"`
+	Help      *bool    `pulumi:"help"`
+	Mode      *string  `pulumi:"mode"`
+	Parents   *bool    `pulumi:"parents"`
+	Verbose   *bool    `pulumi:"verbose"`
+	Version   *bool    `pulumi:"version"`
+}
+
+type MkdirArgsTypeOutput struct{ *pulumi.OutputState }
+
+func (MkdirArgsTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*MkdirArgsType)(nil)).Elem()
+}
+
+func (o MkdirArgsTypeOutput) ToMkdirArgsTypeOutput() MkdirArgsTypeOutput {
+	return o
+}
+
+func (o MkdirArgsTypeOutput) ToMkdirArgsTypeOutputWithContext(ctx context.Context) MkdirArgsTypeOutput {
+	return o
+}
+
+func (o MkdirArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[MkdirArgsType] {
+	return pulumix.Output[MkdirArgsType]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o MkdirArgsTypeOutput) Directory() pulumix.ArrayOutput[string] {
+	value := pulumix.Apply[MkdirArgsType](o, func(v MkdirArgsType) []string { return v.Directory })
+	return pulumix.ArrayOutput[string]{OutputState: value.OutputState}
+}
+
+func (o MkdirArgsTypeOutput) Help() pulumix.Output[*bool] {
+	return pulumix.Apply[MkdirArgsType](o, func(v MkdirArgsType) *bool { return v.Help })
+}
+
+func (o MkdirArgsTypeOutput) Mode() pulumix.Output[*string] {
+	return pulumix.Apply[MkdirArgsType](o, func(v MkdirArgsType) *string { return v.Mode })
+}
+
+func (o MkdirArgsTypeOutput) Parents() pulumix.Output[*bool] {
+	return pulumix.Apply[MkdirArgsType](o, func(v MkdirArgsType) *bool { return v.Parents })
+}
+
+func (o MkdirArgsTypeOutput) Verbose() pulumix.Output[*bool] {
+	return pulumix.Apply[MkdirArgsType](o, func(v MkdirArgsType) *bool { return v.Verbose })
+}
+
+func (o MkdirArgsTypeOutput) Version() pulumix.Output[*bool] {
+	return pulumix.Apply[MkdirArgsType](o, func(v MkdirArgsType) *bool { return v.Version })
+}
+
+type MktempArgsType struct {
+	Directory *bool   `pulumi:"directory"`
+	DryRun    *bool   `pulumi:"dryRun"`
+	Help      *bool   `pulumi:"help"`
+	P         *string `pulumi:"p"`
+	Quiet     *bool   `pulumi:"quiet"`
+	Suffix    *string `pulumi:"suffix"`
+	T         *bool   `pulumi:"t"`
+	Template  *string `pulumi:"template"`
+	Tmpdir    *bool   `pulumi:"tmpdir"`
+	Version   *bool   `pulumi:"version"`
+}
+
+type MktempArgsTypeOutput struct{ *pulumi.OutputState }
+
+func (MktempArgsTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*MktempArgsType)(nil)).Elem()
+}
+
+func (o MktempArgsTypeOutput) ToMktempArgsTypeOutput() MktempArgsTypeOutput {
+	return o
+}
+
+func (o MktempArgsTypeOutput) ToMktempArgsTypeOutputWithContext(ctx context.Context) MktempArgsTypeOutput {
+	return o
+}
+
+func (o MktempArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[MktempArgsType] {
+	return pulumix.Output[MktempArgsType]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o MktempArgsTypeOutput) Directory() pulumix.Output[*bool] {
+	return pulumix.Apply[MktempArgsType](o, func(v MktempArgsType) *bool { return v.Directory })
+}
+
+func (o MktempArgsTypeOutput) DryRun() pulumix.Output[*bool] {
+	return pulumix.Apply[MktempArgsType](o, func(v MktempArgsType) *bool { return v.DryRun })
+}
+
+func (o MktempArgsTypeOutput) Help() pulumix.Output[*bool] {
+	return pulumix.Apply[MktempArgsType](o, func(v MktempArgsType) *bool { return v.Help })
+}
+
+func (o MktempArgsTypeOutput) P() pulumix.Output[*string] {
+	return pulumix.Apply[MktempArgsType](o, func(v MktempArgsType) *string { return v.P })
+}
+
+func (o MktempArgsTypeOutput) Quiet() pulumix.Output[*bool] {
+	return pulumix.Apply[MktempArgsType](o, func(v MktempArgsType) *bool { return v.Quiet })
+}
+
+func (o MktempArgsTypeOutput) Suffix() pulumix.Output[*string] {
+	return pulumix.Apply[MktempArgsType](o, func(v MktempArgsType) *string { return v.Suffix })
+}
+
+func (o MktempArgsTypeOutput) T() pulumix.Output[*bool] {
+	return pulumix.Apply[MktempArgsType](o, func(v MktempArgsType) *bool { return v.T })
+}
+
+func (o MktempArgsTypeOutput) Template() pulumix.Output[*string] {
+	return pulumix.Apply[MktempArgsType](o, func(v MktempArgsType) *string { return v.Template })
+}
+
+func (o MktempArgsTypeOutput) Tmpdir() pulumix.Output[*bool] {
+	return pulumix.Apply[MktempArgsType](o, func(v MktempArgsType) *bool { return v.Tmpdir })
+}
+
+func (o MktempArgsTypeOutput) Version() pulumix.Output[*bool] {
+	return pulumix.Apply[MktempArgsType](o, func(v MktempArgsType) *bool { return v.Version })
+}
+
 type MvArgsType struct {
 	Backup               *string  `pulumi:"backup"`
 	Destination          *string  `pulumi:"destination"`
@@ -681,6 +808,8 @@ func (o WgetArgsTypeOutput) Wait() pulumix.Output[*string] {
 }
 
 func init() {
+	pulumi.RegisterOutputType(MkdirArgsTypeOutput{})
+	pulumi.RegisterOutputType(MktempArgsTypeOutput{})
 	pulumi.RegisterOutputType(MvArgsTypeOutput{})
 	pulumi.RegisterOutputType(RmArgsTypeOutput{})
 	pulumi.RegisterOutputType(TarArgsTypeOutput{})

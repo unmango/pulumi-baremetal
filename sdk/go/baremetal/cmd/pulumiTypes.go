@@ -14,6 +14,132 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
+type MkdirArgsType struct {
+	Directory []string `pulumi:"directory"`
+	Help      *bool    `pulumi:"help"`
+	Mode      *string  `pulumi:"mode"`
+	Parents   *bool    `pulumi:"parents"`
+	Verbose   *bool    `pulumi:"verbose"`
+	Version   *bool    `pulumi:"version"`
+}
+
+type MkdirArgsTypeOutput struct{ *pulumi.OutputState }
+
+func (MkdirArgsTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*MkdirArgsType)(nil)).Elem()
+}
+
+func (o MkdirArgsTypeOutput) ToMkdirArgsTypeOutput() MkdirArgsTypeOutput {
+	return o
+}
+
+func (o MkdirArgsTypeOutput) ToMkdirArgsTypeOutputWithContext(ctx context.Context) MkdirArgsTypeOutput {
+	return o
+}
+
+func (o MkdirArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[MkdirArgsType] {
+	return pulumix.Output[MkdirArgsType]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o MkdirArgsTypeOutput) Directory() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v MkdirArgsType) []string { return v.Directory }).(pulumi.StringArrayOutput)
+}
+
+func (o MkdirArgsTypeOutput) Help() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v MkdirArgsType) *bool { return v.Help }).(pulumi.BoolPtrOutput)
+}
+
+func (o MkdirArgsTypeOutput) Mode() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v MkdirArgsType) *string { return v.Mode }).(pulumi.StringPtrOutput)
+}
+
+func (o MkdirArgsTypeOutput) Parents() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v MkdirArgsType) *bool { return v.Parents }).(pulumi.BoolPtrOutput)
+}
+
+func (o MkdirArgsTypeOutput) Verbose() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v MkdirArgsType) *bool { return v.Verbose }).(pulumi.BoolPtrOutput)
+}
+
+func (o MkdirArgsTypeOutput) Version() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v MkdirArgsType) *bool { return v.Version }).(pulumi.BoolPtrOutput)
+}
+
+type MktempArgsType struct {
+	Directory *bool   `pulumi:"directory"`
+	DryRun    *bool   `pulumi:"dryRun"`
+	Help      *bool   `pulumi:"help"`
+	P         *string `pulumi:"p"`
+	Quiet     *bool   `pulumi:"quiet"`
+	Suffix    *string `pulumi:"suffix"`
+	T         *bool   `pulumi:"t"`
+	Template  *string `pulumi:"template"`
+	Tmpdir    *bool   `pulumi:"tmpdir"`
+	Version   *bool   `pulumi:"version"`
+}
+
+type MktempArgsTypeOutput struct{ *pulumi.OutputState }
+
+func (MktempArgsTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*MktempArgsType)(nil)).Elem()
+}
+
+func (o MktempArgsTypeOutput) ToMktempArgsTypeOutput() MktempArgsTypeOutput {
+	return o
+}
+
+func (o MktempArgsTypeOutput) ToMktempArgsTypeOutputWithContext(ctx context.Context) MktempArgsTypeOutput {
+	return o
+}
+
+func (o MktempArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[MktempArgsType] {
+	return pulumix.Output[MktempArgsType]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o MktempArgsTypeOutput) Directory() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v MktempArgsType) *bool { return v.Directory }).(pulumi.BoolPtrOutput)
+}
+
+func (o MktempArgsTypeOutput) DryRun() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v MktempArgsType) *bool { return v.DryRun }).(pulumi.BoolPtrOutput)
+}
+
+func (o MktempArgsTypeOutput) Help() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v MktempArgsType) *bool { return v.Help }).(pulumi.BoolPtrOutput)
+}
+
+func (o MktempArgsTypeOutput) P() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v MktempArgsType) *string { return v.P }).(pulumi.StringPtrOutput)
+}
+
+func (o MktempArgsTypeOutput) Quiet() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v MktempArgsType) *bool { return v.Quiet }).(pulumi.BoolPtrOutput)
+}
+
+func (o MktempArgsTypeOutput) Suffix() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v MktempArgsType) *string { return v.Suffix }).(pulumi.StringPtrOutput)
+}
+
+func (o MktempArgsTypeOutput) T() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v MktempArgsType) *bool { return v.T }).(pulumi.BoolPtrOutput)
+}
+
+func (o MktempArgsTypeOutput) Template() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v MktempArgsType) *string { return v.Template }).(pulumi.StringPtrOutput)
+}
+
+func (o MktempArgsTypeOutput) Tmpdir() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v MktempArgsType) *bool { return v.Tmpdir }).(pulumi.BoolPtrOutput)
+}
+
+func (o MktempArgsTypeOutput) Version() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v MktempArgsType) *bool { return v.Version }).(pulumi.BoolPtrOutput)
+}
+
 type MvArgsType struct {
 	Backup               *string  `pulumi:"backup"`
 	Destination          *string  `pulumi:"destination"`
@@ -675,6 +801,8 @@ func (o WgetArgsTypeOutput) Wait() pulumi.StringPtrOutput {
 }
 
 func init() {
+	pulumi.RegisterOutputType(MkdirArgsTypeOutput{})
+	pulumi.RegisterOutputType(MktempArgsTypeOutput{})
 	pulumi.RegisterOutputType(MvArgsTypeOutput{})
 	pulumi.RegisterOutputType(RmArgsTypeOutput{})
 	pulumi.RegisterOutputType(TarArgsTypeOutput{})

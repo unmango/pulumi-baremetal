@@ -5,6 +5,16 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "../utilities";
 
 // Export members:
+export { MkdirArgs } from "./mkdir";
+export type Mkdir = import("./mkdir").Mkdir;
+export const Mkdir: typeof import("./mkdir").Mkdir = null as any;
+utilities.lazyLoad(exports, ["Mkdir"], () => require("./mkdir"));
+
+export { MktempArgs } from "./mktemp";
+export type Mktemp = import("./mktemp").Mktemp;
+export const Mktemp: typeof import("./mktemp").Mktemp = null as any;
+utilities.lazyLoad(exports, ["Mktemp"], () => require("./mktemp"));
+
 export { MvArgs } from "./mv";
 export type Mv = import("./mv").Mv;
 export const Mv: typeof import("./mv").Mv = null as any;
@@ -35,6 +45,10 @@ const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {
         switch (type) {
+            case "baremetal:cmd:Mkdir":
+                return new Mkdir(name, <any>undefined, { urn })
+            case "baremetal:cmd:Mktemp":
+                return new Mktemp(name, <any>undefined, { urn })
             case "baremetal:cmd:Mv":
                 return new Mv(name, <any>undefined, { urn })
             case "baremetal:cmd:Rm":

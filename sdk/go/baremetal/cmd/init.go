@@ -21,6 +21,10 @@ func (m *module) Version() semver.Version {
 
 func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi.Resource, err error) {
 	switch typ {
+	case "baremetal:cmd:Mkdir":
+		r = &Mkdir{}
+	case "baremetal:cmd:Mktemp":
+		r = &Mktemp{}
 	case "baremetal:cmd:Mv":
 		r = &Mv{}
 	case "baremetal:cmd:Rm":
