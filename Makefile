@@ -178,7 +178,7 @@ bin/provisioner:: $(GEN_SRC) provider/cmd/provisioner/*.go $(PKG_SRC)
 		-ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" \
 		$(PROJECT)/${PROVIDER_PATH}/cmd/provisioner
 
-gen/go/%.pb.go gen/go/%_grpc.pb.go &: $(BUF_CONFIG) proto/%.proto
+gen/go/%.pb.go gen/go/%_grpc.pb.go: $(BUF_CONFIG) proto/%.proto
 	buf generate --clean --path proto/$*.proto
 
 provider/pkg/%.man: provider/pkg/%.go
