@@ -9,7 +9,8 @@ import (
 )
 
 type MkdirArgs struct {
-	DefaultFileManipulator
+	CommandArgs
+
 	Directory []string `pulumi:"directory"`
 	Mode      string   `pulumi:"mode,optional"`
 	Parents   bool     `pulumi:"parents,optional"`
@@ -33,7 +34,7 @@ func (m MkdirArgs) Cmd() *pb.Command {
 	}
 }
 
-var _ CommandArgs = MkdirArgs{}
+var _ CommandBuilder = MkdirArgs{}
 
 type Mkdir struct{}
 

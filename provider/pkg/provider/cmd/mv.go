@@ -10,7 +10,8 @@ import (
 )
 
 type MvArgs struct {
-	DefaultFileManipulator
+	CommandArgs
+
 	Backup               string   `pulumi:"backup,optional"`
 	Destination          string   `pulumi:"destination,optional"`
 	Directory            string   `pulumi:"directory,optional"`
@@ -71,7 +72,7 @@ func (m MvArgs) ExpectMoved() map[string]string {
 	return files
 }
 
-var _ CommandArgs = MvArgs{}
+var _ CommandBuilder = MvArgs{}
 
 type Mv struct{}
 

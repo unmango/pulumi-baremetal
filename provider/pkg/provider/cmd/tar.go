@@ -10,7 +10,7 @@ import (
 )
 
 type TarArgs struct {
-	DefaultFileManipulator
+	CommandArgs
 
 	Args []string `pulumi:"args,optional"`
 
@@ -145,7 +145,7 @@ func (t TarArgs) ExpectCreated() []string {
 	return []string{}
 }
 
-var _ CommandArgs = TarArgs{}
+var _ CommandBuilder = TarArgs{}
 
 type Tar struct{}
 

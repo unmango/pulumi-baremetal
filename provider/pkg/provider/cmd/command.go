@@ -3,39 +3,49 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"slices"
 
+	provider "github.com/pulumi/pulumi-go-provider"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
 
-type FileManipulator interface {
+type FsManipulator interface {
 	ExpectCreated() []string
 	ExpectMoved() map[string]string
 }
 
-type DefaultFileManipulator struct{}
+type CommandBuilder interface {
+	FsManipulator
+	Cmd() *pb.Command
+	triggers() []any
+}
 
-func (m DefaultFileManipulator) ExpectCreated() []string {
+type CommandArgs struct {
+	Triggers []any `pulumi:"triggers,optional"`
+}
+
+func (CommandArgs) ExpectCreated() []string {
 	return []string{}
 }
 
-func (m DefaultFileManipulator) ExpectMoved() map[string]string {
+func (CommandArgs) ExpectMoved() map[string]string {
 	return map[string]string{}
 }
 
-type CommandArgs interface {
-	FileManipulator
-	Cmd() *pb.Command
+func (a CommandArgs) triggers() []any {
+	return a.Triggers
 }
 
-type CommandState[T CommandArgs] struct {
+type CommandState[T CommandBuilder] struct {
 	Args         T                 `pulumi:"args"`
 	ExitCode     int               `pulumi:"exitCode"`
 	Stderr       string            `pulumi:"stderr"`
 	Stdout       string            `pulumi:"stdout"`
 	CreatedFiles []string          `pulumi:"createdFiles"`
 	MovedFiles   map[string]string `pulumi:"movedFiles"`
+	Triggers     []any             `pulumi:"triggers"`
 }
 
 func (s *CommandState[T]) Create(ctx context.Context, inputs T, preview bool) error {
@@ -81,6 +91,20 @@ func (s *CommandState[T]) Create(ctx context.Context, inputs T, preview bool) er
 
 	log.Info("create success")
 	return nil
+}
+
+func (s *CommandState[T]) Diff(ctx context.Context, inputs T) (provider.DiffResponse, error) {
+	diff := map[string]provider.PropertyDiff{}
+
+	if !slices.Equal(s.Triggers, inputs.triggers()) {
+		diff["triggers"] = provider.PropertyDiff{Kind: provider.Update}
+	}
+
+	return provider.DiffResponse{
+		DeleteBeforeReplace: true,
+		HasChanges:          len(diff) > 0,
+		DetailedDiff:        diff,
+	}, nil
 }
 
 func (s *CommandState[T]) Update(ctx context.Context, inputs T, preview bool) (CommandState[T], error) {

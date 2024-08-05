@@ -9,7 +9,8 @@ import (
 )
 
 type MktempArgs struct {
-	DefaultFileManipulator
+	CommandArgs
+
 	Template  string `pulumi:"template,optional"`
 	Directory bool   `pulumi:"directory,optional"`
 	DryRun    bool   `pulumi:"dryRun,optional"`
@@ -45,7 +46,7 @@ func (m MktempArgs) Cmd() *pb.Command {
 	}
 }
 
-var _ CommandArgs = MktempArgs{}
+var _ CommandBuilder = MktempArgs{}
 
 type Mktemp struct{}
 

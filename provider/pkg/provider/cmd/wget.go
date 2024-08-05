@@ -10,7 +10,8 @@ import (
 )
 
 type WgetArgs struct {
-	DefaultFileManipulator
+	CommandArgs
+
 	AppendOutput      string   `pulumi:"appendOutput,optional"`
 	Background        bool     `pulumi:"background,optional"`
 	Base              string   `pulumi:"base,optional"`

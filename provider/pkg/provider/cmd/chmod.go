@@ -10,7 +10,8 @@ import (
 )
 
 type ChmodArgs struct {
-	DefaultFileManipulator
+	CommandArgs
+
 	Files          []string `pulumi:"files"`
 	Mode           []string `pulumi:"mode,optional"`
 	OctalMode      string   `pulumi:"octalMode,optional"`
@@ -51,7 +52,7 @@ func (m ChmodArgs) Cmd() *pb.Command {
 	}
 }
 
-var _ CommandArgs = ChmodArgs{}
+var _ CommandBuilder = ChmodArgs{}
 
 type Chmod struct{}
 

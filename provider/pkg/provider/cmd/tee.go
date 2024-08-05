@@ -10,7 +10,8 @@ import (
 )
 
 type TeeArgs struct {
-	DefaultFileManipulator
+	CommandArgs
+
 	Append  bool     `pulumi:"append,optional"`
 	Content string   `pulumi:"content"`
 	Files   []string `pulumi:"files"`

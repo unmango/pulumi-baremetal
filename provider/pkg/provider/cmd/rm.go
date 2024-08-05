@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 
+	provider "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 )
 
 type RmArgs struct {
-	DefaultFileManipulator
+	CommandArgs
+
 	Dir           bool     `pulumi:"dir,optional"`
 	Files         []string `pulumi:"files"`
 	Force         bool     `pulumi:"force,optional"`
@@ -34,7 +36,7 @@ func (r RmArgs) Cmd() *pb.Command {
 	}
 }
 
-var _ CommandArgs = RmArgs{}
+var _ CommandBuilder = RmArgs{}
 
 type Rm struct{}
 
@@ -48,6 +50,11 @@ func (Rm) Create(ctx context.Context, name string, inputs RmArgs, preview bool) 
 	}
 
 	return name, state, nil
+}
+
+// Diff implements infer.CustomDiff.
+func (Rm) Diff(ctx context.Context, id string, olds RmState, news RmArgs) (provider.DiffResponse, error) {
+	panic("unimplemented")
 }
 
 // Update implements infer.CustomUpdate.
@@ -70,5 +77,6 @@ func (Rm) Delete(ctx context.Context, id string, props RmState) error {
 }
 
 var _ = (infer.CustomCreate[RmArgs, RmState])((*Rm)(nil))
+var _ = (infer.CustomDiff[RmArgs, RmState])((*Rm)(nil))
 var _ = (infer.CustomUpdate[RmArgs, RmState])((*Rm)(nil))
 var _ = (infer.CustomDelete[RmState])((*Rm)(nil))
