@@ -12,7 +12,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.19.1
 	github.com/onsi/gomega v1.34.1
 	github.com/pulumi/pulumi-go-provider v0.21.0
-	github.com/pulumi/pulumi/pkg/v3 v3.127.0
+	github.com/pulumi/pulumi/pkg/v3 v3.128.0
 	github.com/pulumi/pulumi/sdk/v3 v3.128.0
 	github.com/testcontainers/testcontainers-go v0.32.0
 	github.com/unmango/pulumi-baremetal/provider v0.0.0-00010101000000-000000000000
