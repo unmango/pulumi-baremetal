@@ -37,6 +37,8 @@ builds:
       - darwin
       - windows
       - linux
+    ldflags:
+      - -X github.com/unmango/pulumi-baremetal/provider/cmd/main.Version={{.Tag}}
     main: ./cmd/provisioner
 
 archives:

@@ -12,11 +12,13 @@ import (
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provisioner/cmd"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/reflection"
 )
 
 type Options struct {
-	logger *slog.Logger
-	grpc   []grpc.ServerOption
+	logger     *slog.Logger
+	grpc       []grpc.ServerOption
+	reflection bool
 }
 
 type opt func(*Options) error
@@ -27,21 +29,27 @@ type Provisioner interface {
 
 type provisioner struct {
 	internal.State
-	listener net.Listener
-	server   *grpc.Server
+	listener   net.Listener
+	server     *grpc.Server
+	reflection bool
 }
 
 func New(lis net.Listener, o ...opt) Provisioner {
-	options := &Options{slog.Default(), []grpc.ServerOption{}}
-	err := opts.Apply(options, o...)
-	if err != nil {
+	options := &Options{
+		slog.Default(),
+		[]grpc.ServerOption{},
+		false,
+	}
+
+	if err := opts.Apply(options, o...); err != nil {
 		panic(err) // TODO: Update the signature to return an error
 	}
 
 	return &provisioner{
-		State:    options.state(),
-		listener: lis,
-		server:   grpc.NewServer(options.grpc...),
+		State:      options.state(),
+		listener:   lis,
+		server:     grpc.NewServer(options.grpc...),
+		reflection: options.reflection,
 	}
 }
 
@@ -79,8 +87,20 @@ func WithOptionalCertificates(caFile, certFile, keyFile string) opt {
 	})
 }
 
+func WithReflection(enable bool) opt {
+	return func(o *Options) error {
+		o.reflection = enable
+		return nil
+	}
+}
+
 // Serve implements Provisioner.
 func (p *provisioner) Serve() error {
+	if p.reflection {
+		p.Log.Debug("enabling reflection")
+		reflection.Register(p.server)
+	}
+
 	p.Log.Debug("registering command server")
 	p.registerCommandService(cmd.NewServer(p.State))
 
