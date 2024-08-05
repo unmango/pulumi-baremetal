@@ -6,6 +6,28 @@ import * as inputs from "../types/input";
 import * as outputs from "../types/output";
 
 export namespace cmd {
+    export interface MkdirArgs {
+        directory: string[];
+        help?: boolean;
+        mode?: string;
+        parents?: boolean;
+        verbose?: boolean;
+        version?: boolean;
+    }
+
+    export interface MktempArgs {
+        directory?: boolean;
+        dryRun?: boolean;
+        help?: boolean;
+        p?: string;
+        quiet?: boolean;
+        suffix?: string;
+        t?: boolean;
+        template?: string;
+        tmpdir?: boolean;
+        version?: boolean;
+    }
+
     export interface MvArgs {
         backup?: string;
         destination?: string;

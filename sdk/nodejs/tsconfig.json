@@ -14,6 +14,8 @@
     },
     "files": [
         "cmd/index.ts",
+        "cmd/mkdir.ts",
+        "cmd/mktemp.ts",
         "cmd/mv.ts",
         "cmd/rm.ts",
         "cmd/tar.ts",

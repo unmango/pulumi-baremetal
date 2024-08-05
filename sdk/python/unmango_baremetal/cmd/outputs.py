@@ -10,12 +10,168 @@ from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 
 __all__ = [
+    'MkdirArgs',
+    'MktempArgs',
     'MvArgs',
     'RmArgs',
     'TarArgs',
     'TeeArgs',
     'WgetArgs',
 ]
+
+@pulumi.output_type
+class MkdirArgs(dict):
+    def __init__(__self__, *,
+                 directory: Sequence[str],
+                 help: Optional[bool] = None,
+                 mode: Optional[str] = None,
+                 parents: Optional[bool] = None,
+                 verbose: Optional[bool] = None,
+                 version: Optional[bool] = None):
+        pulumi.set(__self__, "directory", directory)
+        if help is not None:
+            pulumi.set(__self__, "help", help)
+        if mode is not None:
+            pulumi.set(__self__, "mode", mode)
+        if parents is not None:
+            pulumi.set(__self__, "parents", parents)
+        if verbose is not None:
+            pulumi.set(__self__, "verbose", verbose)
+        if version is not None:
+            pulumi.set(__self__, "version", version)
+
+    @property
+    @pulumi.getter
+    def directory(self) -> Sequence[str]:
+        return pulumi.get(self, "directory")
+
+    @property
+    @pulumi.getter
+    def help(self) -> Optional[bool]:
+        return pulumi.get(self, "help")
+
+    @property
+    @pulumi.getter
+    def mode(self) -> Optional[str]:
+        return pulumi.get(self, "mode")
+
+    @property
+    @pulumi.getter
+    def parents(self) -> Optional[bool]:
+        return pulumi.get(self, "parents")
+
+    @property
+    @pulumi.getter
+    def verbose(self) -> Optional[bool]:
+        return pulumi.get(self, "verbose")
+
+    @property
+    @pulumi.getter
+    def version(self) -> Optional[bool]:
+        return pulumi.get(self, "version")
+
+
+@pulumi.output_type
+class MktempArgs(dict):
+    @staticmethod
+    def __key_warning(key: str):
+        suggest = None
+        if key == "dryRun":
+            suggest = "dry_run"
+
+        if suggest:
+            pulumi.log.warn(f"Key '{key}' not found in MktempArgs. Access the value via the '{suggest}' property getter instead.")
+
+    def __getitem__(self, key: str) -> Any:
+        MktempArgs.__key_warning(key)
+        return super().__getitem__(key)
+
+    def get(self, key: str, default = None) -> Any:
+        MktempArgs.__key_warning(key)
+        return super().get(key, default)
+
+    def __init__(__self__, *,
+                 directory: Optional[bool] = None,
+                 dry_run: Optional[bool] = None,
+                 help: Optional[bool] = None,
+                 p: Optional[str] = None,
+                 quiet: Optional[bool] = None,
+                 suffix: Optional[str] = None,
+                 t: Optional[bool] = None,
+                 template: Optional[str] = None,
+                 tmpdir: Optional[bool] = None,
+                 version: Optional[bool] = None):
+        if directory is not None:
+            pulumi.set(__self__, "directory", directory)
+        if dry_run is not None:
+            pulumi.set(__self__, "dry_run", dry_run)
+        if help is not None:
+            pulumi.set(__self__, "help", help)
+        if p is not None:
+            pulumi.set(__self__, "p", p)
+        if quiet is not None:
+            pulumi.set(__self__, "quiet", quiet)
+        if suffix is not None:
+            pulumi.set(__self__, "suffix", suffix)
+        if t is not None:
+            pulumi.set(__self__, "t", t)
+        if template is not None:
+            pulumi.set(__self__, "template", template)
+        if tmpdir is not None:
+            pulumi.set(__self__, "tmpdir", tmpdir)
+        if version is not None:
+            pulumi.set(__self__, "version", version)
+
+    @property
+    @pulumi.getter
+    def directory(self) -> Optional[bool]:
+        return pulumi.get(self, "directory")
+
+    @property
+    @pulumi.getter(name="dryRun")
+    def dry_run(self) -> Optional[bool]:
+        return pulumi.get(self, "dry_run")
+
+    @property
+    @pulumi.getter
+    def help(self) -> Optional[bool]:
+        return pulumi.get(self, "help")
+
+    @property
+    @pulumi.getter
+    def p(self) -> Optional[str]:
+        return pulumi.get(self, "p")
+
+    @property
+    @pulumi.getter
+    def quiet(self) -> Optional[bool]:
+        return pulumi.get(self, "quiet")
+
+    @property
+    @pulumi.getter
+    def suffix(self) -> Optional[str]:
+        return pulumi.get(self, "suffix")
+
+    @property
+    @pulumi.getter
+    def t(self) -> Optional[bool]:
+        return pulumi.get(self, "t")
+
+    @property
+    @pulumi.getter
+    def template(self) -> Optional[str]:
+        return pulumi.get(self, "template")
+
+    @property
+    @pulumi.getter
+    def tmpdir(self) -> Optional[bool]:
+        return pulumi.get(self, "tmpdir")
+
+    @property
+    @pulumi.getter
+    def version(self) -> Optional[bool]:
+        return pulumi.get(self, "version")
+
 
 @pulumi.output_type
 class MvArgs(dict):
