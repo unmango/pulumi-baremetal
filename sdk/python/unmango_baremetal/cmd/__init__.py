@@ -5,6 +5,7 @@
 from .. import _utilities
 import typing
 # Export this package's modules as members:
+from .chmod import *
 from .mkdir import *
 from .mktemp import *
 from .mv import *

@@ -13,6 +13,7 @@
         "strict": true
     },
     "files": [
+        "cmd/chmod.ts",
         "cmd/index.ts",
         "cmd/mkdir.ts",
         "cmd/mktemp.ts",

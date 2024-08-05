@@ -70,4 +70,3 @@ func (Mkdir) Delete(ctx context.Context, id string, props MkdirState) error {
 
 var _ = (infer.CustomCreate[MkdirArgs, MkdirState])((*Mkdir)(nil))
 var _ = (infer.CustomUpdate[MkdirArgs, MkdirState])((*Mkdir)(nil))
-var _ = (infer.CustomDelete[MkdirState])((*Mkdir)(nil))

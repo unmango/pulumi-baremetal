@@ -6,6 +6,21 @@ import * as inputs from "../types/input";
 import * as outputs from "../types/output";
 
 export namespace cmd {
+    export interface ChmodArgs {
+        changes?: boolean;
+        files: string[];
+        help?: boolean;
+        mode?: string[];
+        noPreserveRoot?: boolean;
+        octalMode?: string;
+        preserveRoot?: boolean;
+        quiet?: boolean;
+        recursive?: boolean;
+        reference?: string;
+        verbose?: boolean;
+        version?: boolean;
+    }
+
     export interface MkdirArgs {
         directory: string[];
         help?: boolean;

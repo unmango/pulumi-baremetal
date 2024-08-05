@@ -5,6 +5,11 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "../utilities";
 
 // Export members:
+export { ChmodArgs } from "./chmod";
+export type Chmod = import("./chmod").Chmod;
+export const Chmod: typeof import("./chmod").Chmod = null as any;
+utilities.lazyLoad(exports, ["Chmod"], () => require("./chmod"));
+
 export { MkdirArgs } from "./mkdir";
 export type Mkdir = import("./mkdir").Mkdir;
 export const Mkdir: typeof import("./mkdir").Mkdir = null as any;
@@ -45,6 +50,8 @@ const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {
         switch (type) {
+            case "baremetal:cmd:Chmod":
+                return new Chmod(name, <any>undefined, { urn })
             case "baremetal:cmd:Mkdir":
                 return new Mkdir(name, <any>undefined, { urn })
             case "baremetal:cmd:Mktemp":

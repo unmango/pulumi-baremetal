@@ -25,6 +25,7 @@ _utilities.register(
   "mod": "cmd",
   "fqn": "unmango_baremetal.cmd",
   "classes": {
+   "baremetal:cmd:Chmod": "Chmod",
    "baremetal:cmd:Mkdir": "Mkdir",
    "baremetal:cmd:Mktemp": "Mktemp",
    "baremetal:cmd:Mv": "Mv",

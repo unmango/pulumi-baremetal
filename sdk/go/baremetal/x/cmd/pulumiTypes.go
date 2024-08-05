@@ -14,6 +14,91 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
+type ChmodArgsType struct {
+	Changes        *bool    `pulumi:"changes"`
+	Files          []string `pulumi:"files"`
+	Help           *bool    `pulumi:"help"`
+	Mode           []string `pulumi:"mode"`
+	NoPreserveRoot *bool    `pulumi:"noPreserveRoot"`
+	OctalMode      *string  `pulumi:"octalMode"`
+	PreserveRoot   *bool    `pulumi:"preserveRoot"`
+	Quiet          *bool    `pulumi:"quiet"`
+	Recursive      *bool    `pulumi:"recursive"`
+	Reference      *string  `pulumi:"reference"`
+	Verbose        *bool    `pulumi:"verbose"`
+	Version        *bool    `pulumi:"version"`
+}
+
+type ChmodArgsTypeOutput struct{ *pulumi.OutputState }
+
+func (ChmodArgsTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ChmodArgsType)(nil)).Elem()
+}
+
+func (o ChmodArgsTypeOutput) ToChmodArgsTypeOutput() ChmodArgsTypeOutput {
+	return o
+}
+
+func (o ChmodArgsTypeOutput) ToChmodArgsTypeOutputWithContext(ctx context.Context) ChmodArgsTypeOutput {
+	return o
+}
+
+func (o ChmodArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[ChmodArgsType] {
+	return pulumix.Output[ChmodArgsType]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o ChmodArgsTypeOutput) Changes() pulumix.Output[*bool] {
+	return pulumix.Apply[ChmodArgsType](o, func(v ChmodArgsType) *bool { return v.Changes })
+}
+
+func (o ChmodArgsTypeOutput) Files() pulumix.ArrayOutput[string] {
+	value := pulumix.Apply[ChmodArgsType](o, func(v ChmodArgsType) []string { return v.Files })
+	return pulumix.ArrayOutput[string]{OutputState: value.OutputState}
+}
+
+func (o ChmodArgsTypeOutput) Help() pulumix.Output[*bool] {
+	return pulumix.Apply[ChmodArgsType](o, func(v ChmodArgsType) *bool { return v.Help })
+}
+
+func (o ChmodArgsTypeOutput) Mode() pulumix.ArrayOutput[string] {
+	value := pulumix.Apply[ChmodArgsType](o, func(v ChmodArgsType) []string { return v.Mode })
+	return pulumix.ArrayOutput[string]{OutputState: value.OutputState}
+}
+
+func (o ChmodArgsTypeOutput) NoPreserveRoot() pulumix.Output[*bool] {
+	return pulumix.Apply[ChmodArgsType](o, func(v ChmodArgsType) *bool { return v.NoPreserveRoot })
+}
+
+func (o ChmodArgsTypeOutput) OctalMode() pulumix.Output[*string] {
+	return pulumix.Apply[ChmodArgsType](o, func(v ChmodArgsType) *string { return v.OctalMode })
+}
+
+func (o ChmodArgsTypeOutput) PreserveRoot() pulumix.Output[*bool] {
+	return pulumix.Apply[ChmodArgsType](o, func(v ChmodArgsType) *bool { return v.PreserveRoot })
+}
+
+func (o ChmodArgsTypeOutput) Quiet() pulumix.Output[*bool] {
+	return pulumix.Apply[ChmodArgsType](o, func(v ChmodArgsType) *bool { return v.Quiet })
+}
+
+func (o ChmodArgsTypeOutput) Recursive() pulumix.Output[*bool] {
+	return pulumix.Apply[ChmodArgsType](o, func(v ChmodArgsType) *bool { return v.Recursive })
+}
+
+func (o ChmodArgsTypeOutput) Reference() pulumix.Output[*string] {
+	return pulumix.Apply[ChmodArgsType](o, func(v ChmodArgsType) *string { return v.Reference })
+}
+
+func (o ChmodArgsTypeOutput) Verbose() pulumix.Output[*bool] {
+	return pulumix.Apply[ChmodArgsType](o, func(v ChmodArgsType) *bool { return v.Verbose })
+}
+
+func (o ChmodArgsTypeOutput) Version() pulumix.Output[*bool] {
+	return pulumix.Apply[ChmodArgsType](o, func(v ChmodArgsType) *bool { return v.Version })
+}
+
 type MkdirArgsType struct {
 	Directory []string `pulumi:"directory"`
 	Help      *bool    `pulumi:"help"`
@@ -808,6 +893,7 @@ func (o WgetArgsTypeOutput) Wait() pulumix.Output[*string] {
 }
 
 func init() {
+	pulumi.RegisterOutputType(ChmodArgsTypeOutput{})
 	pulumi.RegisterOutputType(MkdirArgsTypeOutput{})
 	pulumi.RegisterOutputType(MktempArgsTypeOutput{})
 	pulumi.RegisterOutputType(MvArgsTypeOutput{})

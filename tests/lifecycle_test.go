@@ -46,6 +46,58 @@ var _ = Describe("Command Resources", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
+	Describe("Chmod", Ordered, func() {
+		file := containerPath("chmod.txt")
+
+		BeforeAll(func(ctx context.Context) {
+			By("creating a file to modify")
+			err := provisioner.WriteFile(ctx, file, []byte("some text"))
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		test := integration.LifeCycleTest{
+			Resource: "baremetal:cmd:Chmod",
+			Create: integration.Operation{
+				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"files":     []string{file},
+					"octalMode": "0700",
+				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+				},
+				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"exitCode":     0,
+					"stdout":       "",
+					"stderr":       "",
+					"createdFiles": []string{},
+					"movedFiles":   map[string]string{},
+					"args": map[string]interface{}{
+						"files":     []string{file},
+						"octalMode": "0700",
+
+						// Defaults
+						"changes":        false,
+						"noPreserveRoot": false,
+						"preserveRoot":   false,
+						"quiet":          false,
+						"reference":      "",
+						"recursive":      false,
+						"help":           false,
+						"version":        false,
+						"verbose":        false,
+					},
+				}),
+			},
+		}
+
+		It("should complete a full lifecycle", func(ctx context.Context) {
+			run(server, test)
+
+			_, err := provisioner.Exec(ctx, "touch", "blah")
+			Expect(err).NotTo(HaveOccurred())
+		})
+	})
+
 	Describe("Mv", Ordered, func() {
 		file := containerPath("mv.txt")
 		newFile := containerPath("mv-new.txt")
