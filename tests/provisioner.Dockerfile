@@ -1,4 +1,5 @@
-FROM ubuntu:noble-20240605
+# syntax=docker/dockerfile:1
+FROM --platform=$BUILDPLATFORM ubuntu:noble-20240605
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update \
