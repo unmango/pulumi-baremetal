@@ -6,7 +6,6 @@ import (
 	"slices"
 
 	provider "github.com/pulumi/pulumi-go-provider"
-	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
@@ -17,53 +16,53 @@ type FsManipulator interface {
 	ExpectMoved() map[string]string
 }
 
+type CommandArgsBase struct{}
+
+func (CommandArgsBase) ExpectCreated() []string {
+	return []string{}
+}
+
+func (CommandArgsBase) ExpectMoved() map[string]string {
+	return map[string]string{}
+}
+
 type CommandBuilder interface {
 	FsManipulator
 	Cmd() *pb.Command
 }
 
-type FsEntryType string
-
-var _ = (infer.Enum[FsEntryType])((*FsEntryType)(nil))
-
-const (
-	FileFsEntry      FsEntryType = "file"
-	DirectoryFsEntry FsEntryType = "directory"
-)
-
-func (*FsEntryType) Values() []infer.EnumValue[FsEntryType] {
-	return []infer.EnumValue[FsEntryType]{
-		{Value: FileFsEntry, Description: "A file"},
-		{Value: DirectoryFsEntry, Description: "A directory"},
-	}
-}
-
-type FsEntry struct {
-	Path string      `pulumi:"path"`
-	Type FsEntryType `pulumi:"type"`
-}
-
 type CommandArgs[T CommandBuilder] struct {
-	Args     T         `pulumi:"args"`
-	Triggers []any     `pulumi:"triggers,optional"`
-	Expect   []FsEntry `pulumi:"expect,optional"`
+	Args     T     `pulumi:"args"`
+	Triggers []any `pulumi:"triggers,optional"`
+}
+
+func (a *CommandArgs[T]) Cmd() *pb.Command {
+	return a.Args.Cmd()
+}
+
+func (a *CommandArgs[T]) ExpectCreated() []string {
+	return a.Args.ExpectCreated()
+}
+
+func (a *CommandArgs[T]) ExpectMoved() map[string]string {
+	return a.Args.ExpectMoved()
 }
 
 type CommandState[T CommandBuilder] struct {
 	CommandArgs[T]
 
-	ExitCode int                `pulumi:"exitCode"`
-	Stderr   string             `pulumi:"stderr"`
-	Stdout   string             `pulumi:"stdout"`
-	Creates  []FsEntry          `pulumi:"creates"`
-	Moves    map[string]FsEntry `pulumi:"moves"`
+	ExitCode     int               `pulumi:"exitCode"`
+	Stderr       string            `pulumi:"stderr"`
+	Stdout       string            `pulumi:"stdout"`
+	CreatedFiles []string          `pulumi:"createdFiles"`
+	MovedFiles   map[string]string `pulumi:"movedFiles"`
 }
 
-func (s *CommandState[T]) Create(ctx context.Context, inputs T, preview bool) error {
+func (s *CommandState[T]) Create(ctx context.Context, inputs CommandArgs[T], preview bool) error {
 	log := logger.FromContext(ctx)
 	if preview {
 		// Could dial the host and warn if the connection fails
-		log.Debug("skipping during preview")
+		log.DebugStatus("skipping during preview")
 		return nil
 	}
 
@@ -73,7 +72,7 @@ func (s *CommandState[T]) Create(ctx context.Context, inputs T, preview bool) er
 		return fmt.Errorf("creating provisioner: %w", err)
 	}
 
-	log.Debug("sending create request")
+	log.InfoStatus("Sending create request to provisioner")
 	res, err := p.Create(ctx, &pb.CreateRequest{
 		Command:       inputs.Cmd(),
 		ExpectCreated: inputs.ExpectCreated(),
@@ -84,23 +83,23 @@ func (s *CommandState[T]) Create(ctx context.Context, inputs T, preview bool) er
 	}
 
 	if res.CreatedFiles == nil {
-		log.Debugf("%#v was empty, this is probably a bug somewhere else", res.CreatedFiles)
+		log.DebugStatusf("%#v was empty, this is probably a bug somewhere else", res.CreatedFiles)
 		res.CreatedFiles = []string{}
 	}
 
 	if res.MovedFiles == nil {
-		log.Debugf("%#v was empty, this is probably a bug somewhere else", res.MovedFiles)
+		log.DebugStatusf("%#v was empty, this is probably a bug somewhere else", res.MovedFiles)
 		res.MovedFiles = map[string]string{}
 	}
 
-	s.Args = inputs
+	s.CommandArgs = inputs
 	s.ExitCode = int(res.Result.ExitCode)
 	s.Stdout = res.Result.Stdout
 	s.Stderr = res.Result.Stderr
-	s.Creates = res.CreatedFiles
-	s.Moves = res.MovedFiles
+	s.CreatedFiles = res.CreatedFiles
+	s.MovedFiles = res.MovedFiles
 
-	log.Info("create success")
+	log.InfoStatus("Create success")
 	return nil
 }
 
@@ -121,22 +120,21 @@ func (s *CommandState[T]) Diff(ctx context.Context, inputs CommandArgs[T]) (prov
 func (s *CommandState[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bool) (CommandState[T], error) {
 	log := logger.FromContext(ctx)
 	p, err := provisioner.FromContext(ctx)
-	result := s.Copy()
 
 	if err != nil {
 		log.Error("failed creating provisioner")
-		return result, fmt.Errorf("creating provisioner: %w", err)
+		return s.Copy(), fmt.Errorf("creating provisioner: %w", err)
 	}
 
-	log.Debug("sending update request")
+	log.DebugStatus("Sending update request to provisioner")
 	res, err := p.Update(ctx, &pb.UpdateRequest{
 		Command:       inputs.Cmd(),
 		ExpectCreated: inputs.ExpectCreated(),
 		ExpectMoved:   inputs.ExpectMoved(),
 		Create: &pb.Operation{
 			Command:      s.Args.Cmd(),
-			CreatedFiles: s.Creates,
-			MovedFiles:   s.Moves,
+			CreatedFiles: s.CreatedFiles,
+			MovedFiles:   s.MovedFiles,
 			Result: &pb.Result{
 				ExitCode: int32(s.ExitCode),
 				Stdout:   s.Stdout,
@@ -145,28 +143,28 @@ func (s *CommandState[T]) Update(ctx context.Context, inputs CommandArgs[T], pre
 		},
 	})
 	if err != nil {
-		return result, fmt.Errorf("sending update request: %w", err)
+		return s.Copy(), fmt.Errorf("sending update request: %w", err)
 	}
 
 	if res.CreatedFiles == nil {
-		log.Debugf("%#v was empty, this is probably a bug somewhere else", res.CreatedFiles)
+		log.DebugStatusf("%#v was empty, this is probably a bug somewhere else", res.CreatedFiles)
 		res.CreatedFiles = []string{}
 	}
 
 	if res.MovedFiles == nil {
-		log.Debugf("%#v was empty, this is probably a bug somewhere else", res.MovedFiles)
+		log.DebugStatusf("%#v was empty, this is probably a bug somewhere else", res.MovedFiles)
 		res.MovedFiles = map[string]string{}
 	}
 
-	result.Args = inputs
-	result.ExitCode = int(res.Result.ExitCode)
-	result.Stdout = res.Result.Stdout
-	result.Stderr = res.Result.Stderr
-	result.Creates = res.CreatedFiles
-	result.Moves = res.MovedFiles
-
-	log.Info("update success")
-	return result, nil
+	log.InfoStatus("Update success")
+	return CommandState[T]{
+		CommandArgs:  inputs,
+		ExitCode:     int(res.Result.ExitCode),
+		Stdout:       res.Result.Stdout,
+		Stderr:       res.Result.Stderr,
+		CreatedFiles: res.CreatedFiles,
+		MovedFiles:   res.MovedFiles,
+	}, nil
 }
 
 func (s *CommandState[T]) Delete(ctx context.Context) error {
@@ -177,12 +175,12 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 		return fmt.Errorf("creating provisioner: %w", err)
 	}
 
-	log.Debug("sending delete request")
+	log.InfoStatus("Sending delete request to provisioner")
 	res, err := p.Delete(ctx, &pb.DeleteRequest{
 		Create: &pb.Operation{
 			Command:      s.Args.Cmd(),
-			CreatedFiles: s.Creates,
-			MovedFiles:   s.Moves,
+			CreatedFiles: s.CreatedFiles,
+			MovedFiles:   s.MovedFiles,
 			Result: &pb.Result{
 				ExitCode: int32(s.ExitCode),
 				Stdout:   s.Stdout,
@@ -195,7 +193,7 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 	}
 
 	if len(res.Commands) == 0 {
-		log.Info("provisioner did not perform any operations")
+		log.InfoStatus("provisioner did not perform any operations")
 	} else {
 		failed := []*pb.Operation{}
 		for _, c := range res.Commands {
@@ -211,17 +209,17 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 		}
 	}
 
-	log.Info("delete success")
+	log.InfoStatus("Delete success")
 	return nil
 }
 
 func (s *CommandState[T]) Copy() CommandState[T] {
 	return CommandState[T]{
-		CommandArgs: s.CommandArgs,
-		ExitCode:    s.ExitCode,
-		Stderr:      s.Stderr,
-		Stdout:      s.Stdout,
-		Creates:     s.Creates,
-		Moves:       s.Moves,
+		CommandArgs:  s.CommandArgs,
+		ExitCode:     s.ExitCode,
+		Stderr:       s.Stderr,
+		Stdout:       s.Stdout,
+		CreatedFiles: s.CreatedFiles,
+		MovedFiles:   s.MovedFiles,
 	}
 }

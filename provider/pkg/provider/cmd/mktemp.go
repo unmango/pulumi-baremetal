@@ -9,7 +9,7 @@ import (
 )
 
 type MktempArgs struct {
-	CommandArgs
+	CommandArgsBase
 
 	Template  string `pulumi:"template,optional"`
 	Directory bool   `pulumi:"directory,optional"`
@@ -53,7 +53,7 @@ type Mktemp struct{}
 type MktempState = CommandState[MktempArgs]
 
 // Create implements infer.CustomCreate.
-func (Mktemp) Create(ctx context.Context, name string, inputs MktempArgs, preview bool) (id string, output MktempState, err error) {
+func (Mktemp) Create(ctx context.Context, name string, inputs CommandArgs[MktempArgs], preview bool) (id string, output MktempState, err error) {
 	state := MktempState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("mktemp: %w", err)
@@ -63,7 +63,7 @@ func (Mktemp) Create(ctx context.Context, name string, inputs MktempArgs, previe
 }
 
 // Update implements infer.CustomUpdate.
-func (Mktemp) Update(ctx context.Context, id string, olds MktempState, news MktempArgs, preview bool) (MktempState, error) {
+func (Mktemp) Update(ctx context.Context, id string, olds MktempState, news CommandArgs[MktempArgs], preview bool) (MktempState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
 		return olds, fmt.Errorf("mktemp: %w", err)
@@ -81,6 +81,6 @@ func (Mktemp) Delete(ctx context.Context, id string, props MktempState) error {
 	return nil
 }
 
-var _ = (infer.CustomCreate[MktempArgs, MktempState])((*Mktemp)(nil))
-var _ = (infer.CustomUpdate[MktempArgs, MktempState])((*Mktemp)(nil))
+var _ = (infer.CustomCreate[CommandArgs[MktempArgs], MktempState])((*Mktemp)(nil))
+var _ = (infer.CustomUpdate[CommandArgs[MktempArgs], MktempState])((*Mktemp)(nil))
 var _ = (infer.CustomDelete[MktempState])((*Mktemp)(nil))
