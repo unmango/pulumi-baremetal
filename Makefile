@@ -64,7 +64,7 @@ test_all:: test_provider test_sdks
 test_provider:: .test/provider
 test_sdks:: .test/sdks
 
-docker:: .make/provisioner_docker_build
+docker:: .make/provisioner_docker_build .make/provisioner_test_docker_build
 mans:: gen_mans
 proto:: gen_proto
 
