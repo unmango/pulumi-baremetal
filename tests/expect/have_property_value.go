@@ -7,17 +7,16 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/common/resource"
 )
 
-type havePropertyValue struct {
-	Value interface{}
+type AllowedPropertyValue interface {
+	~string | ~int | ~bool
+}
+
+type havePropertyValue[T AllowedPropertyValue] struct {
+	Value T
 }
 
 // Match implements types.GomegaMatcher.
-func (e *havePropertyValue) Match(actual interface{}) (success bool, err error) {
-	expected, ok := e.Value.(string)
-	if !ok {
-		panic("this matcher only supports strings right now")
-	}
-
+func (e *havePropertyValue[T]) Match(actual interface{}) (success bool, err error) {
 	if actual == nil {
 		return false, fmt.Errorf("actual was nil")
 	}
@@ -27,27 +26,23 @@ func (e *havePropertyValue) Match(actual interface{}) (success bool, err error) 
 		return false, fmt.Errorf("unsupported match target: %T", actual)
 	}
 
-	if expected != value.V {
-		return false, fmt.Errorf("expected %#v to match %#v", value.V, expected)
+	if e.Value != value.V {
+		return false, fmt.Errorf("expected %#v to match %#v", value.V, e.Value)
 	}
 
 	return true, nil
 }
 
 // FailureMessage implements types.GomegaMatcher.
-func (e *havePropertyValue) FailureMessage(actual interface{}) (message string) {
+func (e *havePropertyValue[T]) FailureMessage(actual interface{}) (message string) {
 	return fmt.Sprintf("Expected property to have value %#v", e.Value)
 }
 
 // NegatedFailureMessage implements types.GomegaMatcher.
-func (e *havePropertyValue) NegatedFailureMessage(actual interface{}) (message string) {
+func (e *havePropertyValue[T]) NegatedFailureMessage(actual interface{}) (message string) {
 	return fmt.Sprintf("Expected property not to have value %#v", e.Value)
 }
 
-func HavePropertyValue(val interface{}) gomega.OmegaMatcher {
-	if _, ok := val.(string); !ok {
-		panic("this matcher only supports strings right now")
-	}
-
-	return &havePropertyValue{val}
+func HavePropertyValue[T AllowedPropertyValue](val T) gomega.OmegaMatcher {
+	return &havePropertyValue[T]{val}
 }
