@@ -213,7 +213,11 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 	buf lint --path $?
 	@touch $@
 
-.make/provisioner_docker_build: provider/cmd/provisioner/Dockerfile bin/provisioner
+.make/provisioner_docker_build: provider/cmd/provisioner/Dockerfile
+	docker build ${WORKING_DIR} -f $< -t ${PROVISIONER_NAME}:local-${VERSION_TAG}
+	@touch $@
+
+.make/provisioner_test_docker_build: tests/provisioner.Dockerfile bin/provisioner
 	docker build ${WORKING_DIR} -f $< -t ${PROVISIONER_NAME}:local-${VERSION_TAG}
 	@touch $@
 
@@ -230,7 +234,7 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 
 TEST_FLAGS ?=
 
-.test/provider: provisioner .make/provisioner_docker_build
+.test/provider: provisioner .make/provisioner_test_docker_build
 	cd tests && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}
 
 .test/pkg: $(PKG_SRC)

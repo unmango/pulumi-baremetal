@@ -56,7 +56,7 @@ func NewProvisioner(
 		ContainerRequest: tc.ContainerRequest{
 			FromDockerfile: tc.FromDockerfile{
 				Context:    path.Clean(path.Join(cwd, "..")),
-				Dockerfile: path.Join("provider", "cmd", "provisioner", "Dockerfile"),
+				Dockerfile: path.Join("tests", "provisioner.Dockerfile"),
 			},
 			Files: []tc.ContainerFile{
 				{
