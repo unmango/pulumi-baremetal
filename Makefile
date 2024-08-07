@@ -136,9 +136,6 @@ devcontainer::
 .PHONY: build
 build:: provider provisioner dotnet_sdk go_sdk nodejs_sdk python_sdk
 
-# Required for the codegen action that runs in pulumi/pulumi
-only_build:: build
-
 lint:: .make/lint/buf .make/lint_go
 
 install:: install_nodejs_sdk install_dotnet_sdk
