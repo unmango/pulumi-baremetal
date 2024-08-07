@@ -33,12 +33,13 @@ export class Mv extends pulumi.CustomResource {
         return obj['__pulumiType'] === Mv.__pulumiType;
     }
 
-    public /*out*/ readonly args!: pulumi.Output<outputs.cmd.MvArgs>;
+    public readonly args!: pulumi.Output<outputs.cmd.MvArgs>;
     public /*out*/ readonly createdFiles!: pulumi.Output<string[]>;
     public /*out*/ readonly exitCode!: pulumi.Output<number>;
     public /*out*/ readonly movedFiles!: pulumi.Output<{[key: string]: string}>;
     public /*out*/ readonly stderr!: pulumi.Output<string>;
     public /*out*/ readonly stdout!: pulumi.Output<string>;
+    public readonly triggers!: pulumi.Output<any[] | undefined>;
 
     /**
      * Create a Mv resource with the given unique name, arguments, and options.
@@ -51,24 +52,11 @@ export class Mv extends pulumi.CustomResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.source === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'source'");
+            if ((!args || args.args === undefined) && !opts.urn) {
+                throw new Error("Missing required property 'args'");
             }
-            resourceInputs["backup"] = args ? args.backup : undefined;
-            resourceInputs["destination"] = args ? args.destination : undefined;
-            resourceInputs["directory"] = args ? args.directory : undefined;
-            resourceInputs["force"] = args ? args.force : undefined;
-            resourceInputs["help"] = args ? args.help : undefined;
-            resourceInputs["noClobber"] = args ? args.noClobber : undefined;
-            resourceInputs["noTargetDirectory"] = args ? args.noTargetDirectory : undefined;
-            resourceInputs["source"] = args ? args.source : undefined;
-            resourceInputs["stripTrailingSlashes"] = args ? args.stripTrailingSlashes : undefined;
-            resourceInputs["suffix"] = args ? args.suffix : undefined;
-            resourceInputs["targetDirectory"] = args ? args.targetDirectory : undefined;
-            resourceInputs["update"] = args ? args.update : undefined;
-            resourceInputs["verbose"] = args ? args.verbose : undefined;
-            resourceInputs["version"] = args ? args.version : undefined;
-            resourceInputs["args"] = undefined /*out*/;
+            resourceInputs["args"] = args ? args.args : undefined;
+            resourceInputs["triggers"] = args ? args.triggers : undefined;
             resourceInputs["createdFiles"] = undefined /*out*/;
             resourceInputs["exitCode"] = undefined /*out*/;
             resourceInputs["movedFiles"] = undefined /*out*/;
@@ -81,6 +69,7 @@ export class Mv extends pulumi.CustomResource {
             resourceInputs["movedFiles"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
+            resourceInputs["triggers"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Mv.__pulumiType, name, resourceInputs, opts);
@@ -91,18 +80,6 @@ export class Mv extends pulumi.CustomResource {
  * The set of arguments for constructing a Mv resource.
  */
 export interface MvArgs {
-    backup?: pulumi.Input<string>;
-    destination?: pulumi.Input<string>;
-    directory?: pulumi.Input<string>;
-    force?: pulumi.Input<boolean>;
-    help?: pulumi.Input<boolean>;
-    noClobber?: pulumi.Input<boolean>;
-    noTargetDirectory?: pulumi.Input<boolean>;
-    source: pulumi.Input<pulumi.Input<string>[]>;
-    stripTrailingSlashes?: pulumi.Input<boolean>;
-    suffix?: pulumi.Input<string>;
-    targetDirectory?: pulumi.Input<string>;
-    update?: pulumi.Input<boolean>;
-    verbose?: pulumi.Input<boolean>;
-    version?: pulumi.Input<boolean>;
+    args: pulumi.Input<inputs.cmd.MvArgsArgs>;
+    triggers?: pulumi.Input<any[]>;
 }

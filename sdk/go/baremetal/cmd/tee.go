@@ -91,6 +91,7 @@ type Tee struct {
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
 	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput       `pulumi:"triggers"`
 }
 
 // NewTee registers a new resource with the given unique name, arguments, and options.
@@ -100,11 +101,8 @@ func NewTee(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.Content == nil {
-		return nil, errors.New("invalid value for required argument 'Content'")
-	}
-	if args.Files == nil {
-		return nil, errors.New("invalid value for required argument 'Files'")
+	if args.Args == nil {
+		return nil, errors.New("invalid value for required argument 'Args'")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Tee
@@ -139,16 +137,14 @@ func (TeeState) ElementType() reflect.Type {
 }
 
 type teeArgs struct {
-	Append  *bool    `pulumi:"append"`
-	Content string   `pulumi:"content"`
-	Files   []string `pulumi:"files"`
+	Args     TeeArgsType   `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Tee resource.
 type TeeArgs struct {
-	Append  pulumi.BoolPtrInput
-	Content pulumi.StringInput
-	Files   pulumi.StringArrayInput
+	Args     TeeArgsTypeInput
+	Triggers pulumi.ArrayInput
 }
 
 func (TeeArgs) ElementType() reflect.Type {
@@ -222,6 +218,10 @@ func (o TeeOutput) Stderr() pulumi.StringOutput {
 
 func (o TeeOutput) Stdout() pulumi.StringOutput {
 	return o.ApplyT(func(v *Tee) pulumi.StringOutput { return v.Stdout }).(pulumi.StringOutput)
+}
+
+func (o TeeOutput) Triggers() pulumi.ArrayOutput {
+	return o.ApplyT(func(v *Tee) pulumi.ArrayOutput { return v.Triggers }).(pulumi.ArrayOutput)
 }
 
 func init() {

@@ -31,6 +31,9 @@ namespace UnMango.Baremetal.Cmd
         [Output("stdout")]
         public Output<string> Stdout { get; private set; } = null!;
 
+        [Output("triggers")]
+        public Output<ImmutableArray<object>> Triggers { get; private set; } = null!;
+
 
         /// <summary>
         /// Create a Rm resource with the given unique name, arguments, and options.
@@ -77,31 +80,16 @@ namespace UnMango.Baremetal.Cmd
 
     public sealed class RmArgs : global::Pulumi.ResourceArgs
     {
-        [Input("dir")]
-        public Input<bool>? Dir { get; set; }
+        [Input("args", required: true)]
+        public Input<Inputs.RmArgsArgs> Args { get; set; } = null!;
 
-        [Input("files", required: true)]
-        private InputList<string>? _files;
-        public InputList<string> Files
+        [Input("triggers")]
+        private InputList<object>? _triggers;
+        public InputList<object> Triggers
         {
-            get => _files ?? (_files = new InputList<string>());
-            set => _files = value;
+            get => _triggers ?? (_triggers = new InputList<object>());
+            set => _triggers = value;
         }
-
-        [Input("force")]
-        public Input<bool>? Force { get; set; }
-
-        [Input("help")]
-        public Input<bool>? Help { get; set; }
-
-        [Input("oneFileSystem")]
-        public Input<bool>? OneFileSystem { get; set; }
-
-        [Input("recursive")]
-        public Input<bool>? Recursive { get; set; }
-
-        [Input("verbose")]
-        public Input<bool>? Verbose { get; set; }
 
         public RmArgs()
         {

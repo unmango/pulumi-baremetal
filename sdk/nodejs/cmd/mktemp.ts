@@ -33,12 +33,13 @@ export class Mktemp extends pulumi.CustomResource {
         return obj['__pulumiType'] === Mktemp.__pulumiType;
     }
 
-    public /*out*/ readonly args!: pulumi.Output<outputs.cmd.MktempArgs>;
+    public readonly args!: pulumi.Output<outputs.cmd.MktempArgs>;
     public /*out*/ readonly createdFiles!: pulumi.Output<string[]>;
     public /*out*/ readonly exitCode!: pulumi.Output<number>;
     public /*out*/ readonly movedFiles!: pulumi.Output<{[key: string]: string}>;
     public /*out*/ readonly stderr!: pulumi.Output<string>;
     public /*out*/ readonly stdout!: pulumi.Output<string>;
+    public readonly triggers!: pulumi.Output<any[] | undefined>;
 
     /**
      * Create a Mktemp resource with the given unique name, arguments, and options.
@@ -47,21 +48,15 @@ export class Mktemp extends pulumi.CustomResource {
      * @param args The arguments to use to populate this resource's properties.
      * @param opts A bag of options that control this resource's behavior.
      */
-    constructor(name: string, args?: MktempArgs, opts?: pulumi.CustomResourceOptions) {
+    constructor(name: string, args: MktempArgs, opts?: pulumi.CustomResourceOptions) {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            resourceInputs["directory"] = args ? args.directory : undefined;
-            resourceInputs["dryRun"] = args ? args.dryRun : undefined;
-            resourceInputs["help"] = args ? args.help : undefined;
-            resourceInputs["p"] = args ? args.p : undefined;
-            resourceInputs["quiet"] = args ? args.quiet : undefined;
-            resourceInputs["suffix"] = args ? args.suffix : undefined;
-            resourceInputs["t"] = args ? args.t : undefined;
-            resourceInputs["template"] = args ? args.template : undefined;
-            resourceInputs["tmpdir"] = args ? args.tmpdir : undefined;
-            resourceInputs["version"] = args ? args.version : undefined;
-            resourceInputs["args"] = undefined /*out*/;
+            if ((!args || args.args === undefined) && !opts.urn) {
+                throw new Error("Missing required property 'args'");
+            }
+            resourceInputs["args"] = args ? args.args : undefined;
+            resourceInputs["triggers"] = args ? args.triggers : undefined;
             resourceInputs["createdFiles"] = undefined /*out*/;
             resourceInputs["exitCode"] = undefined /*out*/;
             resourceInputs["movedFiles"] = undefined /*out*/;
@@ -74,6 +69,7 @@ export class Mktemp extends pulumi.CustomResource {
             resourceInputs["movedFiles"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
+            resourceInputs["triggers"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Mktemp.__pulumiType, name, resourceInputs, opts);
@@ -84,14 +80,6 @@ export class Mktemp extends pulumi.CustomResource {
  * The set of arguments for constructing a Mktemp resource.
  */
 export interface MktempArgs {
-    directory?: pulumi.Input<boolean>;
-    dryRun?: pulumi.Input<boolean>;
-    help?: pulumi.Input<boolean>;
-    p?: pulumi.Input<string>;
-    quiet?: pulumi.Input<boolean>;
-    suffix?: pulumi.Input<string>;
-    t?: pulumi.Input<boolean>;
-    template?: pulumi.Input<string>;
-    tmpdir?: pulumi.Input<boolean>;
-    version?: pulumi.Input<boolean>;
+    args: pulumi.Input<inputs.cmd.MktempArgsArgs>;
+    triggers?: pulumi.Input<any[]>;
 }

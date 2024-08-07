@@ -22,6 +22,7 @@ type Chmod struct {
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
 	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput       `pulumi:"triggers"`
 }
 
 // NewChmod registers a new resource with the given unique name, arguments, and options.
@@ -31,8 +32,8 @@ func NewChmod(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.Files == nil {
-		return nil, errors.New("invalid value for required argument 'Files'")
+	if args.Args == nil {
+		return nil, errors.New("invalid value for required argument 'Args'")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Chmod
@@ -67,34 +68,14 @@ func (ChmodState) ElementType() reflect.Type {
 }
 
 type chmodArgs struct {
-	Changes        *bool    `pulumi:"changes"`
-	Files          []string `pulumi:"files"`
-	Help           *bool    `pulumi:"help"`
-	Mode           []string `pulumi:"mode"`
-	NoPreserveRoot *bool    `pulumi:"noPreserveRoot"`
-	OctalMode      *string  `pulumi:"octalMode"`
-	PreserveRoot   *bool    `pulumi:"preserveRoot"`
-	Quiet          *bool    `pulumi:"quiet"`
-	Recursive      *bool    `pulumi:"recursive"`
-	Reference      *string  `pulumi:"reference"`
-	Verbose        *bool    `pulumi:"verbose"`
-	Version        *bool    `pulumi:"version"`
+	Args     ChmodArgsType `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Chmod resource.
 type ChmodArgs struct {
-	Changes        pulumi.BoolPtrInput
-	Files          pulumi.StringArrayInput
-	Help           pulumi.BoolPtrInput
-	Mode           pulumi.StringArrayInput
-	NoPreserveRoot pulumi.BoolPtrInput
-	OctalMode      pulumi.StringPtrInput
-	PreserveRoot   pulumi.BoolPtrInput
-	Quiet          pulumi.BoolPtrInput
-	Recursive      pulumi.BoolPtrInput
-	Reference      pulumi.StringPtrInput
-	Verbose        pulumi.BoolPtrInput
-	Version        pulumi.BoolPtrInput
+	Args     ChmodArgsTypeInput
+	Triggers pulumi.ArrayInput
 }
 
 func (ChmodArgs) ElementType() reflect.Type {
@@ -168,6 +149,10 @@ func (o ChmodOutput) Stderr() pulumi.StringOutput {
 
 func (o ChmodOutput) Stdout() pulumi.StringOutput {
 	return o.ApplyT(func(v *Chmod) pulumi.StringOutput { return v.Stdout }).(pulumi.StringOutput)
+}
+
+func (o ChmodOutput) Triggers() pulumi.ArrayOutput {
+	return o.ApplyT(func(v *Chmod) pulumi.ArrayOutput { return v.Triggers }).(pulumi.ArrayOutput)
 }
 
 func init() {

@@ -33,12 +33,13 @@ export class Mkdir extends pulumi.CustomResource {
         return obj['__pulumiType'] === Mkdir.__pulumiType;
     }
 
-    public /*out*/ readonly args!: pulumi.Output<outputs.cmd.MkdirArgs>;
+    public readonly args!: pulumi.Output<outputs.cmd.MkdirArgs>;
     public /*out*/ readonly createdFiles!: pulumi.Output<string[]>;
     public /*out*/ readonly exitCode!: pulumi.Output<number>;
     public /*out*/ readonly movedFiles!: pulumi.Output<{[key: string]: string}>;
     public /*out*/ readonly stderr!: pulumi.Output<string>;
     public /*out*/ readonly stdout!: pulumi.Output<string>;
+    public readonly triggers!: pulumi.Output<any[] | undefined>;
 
     /**
      * Create a Mkdir resource with the given unique name, arguments, and options.
@@ -51,16 +52,11 @@ export class Mkdir extends pulumi.CustomResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.directory === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'directory'");
+            if ((!args || args.args === undefined) && !opts.urn) {
+                throw new Error("Missing required property 'args'");
             }
-            resourceInputs["directory"] = args ? args.directory : undefined;
-            resourceInputs["help"] = args ? args.help : undefined;
-            resourceInputs["mode"] = args ? args.mode : undefined;
-            resourceInputs["parents"] = args ? args.parents : undefined;
-            resourceInputs["verbose"] = args ? args.verbose : undefined;
-            resourceInputs["version"] = args ? args.version : undefined;
-            resourceInputs["args"] = undefined /*out*/;
+            resourceInputs["args"] = args ? args.args : undefined;
+            resourceInputs["triggers"] = args ? args.triggers : undefined;
             resourceInputs["createdFiles"] = undefined /*out*/;
             resourceInputs["exitCode"] = undefined /*out*/;
             resourceInputs["movedFiles"] = undefined /*out*/;
@@ -73,6 +69,7 @@ export class Mkdir extends pulumi.CustomResource {
             resourceInputs["movedFiles"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
+            resourceInputs["triggers"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Mkdir.__pulumiType, name, resourceInputs, opts);
@@ -83,10 +80,6 @@ export class Mkdir extends pulumi.CustomResource {
  * The set of arguments for constructing a Mkdir resource.
  */
 export interface MkdirArgs {
-    directory: pulumi.Input<pulumi.Input<string>[]>;
-    help?: pulumi.Input<boolean>;
-    mode?: pulumi.Input<string>;
-    parents?: pulumi.Input<boolean>;
-    verbose?: pulumi.Input<boolean>;
-    version?: pulumi.Input<boolean>;
+    args: pulumi.Input<inputs.cmd.MkdirArgsArgs>;
+    triggers?: pulumi.Input<any[]>;
 }

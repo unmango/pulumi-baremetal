@@ -22,6 +22,7 @@ type Wget struct {
 	MovedFiles   pulumix.MapOutput[string]                            `pulumi:"movedFiles"`
 	Stderr       pulumix.Output[string]                               `pulumi:"stderr"`
 	Stdout       pulumix.Output[string]                               `pulumi:"stdout"`
+	Triggers     pulumix.ArrayOutput[any]                             `pulumi:"triggers"`
 }
 
 // NewWget registers a new resource with the given unique name, arguments, and options.
@@ -31,20 +32,8 @@ func NewWget(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.Urls == nil {
-		return nil, errors.New("invalid value for required argument 'Urls'")
-	}
-	if args.Password != nil {
-		untypedSecretValue := pulumi.ToSecret(args.Password.ToOutput(ctx.Context()).Untyped())
-		args.Password = pulumix.MustConvertTyped[*string](untypedSecretValue)
-	}
-	if args.PrivateKey != nil {
-		untypedSecretValue := pulumi.ToSecret(args.PrivateKey.ToOutput(ctx.Context()).Untyped())
-		args.PrivateKey = pulumix.MustConvertTyped[*string](untypedSecretValue)
-	}
-	if args.PrivateKeyType != nil {
-		untypedSecretValue := pulumi.ToSecret(args.PrivateKeyType.ToOutput(ctx.Context()).Untyped())
-		args.PrivateKeyType = pulumix.MustConvertTyped[*string](untypedSecretValue)
+	if args.Args == nil {
+		return nil, errors.New("invalid value for required argument 'Args'")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Wget
@@ -79,102 +68,14 @@ func (WgetState) ElementType() reflect.Type {
 }
 
 type wgetArgs struct {
-	AppendOutput       *string  `pulumi:"appendOutput"`
-	Background         *bool    `pulumi:"background"`
-	Base               *string  `pulumi:"base"`
-	CaCertificateFile  *string  `pulumi:"caCertificateFile"`
-	CaDirectory        *string  `pulumi:"caDirectory"`
-	Certificate        *string  `pulumi:"certificate"`
-	CertificateType    *string  `pulumi:"certificateType"`
-	Config             *string  `pulumi:"config"`
-	Continue           *bool    `pulumi:"continue"`
-	CrlFile            *string  `pulumi:"crlFile"`
-	CutDirs            *int     `pulumi:"cutDirs"`
-	Debug              *bool    `pulumi:"debug"`
-	DirectoryPrefix    *string  `pulumi:"directoryPrefix"`
-	Execute            []string `pulumi:"execute"`
-	ForceDirectories   *bool    `pulumi:"forceDirectories"`
-	ForceHtml          *bool    `pulumi:"forceHtml"`
-	Help               *bool    `pulumi:"help"`
-	HttpsOnly          *bool    `pulumi:"httpsOnly"`
-	Inet4Only          *bool    `pulumi:"inet4Only"`
-	InputFile          *string  `pulumi:"inputFile"`
-	KeepSessionCookies *bool    `pulumi:"keepSessionCookies"`
-	NoClobber          *bool    `pulumi:"noClobber"`
-	NoDirectories      *bool    `pulumi:"noDirectories"`
-	NoDnsCache         *bool    `pulumi:"noDnsCache"`
-	NoVerbose          *bool    `pulumi:"noVerbose"`
-	OutputDocument     *string  `pulumi:"outputDocument"`
-	OutputFile         *string  `pulumi:"outputFile"`
-	Password           *string  `pulumi:"password"`
-	PrivateKey         *string  `pulumi:"privateKey"`
-	PrivateKeyType     *string  `pulumi:"privateKeyType"`
-	Progress           *string  `pulumi:"progress"`
-	Quiet              *bool    `pulumi:"quiet"`
-	RandomWait         *bool    `pulumi:"randomWait"`
-	ReportSpeed        *string  `pulumi:"reportSpeed"`
-	SaveCookies        *string  `pulumi:"saveCookies"`
-	ShowProgress       *bool    `pulumi:"showProgress"`
-	StartPos           *string  `pulumi:"startPos"`
-	Timeout            *string  `pulumi:"timeout"`
-	Timestamping       *bool    `pulumi:"timestamping"`
-	Tries              *int     `pulumi:"tries"`
-	Urls               []string `pulumi:"urls"`
-	User               *string  `pulumi:"user"`
-	UserAgent          *string  `pulumi:"userAgent"`
-	Verbose            *bool    `pulumi:"verbose"`
-	Version            *string  `pulumi:"version"`
-	Wait               *string  `pulumi:"wait"`
+	Args     WgetArgsType  `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Wget resource.
 type WgetArgs struct {
-	AppendOutput       pulumix.Input[*string]
-	Background         pulumix.Input[*bool]
-	Base               pulumix.Input[*string]
-	CaCertificateFile  pulumix.Input[*string]
-	CaDirectory        pulumix.Input[*string]
-	Certificate        pulumix.Input[*string]
-	CertificateType    pulumix.Input[*string]
-	Config             pulumix.Input[*string]
-	Continue           pulumix.Input[*bool]
-	CrlFile            pulumix.Input[*string]
-	CutDirs            pulumix.Input[*int]
-	Debug              pulumix.Input[*bool]
-	DirectoryPrefix    pulumix.Input[*string]
-	Execute            pulumix.Input[[]string]
-	ForceDirectories   pulumix.Input[*bool]
-	ForceHtml          pulumix.Input[*bool]
-	Help               pulumix.Input[*bool]
-	HttpsOnly          pulumix.Input[*bool]
-	Inet4Only          pulumix.Input[*bool]
-	InputFile          pulumix.Input[*string]
-	KeepSessionCookies pulumix.Input[*bool]
-	NoClobber          pulumix.Input[*bool]
-	NoDirectories      pulumix.Input[*bool]
-	NoDnsCache         pulumix.Input[*bool]
-	NoVerbose          pulumix.Input[*bool]
-	OutputDocument     pulumix.Input[*string]
-	OutputFile         pulumix.Input[*string]
-	Password           pulumix.Input[*string]
-	PrivateKey         pulumix.Input[*string]
-	PrivateKeyType     pulumix.Input[*string]
-	Progress           pulumix.Input[*string]
-	Quiet              pulumix.Input[*bool]
-	RandomWait         pulumix.Input[*bool]
-	ReportSpeed        pulumix.Input[*string]
-	SaveCookies        pulumix.Input[*string]
-	ShowProgress       pulumix.Input[*bool]
-	StartPos           pulumix.Input[*string]
-	Timeout            pulumix.Input[*string]
-	Timestamping       pulumix.Input[*bool]
-	Tries              pulumix.Input[*int]
-	Urls               pulumix.Input[[]string]
-	User               pulumix.Input[*string]
-	UserAgent          pulumix.Input[*string]
-	Verbose            pulumix.Input[*bool]
-	Version            pulumix.Input[*string]
-	Wait               pulumix.Input[*string]
+	Args     pulumix.Input[*WgetArgsTypeArgs]
+	Triggers pulumix.Input[[]any]
 }
 
 func (WgetArgs) ElementType() reflect.Type {
@@ -232,6 +133,12 @@ func (o WgetOutput) Stderr() pulumix.Output[string] {
 func (o WgetOutput) Stdout() pulumix.Output[string] {
 	value := pulumix.Apply[Wget](o, func(v Wget) pulumix.Output[string] { return v.Stdout })
 	return pulumix.Flatten[string, pulumix.Output[string]](value)
+}
+
+func (o WgetOutput) Triggers() pulumix.ArrayOutput[any] {
+	value := pulumix.Apply[Wget](o, func(v Wget) pulumix.ArrayOutput[any] { return v.Triggers })
+	unwrapped := pulumix.Flatten[[]interface{}, pulumix.ArrayOutput[any]](value)
+	return pulumix.ArrayOutput[any]{OutputState: unwrapped.OutputState}
 }
 
 func init() {

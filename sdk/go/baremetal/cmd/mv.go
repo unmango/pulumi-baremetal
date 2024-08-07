@@ -22,6 +22,7 @@ type Mv struct {
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
 	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput       `pulumi:"triggers"`
 }
 
 // NewMv registers a new resource with the given unique name, arguments, and options.
@@ -31,8 +32,8 @@ func NewMv(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.Source == nil {
-		return nil, errors.New("invalid value for required argument 'Source'")
+	if args.Args == nil {
+		return nil, errors.New("invalid value for required argument 'Args'")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Mv
@@ -67,38 +68,14 @@ func (MvState) ElementType() reflect.Type {
 }
 
 type mvArgs struct {
-	Backup               *string  `pulumi:"backup"`
-	Destination          *string  `pulumi:"destination"`
-	Directory            *string  `pulumi:"directory"`
-	Force                *bool    `pulumi:"force"`
-	Help                 *bool    `pulumi:"help"`
-	NoClobber            *bool    `pulumi:"noClobber"`
-	NoTargetDirectory    *bool    `pulumi:"noTargetDirectory"`
-	Source               []string `pulumi:"source"`
-	StripTrailingSlashes *bool    `pulumi:"stripTrailingSlashes"`
-	Suffix               *string  `pulumi:"suffix"`
-	TargetDirectory      *string  `pulumi:"targetDirectory"`
-	Update               *bool    `pulumi:"update"`
-	Verbose              *bool    `pulumi:"verbose"`
-	Version              *bool    `pulumi:"version"`
+	Args     MvArgsType    `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Mv resource.
 type MvArgs struct {
-	Backup               pulumi.StringPtrInput
-	Destination          pulumi.StringPtrInput
-	Directory            pulumi.StringPtrInput
-	Force                pulumi.BoolPtrInput
-	Help                 pulumi.BoolPtrInput
-	NoClobber            pulumi.BoolPtrInput
-	NoTargetDirectory    pulumi.BoolPtrInput
-	Source               pulumi.StringArrayInput
-	StripTrailingSlashes pulumi.BoolPtrInput
-	Suffix               pulumi.StringPtrInput
-	TargetDirectory      pulumi.StringPtrInput
-	Update               pulumi.BoolPtrInput
-	Verbose              pulumi.BoolPtrInput
-	Version              pulumi.BoolPtrInput
+	Args     MvArgsTypeInput
+	Triggers pulumi.ArrayInput
 }
 
 func (MvArgs) ElementType() reflect.Type {
@@ -172,6 +149,10 @@ func (o MvOutput) Stderr() pulumi.StringOutput {
 
 func (o MvOutput) Stdout() pulumi.StringOutput {
 	return o.ApplyT(func(v *Mv) pulumi.StringOutput { return v.Stdout }).(pulumi.StringOutput)
+}
+
+func (o MvOutput) Triggers() pulumi.ArrayOutput {
+	return o.ApplyT(func(v *Mv) pulumi.ArrayOutput { return v.Triggers }).(pulumi.ArrayOutput)
 }
 
 func init() {

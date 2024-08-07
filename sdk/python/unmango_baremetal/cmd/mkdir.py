@@ -9,86 +9,39 @@ import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from . import outputs
+from ._inputs import *
 
 __all__ = ['MkdirArgs', 'Mkdir']
 
 @pulumi.input_type
 class MkdirArgs:
     def __init__(__self__, *,
-                 directory: pulumi.Input[Sequence[pulumi.Input[str]]],
-                 help: Optional[pulumi.Input[bool]] = None,
-                 mode: Optional[pulumi.Input[str]] = None,
-                 parents: Optional[pulumi.Input[bool]] = None,
-                 verbose: Optional[pulumi.Input[bool]] = None,
-                 version: Optional[pulumi.Input[bool]] = None):
+                 args: pulumi.Input['MkdirArgsArgs'],
+                 triggers: Optional[pulumi.Input[Sequence[Any]]] = None):
         """
         The set of arguments for constructing a Mkdir resource.
         """
-        pulumi.set(__self__, "directory", directory)
-        if help is not None:
-            pulumi.set(__self__, "help", help)
-        if mode is not None:
-            pulumi.set(__self__, "mode", mode)
-        if parents is not None:
-            pulumi.set(__self__, "parents", parents)
-        if verbose is not None:
-            pulumi.set(__self__, "verbose", verbose)
-        if version is not None:
-            pulumi.set(__self__, "version", version)
+        pulumi.set(__self__, "args", args)
+        if triggers is not None:
+            pulumi.set(__self__, "triggers", triggers)
 
     @property
     @pulumi.getter
-    def directory(self) -> pulumi.Input[Sequence[pulumi.Input[str]]]:
-        return pulumi.get(self, "directory")
+    def args(self) -> pulumi.Input['MkdirArgsArgs']:
+        return pulumi.get(self, "args")
 
-    @directory.setter
-    def directory(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
-        pulumi.set(self, "directory", value)
-
-    @property
-    @pulumi.getter
-    def help(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "help")
-
-    @help.setter
-    def help(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "help", value)
+    @args.setter
+    def args(self, value: pulumi.Input['MkdirArgsArgs']):
+        pulumi.set(self, "args", value)
 
     @property
     @pulumi.getter
-    def mode(self) -> Optional[pulumi.Input[str]]:
-        return pulumi.get(self, "mode")
+    def triggers(self) -> Optional[pulumi.Input[Sequence[Any]]]:
+        return pulumi.get(self, "triggers")
 
-    @mode.setter
-    def mode(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "mode", value)
-
-    @property
-    @pulumi.getter
-    def parents(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "parents")
-
-    @parents.setter
-    def parents(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "parents", value)
-
-    @property
-    @pulumi.getter
-    def verbose(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "verbose")
-
-    @verbose.setter
-    def verbose(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "verbose", value)
-
-    @property
-    @pulumi.getter
-    def version(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "version")
-
-    @version.setter
-    def version(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "version", value)
+    @triggers.setter
+    def triggers(self, value: Optional[pulumi.Input[Sequence[Any]]]):
+        pulumi.set(self, "triggers", value)
 
 
 class Mkdir(pulumi.CustomResource):
@@ -96,12 +49,8 @@ class Mkdir(pulumi.CustomResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 directory: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 help: Optional[pulumi.Input[bool]] = None,
-                 mode: Optional[pulumi.Input[str]] = None,
-                 parents: Optional[pulumi.Input[bool]] = None,
-                 verbose: Optional[pulumi.Input[bool]] = None,
-                 version: Optional[pulumi.Input[bool]] = None,
+                 args: Optional[pulumi.Input[Union['MkdirArgsArgs', 'MkdirArgsArgsDict']]] = None,
+                 triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
                  __props__=None):
         """
         Create a Mkdir resource with the given unique name, props, and options.
@@ -131,12 +80,8 @@ class Mkdir(pulumi.CustomResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 directory: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 help: Optional[pulumi.Input[bool]] = None,
-                 mode: Optional[pulumi.Input[str]] = None,
-                 parents: Optional[pulumi.Input[bool]] = None,
-                 verbose: Optional[pulumi.Input[bool]] = None,
-                 version: Optional[pulumi.Input[bool]] = None,
+                 args: Optional[pulumi.Input[Union['MkdirArgsArgs', 'MkdirArgsArgsDict']]] = None,
+                 triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -146,15 +91,10 @@ class Mkdir(pulumi.CustomResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = MkdirArgs.__new__(MkdirArgs)
 
-            if directory is None and not opts.urn:
-                raise TypeError("Missing required property 'directory'")
-            __props__.__dict__["directory"] = directory
-            __props__.__dict__["help"] = help
-            __props__.__dict__["mode"] = mode
-            __props__.__dict__["parents"] = parents
-            __props__.__dict__["verbose"] = verbose
-            __props__.__dict__["version"] = version
-            __props__.__dict__["args"] = None
+            if args is None and not opts.urn:
+                raise TypeError("Missing required property 'args'")
+            __props__.__dict__["args"] = args
+            __props__.__dict__["triggers"] = triggers
             __props__.__dict__["created_files"] = None
             __props__.__dict__["exit_code"] = None
             __props__.__dict__["moved_files"] = None
@@ -188,6 +128,7 @@ class Mkdir(pulumi.CustomResource):
         __props__.__dict__["moved_files"] = None
         __props__.__dict__["stderr"] = None
         __props__.__dict__["stdout"] = None
+        __props__.__dict__["triggers"] = None
         return Mkdir(resource_name, opts=opts, __props__=__props__)
 
     @property
@@ -219,4 +160,9 @@ class Mkdir(pulumi.CustomResource):
     @pulumi.getter
     def stdout(self) -> pulumi.Output[str]:
         return pulumi.get(self, "stdout")
+
+    @property
+    @pulumi.getter
+    def triggers(self) -> pulumi.Output[Optional[Sequence[Any]]]:
+        return pulumi.get(self, "triggers")
 

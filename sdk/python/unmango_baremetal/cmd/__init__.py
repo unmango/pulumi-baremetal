@@ -13,4 +13,5 @@ from .rm import *
 from .tar import *
 from .tee import *
 from .wget import *
+from ._inputs import *
 from . import outputs

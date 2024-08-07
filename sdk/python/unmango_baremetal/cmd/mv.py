@@ -9,182 +9,39 @@ import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from . import outputs
+from ._inputs import *
 
 __all__ = ['MvArgs', 'Mv']
 
 @pulumi.input_type
 class MvArgs:
     def __init__(__self__, *,
-                 source: pulumi.Input[Sequence[pulumi.Input[str]]],
-                 backup: Optional[pulumi.Input[str]] = None,
-                 destination: Optional[pulumi.Input[str]] = None,
-                 directory: Optional[pulumi.Input[str]] = None,
-                 force: Optional[pulumi.Input[bool]] = None,
-                 help: Optional[pulumi.Input[bool]] = None,
-                 no_clobber: Optional[pulumi.Input[bool]] = None,
-                 no_target_directory: Optional[pulumi.Input[bool]] = None,
-                 strip_trailing_slashes: Optional[pulumi.Input[bool]] = None,
-                 suffix: Optional[pulumi.Input[str]] = None,
-                 target_directory: Optional[pulumi.Input[str]] = None,
-                 update: Optional[pulumi.Input[bool]] = None,
-                 verbose: Optional[pulumi.Input[bool]] = None,
-                 version: Optional[pulumi.Input[bool]] = None):
+                 args: pulumi.Input['MvArgsArgs'],
+                 triggers: Optional[pulumi.Input[Sequence[Any]]] = None):
         """
         The set of arguments for constructing a Mv resource.
         """
-        pulumi.set(__self__, "source", source)
-        if backup is not None:
-            pulumi.set(__self__, "backup", backup)
-        if destination is not None:
-            pulumi.set(__self__, "destination", destination)
-        if directory is not None:
-            pulumi.set(__self__, "directory", directory)
-        if force is not None:
-            pulumi.set(__self__, "force", force)
-        if help is not None:
-            pulumi.set(__self__, "help", help)
-        if no_clobber is not None:
-            pulumi.set(__self__, "no_clobber", no_clobber)
-        if no_target_directory is not None:
-            pulumi.set(__self__, "no_target_directory", no_target_directory)
-        if strip_trailing_slashes is not None:
-            pulumi.set(__self__, "strip_trailing_slashes", strip_trailing_slashes)
-        if suffix is not None:
-            pulumi.set(__self__, "suffix", suffix)
-        if target_directory is not None:
-            pulumi.set(__self__, "target_directory", target_directory)
-        if update is not None:
-            pulumi.set(__self__, "update", update)
-        if verbose is not None:
-            pulumi.set(__self__, "verbose", verbose)
-        if version is not None:
-            pulumi.set(__self__, "version", version)
+        pulumi.set(__self__, "args", args)
+        if triggers is not None:
+            pulumi.set(__self__, "triggers", triggers)
 
     @property
     @pulumi.getter
-    def source(self) -> pulumi.Input[Sequence[pulumi.Input[str]]]:
-        return pulumi.get(self, "source")
+    def args(self) -> pulumi.Input['MvArgsArgs']:
+        return pulumi.get(self, "args")
 
-    @source.setter
-    def source(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
-        pulumi.set(self, "source", value)
-
-    @property
-    @pulumi.getter
-    def backup(self) -> Optional[pulumi.Input[str]]:
-        return pulumi.get(self, "backup")
-
-    @backup.setter
-    def backup(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "backup", value)
+    @args.setter
+    def args(self, value: pulumi.Input['MvArgsArgs']):
+        pulumi.set(self, "args", value)
 
     @property
     @pulumi.getter
-    def destination(self) -> Optional[pulumi.Input[str]]:
-        return pulumi.get(self, "destination")
+    def triggers(self) -> Optional[pulumi.Input[Sequence[Any]]]:
+        return pulumi.get(self, "triggers")
 
-    @destination.setter
-    def destination(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "destination", value)
-
-    @property
-    @pulumi.getter
-    def directory(self) -> Optional[pulumi.Input[str]]:
-        return pulumi.get(self, "directory")
-
-    @directory.setter
-    def directory(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "directory", value)
-
-    @property
-    @pulumi.getter
-    def force(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "force")
-
-    @force.setter
-    def force(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "force", value)
-
-    @property
-    @pulumi.getter
-    def help(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "help")
-
-    @help.setter
-    def help(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "help", value)
-
-    @property
-    @pulumi.getter(name="noClobber")
-    def no_clobber(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "no_clobber")
-
-    @no_clobber.setter
-    def no_clobber(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "no_clobber", value)
-
-    @property
-    @pulumi.getter(name="noTargetDirectory")
-    def no_target_directory(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "no_target_directory")
-
-    @no_target_directory.setter
-    def no_target_directory(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "no_target_directory", value)
-
-    @property
-    @pulumi.getter(name="stripTrailingSlashes")
-    def strip_trailing_slashes(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "strip_trailing_slashes")
-
-    @strip_trailing_slashes.setter
-    def strip_trailing_slashes(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "strip_trailing_slashes", value)
-
-    @property
-    @pulumi.getter
-    def suffix(self) -> Optional[pulumi.Input[str]]:
-        return pulumi.get(self, "suffix")
-
-    @suffix.setter
-    def suffix(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "suffix", value)
-
-    @property
-    @pulumi.getter(name="targetDirectory")
-    def target_directory(self) -> Optional[pulumi.Input[str]]:
-        return pulumi.get(self, "target_directory")
-
-    @target_directory.setter
-    def target_directory(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "target_directory", value)
-
-    @property
-    @pulumi.getter
-    def update(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "update")
-
-    @update.setter
-    def update(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "update", value)
-
-    @property
-    @pulumi.getter
-    def verbose(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "verbose")
-
-    @verbose.setter
-    def verbose(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "verbose", value)
-
-    @property
-    @pulumi.getter
-    def version(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "version")
-
-    @version.setter
-    def version(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "version", value)
+    @triggers.setter
+    def triggers(self, value: Optional[pulumi.Input[Sequence[Any]]]):
+        pulumi.set(self, "triggers", value)
 
 
 class Mv(pulumi.CustomResource):
@@ -192,20 +49,8 @@ class Mv(pulumi.CustomResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 backup: Optional[pulumi.Input[str]] = None,
-                 destination: Optional[pulumi.Input[str]] = None,
-                 directory: Optional[pulumi.Input[str]] = None,
-                 force: Optional[pulumi.Input[bool]] = None,
-                 help: Optional[pulumi.Input[bool]] = None,
-                 no_clobber: Optional[pulumi.Input[bool]] = None,
-                 no_target_directory: Optional[pulumi.Input[bool]] = None,
-                 source: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 strip_trailing_slashes: Optional[pulumi.Input[bool]] = None,
-                 suffix: Optional[pulumi.Input[str]] = None,
-                 target_directory: Optional[pulumi.Input[str]] = None,
-                 update: Optional[pulumi.Input[bool]] = None,
-                 verbose: Optional[pulumi.Input[bool]] = None,
-                 version: Optional[pulumi.Input[bool]] = None,
+                 args: Optional[pulumi.Input[Union['MvArgsArgs', 'MvArgsArgsDict']]] = None,
+                 triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
                  __props__=None):
         """
         Create a Mv resource with the given unique name, props, and options.
@@ -235,20 +80,8 @@ class Mv(pulumi.CustomResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 backup: Optional[pulumi.Input[str]] = None,
-                 destination: Optional[pulumi.Input[str]] = None,
-                 directory: Optional[pulumi.Input[str]] = None,
-                 force: Optional[pulumi.Input[bool]] = None,
-                 help: Optional[pulumi.Input[bool]] = None,
-                 no_clobber: Optional[pulumi.Input[bool]] = None,
-                 no_target_directory: Optional[pulumi.Input[bool]] = None,
-                 source: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 strip_trailing_slashes: Optional[pulumi.Input[bool]] = None,
-                 suffix: Optional[pulumi.Input[str]] = None,
-                 target_directory: Optional[pulumi.Input[str]] = None,
-                 update: Optional[pulumi.Input[bool]] = None,
-                 verbose: Optional[pulumi.Input[bool]] = None,
-                 version: Optional[pulumi.Input[bool]] = None,
+                 args: Optional[pulumi.Input[Union['MvArgsArgs', 'MvArgsArgsDict']]] = None,
+                 triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -258,23 +91,10 @@ class Mv(pulumi.CustomResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = MvArgs.__new__(MvArgs)
 
-            __props__.__dict__["backup"] = backup
-            __props__.__dict__["destination"] = destination
-            __props__.__dict__["directory"] = directory
-            __props__.__dict__["force"] = force
-            __props__.__dict__["help"] = help
-            __props__.__dict__["no_clobber"] = no_clobber
-            __props__.__dict__["no_target_directory"] = no_target_directory
-            if source is None and not opts.urn:
-                raise TypeError("Missing required property 'source'")
-            __props__.__dict__["source"] = source
-            __props__.__dict__["strip_trailing_slashes"] = strip_trailing_slashes
-            __props__.__dict__["suffix"] = suffix
-            __props__.__dict__["target_directory"] = target_directory
-            __props__.__dict__["update"] = update
-            __props__.__dict__["verbose"] = verbose
-            __props__.__dict__["version"] = version
-            __props__.__dict__["args"] = None
+            if args is None and not opts.urn:
+                raise TypeError("Missing required property 'args'")
+            __props__.__dict__["args"] = args
+            __props__.__dict__["triggers"] = triggers
             __props__.__dict__["created_files"] = None
             __props__.__dict__["exit_code"] = None
             __props__.__dict__["moved_files"] = None
@@ -308,6 +128,7 @@ class Mv(pulumi.CustomResource):
         __props__.__dict__["moved_files"] = None
         __props__.__dict__["stderr"] = None
         __props__.__dict__["stdout"] = None
+        __props__.__dict__["triggers"] = None
         return Mv(resource_name, opts=opts, __props__=__props__)
 
     @property
@@ -339,4 +160,9 @@ class Mv(pulumi.CustomResource):
     @pulumi.getter
     def stdout(self) -> pulumi.Output[str]:
         return pulumi.get(self, "stdout")
+
+    @property
+    @pulumi.getter
+    def triggers(self) -> pulumi.Output[Optional[Sequence[Any]]]:
+        return pulumi.get(self, "triggers")
 

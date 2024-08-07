@@ -22,6 +22,7 @@ type Rm struct {
 	MovedFiles   pulumix.MapOutput[string]                        `pulumi:"movedFiles"`
 	Stderr       pulumix.Output[string]                           `pulumi:"stderr"`
 	Stdout       pulumix.Output[string]                           `pulumi:"stdout"`
+	Triggers     pulumix.ArrayOutput[any]                         `pulumi:"triggers"`
 }
 
 // NewRm registers a new resource with the given unique name, arguments, and options.
@@ -31,8 +32,8 @@ func NewRm(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.Files == nil {
-		return nil, errors.New("invalid value for required argument 'Files'")
+	if args.Args == nil {
+		return nil, errors.New("invalid value for required argument 'Args'")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Rm
@@ -67,24 +68,14 @@ func (RmState) ElementType() reflect.Type {
 }
 
 type rmArgs struct {
-	Dir           *bool    `pulumi:"dir"`
-	Files         []string `pulumi:"files"`
-	Force         *bool    `pulumi:"force"`
-	Help          *bool    `pulumi:"help"`
-	OneFileSystem *bool    `pulumi:"oneFileSystem"`
-	Recursive     *bool    `pulumi:"recursive"`
-	Verbose       *bool    `pulumi:"verbose"`
+	Args     RmArgsType    `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Rm resource.
 type RmArgs struct {
-	Dir           pulumix.Input[*bool]
-	Files         pulumix.Input[[]string]
-	Force         pulumix.Input[*bool]
-	Help          pulumix.Input[*bool]
-	OneFileSystem pulumix.Input[*bool]
-	Recursive     pulumix.Input[*bool]
-	Verbose       pulumix.Input[*bool]
+	Args     pulumix.Input[*RmArgsTypeArgs]
+	Triggers pulumix.Input[[]any]
 }
 
 func (RmArgs) ElementType() reflect.Type {
@@ -142,6 +133,12 @@ func (o RmOutput) Stderr() pulumix.Output[string] {
 func (o RmOutput) Stdout() pulumix.Output[string] {
 	value := pulumix.Apply[Rm](o, func(v Rm) pulumix.Output[string] { return v.Stdout })
 	return pulumix.Flatten[string, pulumix.Output[string]](value)
+}
+
+func (o RmOutput) Triggers() pulumix.ArrayOutput[any] {
+	value := pulumix.Apply[Rm](o, func(v Rm) pulumix.ArrayOutput[any] { return v.Triggers })
+	unwrapped := pulumix.Flatten[[]interface{}, pulumix.ArrayOutput[any]](value)
+	return pulumix.ArrayOutput[any]{OutputState: unwrapped.OutputState}
 }
 
 func init() {

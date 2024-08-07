@@ -22,6 +22,7 @@ type Wget struct {
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
 	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput       `pulumi:"triggers"`
 }
 
 // NewWget registers a new resource with the given unique name, arguments, and options.
@@ -31,17 +32,8 @@ func NewWget(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.Urls == nil {
-		return nil, errors.New("invalid value for required argument 'Urls'")
-	}
-	if args.Password != nil {
-		args.Password = pulumi.ToSecret(args.Password).(pulumi.StringPtrInput)
-	}
-	if args.PrivateKey != nil {
-		args.PrivateKey = pulumi.ToSecret(args.PrivateKey).(pulumi.StringPtrInput)
-	}
-	if args.PrivateKeyType != nil {
-		args.PrivateKeyType = pulumi.ToSecret(args.PrivateKeyType).(pulumi.StringPtrInput)
+	if args.Args == nil {
+		return nil, errors.New("invalid value for required argument 'Args'")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Wget
@@ -76,102 +68,14 @@ func (WgetState) ElementType() reflect.Type {
 }
 
 type wgetArgs struct {
-	AppendOutput       *string  `pulumi:"appendOutput"`
-	Background         *bool    `pulumi:"background"`
-	Base               *string  `pulumi:"base"`
-	CaCertificateFile  *string  `pulumi:"caCertificateFile"`
-	CaDirectory        *string  `pulumi:"caDirectory"`
-	Certificate        *string  `pulumi:"certificate"`
-	CertificateType    *string  `pulumi:"certificateType"`
-	Config             *string  `pulumi:"config"`
-	Continue           *bool    `pulumi:"continue"`
-	CrlFile            *string  `pulumi:"crlFile"`
-	CutDirs            *int     `pulumi:"cutDirs"`
-	Debug              *bool    `pulumi:"debug"`
-	DirectoryPrefix    *string  `pulumi:"directoryPrefix"`
-	Execute            []string `pulumi:"execute"`
-	ForceDirectories   *bool    `pulumi:"forceDirectories"`
-	ForceHtml          *bool    `pulumi:"forceHtml"`
-	Help               *bool    `pulumi:"help"`
-	HttpsOnly          *bool    `pulumi:"httpsOnly"`
-	Inet4Only          *bool    `pulumi:"inet4Only"`
-	InputFile          *string  `pulumi:"inputFile"`
-	KeepSessionCookies *bool    `pulumi:"keepSessionCookies"`
-	NoClobber          *bool    `pulumi:"noClobber"`
-	NoDirectories      *bool    `pulumi:"noDirectories"`
-	NoDnsCache         *bool    `pulumi:"noDnsCache"`
-	NoVerbose          *bool    `pulumi:"noVerbose"`
-	OutputDocument     *string  `pulumi:"outputDocument"`
-	OutputFile         *string  `pulumi:"outputFile"`
-	Password           *string  `pulumi:"password"`
-	PrivateKey         *string  `pulumi:"privateKey"`
-	PrivateKeyType     *string  `pulumi:"privateKeyType"`
-	Progress           *string  `pulumi:"progress"`
-	Quiet              *bool    `pulumi:"quiet"`
-	RandomWait         *bool    `pulumi:"randomWait"`
-	ReportSpeed        *string  `pulumi:"reportSpeed"`
-	SaveCookies        *string  `pulumi:"saveCookies"`
-	ShowProgress       *bool    `pulumi:"showProgress"`
-	StartPos           *string  `pulumi:"startPos"`
-	Timeout            *string  `pulumi:"timeout"`
-	Timestamping       *bool    `pulumi:"timestamping"`
-	Tries              *int     `pulumi:"tries"`
-	Urls               []string `pulumi:"urls"`
-	User               *string  `pulumi:"user"`
-	UserAgent          *string  `pulumi:"userAgent"`
-	Verbose            *bool    `pulumi:"verbose"`
-	Version            *string  `pulumi:"version"`
-	Wait               *string  `pulumi:"wait"`
+	Args     WgetArgsType  `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Wget resource.
 type WgetArgs struct {
-	AppendOutput       pulumi.StringPtrInput
-	Background         pulumi.BoolPtrInput
-	Base               pulumi.StringPtrInput
-	CaCertificateFile  pulumi.StringPtrInput
-	CaDirectory        pulumi.StringPtrInput
-	Certificate        pulumi.StringPtrInput
-	CertificateType    pulumi.StringPtrInput
-	Config             pulumi.StringPtrInput
-	Continue           pulumi.BoolPtrInput
-	CrlFile            pulumi.StringPtrInput
-	CutDirs            pulumi.IntPtrInput
-	Debug              pulumi.BoolPtrInput
-	DirectoryPrefix    pulumi.StringPtrInput
-	Execute            pulumi.StringArrayInput
-	ForceDirectories   pulumi.BoolPtrInput
-	ForceHtml          pulumi.BoolPtrInput
-	Help               pulumi.BoolPtrInput
-	HttpsOnly          pulumi.BoolPtrInput
-	Inet4Only          pulumi.BoolPtrInput
-	InputFile          pulumi.StringPtrInput
-	KeepSessionCookies pulumi.BoolPtrInput
-	NoClobber          pulumi.BoolPtrInput
-	NoDirectories      pulumi.BoolPtrInput
-	NoDnsCache         pulumi.BoolPtrInput
-	NoVerbose          pulumi.BoolPtrInput
-	OutputDocument     pulumi.StringPtrInput
-	OutputFile         pulumi.StringPtrInput
-	Password           pulumi.StringPtrInput
-	PrivateKey         pulumi.StringPtrInput
-	PrivateKeyType     pulumi.StringPtrInput
-	Progress           pulumi.StringPtrInput
-	Quiet              pulumi.BoolPtrInput
-	RandomWait         pulumi.BoolPtrInput
-	ReportSpeed        pulumi.StringPtrInput
-	SaveCookies        pulumi.StringPtrInput
-	ShowProgress       pulumi.BoolPtrInput
-	StartPos           pulumi.StringPtrInput
-	Timeout            pulumi.StringPtrInput
-	Timestamping       pulumi.BoolPtrInput
-	Tries              pulumi.IntPtrInput
-	Urls               pulumi.StringArrayInput
-	User               pulumi.StringPtrInput
-	UserAgent          pulumi.StringPtrInput
-	Verbose            pulumi.BoolPtrInput
-	Version            pulumi.StringPtrInput
-	Wait               pulumi.StringPtrInput
+	Args     WgetArgsTypeInput
+	Triggers pulumi.ArrayInput
 }
 
 func (WgetArgs) ElementType() reflect.Type {
@@ -245,6 +149,10 @@ func (o WgetOutput) Stderr() pulumi.StringOutput {
 
 func (o WgetOutput) Stdout() pulumi.StringOutput {
 	return o.ApplyT(func(v *Wget) pulumi.StringOutput { return v.Stdout }).(pulumi.StringOutput)
+}
+
+func (o WgetOutput) Triggers() pulumi.ArrayOutput {
+	return o.ApplyT(func(v *Wget) pulumi.ArrayOutput { return v.Triggers }).(pulumi.ArrayOutput)
 }
 
 func init() {

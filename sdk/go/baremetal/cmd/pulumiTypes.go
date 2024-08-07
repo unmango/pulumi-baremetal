@@ -29,6 +29,50 @@ type ChmodArgsType struct {
 	Version        *bool    `pulumi:"version"`
 }
 
+// ChmodArgsTypeInput is an input type that accepts ChmodArgsTypeArgs and ChmodArgsTypeOutput values.
+// You can construct a concrete instance of `ChmodArgsTypeInput` via:
+//
+//	ChmodArgsTypeArgs{...}
+type ChmodArgsTypeInput interface {
+	pulumi.Input
+
+	ToChmodArgsTypeOutput() ChmodArgsTypeOutput
+	ToChmodArgsTypeOutputWithContext(context.Context) ChmodArgsTypeOutput
+}
+
+type ChmodArgsTypeArgs struct {
+	Changes        pulumi.BoolPtrInput     `pulumi:"changes"`
+	Files          pulumi.StringArrayInput `pulumi:"files"`
+	Help           pulumi.BoolPtrInput     `pulumi:"help"`
+	Mode           pulumi.StringArrayInput `pulumi:"mode"`
+	NoPreserveRoot pulumi.BoolPtrInput     `pulumi:"noPreserveRoot"`
+	OctalMode      pulumi.StringPtrInput   `pulumi:"octalMode"`
+	PreserveRoot   pulumi.BoolPtrInput     `pulumi:"preserveRoot"`
+	Quiet          pulumi.BoolPtrInput     `pulumi:"quiet"`
+	Recursive      pulumi.BoolPtrInput     `pulumi:"recursive"`
+	Reference      pulumi.StringPtrInput   `pulumi:"reference"`
+	Verbose        pulumi.BoolPtrInput     `pulumi:"verbose"`
+	Version        pulumi.BoolPtrInput     `pulumi:"version"`
+}
+
+func (ChmodArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ChmodArgsType)(nil)).Elem()
+}
+
+func (i ChmodArgsTypeArgs) ToChmodArgsTypeOutput() ChmodArgsTypeOutput {
+	return i.ToChmodArgsTypeOutputWithContext(context.Background())
+}
+
+func (i ChmodArgsTypeArgs) ToChmodArgsTypeOutputWithContext(ctx context.Context) ChmodArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ChmodArgsTypeOutput)
+}
+
+func (i ChmodArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[ChmodArgsType] {
+	return pulumix.Output[ChmodArgsType]{
+		OutputState: i.ToChmodArgsTypeOutputWithContext(ctx).OutputState,
+	}
+}
+
 type ChmodArgsTypeOutput struct{ *pulumi.OutputState }
 
 func (ChmodArgsTypeOutput) ElementType() reflect.Type {
@@ -106,6 +150,44 @@ type MkdirArgsType struct {
 	Version   *bool    `pulumi:"version"`
 }
 
+// MkdirArgsTypeInput is an input type that accepts MkdirArgsTypeArgs and MkdirArgsTypeOutput values.
+// You can construct a concrete instance of `MkdirArgsTypeInput` via:
+//
+//	MkdirArgsTypeArgs{...}
+type MkdirArgsTypeInput interface {
+	pulumi.Input
+
+	ToMkdirArgsTypeOutput() MkdirArgsTypeOutput
+	ToMkdirArgsTypeOutputWithContext(context.Context) MkdirArgsTypeOutput
+}
+
+type MkdirArgsTypeArgs struct {
+	Directory pulumi.StringArrayInput `pulumi:"directory"`
+	Help      pulumi.BoolPtrInput     `pulumi:"help"`
+	Mode      pulumi.StringPtrInput   `pulumi:"mode"`
+	Parents   pulumi.BoolPtrInput     `pulumi:"parents"`
+	Verbose   pulumi.BoolPtrInput     `pulumi:"verbose"`
+	Version   pulumi.BoolPtrInput     `pulumi:"version"`
+}
+
+func (MkdirArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*MkdirArgsType)(nil)).Elem()
+}
+
+func (i MkdirArgsTypeArgs) ToMkdirArgsTypeOutput() MkdirArgsTypeOutput {
+	return i.ToMkdirArgsTypeOutputWithContext(context.Background())
+}
+
+func (i MkdirArgsTypeArgs) ToMkdirArgsTypeOutputWithContext(ctx context.Context) MkdirArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(MkdirArgsTypeOutput)
+}
+
+func (i MkdirArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[MkdirArgsType] {
+	return pulumix.Output[MkdirArgsType]{
+		OutputState: i.ToMkdirArgsTypeOutputWithContext(ctx).OutputState,
+	}
+}
+
 type MkdirArgsTypeOutput struct{ *pulumi.OutputState }
 
 func (MkdirArgsTypeOutput) ElementType() reflect.Type {
@@ -161,6 +243,48 @@ type MktempArgsType struct {
 	Template  *string `pulumi:"template"`
 	Tmpdir    *bool   `pulumi:"tmpdir"`
 	Version   *bool   `pulumi:"version"`
+}
+
+// MktempArgsTypeInput is an input type that accepts MktempArgsTypeArgs and MktempArgsTypeOutput values.
+// You can construct a concrete instance of `MktempArgsTypeInput` via:
+//
+//	MktempArgsTypeArgs{...}
+type MktempArgsTypeInput interface {
+	pulumi.Input
+
+	ToMktempArgsTypeOutput() MktempArgsTypeOutput
+	ToMktempArgsTypeOutputWithContext(context.Context) MktempArgsTypeOutput
+}
+
+type MktempArgsTypeArgs struct {
+	Directory pulumi.BoolPtrInput   `pulumi:"directory"`
+	DryRun    pulumi.BoolPtrInput   `pulumi:"dryRun"`
+	Help      pulumi.BoolPtrInput   `pulumi:"help"`
+	P         pulumi.StringPtrInput `pulumi:"p"`
+	Quiet     pulumi.BoolPtrInput   `pulumi:"quiet"`
+	Suffix    pulumi.StringPtrInput `pulumi:"suffix"`
+	T         pulumi.BoolPtrInput   `pulumi:"t"`
+	Template  pulumi.StringPtrInput `pulumi:"template"`
+	Tmpdir    pulumi.BoolPtrInput   `pulumi:"tmpdir"`
+	Version   pulumi.BoolPtrInput   `pulumi:"version"`
+}
+
+func (MktempArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*MktempArgsType)(nil)).Elem()
+}
+
+func (i MktempArgsTypeArgs) ToMktempArgsTypeOutput() MktempArgsTypeOutput {
+	return i.ToMktempArgsTypeOutputWithContext(context.Background())
+}
+
+func (i MktempArgsTypeArgs) ToMktempArgsTypeOutputWithContext(ctx context.Context) MktempArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(MktempArgsTypeOutput)
+}
+
+func (i MktempArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[MktempArgsType] {
+	return pulumix.Output[MktempArgsType]{
+		OutputState: i.ToMktempArgsTypeOutputWithContext(ctx).OutputState,
+	}
 }
 
 type MktempArgsTypeOutput struct{ *pulumi.OutputState }
@@ -238,6 +362,52 @@ type MvArgsType struct {
 	Update               *bool    `pulumi:"update"`
 	Verbose              *bool    `pulumi:"verbose"`
 	Version              *bool    `pulumi:"version"`
+}
+
+// MvArgsTypeInput is an input type that accepts MvArgsTypeArgs and MvArgsTypeOutput values.
+// You can construct a concrete instance of `MvArgsTypeInput` via:
+//
+//	MvArgsTypeArgs{...}
+type MvArgsTypeInput interface {
+	pulumi.Input
+
+	ToMvArgsTypeOutput() MvArgsTypeOutput
+	ToMvArgsTypeOutputWithContext(context.Context) MvArgsTypeOutput
+}
+
+type MvArgsTypeArgs struct {
+	Backup               pulumi.StringPtrInput   `pulumi:"backup"`
+	Destination          pulumi.StringPtrInput   `pulumi:"destination"`
+	Directory            pulumi.StringPtrInput   `pulumi:"directory"`
+	Force                pulumi.BoolPtrInput     `pulumi:"force"`
+	Help                 pulumi.BoolPtrInput     `pulumi:"help"`
+	NoClobber            pulumi.BoolPtrInput     `pulumi:"noClobber"`
+	NoTargetDirectory    pulumi.BoolPtrInput     `pulumi:"noTargetDirectory"`
+	Source               pulumi.StringArrayInput `pulumi:"source"`
+	StripTrailingSlashes pulumi.BoolPtrInput     `pulumi:"stripTrailingSlashes"`
+	Suffix               pulumi.StringPtrInput   `pulumi:"suffix"`
+	TargetDirectory      pulumi.StringPtrInput   `pulumi:"targetDirectory"`
+	Update               pulumi.BoolPtrInput     `pulumi:"update"`
+	Verbose              pulumi.BoolPtrInput     `pulumi:"verbose"`
+	Version              pulumi.BoolPtrInput     `pulumi:"version"`
+}
+
+func (MvArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*MvArgsType)(nil)).Elem()
+}
+
+func (i MvArgsTypeArgs) ToMvArgsTypeOutput() MvArgsTypeOutput {
+	return i.ToMvArgsTypeOutputWithContext(context.Background())
+}
+
+func (i MvArgsTypeArgs) ToMvArgsTypeOutputWithContext(ctx context.Context) MvArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(MvArgsTypeOutput)
+}
+
+func (i MvArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[MvArgsType] {
+	return pulumix.Output[MvArgsType]{
+		OutputState: i.ToMvArgsTypeOutputWithContext(ctx).OutputState,
+	}
 }
 
 type MvArgsTypeOutput struct{ *pulumi.OutputState }
@@ -324,6 +494,45 @@ type RmArgsType struct {
 	OneFileSystem *bool    `pulumi:"oneFileSystem"`
 	Recursive     *bool    `pulumi:"recursive"`
 	Verbose       *bool    `pulumi:"verbose"`
+}
+
+// RmArgsTypeInput is an input type that accepts RmArgsTypeArgs and RmArgsTypeOutput values.
+// You can construct a concrete instance of `RmArgsTypeInput` via:
+//
+//	RmArgsTypeArgs{...}
+type RmArgsTypeInput interface {
+	pulumi.Input
+
+	ToRmArgsTypeOutput() RmArgsTypeOutput
+	ToRmArgsTypeOutputWithContext(context.Context) RmArgsTypeOutput
+}
+
+type RmArgsTypeArgs struct {
+	Dir           pulumi.BoolPtrInput     `pulumi:"dir"`
+	Files         pulumi.StringArrayInput `pulumi:"files"`
+	Force         pulumi.BoolPtrInput     `pulumi:"force"`
+	Help          pulumi.BoolPtrInput     `pulumi:"help"`
+	OneFileSystem pulumi.BoolPtrInput     `pulumi:"oneFileSystem"`
+	Recursive     pulumi.BoolPtrInput     `pulumi:"recursive"`
+	Verbose       pulumi.BoolPtrInput     `pulumi:"verbose"`
+}
+
+func (RmArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*RmArgsType)(nil)).Elem()
+}
+
+func (i RmArgsTypeArgs) ToRmArgsTypeOutput() RmArgsTypeOutput {
+	return i.ToRmArgsTypeOutputWithContext(context.Background())
+}
+
+func (i RmArgsTypeArgs) ToRmArgsTypeOutputWithContext(ctx context.Context) RmArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RmArgsTypeOutput)
+}
+
+func (i RmArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[RmArgsType] {
+	return pulumix.Output[RmArgsType]{
+		OutputState: i.ToRmArgsTypeOutputWithContext(ctx).OutputState,
+	}
 }
 
 type RmArgsTypeOutput struct{ *pulumi.OutputState }
@@ -414,6 +623,77 @@ type TarArgsType struct {
 	Verify               *bool    `pulumi:"verify"`
 	Xz                   *bool    `pulumi:"xz"`
 	Zstd                 *bool    `pulumi:"zstd"`
+}
+
+// TarArgsTypeInput is an input type that accepts TarArgsTypeArgs and TarArgsTypeOutput values.
+// You can construct a concrete instance of `TarArgsTypeInput` via:
+//
+//	TarArgsTypeArgs{...}
+type TarArgsTypeInput interface {
+	pulumi.Input
+
+	ToTarArgsTypeOutput() TarArgsTypeOutput
+	ToTarArgsTypeOutputWithContext(context.Context) TarArgsTypeOutput
+}
+
+type TarArgsTypeArgs struct {
+	Append               pulumi.BoolPtrInput     `pulumi:"append"`
+	Args                 pulumi.StringArrayInput `pulumi:"args"`
+	Bzip2                pulumi.BoolPtrInput     `pulumi:"bzip2"`
+	Create               pulumi.BoolPtrInput     `pulumi:"create"`
+	Delete               pulumi.BoolPtrInput     `pulumi:"delete"`
+	Diff                 pulumi.BoolPtrInput     `pulumi:"diff"`
+	Directory            pulumi.StringPtrInput   `pulumi:"directory"`
+	Exclude              pulumi.StringPtrInput   `pulumi:"exclude"`
+	ExcludeFrom          pulumi.StringPtrInput   `pulumi:"excludeFrom"`
+	ExcludeVcs           pulumi.BoolPtrInput     `pulumi:"excludeVcs"`
+	ExcludeVcsIgnores    pulumi.BoolPtrInput     `pulumi:"excludeVcsIgnores"`
+	Extract              pulumi.BoolPtrInput     `pulumi:"extract"`
+	File                 pulumi.StringPtrInput   `pulumi:"file"`
+	Gzip                 pulumi.BoolPtrInput     `pulumi:"gzip"`
+	IgnoreCommandError   pulumi.BoolPtrInput     `pulumi:"ignoreCommandError"`
+	KeepDirectorySymlink pulumi.BoolPtrInput     `pulumi:"keepDirectorySymlink"`
+	KeepNewerFiles       pulumi.BoolPtrInput     `pulumi:"keepNewerFiles"`
+	KeepOldfiles         pulumi.BoolPtrInput     `pulumi:"keepOldfiles"`
+	List                 pulumi.BoolPtrInput     `pulumi:"list"`
+	Lzip                 pulumi.BoolPtrInput     `pulumi:"lzip"`
+	Lzma                 pulumi.BoolPtrInput     `pulumi:"lzma"`
+	Lzop                 pulumi.BoolPtrInput     `pulumi:"lzop"`
+	NoOverwriteDir       pulumi.BoolPtrInput     `pulumi:"noOverwriteDir"`
+	NoSeek               pulumi.BoolPtrInput     `pulumi:"noSeek"`
+	Overwrite            pulumi.BoolPtrInput     `pulumi:"overwrite"`
+	OverwriteDir         pulumi.BoolPtrInput     `pulumi:"overwriteDir"`
+	RemoveFiles          pulumi.BoolPtrInput     `pulumi:"removeFiles"`
+	SkipOldFiles         pulumi.BoolPtrInput     `pulumi:"skipOldFiles"`
+	Sparse               pulumi.BoolPtrInput     `pulumi:"sparse"`
+	StripComponents      pulumi.IntPtrInput      `pulumi:"stripComponents"`
+	Suffix               pulumi.StringPtrInput   `pulumi:"suffix"`
+	ToStdout             pulumi.BoolPtrInput     `pulumi:"toStdout"`
+	Transform            pulumi.StringPtrInput   `pulumi:"transform"`
+	UnlinkFirst          pulumi.BoolPtrInput     `pulumi:"unlinkFirst"`
+	Update               pulumi.BoolPtrInput     `pulumi:"update"`
+	Verbose              pulumi.BoolPtrInput     `pulumi:"verbose"`
+	Verify               pulumi.BoolPtrInput     `pulumi:"verify"`
+	Xz                   pulumi.BoolPtrInput     `pulumi:"xz"`
+	Zstd                 pulumi.BoolPtrInput     `pulumi:"zstd"`
+}
+
+func (TarArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*TarArgsType)(nil)).Elem()
+}
+
+func (i TarArgsTypeArgs) ToTarArgsTypeOutput() TarArgsTypeOutput {
+	return i.ToTarArgsTypeOutputWithContext(context.Background())
+}
+
+func (i TarArgsTypeArgs) ToTarArgsTypeOutputWithContext(ctx context.Context) TarArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(TarArgsTypeOutput)
+}
+
+func (i TarArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[TarArgsType] {
+	return pulumix.Output[TarArgsType]{
+		OutputState: i.ToTarArgsTypeOutputWithContext(ctx).OutputState,
+	}
 }
 
 type TarArgsTypeOutput struct{ *pulumi.OutputState }
@@ -598,6 +878,41 @@ type TeeArgsType struct {
 	Files   []string `pulumi:"files"`
 }
 
+// TeeArgsTypeInput is an input type that accepts TeeArgsTypeArgs and TeeArgsTypeOutput values.
+// You can construct a concrete instance of `TeeArgsTypeInput` via:
+//
+//	TeeArgsTypeArgs{...}
+type TeeArgsTypeInput interface {
+	pulumi.Input
+
+	ToTeeArgsTypeOutput() TeeArgsTypeOutput
+	ToTeeArgsTypeOutputWithContext(context.Context) TeeArgsTypeOutput
+}
+
+type TeeArgsTypeArgs struct {
+	Append  pulumi.BoolPtrInput     `pulumi:"append"`
+	Content pulumi.StringInput      `pulumi:"content"`
+	Files   pulumi.StringArrayInput `pulumi:"files"`
+}
+
+func (TeeArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*TeeArgsType)(nil)).Elem()
+}
+
+func (i TeeArgsTypeArgs) ToTeeArgsTypeOutput() TeeArgsTypeOutput {
+	return i.ToTeeArgsTypeOutputWithContext(context.Background())
+}
+
+func (i TeeArgsTypeArgs) ToTeeArgsTypeOutputWithContext(ctx context.Context) TeeArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(TeeArgsTypeOutput)
+}
+
+func (i TeeArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[TeeArgsType] {
+	return pulumix.Output[TeeArgsType]{
+		OutputState: i.ToTeeArgsTypeOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TeeArgsTypeOutput struct{ *pulumi.OutputState }
 
 func (TeeArgsTypeOutput) ElementType() reflect.Type {
@@ -677,6 +992,84 @@ type WgetArgsType struct {
 	Verbose            *bool    `pulumi:"verbose"`
 	Version            *string  `pulumi:"version"`
 	Wait               *string  `pulumi:"wait"`
+}
+
+// WgetArgsTypeInput is an input type that accepts WgetArgsTypeArgs and WgetArgsTypeOutput values.
+// You can construct a concrete instance of `WgetArgsTypeInput` via:
+//
+//	WgetArgsTypeArgs{...}
+type WgetArgsTypeInput interface {
+	pulumi.Input
+
+	ToWgetArgsTypeOutput() WgetArgsTypeOutput
+	ToWgetArgsTypeOutputWithContext(context.Context) WgetArgsTypeOutput
+}
+
+type WgetArgsTypeArgs struct {
+	AppendOutput       pulumi.StringPtrInput   `pulumi:"appendOutput"`
+	Background         pulumi.BoolPtrInput     `pulumi:"background"`
+	Base               pulumi.StringPtrInput   `pulumi:"base"`
+	CaCertificateFile  pulumi.StringPtrInput   `pulumi:"caCertificateFile"`
+	CaDirectory        pulumi.StringPtrInput   `pulumi:"caDirectory"`
+	Certificate        pulumi.StringPtrInput   `pulumi:"certificate"`
+	CertificateType    pulumi.StringPtrInput   `pulumi:"certificateType"`
+	Config             pulumi.StringPtrInput   `pulumi:"config"`
+	Continue           pulumi.BoolPtrInput     `pulumi:"continue"`
+	CrlFile            pulumi.StringPtrInput   `pulumi:"crlFile"`
+	CutDirs            pulumi.IntPtrInput      `pulumi:"cutDirs"`
+	Debug              pulumi.BoolPtrInput     `pulumi:"debug"`
+	DirectoryPrefix    pulumi.StringPtrInput   `pulumi:"directoryPrefix"`
+	Execute            pulumi.StringArrayInput `pulumi:"execute"`
+	ForceDirectories   pulumi.BoolPtrInput     `pulumi:"forceDirectories"`
+	ForceHtml          pulumi.BoolPtrInput     `pulumi:"forceHtml"`
+	Help               pulumi.BoolPtrInput     `pulumi:"help"`
+	HttpsOnly          pulumi.BoolPtrInput     `pulumi:"httpsOnly"`
+	Inet4Only          pulumi.BoolPtrInput     `pulumi:"inet4Only"`
+	InputFile          pulumi.StringPtrInput   `pulumi:"inputFile"`
+	KeepSessionCookies pulumi.BoolPtrInput     `pulumi:"keepSessionCookies"`
+	NoClobber          pulumi.BoolPtrInput     `pulumi:"noClobber"`
+	NoDirectories      pulumi.BoolPtrInput     `pulumi:"noDirectories"`
+	NoDnsCache         pulumi.BoolPtrInput     `pulumi:"noDnsCache"`
+	NoVerbose          pulumi.BoolPtrInput     `pulumi:"noVerbose"`
+	OutputDocument     pulumi.StringPtrInput   `pulumi:"outputDocument"`
+	OutputFile         pulumi.StringPtrInput   `pulumi:"outputFile"`
+	Password           pulumi.StringPtrInput   `pulumi:"password"`
+	PrivateKey         pulumi.StringPtrInput   `pulumi:"privateKey"`
+	PrivateKeyType     pulumi.StringPtrInput   `pulumi:"privateKeyType"`
+	Progress           pulumi.StringPtrInput   `pulumi:"progress"`
+	Quiet              pulumi.BoolPtrInput     `pulumi:"quiet"`
+	RandomWait         pulumi.BoolPtrInput     `pulumi:"randomWait"`
+	ReportSpeed        pulumi.StringPtrInput   `pulumi:"reportSpeed"`
+	SaveCookies        pulumi.StringPtrInput   `pulumi:"saveCookies"`
+	ShowProgress       pulumi.BoolPtrInput     `pulumi:"showProgress"`
+	StartPos           pulumi.StringPtrInput   `pulumi:"startPos"`
+	Timeout            pulumi.StringPtrInput   `pulumi:"timeout"`
+	Timestamping       pulumi.BoolPtrInput     `pulumi:"timestamping"`
+	Tries              pulumi.IntPtrInput      `pulumi:"tries"`
+	Urls               pulumi.StringArrayInput `pulumi:"urls"`
+	User               pulumi.StringPtrInput   `pulumi:"user"`
+	UserAgent          pulumi.StringPtrInput   `pulumi:"userAgent"`
+	Verbose            pulumi.BoolPtrInput     `pulumi:"verbose"`
+	Version            pulumi.StringPtrInput   `pulumi:"version"`
+	Wait               pulumi.StringPtrInput   `pulumi:"wait"`
+}
+
+func (WgetArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*WgetArgsType)(nil)).Elem()
+}
+
+func (i WgetArgsTypeArgs) ToWgetArgsTypeOutput() WgetArgsTypeOutput {
+	return i.ToWgetArgsTypeOutputWithContext(context.Background())
+}
+
+func (i WgetArgsTypeArgs) ToWgetArgsTypeOutputWithContext(ctx context.Context) WgetArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(WgetArgsTypeOutput)
+}
+
+func (i WgetArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[WgetArgsType] {
+	return pulumix.Output[WgetArgsType]{
+		OutputState: i.ToWgetArgsTypeOutputWithContext(ctx).OutputState,
+	}
 }
 
 type WgetArgsTypeOutput struct{ *pulumi.OutputState }
@@ -884,6 +1277,14 @@ func (o WgetArgsTypeOutput) Wait() pulumi.StringPtrOutput {
 }
 
 func init() {
+	pulumi.RegisterInputType(reflect.TypeOf((*ChmodArgsTypeInput)(nil)).Elem(), ChmodArgsTypeArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*MkdirArgsTypeInput)(nil)).Elem(), MkdirArgsTypeArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*MktempArgsTypeInput)(nil)).Elem(), MktempArgsTypeArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*MvArgsTypeInput)(nil)).Elem(), MvArgsTypeArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*RmArgsTypeInput)(nil)).Elem(), RmArgsTypeArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*TarArgsTypeInput)(nil)).Elem(), TarArgsTypeArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*TeeArgsTypeInput)(nil)).Elem(), TeeArgsTypeArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*WgetArgsTypeInput)(nil)).Elem(), WgetArgsTypeArgs{})
 	pulumi.RegisterOutputType(ChmodArgsTypeOutput{})
 	pulumi.RegisterOutputType(MkdirArgsTypeOutput{})
 	pulumi.RegisterOutputType(MktempArgsTypeOutput{})

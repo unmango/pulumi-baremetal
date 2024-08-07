@@ -9,158 +9,39 @@ import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from . import outputs
+from ._inputs import *
 
 __all__ = ['ChmodArgs', 'Chmod']
 
 @pulumi.input_type
 class ChmodArgs:
     def __init__(__self__, *,
-                 files: pulumi.Input[Sequence[pulumi.Input[str]]],
-                 changes: Optional[pulumi.Input[bool]] = None,
-                 help: Optional[pulumi.Input[bool]] = None,
-                 mode: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 no_preserve_root: Optional[pulumi.Input[bool]] = None,
-                 octal_mode: Optional[pulumi.Input[str]] = None,
-                 preserve_root: Optional[pulumi.Input[bool]] = None,
-                 quiet: Optional[pulumi.Input[bool]] = None,
-                 recursive: Optional[pulumi.Input[bool]] = None,
-                 reference: Optional[pulumi.Input[str]] = None,
-                 verbose: Optional[pulumi.Input[bool]] = None,
-                 version: Optional[pulumi.Input[bool]] = None):
+                 args: pulumi.Input['ChmodArgsArgs'],
+                 triggers: Optional[pulumi.Input[Sequence[Any]]] = None):
         """
         The set of arguments for constructing a Chmod resource.
         """
-        pulumi.set(__self__, "files", files)
-        if changes is not None:
-            pulumi.set(__self__, "changes", changes)
-        if help is not None:
-            pulumi.set(__self__, "help", help)
-        if mode is not None:
-            pulumi.set(__self__, "mode", mode)
-        if no_preserve_root is not None:
-            pulumi.set(__self__, "no_preserve_root", no_preserve_root)
-        if octal_mode is not None:
-            pulumi.set(__self__, "octal_mode", octal_mode)
-        if preserve_root is not None:
-            pulumi.set(__self__, "preserve_root", preserve_root)
-        if quiet is not None:
-            pulumi.set(__self__, "quiet", quiet)
-        if recursive is not None:
-            pulumi.set(__self__, "recursive", recursive)
-        if reference is not None:
-            pulumi.set(__self__, "reference", reference)
-        if verbose is not None:
-            pulumi.set(__self__, "verbose", verbose)
-        if version is not None:
-            pulumi.set(__self__, "version", version)
+        pulumi.set(__self__, "args", args)
+        if triggers is not None:
+            pulumi.set(__self__, "triggers", triggers)
 
     @property
     @pulumi.getter
-    def files(self) -> pulumi.Input[Sequence[pulumi.Input[str]]]:
-        return pulumi.get(self, "files")
+    def args(self) -> pulumi.Input['ChmodArgsArgs']:
+        return pulumi.get(self, "args")
 
-    @files.setter
-    def files(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
-        pulumi.set(self, "files", value)
-
-    @property
-    @pulumi.getter
-    def changes(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "changes")
-
-    @changes.setter
-    def changes(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "changes", value)
+    @args.setter
+    def args(self, value: pulumi.Input['ChmodArgsArgs']):
+        pulumi.set(self, "args", value)
 
     @property
     @pulumi.getter
-    def help(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "help")
+    def triggers(self) -> Optional[pulumi.Input[Sequence[Any]]]:
+        return pulumi.get(self, "triggers")
 
-    @help.setter
-    def help(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "help", value)
-
-    @property
-    @pulumi.getter
-    def mode(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
-        return pulumi.get(self, "mode")
-
-    @mode.setter
-    def mode(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
-        pulumi.set(self, "mode", value)
-
-    @property
-    @pulumi.getter(name="noPreserveRoot")
-    def no_preserve_root(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "no_preserve_root")
-
-    @no_preserve_root.setter
-    def no_preserve_root(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "no_preserve_root", value)
-
-    @property
-    @pulumi.getter(name="octalMode")
-    def octal_mode(self) -> Optional[pulumi.Input[str]]:
-        return pulumi.get(self, "octal_mode")
-
-    @octal_mode.setter
-    def octal_mode(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "octal_mode", value)
-
-    @property
-    @pulumi.getter(name="preserveRoot")
-    def preserve_root(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "preserve_root")
-
-    @preserve_root.setter
-    def preserve_root(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "preserve_root", value)
-
-    @property
-    @pulumi.getter
-    def quiet(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "quiet")
-
-    @quiet.setter
-    def quiet(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "quiet", value)
-
-    @property
-    @pulumi.getter
-    def recursive(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "recursive")
-
-    @recursive.setter
-    def recursive(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "recursive", value)
-
-    @property
-    @pulumi.getter
-    def reference(self) -> Optional[pulumi.Input[str]]:
-        return pulumi.get(self, "reference")
-
-    @reference.setter
-    def reference(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "reference", value)
-
-    @property
-    @pulumi.getter
-    def verbose(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "verbose")
-
-    @verbose.setter
-    def verbose(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "verbose", value)
-
-    @property
-    @pulumi.getter
-    def version(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "version")
-
-    @version.setter
-    def version(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "version", value)
+    @triggers.setter
+    def triggers(self, value: Optional[pulumi.Input[Sequence[Any]]]):
+        pulumi.set(self, "triggers", value)
 
 
 class Chmod(pulumi.CustomResource):
@@ -168,18 +49,8 @@ class Chmod(pulumi.CustomResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 changes: Optional[pulumi.Input[bool]] = None,
-                 files: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 help: Optional[pulumi.Input[bool]] = None,
-                 mode: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 no_preserve_root: Optional[pulumi.Input[bool]] = None,
-                 octal_mode: Optional[pulumi.Input[str]] = None,
-                 preserve_root: Optional[pulumi.Input[bool]] = None,
-                 quiet: Optional[pulumi.Input[bool]] = None,
-                 recursive: Optional[pulumi.Input[bool]] = None,
-                 reference: Optional[pulumi.Input[str]] = None,
-                 verbose: Optional[pulumi.Input[bool]] = None,
-                 version: Optional[pulumi.Input[bool]] = None,
+                 args: Optional[pulumi.Input[Union['ChmodArgsArgs', 'ChmodArgsArgsDict']]] = None,
+                 triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
                  __props__=None):
         """
         Create a Chmod resource with the given unique name, props, and options.
@@ -209,18 +80,8 @@ class Chmod(pulumi.CustomResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 changes: Optional[pulumi.Input[bool]] = None,
-                 files: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 help: Optional[pulumi.Input[bool]] = None,
-                 mode: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 no_preserve_root: Optional[pulumi.Input[bool]] = None,
-                 octal_mode: Optional[pulumi.Input[str]] = None,
-                 preserve_root: Optional[pulumi.Input[bool]] = None,
-                 quiet: Optional[pulumi.Input[bool]] = None,
-                 recursive: Optional[pulumi.Input[bool]] = None,
-                 reference: Optional[pulumi.Input[str]] = None,
-                 verbose: Optional[pulumi.Input[bool]] = None,
-                 version: Optional[pulumi.Input[bool]] = None,
+                 args: Optional[pulumi.Input[Union['ChmodArgsArgs', 'ChmodArgsArgsDict']]] = None,
+                 triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -230,21 +91,10 @@ class Chmod(pulumi.CustomResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = ChmodArgs.__new__(ChmodArgs)
 
-            __props__.__dict__["changes"] = changes
-            if files is None and not opts.urn:
-                raise TypeError("Missing required property 'files'")
-            __props__.__dict__["files"] = files
-            __props__.__dict__["help"] = help
-            __props__.__dict__["mode"] = mode
-            __props__.__dict__["no_preserve_root"] = no_preserve_root
-            __props__.__dict__["octal_mode"] = octal_mode
-            __props__.__dict__["preserve_root"] = preserve_root
-            __props__.__dict__["quiet"] = quiet
-            __props__.__dict__["recursive"] = recursive
-            __props__.__dict__["reference"] = reference
-            __props__.__dict__["verbose"] = verbose
-            __props__.__dict__["version"] = version
-            __props__.__dict__["args"] = None
+            if args is None and not opts.urn:
+                raise TypeError("Missing required property 'args'")
+            __props__.__dict__["args"] = args
+            __props__.__dict__["triggers"] = triggers
             __props__.__dict__["created_files"] = None
             __props__.__dict__["exit_code"] = None
             __props__.__dict__["moved_files"] = None
@@ -278,6 +128,7 @@ class Chmod(pulumi.CustomResource):
         __props__.__dict__["moved_files"] = None
         __props__.__dict__["stderr"] = None
         __props__.__dict__["stdout"] = None
+        __props__.__dict__["triggers"] = None
         return Chmod(resource_name, opts=opts, __props__=__props__)
 
     @property
@@ -309,4 +160,9 @@ class Chmod(pulumi.CustomResource):
     @pulumi.getter
     def stdout(self) -> pulumi.Output[str]:
         return pulumi.get(self, "stdout")
+
+    @property
+    @pulumi.getter
+    def triggers(self) -> pulumi.Output[Optional[Sequence[Any]]]:
+        return pulumi.get(self, "triggers")
 

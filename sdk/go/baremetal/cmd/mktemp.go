@@ -7,6 +7,7 @@ import (
 	"context"
 	"reflect"
 
+	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
@@ -21,15 +22,19 @@ type Mktemp struct {
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
 	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput       `pulumi:"triggers"`
 }
 
 // NewMktemp registers a new resource with the given unique name, arguments, and options.
 func NewMktemp(ctx *pulumi.Context,
 	name string, args *MktempArgs, opts ...pulumi.ResourceOption) (*Mktemp, error) {
 	if args == nil {
-		args = &MktempArgs{}
+		return nil, errors.New("missing one or more required arguments")
 	}
 
+	if args.Args == nil {
+		return nil, errors.New("invalid value for required argument 'Args'")
+	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Mktemp
 	err := ctx.RegisterResource("baremetal:cmd:Mktemp", name, args, &resource, opts...)
@@ -63,30 +68,14 @@ func (MktempState) ElementType() reflect.Type {
 }
 
 type mktempArgs struct {
-	Directory *bool   `pulumi:"directory"`
-	DryRun    *bool   `pulumi:"dryRun"`
-	Help      *bool   `pulumi:"help"`
-	P         *string `pulumi:"p"`
-	Quiet     *bool   `pulumi:"quiet"`
-	Suffix    *string `pulumi:"suffix"`
-	T         *bool   `pulumi:"t"`
-	Template  *string `pulumi:"template"`
-	Tmpdir    *bool   `pulumi:"tmpdir"`
-	Version   *bool   `pulumi:"version"`
+	Args     MktempArgsType `pulumi:"args"`
+	Triggers []interface{}  `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Mktemp resource.
 type MktempArgs struct {
-	Directory pulumi.BoolPtrInput
-	DryRun    pulumi.BoolPtrInput
-	Help      pulumi.BoolPtrInput
-	P         pulumi.StringPtrInput
-	Quiet     pulumi.BoolPtrInput
-	Suffix    pulumi.StringPtrInput
-	T         pulumi.BoolPtrInput
-	Template  pulumi.StringPtrInput
-	Tmpdir    pulumi.BoolPtrInput
-	Version   pulumi.BoolPtrInput
+	Args     MktempArgsTypeInput
+	Triggers pulumi.ArrayInput
 }
 
 func (MktempArgs) ElementType() reflect.Type {
@@ -160,6 +149,10 @@ func (o MktempOutput) Stderr() pulumi.StringOutput {
 
 func (o MktempOutput) Stdout() pulumi.StringOutput {
 	return o.ApplyT(func(v *Mktemp) pulumi.StringOutput { return v.Stdout }).(pulumi.StringOutput)
+}
+
+func (o MktempOutput) Triggers() pulumi.ArrayOutput {
+	return o.ApplyT(func(v *Mktemp) pulumi.ArrayOutput { return v.Triggers }).(pulumi.ArrayOutput)
 }
 
 func init() {

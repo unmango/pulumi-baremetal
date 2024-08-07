@@ -39,6 +39,7 @@ export class Tar extends pulumi.CustomResource {
     public /*out*/ readonly movedFiles!: pulumi.Output<{[key: string]: string}>;
     public /*out*/ readonly stderr!: pulumi.Output<string>;
     public /*out*/ readonly stdout!: pulumi.Output<string>;
+    public readonly triggers!: pulumi.Output<any[] | undefined>;
 
     /**
      * Create a Tar resource with the given unique name, arguments, and options.
@@ -47,49 +48,15 @@ export class Tar extends pulumi.CustomResource {
      * @param args The arguments to use to populate this resource's properties.
      * @param opts A bag of options that control this resource's behavior.
      */
-    constructor(name: string, args?: TarArgs, opts?: pulumi.CustomResourceOptions) {
+    constructor(name: string, args: TarArgs, opts?: pulumi.CustomResourceOptions) {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            resourceInputs["append"] = args ? args.append : undefined;
+            if ((!args || args.args === undefined) && !opts.urn) {
+                throw new Error("Missing required property 'args'");
+            }
             resourceInputs["args"] = args ? args.args : undefined;
-            resourceInputs["bzip2"] = args ? args.bzip2 : undefined;
-            resourceInputs["create"] = args ? args.create : undefined;
-            resourceInputs["delete"] = args ? args.delete : undefined;
-            resourceInputs["diff"] = args ? args.diff : undefined;
-            resourceInputs["directory"] = args ? args.directory : undefined;
-            resourceInputs["exclude"] = args ? args.exclude : undefined;
-            resourceInputs["excludeFrom"] = args ? args.excludeFrom : undefined;
-            resourceInputs["excludeVcs"] = args ? args.excludeVcs : undefined;
-            resourceInputs["excludeVcsIgnores"] = args ? args.excludeVcsIgnores : undefined;
-            resourceInputs["extract"] = args ? args.extract : undefined;
-            resourceInputs["file"] = args ? args.file : undefined;
-            resourceInputs["gzip"] = args ? args.gzip : undefined;
-            resourceInputs["ignoreCommandError"] = args ? args.ignoreCommandError : undefined;
-            resourceInputs["keepDirectorySymlink"] = args ? args.keepDirectorySymlink : undefined;
-            resourceInputs["keepNewerFiles"] = args ? args.keepNewerFiles : undefined;
-            resourceInputs["keepOldfiles"] = args ? args.keepOldfiles : undefined;
-            resourceInputs["list"] = args ? args.list : undefined;
-            resourceInputs["lzip"] = args ? args.lzip : undefined;
-            resourceInputs["lzma"] = args ? args.lzma : undefined;
-            resourceInputs["lzop"] = args ? args.lzop : undefined;
-            resourceInputs["noOverwriteDir"] = args ? args.noOverwriteDir : undefined;
-            resourceInputs["noSeek"] = args ? args.noSeek : undefined;
-            resourceInputs["overwrite"] = args ? args.overwrite : undefined;
-            resourceInputs["overwriteDir"] = args ? args.overwriteDir : undefined;
-            resourceInputs["removeFiles"] = args ? args.removeFiles : undefined;
-            resourceInputs["skipOldFiles"] = args ? args.skipOldFiles : undefined;
-            resourceInputs["sparse"] = args ? args.sparse : undefined;
-            resourceInputs["stripComponents"] = args ? args.stripComponents : undefined;
-            resourceInputs["suffix"] = args ? args.suffix : undefined;
-            resourceInputs["toStdout"] = args ? args.toStdout : undefined;
-            resourceInputs["transform"] = args ? args.transform : undefined;
-            resourceInputs["unlinkFirst"] = args ? args.unlinkFirst : undefined;
-            resourceInputs["update"] = args ? args.update : undefined;
-            resourceInputs["verbose"] = args ? args.verbose : undefined;
-            resourceInputs["verify"] = args ? args.verify : undefined;
-            resourceInputs["xz"] = args ? args.xz : undefined;
-            resourceInputs["zstd"] = args ? args.zstd : undefined;
+            resourceInputs["triggers"] = args ? args.triggers : undefined;
             resourceInputs["createdFiles"] = undefined /*out*/;
             resourceInputs["exitCode"] = undefined /*out*/;
             resourceInputs["movedFiles"] = undefined /*out*/;
@@ -102,6 +69,7 @@ export class Tar extends pulumi.CustomResource {
             resourceInputs["movedFiles"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
+            resourceInputs["triggers"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Tar.__pulumiType, name, resourceInputs, opts);
@@ -112,43 +80,6 @@ export class Tar extends pulumi.CustomResource {
  * The set of arguments for constructing a Tar resource.
  */
 export interface TarArgs {
-    append?: pulumi.Input<boolean>;
-    args?: pulumi.Input<pulumi.Input<string>[]>;
-    bzip2?: pulumi.Input<boolean>;
-    create?: pulumi.Input<boolean>;
-    delete?: pulumi.Input<boolean>;
-    diff?: pulumi.Input<boolean>;
-    directory?: pulumi.Input<string>;
-    exclude?: pulumi.Input<string>;
-    excludeFrom?: pulumi.Input<string>;
-    excludeVcs?: pulumi.Input<boolean>;
-    excludeVcsIgnores?: pulumi.Input<boolean>;
-    extract?: pulumi.Input<boolean>;
-    file?: pulumi.Input<string>;
-    gzip?: pulumi.Input<boolean>;
-    ignoreCommandError?: pulumi.Input<boolean>;
-    keepDirectorySymlink?: pulumi.Input<boolean>;
-    keepNewerFiles?: pulumi.Input<boolean>;
-    keepOldfiles?: pulumi.Input<boolean>;
-    list?: pulumi.Input<boolean>;
-    lzip?: pulumi.Input<boolean>;
-    lzma?: pulumi.Input<boolean>;
-    lzop?: pulumi.Input<boolean>;
-    noOverwriteDir?: pulumi.Input<boolean>;
-    noSeek?: pulumi.Input<boolean>;
-    overwrite?: pulumi.Input<boolean>;
-    overwriteDir?: pulumi.Input<boolean>;
-    removeFiles?: pulumi.Input<boolean>;
-    skipOldFiles?: pulumi.Input<boolean>;
-    sparse?: pulumi.Input<boolean>;
-    stripComponents?: pulumi.Input<number>;
-    suffix?: pulumi.Input<string>;
-    toStdout?: pulumi.Input<boolean>;
-    transform?: pulumi.Input<string>;
-    unlinkFirst?: pulumi.Input<boolean>;
-    update?: pulumi.Input<boolean>;
-    verbose?: pulumi.Input<boolean>;
-    verify?: pulumi.Input<boolean>;
-    xz?: pulumi.Input<boolean>;
-    zstd?: pulumi.Input<boolean>;
+    args: pulumi.Input<inputs.cmd.TarArgsArgs>;
+    triggers?: pulumi.Input<any[]>;
 }

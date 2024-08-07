@@ -91,6 +91,7 @@ type Tee struct {
 	MovedFiles   pulumix.MapOutput[string]                          `pulumi:"movedFiles"`
 	Stderr       pulumix.Output[string]                             `pulumi:"stderr"`
 	Stdout       pulumix.Output[string]                             `pulumi:"stdout"`
+	Triggers     pulumix.ArrayOutput[any]                           `pulumi:"triggers"`
 }
 
 // NewTee registers a new resource with the given unique name, arguments, and options.
@@ -100,11 +101,8 @@ func NewTee(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.Content == nil {
-		return nil, errors.New("invalid value for required argument 'Content'")
-	}
-	if args.Files == nil {
-		return nil, errors.New("invalid value for required argument 'Files'")
+	if args.Args == nil {
+		return nil, errors.New("invalid value for required argument 'Args'")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Tee
@@ -139,16 +137,14 @@ func (TeeState) ElementType() reflect.Type {
 }
 
 type teeArgs struct {
-	Append  *bool    `pulumi:"append"`
-	Content string   `pulumi:"content"`
-	Files   []string `pulumi:"files"`
+	Args     TeeArgsType   `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Tee resource.
 type TeeArgs struct {
-	Append  pulumix.Input[*bool]
-	Content pulumix.Input[string]
-	Files   pulumix.Input[[]string]
+	Args     pulumix.Input[*TeeArgsTypeArgs]
+	Triggers pulumix.Input[[]any]
 }
 
 func (TeeArgs) ElementType() reflect.Type {
@@ -206,6 +202,12 @@ func (o TeeOutput) Stderr() pulumix.Output[string] {
 func (o TeeOutput) Stdout() pulumix.Output[string] {
 	value := pulumix.Apply[Tee](o, func(v Tee) pulumix.Output[string] { return v.Stdout })
 	return pulumix.Flatten[string, pulumix.Output[string]](value)
+}
+
+func (o TeeOutput) Triggers() pulumix.ArrayOutput[any] {
+	value := pulumix.Apply[Tee](o, func(v Tee) pulumix.ArrayOutput[any] { return v.Triggers })
+	unwrapped := pulumix.Flatten[[]interface{}, pulumix.ArrayOutput[any]](value)
+	return pulumix.ArrayOutput[any]{OutputState: unwrapped.OutputState}
 }
 
 func init() {
