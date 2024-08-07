@@ -6,6 +6,7 @@ import (
 	"slices"
 
 	provider "github.com/pulumi/pulumi-go-provider"
+	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
@@ -19,33 +20,43 @@ type FsManipulator interface {
 type CommandBuilder interface {
 	FsManipulator
 	Cmd() *pb.Command
-	triggers() []any
 }
 
-type CommandArgs struct {
-	Triggers []any `pulumi:"triggers,optional"`
+type FsEntryType string
+
+var _ = (infer.Enum[FsEntryType])((*FsEntryType)(nil))
+
+const (
+	FileFsEntry      FsEntryType = "file"
+	DirectoryFsEntry FsEntryType = "directory"
+)
+
+func (*FsEntryType) Values() []infer.EnumValue[FsEntryType] {
+	return []infer.EnumValue[FsEntryType]{
+		{Value: FileFsEntry, Description: "A file"},
+		{Value: DirectoryFsEntry, Description: "A directory"},
+	}
 }
 
-func (CommandArgs) ExpectCreated() []string {
-	return []string{}
+type FsEntry struct {
+	Path string      `pulumi:"path"`
+	Type FsEntryType `pulumi:"type"`
 }
 
-func (CommandArgs) ExpectMoved() map[string]string {
-	return map[string]string{}
-}
-
-func (a CommandArgs) triggers() []any {
-	return a.Triggers
+type CommandArgs[T CommandBuilder] struct {
+	Args     T         `pulumi:"args"`
+	Triggers []any     `pulumi:"triggers,optional"`
+	Expect   []FsEntry `pulumi:"expect,optional"`
 }
 
 type CommandState[T CommandBuilder] struct {
-	Args         T                 `pulumi:"args"`
-	ExitCode     int               `pulumi:"exitCode"`
-	Stderr       string            `pulumi:"stderr"`
-	Stdout       string            `pulumi:"stdout"`
-	CreatedFiles []string          `pulumi:"createdFiles"`
-	MovedFiles   map[string]string `pulumi:"movedFiles"`
-	Triggers     []any             `pulumi:"triggers"`
+	CommandArgs[T]
+
+	ExitCode int                `pulumi:"exitCode"`
+	Stderr   string             `pulumi:"stderr"`
+	Stdout   string             `pulumi:"stdout"`
+	Creates  []FsEntry          `pulumi:"creates"`
+	Moves    map[string]FsEntry `pulumi:"moves"`
 }
 
 func (s *CommandState[T]) Create(ctx context.Context, inputs T, preview bool) error {
@@ -86,17 +97,17 @@ func (s *CommandState[T]) Create(ctx context.Context, inputs T, preview bool) er
 	s.ExitCode = int(res.Result.ExitCode)
 	s.Stdout = res.Result.Stdout
 	s.Stderr = res.Result.Stderr
-	s.CreatedFiles = res.CreatedFiles
-	s.MovedFiles = res.MovedFiles
+	s.Creates = res.CreatedFiles
+	s.Moves = res.MovedFiles
 
 	log.Info("create success")
 	return nil
 }
 
-func (s *CommandState[T]) Diff(ctx context.Context, inputs T) (provider.DiffResponse, error) {
+func (s *CommandState[T]) Diff(ctx context.Context, inputs CommandArgs[T]) (provider.DiffResponse, error) {
 	diff := map[string]provider.PropertyDiff{}
 
-	if !slices.Equal(s.Triggers, inputs.triggers()) {
+	if !slices.Equal(s.Triggers, inputs.Triggers) {
 		diff["triggers"] = provider.PropertyDiff{Kind: provider.Update}
 	}
 
@@ -107,7 +118,7 @@ func (s *CommandState[T]) Diff(ctx context.Context, inputs T) (provider.DiffResp
 	}, nil
 }
 
-func (s *CommandState[T]) Update(ctx context.Context, inputs T, preview bool) (CommandState[T], error) {
+func (s *CommandState[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bool) (CommandState[T], error) {
 	log := logger.FromContext(ctx)
 	p, err := provisioner.FromContext(ctx)
 	result := s.Copy()
@@ -124,8 +135,8 @@ func (s *CommandState[T]) Update(ctx context.Context, inputs T, preview bool) (C
 		ExpectMoved:   inputs.ExpectMoved(),
 		Create: &pb.Operation{
 			Command:      s.Args.Cmd(),
-			CreatedFiles: s.CreatedFiles,
-			MovedFiles:   s.MovedFiles,
+			CreatedFiles: s.Creates,
+			MovedFiles:   s.Moves,
 			Result: &pb.Result{
 				ExitCode: int32(s.ExitCode),
 				Stdout:   s.Stdout,
@@ -151,8 +162,8 @@ func (s *CommandState[T]) Update(ctx context.Context, inputs T, preview bool) (C
 	result.ExitCode = int(res.Result.ExitCode)
 	result.Stdout = res.Result.Stdout
 	result.Stderr = res.Result.Stderr
-	result.CreatedFiles = res.CreatedFiles
-	result.MovedFiles = res.MovedFiles
+	result.Creates = res.CreatedFiles
+	result.Moves = res.MovedFiles
 
 	log.Info("update success")
 	return result, nil
@@ -170,8 +181,8 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 	res, err := p.Delete(ctx, &pb.DeleteRequest{
 		Create: &pb.Operation{
 			Command:      s.Args.Cmd(),
-			CreatedFiles: s.CreatedFiles,
-			MovedFiles:   s.MovedFiles,
+			CreatedFiles: s.Creates,
+			MovedFiles:   s.Moves,
 			Result: &pb.Result{
 				ExitCode: int32(s.ExitCode),
 				Stdout:   s.Stdout,
@@ -206,11 +217,11 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 
 func (s *CommandState[T]) Copy() CommandState[T] {
 	return CommandState[T]{
-		Args:         s.Args,
-		ExitCode:     s.ExitCode,
-		Stderr:       s.Stderr,
-		Stdout:       s.Stdout,
-		CreatedFiles: s.CreatedFiles,
-		MovedFiles:   s.MovedFiles,
+		CommandArgs: s.CommandArgs,
+		ExitCode:    s.ExitCode,
+		Stderr:      s.Stderr,
+		Stdout:      s.Stdout,
+		Creates:     s.Creates,
+		Moves:       s.Moves,
 	}
 }
