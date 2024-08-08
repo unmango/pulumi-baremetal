@@ -537,13 +537,13 @@ var _ = Describe("Command Resources", func() {
 					Expect(output["exitCode"]).To(HavePropertyValue(0))
 					Expect(output["stdout"]).To(HavePropertyValue(""))
 					Expect(output["stderr"]).To(HavePropertyValue(""))
-					Expect(output["createdFiles"].V).To(Equal([]string{file}))
+					Expect(output["createdFiles"].V).To(ContainElement(resource.NewProperty(file)))
 					Expect(output["movedFiles"].V).To(BeEmpty())
 
 					args := output["args"].ObjectValue()
 					Expect(args["directoryPrefix"]).To(HavePropertyValue(dir))
-					Expect(args["directoryPrefix"].V).To(Equal([]string{url}))
-					Expect(args["directoryPrefix"]).To(HavePropertyValue(true))
+					Expect(args["urls"].V).To(ContainElement(resource.NewProperty(url)))
+					Expect(args["quiet"]).To(HavePropertyValue(true))
 
 					_, err := provisioner.ReadFile(context.Background(), file)
 					Expect(err).NotTo(HaveOccurred())
