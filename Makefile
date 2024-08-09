@@ -64,7 +64,7 @@ test_all:: test_provider test_sdks
 test_provider:: .test/provider
 test_sdks:: .test/sdks
 
-docker:: .make/provisioner_docker_build
+docker:: .make/provisioner_docker_build .make/provisioner_test_docker_build
 mans:: gen_mans
 proto:: gen_proto
 
@@ -135,9 +135,6 @@ devcontainer::
 
 .PHONY: build
 build:: provider provisioner dotnet_sdk go_sdk nodejs_sdk python_sdk
-
-# Required for the codegen action that runs in pulumi/pulumi
-only_build:: build
 
 lint:: .make/lint/buf .make/lint_go
 
@@ -213,8 +210,12 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 	buf lint --path $?
 	@touch $@
 
-.make/provisioner_docker_build: provider/cmd/provisioner/Dockerfile bin/provisioner
+.make/provisioner_docker_build: provider/cmd/provisioner/Dockerfile .dockerignore
 	docker build ${WORKING_DIR} -f $< -t ${PROVISIONER_NAME}:local-${VERSION_TAG}
+	@touch $@
+
+.make/provisioner_test_docker_build: tests/provisioner.Dockerfile .dockerignore bin/provisioner
+	docker build ${WORKING_DIR} -f $< -t ${PROVISIONER_NAME}:test
 	@touch $@
 
 .make/examples/%: examples/yaml/** bin/$(PROVIDER)
@@ -230,7 +231,7 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 
 TEST_FLAGS ?=
 
-.test/provider: provisioner .make/provisioner_docker_build
+.test/provider: .make/provisioner_test_docker_build
 	cd tests && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}
 
 .test/pkg: $(PKG_SRC)
