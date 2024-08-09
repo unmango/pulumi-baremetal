@@ -22,6 +22,7 @@ type Rm struct {
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
 	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput       `pulumi:"triggers"`
 }
 
 // NewRm registers a new resource with the given unique name, arguments, and options.
@@ -31,8 +32,8 @@ func NewRm(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.Files == nil {
-		return nil, errors.New("invalid value for required argument 'Files'")
+	if args.Args == nil {
+		return nil, errors.New("invalid value for required argument 'Args'")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Rm
@@ -67,24 +68,14 @@ func (RmState) ElementType() reflect.Type {
 }
 
 type rmArgs struct {
-	Dir           *bool    `pulumi:"dir"`
-	Files         []string `pulumi:"files"`
-	Force         *bool    `pulumi:"force"`
-	Help          *bool    `pulumi:"help"`
-	OneFileSystem *bool    `pulumi:"oneFileSystem"`
-	Recursive     *bool    `pulumi:"recursive"`
-	Verbose       *bool    `pulumi:"verbose"`
+	Args     RmArgsType    `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Rm resource.
 type RmArgs struct {
-	Dir           pulumi.BoolPtrInput
-	Files         pulumi.StringArrayInput
-	Force         pulumi.BoolPtrInput
-	Help          pulumi.BoolPtrInput
-	OneFileSystem pulumi.BoolPtrInput
-	Recursive     pulumi.BoolPtrInput
-	Verbose       pulumi.BoolPtrInput
+	Args     RmArgsTypeInput
+	Triggers pulumi.ArrayInput
 }
 
 func (RmArgs) ElementType() reflect.Type {
@@ -158,6 +149,10 @@ func (o RmOutput) Stderr() pulumi.StringOutput {
 
 func (o RmOutput) Stdout() pulumi.StringOutput {
 	return o.ApplyT(func(v *Rm) pulumi.StringOutput { return v.Stdout }).(pulumi.StringOutput)
+}
+
+func (o RmOutput) Triggers() pulumi.ArrayOutput {
+	return o.ApplyT(func(v *Rm) pulumi.ArrayOutput { return v.Triggers }).(pulumi.ArrayOutput)
 }
 
 func init() {

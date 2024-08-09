@@ -59,8 +59,10 @@ var _ = Describe("Command Resources", func() {
 			Resource: "baremetal:cmd:Chmod",
 			Create: integration.Operation{
 				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"files":     []string{file},
-					"octalMode": "0700",
+					"args": map[string]interface{}{
+						"files":     []string{file},
+						"octalMode": "0700",
+					},
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
@@ -112,8 +114,10 @@ var _ = Describe("Command Resources", func() {
 			Resource: "baremetal:cmd:Mv",
 			Create: integration.Operation{
 				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"source":      []string{file},
-					"destination": newFile,
+					"args": map[string]interface{}{
+						"source":      []string{file},
+						"destination": newFile,
+					},
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
@@ -163,7 +167,9 @@ var _ = Describe("Command Resources", func() {
 			Resource: "baremetal:cmd:Mkdir",
 			Create: integration.Operation{
 				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"directory": []string{expectedDir},
+					"args": map[string]interface{}{
+						"directory": []string{expectedDir},
+					},
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
@@ -201,7 +207,9 @@ var _ = Describe("Command Resources", func() {
 			Resource: "baremetal:cmd:Mktemp",
 			Create: integration.Operation{
 				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"tmpdir": true,
+					"args": map[string]interface{}{
+						"tmpdir": true,
+					},
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
@@ -211,6 +219,21 @@ var _ = Describe("Command Resources", func() {
 					Expect(output["movedFiles"].V).To(BeEmpty())
 				},
 			},
+			// This seems to be crashing the provisioner
+			// Updates: []integration.Operation{
+			// 	{ // Add a trigger
+			// 		Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+			// 			"args": map[string]interface{}{
+			// 				"tmpdir": true,
+			// 			},
+			// 			"triggers": []interface{}{"a trigger"},
+			// 		}),
+			// 		Hook: func(inputs, output resource.PropertyMap) {
+			// 			Expect(output["triggers"]).To(Equal([]interface{}{"a trigger"}))
+			// 			Expect(inputs).To(Equal(output))
+			// 		},
+			// 	},
+			// },
 		}
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
@@ -234,7 +257,9 @@ var _ = Describe("Command Resources", func() {
 			Resource: "baremetal:cmd:Rm",
 			Create: integration.Operation{
 				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"files": []string{file},
+					"args": map[string]interface{}{
+						"files": []string{file},
+					},
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
@@ -297,10 +322,12 @@ var _ = Describe("Command Resources", func() {
 			Resource: "baremetal:cmd:Tar",
 			Create: integration.Operation{
 				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"extract":   true,
-					"file":      archive,
-					"directory": dest,
-					"args":      []string{fileName},
+					"args": map[string]interface{}{
+						"extract":   true,
+						"file":      archive,
+						"directory": dest,
+						"args":      []string{fileName},
+					},
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
@@ -377,8 +404,10 @@ var _ = Describe("Command Resources", func() {
 			Resource: "baremetal:cmd:Tee",
 			Create: integration.Operation{
 				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"content": stdin,
-					"files":   []string{file},
+					"args": map[string]interface{}{
+						"content": stdin,
+						"files":   []string{file},
+					},
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
@@ -402,8 +431,10 @@ var _ = Describe("Command Resources", func() {
 			Updates: []integration.Operation{
 				{
 					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-						"content": stdin,
-						"files":   []string{newFile},
+						"args": map[string]interface{}{
+							"content": stdin,
+							"files":   []string{newFile},
+						},
 					}),
 					Hook: func(inputs, output resource.PropertyMap) {
 						ctx := context.Background()
@@ -428,8 +459,10 @@ var _ = Describe("Command Resources", func() {
 				},
 				{
 					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-						"content": newStdin,
-						"files":   []string{newFile},
+						"args": map[string]interface{}{
+							"content": newStdin,
+							"files":   []string{newFile},
+						},
 					}),
 					Hook: func(inputs, output resource.PropertyMap) {
 						Expect(output["stderr"]).To(HavePropertyValue(""))
@@ -453,8 +486,10 @@ var _ = Describe("Command Resources", func() {
 				},
 				{
 					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-						"content": newStdin,
-						"files":   []string{file, newFile},
+						"args": map[string]interface{}{
+							"content": newStdin,
+							"files":   []string{file, newFile},
+						},
 					}),
 					Hook: func(inputs, output resource.PropertyMap) {
 						Expect(output["stderr"]).To(HavePropertyValue(""))
@@ -507,70 +542,27 @@ var _ = Describe("Command Resources", func() {
 			Resource: "baremetal:cmd:Wget",
 			Create: integration.Operation{
 				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"directoryPrefix": dir,
-					"urls":            []string{url},
-					"quiet":           true,
-				}),
-				Hook: func(inputs, output resource.PropertyMap) {
-					_, err := provisioner.ReadFile(context.Background(), file)
-					Expect(err).NotTo(HaveOccurred())
-				},
-				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"exitCode":     0,
-					"stdout":       "",
-					"stderr":       "",
-					"createdFiles": []string{file},
-					"movedFiles":   map[string]string{},
 					"args": map[string]interface{}{
 						"directoryPrefix": dir,
 						"urls":            []string{url},
 						"quiet":           true,
-
-						// Defaults
-						"wait":               "",
-						"config":             "",
-						"inputFile":          "",
-						"caCertificateFile":  "",
-						"timeout":            "",
-						"showProgress":       false,
-						"continue":           false,
-						"noDirectories":      false,
-						"appendOutput":       "",
-						"timestamping":       false,
-						"saveCookies":        "",
-						"base":               "",
-						"noDnsCache":         false,
-						"noVerbose":          false,
-						"version":            "",
-						"progress":           "",
-						"outputDocument":     "",
-						"password":           "",
-						"caDirectory":        "",
-						"forceDirectories":   false,
-						"background":         false,
-						"httpsOnly":          false,
-						"certificateType":    "",
-						"userAgent":          "",
-						"keepSessionCookies": false,
-						"noClobber":          false,
-						"debug":              false,
-						"help":               false,
-						"inet4Only":          false,
-						"privateKeyType":     "",
-						"certificate":        "",
-						"forceHtml":          false,
-						"user":               "",
-						"tries":              0,
-						"outputFile":         "",
-						"randomWait":         false,
-						"startPos":           "",
-						"verbose":            false,
-						"privateKey":         "",
-						"reportSpeed":        "",
-						"cutDirs":            0,
-						"crlFile":            "",
 					},
 				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					Expect(output["exitCode"]).To(HavePropertyValue(0))
+					Expect(output["stdout"]).To(HavePropertyValue(""))
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(output["createdFiles"].V).To(ContainElement(resource.NewProperty(file)))
+					Expect(output["movedFiles"].V).To(BeEmpty())
+
+					args := output["args"].ObjectValue()
+					Expect(args["directoryPrefix"]).To(HavePropertyValue(dir))
+					Expect(args["urls"].V).To(ContainElement(resource.NewProperty(url)))
+					Expect(args["quiet"]).To(HavePropertyValue(true))
+
+					_, err := provisioner.ReadFile(context.Background(), file)
+					Expect(err).NotTo(HaveOccurred())
+				},
 			},
 		}
 

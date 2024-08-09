@@ -31,6 +31,9 @@ namespace UnMango.Baremetal.Cmd
         [Output("stdout")]
         public Output<string> Stdout { get; private set; } = null!;
 
+        [Output("triggers")]
+        public Output<ImmutableArray<object>> Triggers { get; private set; } = null!;
+
 
         /// <summary>
         /// Create a Mktemp resource with the given unique name, arguments, and options.
@@ -39,7 +42,7 @@ namespace UnMango.Baremetal.Cmd
         /// <param name="name">The unique name of the resource</param>
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
-        public Mktemp(string name, MktempArgs? args = null, CustomResourceOptions? options = null)
+        public Mktemp(string name, MktempArgs args, CustomResourceOptions? options = null)
             : base("baremetal:cmd:Mktemp", name, args ?? new MktempArgs(), MakeResourceOptions(options, ""))
         {
         }
@@ -77,35 +80,16 @@ namespace UnMango.Baremetal.Cmd
 
     public sealed class MktempArgs : global::Pulumi.ResourceArgs
     {
-        [Input("directory")]
-        public Input<bool>? Directory { get; set; }
+        [Input("args", required: true)]
+        public Input<Inputs.MktempArgsArgs> Args { get; set; } = null!;
 
-        [Input("dryRun")]
-        public Input<bool>? DryRun { get; set; }
-
-        [Input("help")]
-        public Input<bool>? Help { get; set; }
-
-        [Input("p")]
-        public Input<string>? P { get; set; }
-
-        [Input("quiet")]
-        public Input<bool>? Quiet { get; set; }
-
-        [Input("suffix")]
-        public Input<string>? Suffix { get; set; }
-
-        [Input("t")]
-        public Input<bool>? T { get; set; }
-
-        [Input("template")]
-        public Input<string>? Template { get; set; }
-
-        [Input("tmpdir")]
-        public Input<bool>? Tmpdir { get; set; }
-
-        [Input("version")]
-        public Input<bool>? Version { get; set; }
+        [Input("triggers")]
+        private InputList<object>? _triggers;
+        public InputList<object> Triggers
+        {
+            get => _triggers ?? (_triggers = new InputList<object>());
+            set => _triggers = value;
+        }
 
         public MktempArgs()
         {

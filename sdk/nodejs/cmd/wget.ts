@@ -33,12 +33,13 @@ export class Wget extends pulumi.CustomResource {
         return obj['__pulumiType'] === Wget.__pulumiType;
     }
 
-    public /*out*/ readonly args!: pulumi.Output<outputs.cmd.WgetArgs>;
+    public readonly args!: pulumi.Output<outputs.cmd.WgetArgs>;
     public /*out*/ readonly createdFiles!: pulumi.Output<string[]>;
     public /*out*/ readonly exitCode!: pulumi.Output<number>;
     public /*out*/ readonly movedFiles!: pulumi.Output<{[key: string]: string}>;
     public /*out*/ readonly stderr!: pulumi.Output<string>;
     public /*out*/ readonly stdout!: pulumi.Output<string>;
+    public readonly triggers!: pulumi.Output<any[] | undefined>;
 
     /**
      * Create a Wget resource with the given unique name, arguments, and options.
@@ -51,56 +52,11 @@ export class Wget extends pulumi.CustomResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.urls === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'urls'");
+            if ((!args || args.args === undefined) && !opts.urn) {
+                throw new Error("Missing required property 'args'");
             }
-            resourceInputs["appendOutput"] = args ? args.appendOutput : undefined;
-            resourceInputs["background"] = args ? args.background : undefined;
-            resourceInputs["base"] = args ? args.base : undefined;
-            resourceInputs["caCertificateFile"] = args ? args.caCertificateFile : undefined;
-            resourceInputs["caDirectory"] = args ? args.caDirectory : undefined;
-            resourceInputs["certificate"] = args ? args.certificate : undefined;
-            resourceInputs["certificateType"] = args ? args.certificateType : undefined;
-            resourceInputs["config"] = args ? args.config : undefined;
-            resourceInputs["continue"] = args ? args.continue : undefined;
-            resourceInputs["crlFile"] = args ? args.crlFile : undefined;
-            resourceInputs["cutDirs"] = args ? args.cutDirs : undefined;
-            resourceInputs["debug"] = args ? args.debug : undefined;
-            resourceInputs["directoryPrefix"] = args ? args.directoryPrefix : undefined;
-            resourceInputs["execute"] = args ? args.execute : undefined;
-            resourceInputs["forceDirectories"] = args ? args.forceDirectories : undefined;
-            resourceInputs["forceHtml"] = args ? args.forceHtml : undefined;
-            resourceInputs["help"] = args ? args.help : undefined;
-            resourceInputs["httpsOnly"] = args ? args.httpsOnly : undefined;
-            resourceInputs["inet4Only"] = args ? args.inet4Only : undefined;
-            resourceInputs["inputFile"] = args ? args.inputFile : undefined;
-            resourceInputs["keepSessionCookies"] = args ? args.keepSessionCookies : undefined;
-            resourceInputs["noClobber"] = args ? args.noClobber : undefined;
-            resourceInputs["noDirectories"] = args ? args.noDirectories : undefined;
-            resourceInputs["noDnsCache"] = args ? args.noDnsCache : undefined;
-            resourceInputs["noVerbose"] = args ? args.noVerbose : undefined;
-            resourceInputs["outputDocument"] = args ? args.outputDocument : undefined;
-            resourceInputs["outputFile"] = args ? args.outputFile : undefined;
-            resourceInputs["password"] = args?.password ? pulumi.secret(args.password) : undefined;
-            resourceInputs["privateKey"] = args?.privateKey ? pulumi.secret(args.privateKey) : undefined;
-            resourceInputs["privateKeyType"] = args?.privateKeyType ? pulumi.secret(args.privateKeyType) : undefined;
-            resourceInputs["progress"] = args ? args.progress : undefined;
-            resourceInputs["quiet"] = args ? args.quiet : undefined;
-            resourceInputs["randomWait"] = args ? args.randomWait : undefined;
-            resourceInputs["reportSpeed"] = args ? args.reportSpeed : undefined;
-            resourceInputs["saveCookies"] = args ? args.saveCookies : undefined;
-            resourceInputs["showProgress"] = args ? args.showProgress : undefined;
-            resourceInputs["startPos"] = args ? args.startPos : undefined;
-            resourceInputs["timeout"] = args ? args.timeout : undefined;
-            resourceInputs["timestamping"] = args ? args.timestamping : undefined;
-            resourceInputs["tries"] = args ? args.tries : undefined;
-            resourceInputs["urls"] = args ? args.urls : undefined;
-            resourceInputs["user"] = args ? args.user : undefined;
-            resourceInputs["userAgent"] = args ? args.userAgent : undefined;
-            resourceInputs["verbose"] = args ? args.verbose : undefined;
-            resourceInputs["version"] = args ? args.version : undefined;
-            resourceInputs["wait"] = args ? args.wait : undefined;
-            resourceInputs["args"] = undefined /*out*/;
+            resourceInputs["args"] = args ? args.args : undefined;
+            resourceInputs["triggers"] = args ? args.triggers : undefined;
             resourceInputs["createdFiles"] = undefined /*out*/;
             resourceInputs["exitCode"] = undefined /*out*/;
             resourceInputs["movedFiles"] = undefined /*out*/;
@@ -113,6 +69,7 @@ export class Wget extends pulumi.CustomResource {
             resourceInputs["movedFiles"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
+            resourceInputs["triggers"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Wget.__pulumiType, name, resourceInputs, opts);
@@ -123,50 +80,6 @@ export class Wget extends pulumi.CustomResource {
  * The set of arguments for constructing a Wget resource.
  */
 export interface WgetArgs {
-    appendOutput?: pulumi.Input<string>;
-    background?: pulumi.Input<boolean>;
-    base?: pulumi.Input<string>;
-    caCertificateFile?: pulumi.Input<string>;
-    caDirectory?: pulumi.Input<string>;
-    certificate?: pulumi.Input<string>;
-    certificateType?: pulumi.Input<string>;
-    config?: pulumi.Input<string>;
-    continue?: pulumi.Input<boolean>;
-    crlFile?: pulumi.Input<string>;
-    cutDirs?: pulumi.Input<number>;
-    debug?: pulumi.Input<boolean>;
-    directoryPrefix?: pulumi.Input<string>;
-    execute?: pulumi.Input<pulumi.Input<string>[]>;
-    forceDirectories?: pulumi.Input<boolean>;
-    forceHtml?: pulumi.Input<boolean>;
-    help?: pulumi.Input<boolean>;
-    httpsOnly?: pulumi.Input<boolean>;
-    inet4Only?: pulumi.Input<boolean>;
-    inputFile?: pulumi.Input<string>;
-    keepSessionCookies?: pulumi.Input<boolean>;
-    noClobber?: pulumi.Input<boolean>;
-    noDirectories?: pulumi.Input<boolean>;
-    noDnsCache?: pulumi.Input<boolean>;
-    noVerbose?: pulumi.Input<boolean>;
-    outputDocument?: pulumi.Input<string>;
-    outputFile?: pulumi.Input<string>;
-    password?: pulumi.Input<string>;
-    privateKey?: pulumi.Input<string>;
-    privateKeyType?: pulumi.Input<string>;
-    progress?: pulumi.Input<string>;
-    quiet?: pulumi.Input<boolean>;
-    randomWait?: pulumi.Input<boolean>;
-    reportSpeed?: pulumi.Input<string>;
-    saveCookies?: pulumi.Input<string>;
-    showProgress?: pulumi.Input<boolean>;
-    startPos?: pulumi.Input<string>;
-    timeout?: pulumi.Input<string>;
-    timestamping?: pulumi.Input<boolean>;
-    tries?: pulumi.Input<number>;
-    urls: pulumi.Input<pulumi.Input<string>[]>;
-    user?: pulumi.Input<string>;
-    userAgent?: pulumi.Input<string>;
-    verbose?: pulumi.Input<boolean>;
-    version?: pulumi.Input<string>;
-    wait?: pulumi.Input<string>;
+    args: pulumi.Input<inputs.cmd.WgetArgsArgs>;
+    triggers?: pulumi.Input<any[]>;
 }

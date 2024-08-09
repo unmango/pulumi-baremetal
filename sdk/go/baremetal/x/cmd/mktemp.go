@@ -7,6 +7,7 @@ import (
 	"context"
 	"reflect"
 
+	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
@@ -21,15 +22,19 @@ type Mktemp struct {
 	MovedFiles   pulumix.MapOutput[string]                                `pulumi:"movedFiles"`
 	Stderr       pulumix.Output[string]                                   `pulumi:"stderr"`
 	Stdout       pulumix.Output[string]                                   `pulumi:"stdout"`
+	Triggers     pulumix.ArrayOutput[any]                                 `pulumi:"triggers"`
 }
 
 // NewMktemp registers a new resource with the given unique name, arguments, and options.
 func NewMktemp(ctx *pulumi.Context,
 	name string, args *MktempArgs, opts ...pulumi.ResourceOption) (*Mktemp, error) {
 	if args == nil {
-		args = &MktempArgs{}
+		return nil, errors.New("missing one or more required arguments")
 	}
 
+	if args.Args == nil {
+		return nil, errors.New("invalid value for required argument 'Args'")
+	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Mktemp
 	err := ctx.RegisterResource("baremetal:cmd:Mktemp", name, args, &resource, opts...)
@@ -63,30 +68,14 @@ func (MktempState) ElementType() reflect.Type {
 }
 
 type mktempArgs struct {
-	Directory *bool   `pulumi:"directory"`
-	DryRun    *bool   `pulumi:"dryRun"`
-	Help      *bool   `pulumi:"help"`
-	P         *string `pulumi:"p"`
-	Quiet     *bool   `pulumi:"quiet"`
-	Suffix    *string `pulumi:"suffix"`
-	T         *bool   `pulumi:"t"`
-	Template  *string `pulumi:"template"`
-	Tmpdir    *bool   `pulumi:"tmpdir"`
-	Version   *bool   `pulumi:"version"`
+	Args     MktempArgsType `pulumi:"args"`
+	Triggers []interface{}  `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Mktemp resource.
 type MktempArgs struct {
-	Directory pulumix.Input[*bool]
-	DryRun    pulumix.Input[*bool]
-	Help      pulumix.Input[*bool]
-	P         pulumix.Input[*string]
-	Quiet     pulumix.Input[*bool]
-	Suffix    pulumix.Input[*string]
-	T         pulumix.Input[*bool]
-	Template  pulumix.Input[*string]
-	Tmpdir    pulumix.Input[*bool]
-	Version   pulumix.Input[*bool]
+	Args     pulumix.Input[*MktempArgsTypeArgs]
+	Triggers pulumix.Input[[]any]
 }
 
 func (MktempArgs) ElementType() reflect.Type {
@@ -144,6 +133,12 @@ func (o MktempOutput) Stderr() pulumix.Output[string] {
 func (o MktempOutput) Stdout() pulumix.Output[string] {
 	value := pulumix.Apply[Mktemp](o, func(v Mktemp) pulumix.Output[string] { return v.Stdout })
 	return pulumix.Flatten[string, pulumix.Output[string]](value)
+}
+
+func (o MktempOutput) Triggers() pulumix.ArrayOutput[any] {
+	value := pulumix.Apply[Mktemp](o, func(v Mktemp) pulumix.ArrayOutput[any] { return v.Triggers })
+	unwrapped := pulumix.Flatten[[]interface{}, pulumix.ArrayOutput[any]](value)
+	return pulumix.ArrayOutput[any]{OutputState: unwrapped.OutputState}
 }
 
 func init() {

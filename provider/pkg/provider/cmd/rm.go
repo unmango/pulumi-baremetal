@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 
+	provider "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 )
 
 type RmArgs struct {
-	DefaultFileManipulator
+	CommandArgsBase
+
 	Dir           bool     `pulumi:"dir,optional"`
 	Files         []string `pulumi:"files"`
 	Force         bool     `pulumi:"force,optional"`
@@ -34,14 +36,14 @@ func (r RmArgs) Cmd() *pb.Command {
 	}
 }
 
-var _ CommandArgs = RmArgs{}
+var _ CommandBuilder = RmArgs{}
 
 type Rm struct{}
 
 type RmState = CommandState[RmArgs]
 
 // Create implements infer.CustomCreate.
-func (Rm) Create(ctx context.Context, name string, inputs RmArgs, preview bool) (id string, output RmState, err error) {
+func (Rm) Create(ctx context.Context, name string, inputs CommandArgs[RmArgs], preview bool) (id string, output RmState, err error) {
 	state := RmState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("rm: %w", err)
@@ -50,8 +52,13 @@ func (Rm) Create(ctx context.Context, name string, inputs RmArgs, preview bool) 
 	return name, state, nil
 }
 
+// Diff implements infer.CustomDiff.
+func (Rm) Diff(ctx context.Context, id string, olds RmState, news CommandArgs[RmArgs]) (provider.DiffResponse, error) {
+	panic("unimplemented")
+}
+
 // Update implements infer.CustomUpdate.
-func (Rm) Update(ctx context.Context, id string, olds RmState, news RmArgs, preview bool) (RmState, error) {
+func (Rm) Update(ctx context.Context, id string, olds RmState, news CommandArgs[RmArgs], preview bool) (RmState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
 		return olds, fmt.Errorf("rm: %w", err)
@@ -69,6 +76,7 @@ func (Rm) Delete(ctx context.Context, id string, props RmState) error {
 	return nil
 }
 
-var _ = (infer.CustomCreate[RmArgs, RmState])((*Rm)(nil))
-var _ = (infer.CustomUpdate[RmArgs, RmState])((*Rm)(nil))
+var _ = (infer.CustomCreate[CommandArgs[RmArgs], RmState])((*Rm)(nil))
+var _ = (infer.CustomDiff[CommandArgs[RmArgs], RmState])((*Rm)(nil))
+var _ = (infer.CustomUpdate[CommandArgs[RmArgs], RmState])((*Rm)(nil))
 var _ = (infer.CustomDelete[RmState])((*Rm)(nil))

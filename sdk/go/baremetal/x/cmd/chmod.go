@@ -22,6 +22,7 @@ type Chmod struct {
 	MovedFiles   pulumix.MapOutput[string]                              `pulumi:"movedFiles"`
 	Stderr       pulumix.Output[string]                                 `pulumi:"stderr"`
 	Stdout       pulumix.Output[string]                                 `pulumi:"stdout"`
+	Triggers     pulumix.ArrayOutput[any]                               `pulumi:"triggers"`
 }
 
 // NewChmod registers a new resource with the given unique name, arguments, and options.
@@ -31,8 +32,8 @@ func NewChmod(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.Files == nil {
-		return nil, errors.New("invalid value for required argument 'Files'")
+	if args.Args == nil {
+		return nil, errors.New("invalid value for required argument 'Args'")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Chmod
@@ -67,34 +68,14 @@ func (ChmodState) ElementType() reflect.Type {
 }
 
 type chmodArgs struct {
-	Changes        *bool    `pulumi:"changes"`
-	Files          []string `pulumi:"files"`
-	Help           *bool    `pulumi:"help"`
-	Mode           []string `pulumi:"mode"`
-	NoPreserveRoot *bool    `pulumi:"noPreserveRoot"`
-	OctalMode      *string  `pulumi:"octalMode"`
-	PreserveRoot   *bool    `pulumi:"preserveRoot"`
-	Quiet          *bool    `pulumi:"quiet"`
-	Recursive      *bool    `pulumi:"recursive"`
-	Reference      *string  `pulumi:"reference"`
-	Verbose        *bool    `pulumi:"verbose"`
-	Version        *bool    `pulumi:"version"`
+	Args     ChmodArgsType `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Chmod resource.
 type ChmodArgs struct {
-	Changes        pulumix.Input[*bool]
-	Files          pulumix.Input[[]string]
-	Help           pulumix.Input[*bool]
-	Mode           pulumix.Input[[]string]
-	NoPreserveRoot pulumix.Input[*bool]
-	OctalMode      pulumix.Input[*string]
-	PreserveRoot   pulumix.Input[*bool]
-	Quiet          pulumix.Input[*bool]
-	Recursive      pulumix.Input[*bool]
-	Reference      pulumix.Input[*string]
-	Verbose        pulumix.Input[*bool]
-	Version        pulumix.Input[*bool]
+	Args     pulumix.Input[*ChmodArgsTypeArgs]
+	Triggers pulumix.Input[[]any]
 }
 
 func (ChmodArgs) ElementType() reflect.Type {
@@ -152,6 +133,12 @@ func (o ChmodOutput) Stderr() pulumix.Output[string] {
 func (o ChmodOutput) Stdout() pulumix.Output[string] {
 	value := pulumix.Apply[Chmod](o, func(v Chmod) pulumix.Output[string] { return v.Stdout })
 	return pulumix.Flatten[string, pulumix.Output[string]](value)
+}
+
+func (o ChmodOutput) Triggers() pulumix.ArrayOutput[any] {
+	value := pulumix.Apply[Chmod](o, func(v Chmod) pulumix.ArrayOutput[any] { return v.Triggers })
+	unwrapped := pulumix.Flatten[[]interface{}, pulumix.ArrayOutput[any]](value)
+	return pulumix.ArrayOutput[any]{OutputState: unwrapped.OutputState}
 }
 
 func init() {

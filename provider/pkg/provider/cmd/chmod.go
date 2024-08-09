@@ -10,7 +10,8 @@ import (
 )
 
 type ChmodArgs struct {
-	DefaultFileManipulator
+	CommandArgsBase
+
 	Files          []string `pulumi:"files"`
 	Mode           []string `pulumi:"mode,optional"`
 	OctalMode      string   `pulumi:"octalMode,optional"`
@@ -51,14 +52,14 @@ func (m ChmodArgs) Cmd() *pb.Command {
 	}
 }
 
-var _ CommandArgs = ChmodArgs{}
+var _ CommandBuilder = ChmodArgs{}
 
 type Chmod struct{}
 
 type ChmodState = CommandState[ChmodArgs]
 
 // Create implements infer.CustomCreate.
-func (Chmod) Create(ctx context.Context, name string, inputs ChmodArgs, preview bool) (id string, output ChmodState, err error) {
+func (Chmod) Create(ctx context.Context, name string, inputs CommandArgs[ChmodArgs], preview bool) (id string, output ChmodState, err error) {
 	state := ChmodState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("chmod: %w", err)
@@ -68,7 +69,7 @@ func (Chmod) Create(ctx context.Context, name string, inputs ChmodArgs, preview 
 }
 
 // Update implements infer.CustomUpdate.
-func (Chmod) Update(ctx context.Context, id string, olds ChmodState, news ChmodArgs, preview bool) (ChmodState, error) {
+func (Chmod) Update(ctx context.Context, id string, olds ChmodState, news CommandArgs[ChmodArgs], preview bool) (ChmodState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
 		return olds, fmt.Errorf("chmod: %w", err)
@@ -86,5 +87,5 @@ func (Chmod) Delete(ctx context.Context, id string, props ChmodState) error {
 	return nil
 }
 
-var _ = (infer.CustomCreate[ChmodArgs, ChmodState])((*Chmod)(nil))
-var _ = (infer.CustomUpdate[ChmodArgs, ChmodState])((*Chmod)(nil))
+var _ = (infer.CustomCreate[CommandArgs[ChmodArgs], ChmodState])((*Chmod)(nil))
+var _ = (infer.CustomUpdate[CommandArgs[ChmodArgs], ChmodState])((*Chmod)(nil))

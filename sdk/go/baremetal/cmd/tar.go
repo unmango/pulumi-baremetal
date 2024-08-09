@@ -7,6 +7,7 @@ import (
 	"context"
 	"reflect"
 
+	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
@@ -21,15 +22,19 @@ type Tar struct {
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
 	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput       `pulumi:"triggers"`
 }
 
 // NewTar registers a new resource with the given unique name, arguments, and options.
 func NewTar(ctx *pulumi.Context,
 	name string, args *TarArgs, opts ...pulumi.ResourceOption) (*Tar, error) {
 	if args == nil {
-		args = &TarArgs{}
+		return nil, errors.New("missing one or more required arguments")
 	}
 
+	if args.Args == nil {
+		return nil, errors.New("invalid value for required argument 'Args'")
+	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Tar
 	err := ctx.RegisterResource("baremetal:cmd:Tar", name, args, &resource, opts...)
@@ -63,88 +68,14 @@ func (TarState) ElementType() reflect.Type {
 }
 
 type tarArgs struct {
-	Append               *bool    `pulumi:"append"`
-	Args                 []string `pulumi:"args"`
-	Bzip2                *bool    `pulumi:"bzip2"`
-	Create               *bool    `pulumi:"create"`
-	Delete               *bool    `pulumi:"delete"`
-	Diff                 *bool    `pulumi:"diff"`
-	Directory            *string  `pulumi:"directory"`
-	Exclude              *string  `pulumi:"exclude"`
-	ExcludeFrom          *string  `pulumi:"excludeFrom"`
-	ExcludeVcs           *bool    `pulumi:"excludeVcs"`
-	ExcludeVcsIgnores    *bool    `pulumi:"excludeVcsIgnores"`
-	Extract              *bool    `pulumi:"extract"`
-	File                 *string  `pulumi:"file"`
-	Gzip                 *bool    `pulumi:"gzip"`
-	IgnoreCommandError   *bool    `pulumi:"ignoreCommandError"`
-	KeepDirectorySymlink *bool    `pulumi:"keepDirectorySymlink"`
-	KeepNewerFiles       *bool    `pulumi:"keepNewerFiles"`
-	KeepOldfiles         *bool    `pulumi:"keepOldfiles"`
-	List                 *bool    `pulumi:"list"`
-	Lzip                 *bool    `pulumi:"lzip"`
-	Lzma                 *bool    `pulumi:"lzma"`
-	Lzop                 *bool    `pulumi:"lzop"`
-	NoOverwriteDir       *bool    `pulumi:"noOverwriteDir"`
-	NoSeek               *bool    `pulumi:"noSeek"`
-	Overwrite            *bool    `pulumi:"overwrite"`
-	OverwriteDir         *bool    `pulumi:"overwriteDir"`
-	RemoveFiles          *bool    `pulumi:"removeFiles"`
-	SkipOldFiles         *bool    `pulumi:"skipOldFiles"`
-	Sparse               *bool    `pulumi:"sparse"`
-	StripComponents      *int     `pulumi:"stripComponents"`
-	Suffix               *string  `pulumi:"suffix"`
-	ToStdout             *bool    `pulumi:"toStdout"`
-	Transform            *string  `pulumi:"transform"`
-	UnlinkFirst          *bool    `pulumi:"unlinkFirst"`
-	Update               *bool    `pulumi:"update"`
-	Verbose              *bool    `pulumi:"verbose"`
-	Verify               *bool    `pulumi:"verify"`
-	Xz                   *bool    `pulumi:"xz"`
-	Zstd                 *bool    `pulumi:"zstd"`
+	Args     TarArgsType   `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Tar resource.
 type TarArgs struct {
-	Append               pulumi.BoolPtrInput
-	Args                 pulumi.StringArrayInput
-	Bzip2                pulumi.BoolPtrInput
-	Create               pulumi.BoolPtrInput
-	Delete               pulumi.BoolPtrInput
-	Diff                 pulumi.BoolPtrInput
-	Directory            pulumi.StringPtrInput
-	Exclude              pulumi.StringPtrInput
-	ExcludeFrom          pulumi.StringPtrInput
-	ExcludeVcs           pulumi.BoolPtrInput
-	ExcludeVcsIgnores    pulumi.BoolPtrInput
-	Extract              pulumi.BoolPtrInput
-	File                 pulumi.StringPtrInput
-	Gzip                 pulumi.BoolPtrInput
-	IgnoreCommandError   pulumi.BoolPtrInput
-	KeepDirectorySymlink pulumi.BoolPtrInput
-	KeepNewerFiles       pulumi.BoolPtrInput
-	KeepOldfiles         pulumi.BoolPtrInput
-	List                 pulumi.BoolPtrInput
-	Lzip                 pulumi.BoolPtrInput
-	Lzma                 pulumi.BoolPtrInput
-	Lzop                 pulumi.BoolPtrInput
-	NoOverwriteDir       pulumi.BoolPtrInput
-	NoSeek               pulumi.BoolPtrInput
-	Overwrite            pulumi.BoolPtrInput
-	OverwriteDir         pulumi.BoolPtrInput
-	RemoveFiles          pulumi.BoolPtrInput
-	SkipOldFiles         pulumi.BoolPtrInput
-	Sparse               pulumi.BoolPtrInput
-	StripComponents      pulumi.IntPtrInput
-	Suffix               pulumi.StringPtrInput
-	ToStdout             pulumi.BoolPtrInput
-	Transform            pulumi.StringPtrInput
-	UnlinkFirst          pulumi.BoolPtrInput
-	Update               pulumi.BoolPtrInput
-	Verbose              pulumi.BoolPtrInput
-	Verify               pulumi.BoolPtrInput
-	Xz                   pulumi.BoolPtrInput
-	Zstd                 pulumi.BoolPtrInput
+	Args     TarArgsTypeInput
+	Triggers pulumi.ArrayInput
 }
 
 func (TarArgs) ElementType() reflect.Type {
@@ -218,6 +149,10 @@ func (o TarOutput) Stderr() pulumi.StringOutput {
 
 func (o TarOutput) Stdout() pulumi.StringOutput {
 	return o.ApplyT(func(v *Tar) pulumi.StringOutput { return v.Stdout }).(pulumi.StringOutput)
+}
+
+func (o TarOutput) Triggers() pulumi.ArrayOutput {
+	return o.ApplyT(func(v *Tar) pulumi.ArrayOutput { return v.Triggers }).(pulumi.ArrayOutput)
 }
 
 func init() {

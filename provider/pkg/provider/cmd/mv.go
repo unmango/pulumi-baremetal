@@ -10,7 +10,8 @@ import (
 )
 
 type MvArgs struct {
-	DefaultFileManipulator
+	CommandArgsBase
+
 	Backup               string   `pulumi:"backup,optional"`
 	Destination          string   `pulumi:"destination,optional"`
 	Directory            string   `pulumi:"directory,optional"`
@@ -71,14 +72,14 @@ func (m MvArgs) ExpectMoved() map[string]string {
 	return files
 }
 
-var _ CommandArgs = MvArgs{}
+var _ CommandBuilder = MvArgs{}
 
 type Mv struct{}
 
 type MvState = CommandState[MvArgs]
 
 // Create implements infer.CustomCreate.
-func (Mv) Create(ctx context.Context, name string, inputs MvArgs, preview bool) (id string, output MvState, err error) {
+func (Mv) Create(ctx context.Context, name string, inputs CommandArgs[MvArgs], preview bool) (id string, output MvState, err error) {
 	state := MvState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("mv: %w", err)
@@ -88,7 +89,7 @@ func (Mv) Create(ctx context.Context, name string, inputs MvArgs, preview bool) 
 }
 
 // Update implements infer.CustomUpdate.
-func (Mv) Update(ctx context.Context, id string, olds MvState, news MvArgs, preview bool) (MvState, error) {
+func (Mv) Update(ctx context.Context, id string, olds MvState, news CommandArgs[MvArgs], preview bool) (MvState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
 		return olds, fmt.Errorf("mv: %w", err)
@@ -106,5 +107,5 @@ func (Mv) Delete(ctx context.Context, id string, props MvState) error {
 	return nil
 }
 
-var _ = (infer.CustomCreate[MvArgs, MvState])((*Mv)(nil))
-var _ = (infer.CustomUpdate[MvArgs, MvState])((*Mv)(nil))
+var _ = (infer.CustomCreate[CommandArgs[MvArgs], MvState])((*Mv)(nil))
+var _ = (infer.CustomUpdate[CommandArgs[MvArgs], MvState])((*Mv)(nil))

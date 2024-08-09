@@ -9,135 +9,39 @@ import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from . import outputs
+from ._inputs import *
 
 __all__ = ['MktempArgs', 'Mktemp']
 
 @pulumi.input_type
 class MktempArgs:
     def __init__(__self__, *,
-                 directory: Optional[pulumi.Input[bool]] = None,
-                 dry_run: Optional[pulumi.Input[bool]] = None,
-                 help: Optional[pulumi.Input[bool]] = None,
-                 p: Optional[pulumi.Input[str]] = None,
-                 quiet: Optional[pulumi.Input[bool]] = None,
-                 suffix: Optional[pulumi.Input[str]] = None,
-                 t: Optional[pulumi.Input[bool]] = None,
-                 template: Optional[pulumi.Input[str]] = None,
-                 tmpdir: Optional[pulumi.Input[bool]] = None,
-                 version: Optional[pulumi.Input[bool]] = None):
+                 args: pulumi.Input['MktempArgsArgs'],
+                 triggers: Optional[pulumi.Input[Sequence[Any]]] = None):
         """
         The set of arguments for constructing a Mktemp resource.
         """
-        if directory is not None:
-            pulumi.set(__self__, "directory", directory)
-        if dry_run is not None:
-            pulumi.set(__self__, "dry_run", dry_run)
-        if help is not None:
-            pulumi.set(__self__, "help", help)
-        if p is not None:
-            pulumi.set(__self__, "p", p)
-        if quiet is not None:
-            pulumi.set(__self__, "quiet", quiet)
-        if suffix is not None:
-            pulumi.set(__self__, "suffix", suffix)
-        if t is not None:
-            pulumi.set(__self__, "t", t)
-        if template is not None:
-            pulumi.set(__self__, "template", template)
-        if tmpdir is not None:
-            pulumi.set(__self__, "tmpdir", tmpdir)
-        if version is not None:
-            pulumi.set(__self__, "version", version)
+        pulumi.set(__self__, "args", args)
+        if triggers is not None:
+            pulumi.set(__self__, "triggers", triggers)
 
     @property
     @pulumi.getter
-    def directory(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "directory")
+    def args(self) -> pulumi.Input['MktempArgsArgs']:
+        return pulumi.get(self, "args")
 
-    @directory.setter
-    def directory(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "directory", value)
-
-    @property
-    @pulumi.getter(name="dryRun")
-    def dry_run(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "dry_run")
-
-    @dry_run.setter
-    def dry_run(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "dry_run", value)
+    @args.setter
+    def args(self, value: pulumi.Input['MktempArgsArgs']):
+        pulumi.set(self, "args", value)
 
     @property
     @pulumi.getter
-    def help(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "help")
+    def triggers(self) -> Optional[pulumi.Input[Sequence[Any]]]:
+        return pulumi.get(self, "triggers")
 
-    @help.setter
-    def help(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "help", value)
-
-    @property
-    @pulumi.getter
-    def p(self) -> Optional[pulumi.Input[str]]:
-        return pulumi.get(self, "p")
-
-    @p.setter
-    def p(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "p", value)
-
-    @property
-    @pulumi.getter
-    def quiet(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "quiet")
-
-    @quiet.setter
-    def quiet(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "quiet", value)
-
-    @property
-    @pulumi.getter
-    def suffix(self) -> Optional[pulumi.Input[str]]:
-        return pulumi.get(self, "suffix")
-
-    @suffix.setter
-    def suffix(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "suffix", value)
-
-    @property
-    @pulumi.getter
-    def t(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "t")
-
-    @t.setter
-    def t(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "t", value)
-
-    @property
-    @pulumi.getter
-    def template(self) -> Optional[pulumi.Input[str]]:
-        return pulumi.get(self, "template")
-
-    @template.setter
-    def template(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "template", value)
-
-    @property
-    @pulumi.getter
-    def tmpdir(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "tmpdir")
-
-    @tmpdir.setter
-    def tmpdir(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "tmpdir", value)
-
-    @property
-    @pulumi.getter
-    def version(self) -> Optional[pulumi.Input[bool]]:
-        return pulumi.get(self, "version")
-
-    @version.setter
-    def version(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "version", value)
+    @triggers.setter
+    def triggers(self, value: Optional[pulumi.Input[Sequence[Any]]]):
+        pulumi.set(self, "triggers", value)
 
 
 class Mktemp(pulumi.CustomResource):
@@ -145,16 +49,8 @@ class Mktemp(pulumi.CustomResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 directory: Optional[pulumi.Input[bool]] = None,
-                 dry_run: Optional[pulumi.Input[bool]] = None,
-                 help: Optional[pulumi.Input[bool]] = None,
-                 p: Optional[pulumi.Input[str]] = None,
-                 quiet: Optional[pulumi.Input[bool]] = None,
-                 suffix: Optional[pulumi.Input[str]] = None,
-                 t: Optional[pulumi.Input[bool]] = None,
-                 template: Optional[pulumi.Input[str]] = None,
-                 tmpdir: Optional[pulumi.Input[bool]] = None,
-                 version: Optional[pulumi.Input[bool]] = None,
+                 args: Optional[pulumi.Input[Union['MktempArgsArgs', 'MktempArgsArgsDict']]] = None,
+                 triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
                  __props__=None):
         """
         Create a Mktemp resource with the given unique name, props, and options.
@@ -165,7 +61,7 @@ class Mktemp(pulumi.CustomResource):
     @overload
     def __init__(__self__,
                  resource_name: str,
-                 args: Optional[MktempArgs] = None,
+                 args: MktempArgs,
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         Create a Mktemp resource with the given unique name, props, and options.
@@ -184,16 +80,8 @@ class Mktemp(pulumi.CustomResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 directory: Optional[pulumi.Input[bool]] = None,
-                 dry_run: Optional[pulumi.Input[bool]] = None,
-                 help: Optional[pulumi.Input[bool]] = None,
-                 p: Optional[pulumi.Input[str]] = None,
-                 quiet: Optional[pulumi.Input[bool]] = None,
-                 suffix: Optional[pulumi.Input[str]] = None,
-                 t: Optional[pulumi.Input[bool]] = None,
-                 template: Optional[pulumi.Input[str]] = None,
-                 tmpdir: Optional[pulumi.Input[bool]] = None,
-                 version: Optional[pulumi.Input[bool]] = None,
+                 args: Optional[pulumi.Input[Union['MktempArgsArgs', 'MktempArgsArgsDict']]] = None,
+                 triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -203,17 +91,10 @@ class Mktemp(pulumi.CustomResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = MktempArgs.__new__(MktempArgs)
 
-            __props__.__dict__["directory"] = directory
-            __props__.__dict__["dry_run"] = dry_run
-            __props__.__dict__["help"] = help
-            __props__.__dict__["p"] = p
-            __props__.__dict__["quiet"] = quiet
-            __props__.__dict__["suffix"] = suffix
-            __props__.__dict__["t"] = t
-            __props__.__dict__["template"] = template
-            __props__.__dict__["tmpdir"] = tmpdir
-            __props__.__dict__["version"] = version
-            __props__.__dict__["args"] = None
+            if args is None and not opts.urn:
+                raise TypeError("Missing required property 'args'")
+            __props__.__dict__["args"] = args
+            __props__.__dict__["triggers"] = triggers
             __props__.__dict__["created_files"] = None
             __props__.__dict__["exit_code"] = None
             __props__.__dict__["moved_files"] = None
@@ -247,6 +128,7 @@ class Mktemp(pulumi.CustomResource):
         __props__.__dict__["moved_files"] = None
         __props__.__dict__["stderr"] = None
         __props__.__dict__["stdout"] = None
+        __props__.__dict__["triggers"] = None
         return Mktemp(resource_name, opts=opts, __props__=__props__)
 
     @property
@@ -278,4 +160,9 @@ class Mktemp(pulumi.CustomResource):
     @pulumi.getter
     def stdout(self) -> pulumi.Output[str]:
         return pulumi.get(self, "stdout")
+
+    @property
+    @pulumi.getter
+    def triggers(self) -> pulumi.Output[Optional[Sequence[Any]]]:
+        return pulumi.get(self, "triggers")
 

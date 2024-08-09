@@ -31,6 +31,9 @@ namespace UnMango.Baremetal.Cmd
         [Output("stdout")]
         public Output<string> Stdout { get; private set; } = null!;
 
+        [Output("triggers")]
+        public Output<ImmutableArray<object>> Triggers { get; private set; } = null!;
+
 
         /// <summary>
         /// Create a Mkdir resource with the given unique name, arguments, and options.
@@ -77,28 +80,16 @@ namespace UnMango.Baremetal.Cmd
 
     public sealed class MkdirArgs : global::Pulumi.ResourceArgs
     {
-        [Input("directory", required: true)]
-        private InputList<string>? _directory;
-        public InputList<string> Directory
+        [Input("args", required: true)]
+        public Input<Inputs.MkdirArgsArgs> Args { get; set; } = null!;
+
+        [Input("triggers")]
+        private InputList<object>? _triggers;
+        public InputList<object> Triggers
         {
-            get => _directory ?? (_directory = new InputList<string>());
-            set => _directory = value;
+            get => _triggers ?? (_triggers = new InputList<object>());
+            set => _triggers = value;
         }
-
-        [Input("help")]
-        public Input<bool>? Help { get; set; }
-
-        [Input("mode")]
-        public Input<string>? Mode { get; set; }
-
-        [Input("parents")]
-        public Input<bool>? Parents { get; set; }
-
-        [Input("verbose")]
-        public Input<bool>? Verbose { get; set; }
-
-        [Input("version")]
-        public Input<bool>? Version { get; set; }
 
         public MkdirArgs()
         {

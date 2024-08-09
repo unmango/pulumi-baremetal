@@ -97,12 +97,13 @@ export class Tee extends pulumi.CustomResource {
         return obj['__pulumiType'] === Tee.__pulumiType;
     }
 
-    public /*out*/ readonly args!: pulumi.Output<outputs.cmd.TeeArgs>;
+    public readonly args!: pulumi.Output<outputs.cmd.TeeArgs>;
     public /*out*/ readonly createdFiles!: pulumi.Output<string[]>;
     public /*out*/ readonly exitCode!: pulumi.Output<number>;
     public /*out*/ readonly movedFiles!: pulumi.Output<{[key: string]: string}>;
     public /*out*/ readonly stderr!: pulumi.Output<string>;
     public /*out*/ readonly stdout!: pulumi.Output<string>;
+    public readonly triggers!: pulumi.Output<any[] | undefined>;
 
     /**
      * Create a Tee resource with the given unique name, arguments, and options.
@@ -115,16 +116,11 @@ export class Tee extends pulumi.CustomResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.content === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'content'");
+            if ((!args || args.args === undefined) && !opts.urn) {
+                throw new Error("Missing required property 'args'");
             }
-            if ((!args || args.files === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'files'");
-            }
-            resourceInputs["append"] = args ? args.append : undefined;
-            resourceInputs["content"] = args ? args.content : undefined;
-            resourceInputs["files"] = args ? args.files : undefined;
-            resourceInputs["args"] = undefined /*out*/;
+            resourceInputs["args"] = args ? args.args : undefined;
+            resourceInputs["triggers"] = args ? args.triggers : undefined;
             resourceInputs["createdFiles"] = undefined /*out*/;
             resourceInputs["exitCode"] = undefined /*out*/;
             resourceInputs["movedFiles"] = undefined /*out*/;
@@ -137,6 +133,7 @@ export class Tee extends pulumi.CustomResource {
             resourceInputs["movedFiles"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
+            resourceInputs["triggers"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Tee.__pulumiType, name, resourceInputs, opts);
@@ -147,7 +144,6 @@ export class Tee extends pulumi.CustomResource {
  * The set of arguments for constructing a Tee resource.
  */
 export interface TeeArgs {
-    append?: pulumi.Input<boolean>;
-    content: pulumi.Input<string>;
-    files: pulumi.Input<pulumi.Input<string>[]>;
+    args: pulumi.Input<inputs.cmd.TeeArgsArgs>;
+    triggers?: pulumi.Input<any[]>;
 }

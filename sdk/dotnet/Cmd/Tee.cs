@@ -95,6 +95,9 @@ namespace UnMango.Baremetal.Cmd
         [Output("stdout")]
         public Output<string> Stdout { get; private set; } = null!;
 
+        [Output("triggers")]
+        public Output<ImmutableArray<object>> Triggers { get; private set; } = null!;
+
 
         /// <summary>
         /// Create a Tee resource with the given unique name, arguments, and options.
@@ -141,18 +144,15 @@ namespace UnMango.Baremetal.Cmd
 
     public sealed class TeeArgs : global::Pulumi.ResourceArgs
     {
-        [Input("append")]
-        public Input<bool>? Append { get; set; }
+        [Input("args", required: true)]
+        public Input<Inputs.TeeArgsArgs> Args { get; set; } = null!;
 
-        [Input("content", required: true)]
-        public Input<string> Content { get; set; } = null!;
-
-        [Input("files", required: true)]
-        private InputList<string>? _files;
-        public InputList<string> Files
+        [Input("triggers")]
+        private InputList<object>? _triggers;
+        public InputList<object> Triggers
         {
-            get => _files ?? (_files = new InputList<string>());
-            set => _files = value;
+            get => _triggers ?? (_triggers = new InputList<object>());
+            set => _triggers = value;
         }
 
         public TeeArgs()

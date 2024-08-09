@@ -9,7 +9,8 @@ import (
 )
 
 type MkdirArgs struct {
-	DefaultFileManipulator
+	CommandArgsBase
+
 	Directory []string `pulumi:"directory"`
 	Mode      string   `pulumi:"mode,optional"`
 	Parents   bool     `pulumi:"parents,optional"`
@@ -33,14 +34,14 @@ func (m MkdirArgs) Cmd() *pb.Command {
 	}
 }
 
-var _ CommandArgs = MkdirArgs{}
+var _ CommandBuilder = MkdirArgs{}
 
 type Mkdir struct{}
 
 type MkdirState = CommandState[MkdirArgs]
 
 // Create implements infer.CustomCreate.
-func (Mkdir) Create(ctx context.Context, name string, inputs MkdirArgs, preview bool) (id string, output MkdirState, err error) {
+func (Mkdir) Create(ctx context.Context, name string, inputs CommandArgs[MkdirArgs], preview bool) (id string, output MkdirState, err error) {
 	state := MkdirState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("mkdir: %w", err)
@@ -50,7 +51,7 @@ func (Mkdir) Create(ctx context.Context, name string, inputs MkdirArgs, preview 
 }
 
 // Update implements infer.CustomUpdate.
-func (Mkdir) Update(ctx context.Context, id string, olds MkdirState, news MkdirArgs, preview bool) (MkdirState, error) {
+func (Mkdir) Update(ctx context.Context, id string, olds MkdirState, news CommandArgs[MkdirArgs], preview bool) (MkdirState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
 		return olds, fmt.Errorf("mkdir: %w", err)
@@ -68,5 +69,5 @@ func (Mkdir) Delete(ctx context.Context, id string, props MkdirState) error {
 	return nil
 }
 
-var _ = (infer.CustomCreate[MkdirArgs, MkdirState])((*Mkdir)(nil))
-var _ = (infer.CustomUpdate[MkdirArgs, MkdirState])((*Mkdir)(nil))
+var _ = (infer.CustomCreate[CommandArgs[MkdirArgs], MkdirState])((*Mkdir)(nil))
+var _ = (infer.CustomUpdate[CommandArgs[MkdirArgs], MkdirState])((*Mkdir)(nil))

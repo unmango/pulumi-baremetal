@@ -31,6 +31,9 @@ namespace UnMango.Baremetal.Cmd
         [Output("stdout")]
         public Output<string> Stdout { get; private set; } = null!;
 
+        [Output("triggers")]
+        public Output<ImmutableArray<object>> Triggers { get; private set; } = null!;
+
 
         /// <summary>
         /// Create a Tar resource with the given unique name, arguments, and options.
@@ -39,7 +42,7 @@ namespace UnMango.Baremetal.Cmd
         /// <param name="name">The unique name of the resource</param>
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
-        public Tar(string name, TarArgs? args = null, CustomResourceOptions? options = null)
+        public Tar(string name, TarArgs args, CustomResourceOptions? options = null)
             : base("baremetal:cmd:Tar", name, args ?? new TarArgs(), MakeResourceOptions(options, ""))
         {
         }
@@ -77,127 +80,16 @@ namespace UnMango.Baremetal.Cmd
 
     public sealed class TarArgs : global::Pulumi.ResourceArgs
     {
-        [Input("append")]
-        public Input<bool>? Append { get; set; }
+        [Input("args", required: true)]
+        public Input<Inputs.TarArgsArgs> Args { get; set; } = null!;
 
-        [Input("args")]
-        private InputList<string>? _args;
-        public InputList<string> Args
+        [Input("triggers")]
+        private InputList<object>? _triggers;
+        public InputList<object> Triggers
         {
-            get => _args ?? (_args = new InputList<string>());
-            set => _args = value;
+            get => _triggers ?? (_triggers = new InputList<object>());
+            set => _triggers = value;
         }
-
-        [Input("bzip2")]
-        public Input<bool>? Bzip2 { get; set; }
-
-        [Input("create")]
-        public Input<bool>? Create { get; set; }
-
-        [Input("delete")]
-        public Input<bool>? Delete { get; set; }
-
-        [Input("diff")]
-        public Input<bool>? Diff { get; set; }
-
-        [Input("directory")]
-        public Input<string>? Directory { get; set; }
-
-        [Input("exclude")]
-        public Input<string>? Exclude { get; set; }
-
-        [Input("excludeFrom")]
-        public Input<string>? ExcludeFrom { get; set; }
-
-        [Input("excludeVcs")]
-        public Input<bool>? ExcludeVcs { get; set; }
-
-        [Input("excludeVcsIgnores")]
-        public Input<bool>? ExcludeVcsIgnores { get; set; }
-
-        [Input("extract")]
-        public Input<bool>? Extract { get; set; }
-
-        [Input("file")]
-        public Input<string>? File { get; set; }
-
-        [Input("gzip")]
-        public Input<bool>? Gzip { get; set; }
-
-        [Input("ignoreCommandError")]
-        public Input<bool>? IgnoreCommandError { get; set; }
-
-        [Input("keepDirectorySymlink")]
-        public Input<bool>? KeepDirectorySymlink { get; set; }
-
-        [Input("keepNewerFiles")]
-        public Input<bool>? KeepNewerFiles { get; set; }
-
-        [Input("keepOldfiles")]
-        public Input<bool>? KeepOldfiles { get; set; }
-
-        [Input("list")]
-        public Input<bool>? List { get; set; }
-
-        [Input("lzip")]
-        public Input<bool>? Lzip { get; set; }
-
-        [Input("lzma")]
-        public Input<bool>? Lzma { get; set; }
-
-        [Input("lzop")]
-        public Input<bool>? Lzop { get; set; }
-
-        [Input("noOverwriteDir")]
-        public Input<bool>? NoOverwriteDir { get; set; }
-
-        [Input("noSeek")]
-        public Input<bool>? NoSeek { get; set; }
-
-        [Input("overwrite")]
-        public Input<bool>? Overwrite { get; set; }
-
-        [Input("overwriteDir")]
-        public Input<bool>? OverwriteDir { get; set; }
-
-        [Input("removeFiles")]
-        public Input<bool>? RemoveFiles { get; set; }
-
-        [Input("skipOldFiles")]
-        public Input<bool>? SkipOldFiles { get; set; }
-
-        [Input("sparse")]
-        public Input<bool>? Sparse { get; set; }
-
-        [Input("stripComponents")]
-        public Input<int>? StripComponents { get; set; }
-
-        [Input("suffix")]
-        public Input<string>? Suffix { get; set; }
-
-        [Input("toStdout")]
-        public Input<bool>? ToStdout { get; set; }
-
-        [Input("transform")]
-        public Input<string>? Transform { get; set; }
-
-        [Input("unlinkFirst")]
-        public Input<bool>? UnlinkFirst { get; set; }
-
-        [Input("update")]
-        public Input<bool>? Update { get; set; }
-
-        [Input("verbose")]
-        public Input<bool>? Verbose { get; set; }
-
-        [Input("verify")]
-        public Input<bool>? Verify { get; set; }
-
-        [Input("xz")]
-        public Input<bool>? Xz { get; set; }
-
-        [Input("zstd")]
-        public Input<bool>? Zstd { get; set; }
 
         public TarArgs()
         {

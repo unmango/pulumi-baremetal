@@ -33,12 +33,13 @@ export class Rm extends pulumi.CustomResource {
         return obj['__pulumiType'] === Rm.__pulumiType;
     }
 
-    public /*out*/ readonly args!: pulumi.Output<outputs.cmd.RmArgs>;
+    public readonly args!: pulumi.Output<outputs.cmd.RmArgs>;
     public /*out*/ readonly createdFiles!: pulumi.Output<string[]>;
     public /*out*/ readonly exitCode!: pulumi.Output<number>;
     public /*out*/ readonly movedFiles!: pulumi.Output<{[key: string]: string}>;
     public /*out*/ readonly stderr!: pulumi.Output<string>;
     public /*out*/ readonly stdout!: pulumi.Output<string>;
+    public readonly triggers!: pulumi.Output<any[] | undefined>;
 
     /**
      * Create a Rm resource with the given unique name, arguments, and options.
@@ -51,17 +52,11 @@ export class Rm extends pulumi.CustomResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.files === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'files'");
+            if ((!args || args.args === undefined) && !opts.urn) {
+                throw new Error("Missing required property 'args'");
             }
-            resourceInputs["dir"] = args ? args.dir : undefined;
-            resourceInputs["files"] = args ? args.files : undefined;
-            resourceInputs["force"] = args ? args.force : undefined;
-            resourceInputs["help"] = args ? args.help : undefined;
-            resourceInputs["oneFileSystem"] = args ? args.oneFileSystem : undefined;
-            resourceInputs["recursive"] = args ? args.recursive : undefined;
-            resourceInputs["verbose"] = args ? args.verbose : undefined;
-            resourceInputs["args"] = undefined /*out*/;
+            resourceInputs["args"] = args ? args.args : undefined;
+            resourceInputs["triggers"] = args ? args.triggers : undefined;
             resourceInputs["createdFiles"] = undefined /*out*/;
             resourceInputs["exitCode"] = undefined /*out*/;
             resourceInputs["movedFiles"] = undefined /*out*/;
@@ -74,6 +69,7 @@ export class Rm extends pulumi.CustomResource {
             resourceInputs["movedFiles"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
+            resourceInputs["triggers"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Rm.__pulumiType, name, resourceInputs, opts);
@@ -84,11 +80,6 @@ export class Rm extends pulumi.CustomResource {
  * The set of arguments for constructing a Rm resource.
  */
 export interface RmArgs {
-    dir?: pulumi.Input<boolean>;
-    files: pulumi.Input<pulumi.Input<string>[]>;
-    force?: pulumi.Input<boolean>;
-    help?: pulumi.Input<boolean>;
-    oneFileSystem?: pulumi.Input<boolean>;
-    recursive?: pulumi.Input<boolean>;
-    verbose?: pulumi.Input<boolean>;
+    args: pulumi.Input<inputs.cmd.RmArgsArgs>;
+    triggers?: pulumi.Input<any[]>;
 }

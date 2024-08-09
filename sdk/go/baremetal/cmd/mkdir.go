@@ -22,6 +22,7 @@ type Mkdir struct {
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
 	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput       `pulumi:"triggers"`
 }
 
 // NewMkdir registers a new resource with the given unique name, arguments, and options.
@@ -31,8 +32,8 @@ func NewMkdir(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.Directory == nil {
-		return nil, errors.New("invalid value for required argument 'Directory'")
+	if args.Args == nil {
+		return nil, errors.New("invalid value for required argument 'Args'")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Mkdir
@@ -67,22 +68,14 @@ func (MkdirState) ElementType() reflect.Type {
 }
 
 type mkdirArgs struct {
-	Directory []string `pulumi:"directory"`
-	Help      *bool    `pulumi:"help"`
-	Mode      *string  `pulumi:"mode"`
-	Parents   *bool    `pulumi:"parents"`
-	Verbose   *bool    `pulumi:"verbose"`
-	Version   *bool    `pulumi:"version"`
+	Args     MkdirArgsType `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Mkdir resource.
 type MkdirArgs struct {
-	Directory pulumi.StringArrayInput
-	Help      pulumi.BoolPtrInput
-	Mode      pulumi.StringPtrInput
-	Parents   pulumi.BoolPtrInput
-	Verbose   pulumi.BoolPtrInput
-	Version   pulumi.BoolPtrInput
+	Args     MkdirArgsTypeInput
+	Triggers pulumi.ArrayInput
 }
 
 func (MkdirArgs) ElementType() reflect.Type {
@@ -156,6 +149,10 @@ func (o MkdirOutput) Stderr() pulumi.StringOutput {
 
 func (o MkdirOutput) Stdout() pulumi.StringOutput {
 	return o.ApplyT(func(v *Mkdir) pulumi.StringOutput { return v.Stdout }).(pulumi.StringOutput)
+}
+
+func (o MkdirOutput) Triggers() pulumi.ArrayOutput {
+	return o.ApplyT(func(v *Mkdir) pulumi.ArrayOutput { return v.Triggers }).(pulumi.ArrayOutput)
 }
 
 func init() {

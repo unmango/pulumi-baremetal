@@ -33,12 +33,13 @@ export class Chmod extends pulumi.CustomResource {
         return obj['__pulumiType'] === Chmod.__pulumiType;
     }
 
-    public /*out*/ readonly args!: pulumi.Output<outputs.cmd.ChmodArgs>;
+    public readonly args!: pulumi.Output<outputs.cmd.ChmodArgs>;
     public /*out*/ readonly createdFiles!: pulumi.Output<string[]>;
     public /*out*/ readonly exitCode!: pulumi.Output<number>;
     public /*out*/ readonly movedFiles!: pulumi.Output<{[key: string]: string}>;
     public /*out*/ readonly stderr!: pulumi.Output<string>;
     public /*out*/ readonly stdout!: pulumi.Output<string>;
+    public readonly triggers!: pulumi.Output<any[] | undefined>;
 
     /**
      * Create a Chmod resource with the given unique name, arguments, and options.
@@ -51,22 +52,11 @@ export class Chmod extends pulumi.CustomResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.files === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'files'");
+            if ((!args || args.args === undefined) && !opts.urn) {
+                throw new Error("Missing required property 'args'");
             }
-            resourceInputs["changes"] = args ? args.changes : undefined;
-            resourceInputs["files"] = args ? args.files : undefined;
-            resourceInputs["help"] = args ? args.help : undefined;
-            resourceInputs["mode"] = args ? args.mode : undefined;
-            resourceInputs["noPreserveRoot"] = args ? args.noPreserveRoot : undefined;
-            resourceInputs["octalMode"] = args ? args.octalMode : undefined;
-            resourceInputs["preserveRoot"] = args ? args.preserveRoot : undefined;
-            resourceInputs["quiet"] = args ? args.quiet : undefined;
-            resourceInputs["recursive"] = args ? args.recursive : undefined;
-            resourceInputs["reference"] = args ? args.reference : undefined;
-            resourceInputs["verbose"] = args ? args.verbose : undefined;
-            resourceInputs["version"] = args ? args.version : undefined;
-            resourceInputs["args"] = undefined /*out*/;
+            resourceInputs["args"] = args ? args.args : undefined;
+            resourceInputs["triggers"] = args ? args.triggers : undefined;
             resourceInputs["createdFiles"] = undefined /*out*/;
             resourceInputs["exitCode"] = undefined /*out*/;
             resourceInputs["movedFiles"] = undefined /*out*/;
@@ -79,6 +69,7 @@ export class Chmod extends pulumi.CustomResource {
             resourceInputs["movedFiles"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
+            resourceInputs["triggers"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Chmod.__pulumiType, name, resourceInputs, opts);
@@ -89,16 +80,6 @@ export class Chmod extends pulumi.CustomResource {
  * The set of arguments for constructing a Chmod resource.
  */
 export interface ChmodArgs {
-    changes?: pulumi.Input<boolean>;
-    files: pulumi.Input<pulumi.Input<string>[]>;
-    help?: pulumi.Input<boolean>;
-    mode?: pulumi.Input<pulumi.Input<string>[]>;
-    noPreserveRoot?: pulumi.Input<boolean>;
-    octalMode?: pulumi.Input<string>;
-    preserveRoot?: pulumi.Input<boolean>;
-    quiet?: pulumi.Input<boolean>;
-    recursive?: pulumi.Input<boolean>;
-    reference?: pulumi.Input<string>;
-    verbose?: pulumi.Input<boolean>;
-    version?: pulumi.Input<boolean>;
+    args: pulumi.Input<inputs.cmd.ChmodArgsArgs>;
+    triggers?: pulumi.Input<any[]>;
 }

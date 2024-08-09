@@ -22,6 +22,7 @@ type Mv struct {
 	MovedFiles   pulumix.MapOutput[string]                        `pulumi:"movedFiles"`
 	Stderr       pulumix.Output[string]                           `pulumi:"stderr"`
 	Stdout       pulumix.Output[string]                           `pulumi:"stdout"`
+	Triggers     pulumix.ArrayOutput[any]                         `pulumi:"triggers"`
 }
 
 // NewMv registers a new resource with the given unique name, arguments, and options.
@@ -31,8 +32,8 @@ func NewMv(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.Source == nil {
-		return nil, errors.New("invalid value for required argument 'Source'")
+	if args.Args == nil {
+		return nil, errors.New("invalid value for required argument 'Args'")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Mv
@@ -67,38 +68,14 @@ func (MvState) ElementType() reflect.Type {
 }
 
 type mvArgs struct {
-	Backup               *string  `pulumi:"backup"`
-	Destination          *string  `pulumi:"destination"`
-	Directory            *string  `pulumi:"directory"`
-	Force                *bool    `pulumi:"force"`
-	Help                 *bool    `pulumi:"help"`
-	NoClobber            *bool    `pulumi:"noClobber"`
-	NoTargetDirectory    *bool    `pulumi:"noTargetDirectory"`
-	Source               []string `pulumi:"source"`
-	StripTrailingSlashes *bool    `pulumi:"stripTrailingSlashes"`
-	Suffix               *string  `pulumi:"suffix"`
-	TargetDirectory      *string  `pulumi:"targetDirectory"`
-	Update               *bool    `pulumi:"update"`
-	Verbose              *bool    `pulumi:"verbose"`
-	Version              *bool    `pulumi:"version"`
+	Args     MvArgsType    `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Mv resource.
 type MvArgs struct {
-	Backup               pulumix.Input[*string]
-	Destination          pulumix.Input[*string]
-	Directory            pulumix.Input[*string]
-	Force                pulumix.Input[*bool]
-	Help                 pulumix.Input[*bool]
-	NoClobber            pulumix.Input[*bool]
-	NoTargetDirectory    pulumix.Input[*bool]
-	Source               pulumix.Input[[]string]
-	StripTrailingSlashes pulumix.Input[*bool]
-	Suffix               pulumix.Input[*string]
-	TargetDirectory      pulumix.Input[*string]
-	Update               pulumix.Input[*bool]
-	Verbose              pulumix.Input[*bool]
-	Version              pulumix.Input[*bool]
+	Args     pulumix.Input[*MvArgsTypeArgs]
+	Triggers pulumix.Input[[]any]
 }
 
 func (MvArgs) ElementType() reflect.Type {
@@ -156,6 +133,12 @@ func (o MvOutput) Stderr() pulumix.Output[string] {
 func (o MvOutput) Stdout() pulumix.Output[string] {
 	value := pulumix.Apply[Mv](o, func(v Mv) pulumix.Output[string] { return v.Stdout })
 	return pulumix.Flatten[string, pulumix.Output[string]](value)
+}
+
+func (o MvOutput) Triggers() pulumix.ArrayOutput[any] {
+	value := pulumix.Apply[Mv](o, func(v Mv) pulumix.ArrayOutput[any] { return v.Triggers })
+	unwrapped := pulumix.Flatten[[]interface{}, pulumix.ArrayOutput[any]](value)
+	return pulumix.ArrayOutput[any]{OutputState: unwrapped.OutputState}
 }
 
 func init() {

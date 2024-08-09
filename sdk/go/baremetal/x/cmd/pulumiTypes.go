@@ -29,6 +29,37 @@ type ChmodArgsType struct {
 	Version        *bool    `pulumi:"version"`
 }
 
+type ChmodArgsTypeArgs struct {
+	Changes        pulumix.Input[*bool]    `pulumi:"changes"`
+	Files          pulumix.Input[[]string] `pulumi:"files"`
+	Help           pulumix.Input[*bool]    `pulumi:"help"`
+	Mode           pulumix.Input[[]string] `pulumi:"mode"`
+	NoPreserveRoot pulumix.Input[*bool]    `pulumi:"noPreserveRoot"`
+	OctalMode      pulumix.Input[*string]  `pulumi:"octalMode"`
+	PreserveRoot   pulumix.Input[*bool]    `pulumi:"preserveRoot"`
+	Quiet          pulumix.Input[*bool]    `pulumi:"quiet"`
+	Recursive      pulumix.Input[*bool]    `pulumi:"recursive"`
+	Reference      pulumix.Input[*string]  `pulumi:"reference"`
+	Verbose        pulumix.Input[*bool]    `pulumi:"verbose"`
+	Version        pulumix.Input[*bool]    `pulumi:"version"`
+}
+
+func (ChmodArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ChmodArgsType)(nil)).Elem()
+}
+
+func (i ChmodArgsTypeArgs) ToChmodArgsTypeOutput() ChmodArgsTypeOutput {
+	return i.ToChmodArgsTypeOutputWithContext(context.Background())
+}
+
+func (i ChmodArgsTypeArgs) ToChmodArgsTypeOutputWithContext(ctx context.Context) ChmodArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ChmodArgsTypeOutput)
+}
+
+func (i *ChmodArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[*ChmodArgsTypeArgs] {
+	return pulumix.Val(i)
+}
+
 type ChmodArgsTypeOutput struct{ *pulumi.OutputState }
 
 func (ChmodArgsTypeOutput) ElementType() reflect.Type {
@@ -108,6 +139,31 @@ type MkdirArgsType struct {
 	Version   *bool    `pulumi:"version"`
 }
 
+type MkdirArgsTypeArgs struct {
+	Directory pulumix.Input[[]string] `pulumi:"directory"`
+	Help      pulumix.Input[*bool]    `pulumi:"help"`
+	Mode      pulumix.Input[*string]  `pulumi:"mode"`
+	Parents   pulumix.Input[*bool]    `pulumi:"parents"`
+	Verbose   pulumix.Input[*bool]    `pulumi:"verbose"`
+	Version   pulumix.Input[*bool]    `pulumi:"version"`
+}
+
+func (MkdirArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*MkdirArgsType)(nil)).Elem()
+}
+
+func (i MkdirArgsTypeArgs) ToMkdirArgsTypeOutput() MkdirArgsTypeOutput {
+	return i.ToMkdirArgsTypeOutputWithContext(context.Background())
+}
+
+func (i MkdirArgsTypeArgs) ToMkdirArgsTypeOutputWithContext(ctx context.Context) MkdirArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(MkdirArgsTypeOutput)
+}
+
+func (i *MkdirArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[*MkdirArgsTypeArgs] {
+	return pulumix.Val(i)
+}
+
 type MkdirArgsTypeOutput struct{ *pulumi.OutputState }
 
 func (MkdirArgsTypeOutput) ElementType() reflect.Type {
@@ -164,6 +220,35 @@ type MktempArgsType struct {
 	Template  *string `pulumi:"template"`
 	Tmpdir    *bool   `pulumi:"tmpdir"`
 	Version   *bool   `pulumi:"version"`
+}
+
+type MktempArgsTypeArgs struct {
+	Directory pulumix.Input[*bool]   `pulumi:"directory"`
+	DryRun    pulumix.Input[*bool]   `pulumi:"dryRun"`
+	Help      pulumix.Input[*bool]   `pulumi:"help"`
+	P         pulumix.Input[*string] `pulumi:"p"`
+	Quiet     pulumix.Input[*bool]   `pulumi:"quiet"`
+	Suffix    pulumix.Input[*string] `pulumi:"suffix"`
+	T         pulumix.Input[*bool]   `pulumi:"t"`
+	Template  pulumix.Input[*string] `pulumi:"template"`
+	Tmpdir    pulumix.Input[*bool]   `pulumi:"tmpdir"`
+	Version   pulumix.Input[*bool]   `pulumi:"version"`
+}
+
+func (MktempArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*MktempArgsType)(nil)).Elem()
+}
+
+func (i MktempArgsTypeArgs) ToMktempArgsTypeOutput() MktempArgsTypeOutput {
+	return i.ToMktempArgsTypeOutputWithContext(context.Background())
+}
+
+func (i MktempArgsTypeArgs) ToMktempArgsTypeOutputWithContext(ctx context.Context) MktempArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(MktempArgsTypeOutput)
+}
+
+func (i *MktempArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[*MktempArgsTypeArgs] {
+	return pulumix.Val(i)
 }
 
 type MktempArgsTypeOutput struct{ *pulumi.OutputState }
@@ -241,6 +326,39 @@ type MvArgsType struct {
 	Update               *bool    `pulumi:"update"`
 	Verbose              *bool    `pulumi:"verbose"`
 	Version              *bool    `pulumi:"version"`
+}
+
+type MvArgsTypeArgs struct {
+	Backup               pulumix.Input[*string]  `pulumi:"backup"`
+	Destination          pulumix.Input[*string]  `pulumi:"destination"`
+	Directory            pulumix.Input[*string]  `pulumi:"directory"`
+	Force                pulumix.Input[*bool]    `pulumi:"force"`
+	Help                 pulumix.Input[*bool]    `pulumi:"help"`
+	NoClobber            pulumix.Input[*bool]    `pulumi:"noClobber"`
+	NoTargetDirectory    pulumix.Input[*bool]    `pulumi:"noTargetDirectory"`
+	Source               pulumix.Input[[]string] `pulumi:"source"`
+	StripTrailingSlashes pulumix.Input[*bool]    `pulumi:"stripTrailingSlashes"`
+	Suffix               pulumix.Input[*string]  `pulumi:"suffix"`
+	TargetDirectory      pulumix.Input[*string]  `pulumi:"targetDirectory"`
+	Update               pulumix.Input[*bool]    `pulumi:"update"`
+	Verbose              pulumix.Input[*bool]    `pulumi:"verbose"`
+	Version              pulumix.Input[*bool]    `pulumi:"version"`
+}
+
+func (MvArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*MvArgsType)(nil)).Elem()
+}
+
+func (i MvArgsTypeArgs) ToMvArgsTypeOutput() MvArgsTypeOutput {
+	return i.ToMvArgsTypeOutputWithContext(context.Background())
+}
+
+func (i MvArgsTypeArgs) ToMvArgsTypeOutputWithContext(ctx context.Context) MvArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(MvArgsTypeOutput)
+}
+
+func (i *MvArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[*MvArgsTypeArgs] {
+	return pulumix.Val(i)
 }
 
 type MvArgsTypeOutput struct{ *pulumi.OutputState }
@@ -328,6 +446,32 @@ type RmArgsType struct {
 	OneFileSystem *bool    `pulumi:"oneFileSystem"`
 	Recursive     *bool    `pulumi:"recursive"`
 	Verbose       *bool    `pulumi:"verbose"`
+}
+
+type RmArgsTypeArgs struct {
+	Dir           pulumix.Input[*bool]    `pulumi:"dir"`
+	Files         pulumix.Input[[]string] `pulumi:"files"`
+	Force         pulumix.Input[*bool]    `pulumi:"force"`
+	Help          pulumix.Input[*bool]    `pulumi:"help"`
+	OneFileSystem pulumix.Input[*bool]    `pulumi:"oneFileSystem"`
+	Recursive     pulumix.Input[*bool]    `pulumi:"recursive"`
+	Verbose       pulumix.Input[*bool]    `pulumi:"verbose"`
+}
+
+func (RmArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*RmArgsType)(nil)).Elem()
+}
+
+func (i RmArgsTypeArgs) ToRmArgsTypeOutput() RmArgsTypeOutput {
+	return i.ToRmArgsTypeOutputWithContext(context.Background())
+}
+
+func (i RmArgsTypeArgs) ToRmArgsTypeOutputWithContext(ctx context.Context) RmArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RmArgsTypeOutput)
+}
+
+func (i *RmArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[*RmArgsTypeArgs] {
+	return pulumix.Val(i)
 }
 
 type RmArgsTypeOutput struct{ *pulumi.OutputState }
@@ -419,6 +563,64 @@ type TarArgsType struct {
 	Verify               *bool    `pulumi:"verify"`
 	Xz                   *bool    `pulumi:"xz"`
 	Zstd                 *bool    `pulumi:"zstd"`
+}
+
+type TarArgsTypeArgs struct {
+	Append               pulumix.Input[*bool]    `pulumi:"append"`
+	Args                 pulumix.Input[[]string] `pulumi:"args"`
+	Bzip2                pulumix.Input[*bool]    `pulumi:"bzip2"`
+	Create               pulumix.Input[*bool]    `pulumi:"create"`
+	Delete               pulumix.Input[*bool]    `pulumi:"delete"`
+	Diff                 pulumix.Input[*bool]    `pulumi:"diff"`
+	Directory            pulumix.Input[*string]  `pulumi:"directory"`
+	Exclude              pulumix.Input[*string]  `pulumi:"exclude"`
+	ExcludeFrom          pulumix.Input[*string]  `pulumi:"excludeFrom"`
+	ExcludeVcs           pulumix.Input[*bool]    `pulumi:"excludeVcs"`
+	ExcludeVcsIgnores    pulumix.Input[*bool]    `pulumi:"excludeVcsIgnores"`
+	Extract              pulumix.Input[*bool]    `pulumi:"extract"`
+	File                 pulumix.Input[*string]  `pulumi:"file"`
+	Gzip                 pulumix.Input[*bool]    `pulumi:"gzip"`
+	IgnoreCommandError   pulumix.Input[*bool]    `pulumi:"ignoreCommandError"`
+	KeepDirectorySymlink pulumix.Input[*bool]    `pulumi:"keepDirectorySymlink"`
+	KeepNewerFiles       pulumix.Input[*bool]    `pulumi:"keepNewerFiles"`
+	KeepOldfiles         pulumix.Input[*bool]    `pulumi:"keepOldfiles"`
+	List                 pulumix.Input[*bool]    `pulumi:"list"`
+	Lzip                 pulumix.Input[*bool]    `pulumi:"lzip"`
+	Lzma                 pulumix.Input[*bool]    `pulumi:"lzma"`
+	Lzop                 pulumix.Input[*bool]    `pulumi:"lzop"`
+	NoOverwriteDir       pulumix.Input[*bool]    `pulumi:"noOverwriteDir"`
+	NoSeek               pulumix.Input[*bool]    `pulumi:"noSeek"`
+	Overwrite            pulumix.Input[*bool]    `pulumi:"overwrite"`
+	OverwriteDir         pulumix.Input[*bool]    `pulumi:"overwriteDir"`
+	RemoveFiles          pulumix.Input[*bool]    `pulumi:"removeFiles"`
+	SkipOldFiles         pulumix.Input[*bool]    `pulumi:"skipOldFiles"`
+	Sparse               pulumix.Input[*bool]    `pulumi:"sparse"`
+	StripComponents      pulumix.Input[*int]     `pulumi:"stripComponents"`
+	Suffix               pulumix.Input[*string]  `pulumi:"suffix"`
+	ToStdout             pulumix.Input[*bool]    `pulumi:"toStdout"`
+	Transform            pulumix.Input[*string]  `pulumi:"transform"`
+	UnlinkFirst          pulumix.Input[*bool]    `pulumi:"unlinkFirst"`
+	Update               pulumix.Input[*bool]    `pulumi:"update"`
+	Verbose              pulumix.Input[*bool]    `pulumi:"verbose"`
+	Verify               pulumix.Input[*bool]    `pulumi:"verify"`
+	Xz                   pulumix.Input[*bool]    `pulumi:"xz"`
+	Zstd                 pulumix.Input[*bool]    `pulumi:"zstd"`
+}
+
+func (TarArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*TarArgsType)(nil)).Elem()
+}
+
+func (i TarArgsTypeArgs) ToTarArgsTypeOutput() TarArgsTypeOutput {
+	return i.ToTarArgsTypeOutputWithContext(context.Background())
+}
+
+func (i TarArgsTypeArgs) ToTarArgsTypeOutputWithContext(ctx context.Context) TarArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(TarArgsTypeOutput)
+}
+
+func (i *TarArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[*TarArgsTypeArgs] {
+	return pulumix.Val(i)
 }
 
 type TarArgsTypeOutput struct{ *pulumi.OutputState }
@@ -604,6 +806,28 @@ type TeeArgsType struct {
 	Files   []string `pulumi:"files"`
 }
 
+type TeeArgsTypeArgs struct {
+	Append  pulumix.Input[*bool]    `pulumi:"append"`
+	Content pulumix.Input[string]   `pulumi:"content"`
+	Files   pulumix.Input[[]string] `pulumi:"files"`
+}
+
+func (TeeArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*TeeArgsType)(nil)).Elem()
+}
+
+func (i TeeArgsTypeArgs) ToTeeArgsTypeOutput() TeeArgsTypeOutput {
+	return i.ToTeeArgsTypeOutputWithContext(context.Background())
+}
+
+func (i TeeArgsTypeArgs) ToTeeArgsTypeOutputWithContext(ctx context.Context) TeeArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(TeeArgsTypeOutput)
+}
+
+func (i *TeeArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[*TeeArgsTypeArgs] {
+	return pulumix.Val(i)
+}
+
 type TeeArgsTypeOutput struct{ *pulumi.OutputState }
 
 func (TeeArgsTypeOutput) ElementType() reflect.Type {
@@ -684,6 +908,71 @@ type WgetArgsType struct {
 	Verbose            *bool    `pulumi:"verbose"`
 	Version            *string  `pulumi:"version"`
 	Wait               *string  `pulumi:"wait"`
+}
+
+type WgetArgsTypeArgs struct {
+	AppendOutput       pulumix.Input[*string]  `pulumi:"appendOutput"`
+	Background         pulumix.Input[*bool]    `pulumi:"background"`
+	Base               pulumix.Input[*string]  `pulumi:"base"`
+	CaCertificateFile  pulumix.Input[*string]  `pulumi:"caCertificateFile"`
+	CaDirectory        pulumix.Input[*string]  `pulumi:"caDirectory"`
+	Certificate        pulumix.Input[*string]  `pulumi:"certificate"`
+	CertificateType    pulumix.Input[*string]  `pulumi:"certificateType"`
+	Config             pulumix.Input[*string]  `pulumi:"config"`
+	Continue           pulumix.Input[*bool]    `pulumi:"continue"`
+	CrlFile            pulumix.Input[*string]  `pulumi:"crlFile"`
+	CutDirs            pulumix.Input[*int]     `pulumi:"cutDirs"`
+	Debug              pulumix.Input[*bool]    `pulumi:"debug"`
+	DirectoryPrefix    pulumix.Input[*string]  `pulumi:"directoryPrefix"`
+	Execute            pulumix.Input[[]string] `pulumi:"execute"`
+	ForceDirectories   pulumix.Input[*bool]    `pulumi:"forceDirectories"`
+	ForceHtml          pulumix.Input[*bool]    `pulumi:"forceHtml"`
+	Help               pulumix.Input[*bool]    `pulumi:"help"`
+	HttpsOnly          pulumix.Input[*bool]    `pulumi:"httpsOnly"`
+	Inet4Only          pulumix.Input[*bool]    `pulumi:"inet4Only"`
+	InputFile          pulumix.Input[*string]  `pulumi:"inputFile"`
+	KeepSessionCookies pulumix.Input[*bool]    `pulumi:"keepSessionCookies"`
+	NoClobber          pulumix.Input[*bool]    `pulumi:"noClobber"`
+	NoDirectories      pulumix.Input[*bool]    `pulumi:"noDirectories"`
+	NoDnsCache         pulumix.Input[*bool]    `pulumi:"noDnsCache"`
+	NoVerbose          pulumix.Input[*bool]    `pulumi:"noVerbose"`
+	OutputDocument     pulumix.Input[*string]  `pulumi:"outputDocument"`
+	OutputFile         pulumix.Input[*string]  `pulumi:"outputFile"`
+	Password           pulumix.Input[*string]  `pulumi:"password"`
+	PrivateKey         pulumix.Input[*string]  `pulumi:"privateKey"`
+	PrivateKeyType     pulumix.Input[*string]  `pulumi:"privateKeyType"`
+	Progress           pulumix.Input[*string]  `pulumi:"progress"`
+	Quiet              pulumix.Input[*bool]    `pulumi:"quiet"`
+	RandomWait         pulumix.Input[*bool]    `pulumi:"randomWait"`
+	ReportSpeed        pulumix.Input[*string]  `pulumi:"reportSpeed"`
+	SaveCookies        pulumix.Input[*string]  `pulumi:"saveCookies"`
+	ShowProgress       pulumix.Input[*bool]    `pulumi:"showProgress"`
+	StartPos           pulumix.Input[*string]  `pulumi:"startPos"`
+	Timeout            pulumix.Input[*string]  `pulumi:"timeout"`
+	Timestamping       pulumix.Input[*bool]    `pulumi:"timestamping"`
+	Tries              pulumix.Input[*int]     `pulumi:"tries"`
+	Urls               pulumix.Input[[]string] `pulumi:"urls"`
+	User               pulumix.Input[*string]  `pulumi:"user"`
+	UserAgent          pulumix.Input[*string]  `pulumi:"userAgent"`
+	Verbose            pulumix.Input[*bool]    `pulumi:"verbose"`
+	Version            pulumix.Input[*string]  `pulumi:"version"`
+	Wait               pulumix.Input[*string]  `pulumi:"wait"`
+}
+
+func (WgetArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*WgetArgsType)(nil)).Elem()
+}
+
+func (i WgetArgsTypeArgs) ToWgetArgsTypeOutput() WgetArgsTypeOutput {
+	return i.ToWgetArgsTypeOutputWithContext(context.Background())
+}
+
+func (i WgetArgsTypeArgs) ToWgetArgsTypeOutputWithContext(ctx context.Context) WgetArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(WgetArgsTypeOutput)
+}
+
+func (i *WgetArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[*WgetArgsTypeArgs] {
+	return pulumix.Val(i)
 }
 
 type WgetArgsTypeOutput struct{ *pulumi.OutputState }

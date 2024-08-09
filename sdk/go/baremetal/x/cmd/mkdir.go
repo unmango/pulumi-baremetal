@@ -22,6 +22,7 @@ type Mkdir struct {
 	MovedFiles   pulumix.MapOutput[string]                              `pulumi:"movedFiles"`
 	Stderr       pulumix.Output[string]                                 `pulumi:"stderr"`
 	Stdout       pulumix.Output[string]                                 `pulumi:"stdout"`
+	Triggers     pulumix.ArrayOutput[any]                               `pulumi:"triggers"`
 }
 
 // NewMkdir registers a new resource with the given unique name, arguments, and options.
@@ -31,8 +32,8 @@ func NewMkdir(ctx *pulumi.Context,
 		return nil, errors.New("missing one or more required arguments")
 	}
 
-	if args.Directory == nil {
-		return nil, errors.New("invalid value for required argument 'Directory'")
+	if args.Args == nil {
+		return nil, errors.New("invalid value for required argument 'Args'")
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Mkdir
@@ -67,22 +68,14 @@ func (MkdirState) ElementType() reflect.Type {
 }
 
 type mkdirArgs struct {
-	Directory []string `pulumi:"directory"`
-	Help      *bool    `pulumi:"help"`
-	Mode      *string  `pulumi:"mode"`
-	Parents   *bool    `pulumi:"parents"`
-	Verbose   *bool    `pulumi:"verbose"`
-	Version   *bool    `pulumi:"version"`
+	Args     MkdirArgsType `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Mkdir resource.
 type MkdirArgs struct {
-	Directory pulumix.Input[[]string]
-	Help      pulumix.Input[*bool]
-	Mode      pulumix.Input[*string]
-	Parents   pulumix.Input[*bool]
-	Verbose   pulumix.Input[*bool]
-	Version   pulumix.Input[*bool]
+	Args     pulumix.Input[*MkdirArgsTypeArgs]
+	Triggers pulumix.Input[[]any]
 }
 
 func (MkdirArgs) ElementType() reflect.Type {
@@ -140,6 +133,12 @@ func (o MkdirOutput) Stderr() pulumix.Output[string] {
 func (o MkdirOutput) Stdout() pulumix.Output[string] {
 	value := pulumix.Apply[Mkdir](o, func(v Mkdir) pulumix.Output[string] { return v.Stdout })
 	return pulumix.Flatten[string, pulumix.Output[string]](value)
+}
+
+func (o MkdirOutput) Triggers() pulumix.ArrayOutput[any] {
+	value := pulumix.Apply[Mkdir](o, func(v Mkdir) pulumix.ArrayOutput[any] { return v.Triggers })
+	unwrapped := pulumix.Flatten[[]interface{}, pulumix.ArrayOutput[any]](value)
+	return pulumix.ArrayOutput[any]{OutputState: unwrapped.OutputState}
 }
 
 func init() {

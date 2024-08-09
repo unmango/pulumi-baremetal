@@ -10,7 +10,7 @@ import (
 )
 
 type TarArgs struct {
-	DefaultFileManipulator
+	CommandArgsBase
 
 	Args []string `pulumi:"args,optional"`
 
@@ -145,14 +145,14 @@ func (t TarArgs) ExpectCreated() []string {
 	return []string{}
 }
 
-var _ CommandArgs = TarArgs{}
+var _ CommandBuilder = TarArgs{}
 
 type Tar struct{}
 
 type TarState = CommandState[TarArgs]
 
 // Create implements infer.CustomCreate.
-func (Tar) Create(ctx context.Context, name string, inputs TarArgs, preview bool) (id string, output TarState, err error) {
+func (Tar) Create(ctx context.Context, name string, inputs CommandArgs[TarArgs], preview bool) (id string, output TarState, err error) {
 	state := TarState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("tar: %w", err)
@@ -162,7 +162,7 @@ func (Tar) Create(ctx context.Context, name string, inputs TarArgs, preview bool
 }
 
 // Update implements infer.CustomUpdate.
-func (Tar) Update(ctx context.Context, id string, olds TarState, news TarArgs, preview bool) (TarState, error) {
+func (Tar) Update(ctx context.Context, id string, olds TarState, news CommandArgs[TarArgs], preview bool) (TarState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
 		return olds, fmt.Errorf("tar: %w", err)
@@ -180,6 +180,6 @@ func (Tar) Delete(ctx context.Context, id string, props TarState) error {
 	return nil
 }
 
-var _ = (infer.CustomCreate[TarArgs, TarState])((*Tar)(nil))
-var _ = (infer.CustomUpdate[TarArgs, TarState])((*Tar)(nil))
+var _ = (infer.CustomCreate[CommandArgs[TarArgs], TarState])((*Tar)(nil))
+var _ = (infer.CustomUpdate[CommandArgs[TarArgs], TarState])((*Tar)(nil))
 var _ = (infer.CustomDelete[TarState])((*Tar)(nil))

@@ -31,6 +31,9 @@ namespace UnMango.Baremetal.Cmd
         [Output("stdout")]
         public Output<string> Stdout { get; private set; } = null!;
 
+        [Output("triggers")]
+        public Output<ImmutableArray<object>> Triggers { get; private set; } = null!;
+
 
         /// <summary>
         /// Create a Chmod resource with the given unique name, arguments, and options.
@@ -77,51 +80,16 @@ namespace UnMango.Baremetal.Cmd
 
     public sealed class ChmodArgs : global::Pulumi.ResourceArgs
     {
-        [Input("changes")]
-        public Input<bool>? Changes { get; set; }
+        [Input("args", required: true)]
+        public Input<Inputs.ChmodArgsArgs> Args { get; set; } = null!;
 
-        [Input("files", required: true)]
-        private InputList<string>? _files;
-        public InputList<string> Files
+        [Input("triggers")]
+        private InputList<object>? _triggers;
+        public InputList<object> Triggers
         {
-            get => _files ?? (_files = new InputList<string>());
-            set => _files = value;
+            get => _triggers ?? (_triggers = new InputList<object>());
+            set => _triggers = value;
         }
-
-        [Input("help")]
-        public Input<bool>? Help { get; set; }
-
-        [Input("mode")]
-        private InputList<string>? _mode;
-        public InputList<string> Mode
-        {
-            get => _mode ?? (_mode = new InputList<string>());
-            set => _mode = value;
-        }
-
-        [Input("noPreserveRoot")]
-        public Input<bool>? NoPreserveRoot { get; set; }
-
-        [Input("octalMode")]
-        public Input<string>? OctalMode { get; set; }
-
-        [Input("preserveRoot")]
-        public Input<bool>? PreserveRoot { get; set; }
-
-        [Input("quiet")]
-        public Input<bool>? Quiet { get; set; }
-
-        [Input("recursive")]
-        public Input<bool>? Recursive { get; set; }
-
-        [Input("reference")]
-        public Input<string>? Reference { get; set; }
-
-        [Input("verbose")]
-        public Input<bool>? Verbose { get; set; }
-
-        [Input("version")]
-        public Input<bool>? Version { get; set; }
 
         public ChmodArgs()
         {

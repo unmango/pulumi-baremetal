@@ -31,6 +31,9 @@ namespace UnMango.Baremetal.Cmd
         [Output("stdout")]
         public Output<string> Stdout { get; private set; } = null!;
 
+        [Output("triggers")]
+        public Output<ImmutableArray<object>> Triggers { get; private set; } = null!;
+
 
         /// <summary>
         /// Create a Mv resource with the given unique name, arguments, and options.
@@ -77,52 +80,16 @@ namespace UnMango.Baremetal.Cmd
 
     public sealed class MvArgs : global::Pulumi.ResourceArgs
     {
-        [Input("backup")]
-        public Input<string>? Backup { get; set; }
+        [Input("args", required: true)]
+        public Input<Inputs.MvArgsArgs> Args { get; set; } = null!;
 
-        [Input("destination")]
-        public Input<string>? Destination { get; set; }
-
-        [Input("directory")]
-        public Input<string>? Directory { get; set; }
-
-        [Input("force")]
-        public Input<bool>? Force { get; set; }
-
-        [Input("help")]
-        public Input<bool>? Help { get; set; }
-
-        [Input("noClobber")]
-        public Input<bool>? NoClobber { get; set; }
-
-        [Input("noTargetDirectory")]
-        public Input<bool>? NoTargetDirectory { get; set; }
-
-        [Input("source", required: true)]
-        private InputList<string>? _source;
-        public InputList<string> Source
+        [Input("triggers")]
+        private InputList<object>? _triggers;
+        public InputList<object> Triggers
         {
-            get => _source ?? (_source = new InputList<string>());
-            set => _source = value;
+            get => _triggers ?? (_triggers = new InputList<object>());
+            set => _triggers = value;
         }
-
-        [Input("stripTrailingSlashes")]
-        public Input<bool>? StripTrailingSlashes { get; set; }
-
-        [Input("suffix")]
-        public Input<string>? Suffix { get; set; }
-
-        [Input("targetDirectory")]
-        public Input<string>? TargetDirectory { get; set; }
-
-        [Input("update")]
-        public Input<bool>? Update { get; set; }
-
-        [Input("verbose")]
-        public Input<bool>? Verbose { get; set; }
-
-        [Input("version")]
-        public Input<bool>? Version { get; set; }
 
         public MvArgs()
         {

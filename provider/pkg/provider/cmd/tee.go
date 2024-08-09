@@ -10,7 +10,8 @@ import (
 )
 
 type TeeArgs struct {
-	DefaultFileManipulator
+	CommandArgsBase
+
 	Append  bool     `pulumi:"append,optional"`
 	Content string   `pulumi:"content"`
 	Files   []string `pulumi:"files"`
@@ -46,7 +47,7 @@ func (t *Tee) Annotate(a infer.Annotator) {
 type TeeState = CommandState[TeeArgs]
 
 // Create implements infer.CustomCreate.
-func (Tee) Create(ctx context.Context, name string, inputs TeeArgs, preview bool) (string, TeeState, error) {
+func (Tee) Create(ctx context.Context, name string, inputs CommandArgs[TeeArgs], preview bool) (string, TeeState, error) {
 	state := TeeState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("tee: %w", err)
@@ -56,7 +57,7 @@ func (Tee) Create(ctx context.Context, name string, inputs TeeArgs, preview bool
 }
 
 // Update implements infer.CustomUpdate.
-func (Tee) Update(ctx context.Context, id string, olds TeeState, news TeeArgs, preview bool) (TeeState, error) {
+func (Tee) Update(ctx context.Context, id string, olds TeeState, news CommandArgs[TeeArgs], preview bool) (TeeState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
 		return olds, fmt.Errorf("tee: %w", err)
@@ -74,6 +75,6 @@ func (Tee) Delete(ctx context.Context, id string, props TeeState) error {
 	return nil
 }
 
-var _ = (infer.CustomCreate[TeeArgs, TeeState])((*Tee)(nil))
-var _ = (infer.CustomUpdate[TeeArgs, TeeState])((*Tee)(nil))
+var _ = (infer.CustomCreate[CommandArgs[TeeArgs], TeeState])((*Tee)(nil))
+var _ = (infer.CustomUpdate[CommandArgs[TeeArgs], TeeState])((*Tee)(nil))
 var _ = (infer.CustomDelete[TeeState])((*Tee)(nil))

@@ -10,22 +10,22 @@ import (
 )
 
 type WgetArgs struct {
-	DefaultFileManipulator
-	AppendOutput      string   `pulumi:"appendOutput,optional"`
-	Background        bool     `pulumi:"background,optional"`
-	Base              string   `pulumi:"base,optional"`
-	CaCertificateFile string   `pulumi:"caCertificateFile,optional"`
-	CaDirectory       string   `pulumi:"caDirectory,optional"`
-	Certificate       string   `pulumi:"certificate,optional"`
-	CertificateType   string   `pulumi:"certificateType,optional"`
-	Config            string   `pulumi:"config,optional"`
-	Continue          bool     `pulumi:"continue,optional"`
-	CrlFile           string   `pulumi:"crlFile,optional"`
-	CutDirs           int      `pulumi:"cutDirs,optional"`
-	Debug             bool     `pulumi:"debug,optional"`
-	DirectoryPrefix   string   `pulumi:"directoryPrefix,optional"`
-	Execute           []string `pulumi:"execute,optional"`
-	// ExpectedFiles      []string `pulumi:"expectedFiles,optional"`
+	CommandArgsBase
+
+	AppendOutput       string   `pulumi:"appendOutput,optional"`
+	Background         bool     `pulumi:"background,optional"`
+	Base               string   `pulumi:"base,optional"`
+	CaCertificateFile  string   `pulumi:"caCertificateFile,optional"`
+	CaDirectory        string   `pulumi:"caDirectory,optional"`
+	Certificate        string   `pulumi:"certificate,optional"`
+	CertificateType    string   `pulumi:"certificateType,optional"`
+	Config             string   `pulumi:"config,optional"`
+	Continue           bool     `pulumi:"continue,optional"`
+	CrlFile            string   `pulumi:"crlFile,optional"`
+	CutDirs            int      `pulumi:"cutDirs,optional"`
+	Debug              bool     `pulumi:"debug,optional"`
+	DirectoryPrefix    string   `pulumi:"directoryPrefix,optional"`
+	Execute            []string `pulumi:"execute,optional"`
 	ForceDirectories   bool     `pulumi:"forceDirectories,optional"`
 	ForceHtml          bool     `pulumi:"forceHtml,optional"`
 	Help               bool     `pulumi:"help,optional"`
@@ -143,7 +143,7 @@ type Wget struct{}
 type WgetState = CommandState[WgetArgs]
 
 // Create implements infer.CustomCreate.
-func (Wget) Create(ctx context.Context, name string, inputs WgetArgs, preview bool) (id string, output WgetState, err error) {
+func (Wget) Create(ctx context.Context, name string, inputs CommandArgs[WgetArgs], preview bool) (id string, output WgetState, err error) {
 	state := WgetState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("wget: %w", err)
@@ -153,7 +153,7 @@ func (Wget) Create(ctx context.Context, name string, inputs WgetArgs, preview bo
 }
 
 // Update implements infer.CustomUpdate.
-func (Wget) Update(ctx context.Context, id string, olds WgetState, news WgetArgs, preview bool) (WgetState, error) {
+func (Wget) Update(ctx context.Context, id string, olds WgetState, news CommandArgs[WgetArgs], preview bool) (WgetState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
 		return olds, fmt.Errorf("wget: %w", err)
@@ -171,6 +171,6 @@ func (Wget) Delete(ctx context.Context, id string, props WgetState) error {
 	return nil
 }
 
-var _ = (infer.CustomCreate[WgetArgs, WgetState])((*Wget)(nil))
-var _ = (infer.CustomUpdate[WgetArgs, WgetState])((*Wget)(nil))
+var _ = (infer.CustomCreate[CommandArgs[WgetArgs], WgetState])((*Wget)(nil))
+var _ = (infer.CustomUpdate[CommandArgs[WgetArgs], WgetState])((*Wget)(nil))
 var _ = (infer.CustomDelete[WgetState])((*Wget)(nil))
