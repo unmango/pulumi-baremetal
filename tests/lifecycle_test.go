@@ -219,6 +219,21 @@ var _ = Describe("Command Resources", func() {
 					Expect(output["movedFiles"].V).To(BeEmpty())
 				},
 			},
+			// This seems to be crashing the provisioner
+			// Updates: []integration.Operation{
+			// 	{ // Add a trigger
+			// 		Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+			// 			"args": map[string]interface{}{
+			// 				"tmpdir": true,
+			// 			},
+			// 			"triggers": []interface{}{"a trigger"},
+			// 		}),
+			// 		Hook: func(inputs, output resource.PropertyMap) {
+			// 			Expect(output["triggers"]).To(Equal([]interface{}{"a trigger"}))
+			// 			Expect(inputs).To(Equal(output))
+			// 		},
+			// 	},
+			// },
 		}
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
@@ -548,63 +563,6 @@ var _ = Describe("Command Resources", func() {
 					_, err := provisioner.ReadFile(context.Background(), file)
 					Expect(err).NotTo(HaveOccurred())
 				},
-				// Need to figure out how secrets work
-				// ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
-				// 	"exitCode":     0,
-				// 	"stdout":       "",
-				// 	"stderr":       "",
-				// 	"createdFiles": []string{file},
-				// 	"movedFiles":   map[string]string{},
-				// 	"args": map[string]interface{}{
-				// 		"directoryPrefix": dir,
-				// 		"urls":            []string{url},
-				// 		"quiet":           true,
-
-				// 		// Defaults
-				// 		"wait":               "",
-				// 		"config":             "",
-				// 		"inputFile":          "",
-				// 		"caCertificateFile":  "",
-				// 		"timeout":            "",
-				// 		"showProgress":       false,
-				// 		"continue":           false,
-				// 		"noDirectories":      false,
-				// 		"appendOutput":       "",
-				// 		"timestamping":       false,
-				// 		"saveCookies":        "",
-				// 		"base":               "",
-				// 		"noDnsCache":         false,
-				// 		"noVerbose":          false,
-				// 		"version":            "",
-				// 		"progress":           "",
-				// 		"outputDocument":     "",
-				// 		"password":           resource.MakeSecret(resource.NewProperty("")),
-				// 		"caDirectory":        "",
-				// 		"forceDirectories":   false,
-				// 		"background":         false,
-				// 		"httpsOnly":          false,
-				// 		"certificateType":    "",
-				// 		"userAgent":          "",
-				// 		"keepSessionCookies": false,
-				// 		"noClobber":          false,
-				// 		"debug":              false,
-				// 		"help":               false,
-				// 		"inet4Only":          false,
-				// 		"privateKeyType":     resource.MakeSecret(resource.NewProperty("")),
-				// 		"certificate":        "",
-				// 		"forceHtml":          false,
-				// 		"user":               "",
-				// 		"tries":              0,
-				// 		"outputFile":         "",
-				// 		"randomWait":         false,
-				// 		"startPos":           "",
-				// 		"verbose":            false,
-				// 		"privateKey":         resource.MakeSecret(resource.NewProperty("")),
-				// 		"reportSpeed":        "",
-				// 		"cutDirs":            0,
-				// 		"crlFile":            "",
-				// 	},
-				// }),
 			},
 		}
 
