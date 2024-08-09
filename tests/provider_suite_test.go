@@ -48,9 +48,11 @@ var _ = BeforeSuite(func(ctx context.Context) {
 })
 
 var _ = AfterSuite(func(ctx context.Context) {
-	By("stopping the provisioner")
-	err := provisioner.Stop(ctx)
-	Expect(err).NotTo(HaveOccurred())
+	if provisioner != nil {
+		By("stopping the provisioner")
+		err := provisioner.Stop(ctx)
+		Expect(err).NotTo(HaveOccurred())
+	}
 
 	// By("stopping the ssh server")
 	// err = sshServer.Stop(ctx)
