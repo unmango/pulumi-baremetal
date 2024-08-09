@@ -312,6 +312,7 @@ jobs:
           cache-to: type=gha
           context: .
           file: tests/provisioner.Dockerfile
+          tags: baremetal-provisioner:test
 
       - name: Test
         run: make test_provider

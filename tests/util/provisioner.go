@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"os"
 	"path"
 
 	"github.com/mdelapenya/tlscert"
@@ -35,11 +34,6 @@ func NewProvisioner(
 	clientCa *tlscert.Certificate,
 	logger io.Writer,
 ) (TestProvisioner, error) {
-	cwd, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-
 	certs, err := NewCertBundle("ca", "provisioner")
 	if err != nil {
 		return nil, err
@@ -53,10 +47,7 @@ func NewProvisioner(
 	req := tc.GenericContainerRequest{
 		Logger: NewLogger(logger),
 		ContainerRequest: tc.ContainerRequest{
-			FromDockerfile: tc.FromDockerfile{
-				Context:    path.Clean(path.Join(cwd, "..")),
-				Dockerfile: path.Join("tests", "provisioner.Dockerfile"),
-			},
+			Image: "baremetal-provisioner:test",
 			Files: []tc.ContainerFile{
 				{ContainerFilePath: clientCaPath, Reader: bytes.NewReader(clientCa.Bytes)},
 				{ContainerFilePath: certPath, Reader: bytes.NewReader(certs.Cert.Bytes)},
