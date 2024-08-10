@@ -125,6 +125,26 @@ func (s *service) Update(ctx context.Context, req *pb.UpdateRequest) (res *pb.Up
 func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteResponse, error) {
 	log := s.Log.With("op", "delete", "prev", req.Previous)
 
+	if req.Command != nil {
+		log.Info("executing custom delete")
+		create, err := s.Create(ctx, &pb.CreateRequest{
+			Command:       req.Command,
+			ExpectCreated: []string{},
+			ExpectMoved:   map[string]string{},
+		})
+		if err != nil {
+			log.ErrorContext(ctx, "failed performing create", "err", err)
+			return nil, fmt.Errorf("failed creating: %w", err)
+		}
+
+		return &pb.DeleteResponse{Commands: []*pb.Operation{{
+			Result:       create.Result,
+			Command:      req.Command,
+			CreatedFiles: create.CreatedFiles,
+			MovedFiles:   create.MovedFiles,
+		}}}, nil
+	}
+
 	commands := []*pb.Operation{}
 	toDelete := req.Previous.CreatedFiles
 	toMove := req.Previous.MovedFiles
