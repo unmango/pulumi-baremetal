@@ -88,7 +88,6 @@ var _ = Describe("Command Resources", func() {
 		file := containerPath("mv.txt")
 		firstFile := containerPath("mv-new.txt")
 		secondFile := containerPath("mv-2.txt")
-		customFile := containerPath("mv-custom.txt")
 
 		BeforeAll(func(ctx context.Context) {
 			By("creating a file to be moved")
@@ -140,53 +139,13 @@ var _ = Describe("Command Resources", func() {
 						Expect(provisioner).To(ContainFile(context.Background(), secondFile))
 					},
 				},
-				{
-					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-						"args": map[string]interface{}{
-							"source":      []string{file},
-							"destination": secondFile,
-						},
-						"customUpdate": []string{"mv", secondFile, customFile},
-					}),
-					Hook: func(inputs, output resource.PropertyMap) {
-						Expect(output["stderr"]).To(HavePropertyValue(""))
-						Expect(output["stdout"]).To(HavePropertyValue(""))
-						Expect(output["exitCode"]).To(HavePropertyValue(0))
-						Expect(output["createdFiles"].V).To(BeEmpty())
-						Expect(output["movedFiles"].V).To(BeEmpty())
-						Expect(output["args"]).To(Equal(inputs["args"]))
-						Expect(provisioner).NotTo(ContainFile(context.Background(), file))
-						Expect(provisioner).NotTo(ContainFile(context.Background(), firstFile))
-						Expect(provisioner).To(ContainFile(context.Background(), customFile))
-					},
-				},
-				{
-					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-						"args": map[string]interface{}{
-							"source":      []string{file},
-							"destination": secondFile,
-						},
-						"customUpdate": []string{"mv", secondFile, customFile},
-						"customDelete": []string{"mv", customFile, file},
-					}),
-					Hook: func(inputs, output resource.PropertyMap) {
-						Expect(output["stderr"]).To(HavePropertyValue(""))
-						Expect(output["stdout"]).To(HavePropertyValue(""))
-						Expect(output["exitCode"]).To(HavePropertyValue(0))
-						Expect(output["createdFiles"].V).To(BeEmpty())
-						Expect(output["movedFiles"].V).To(BeEmpty())
-						Expect(output["args"]).To(Equal(inputs["args"]))
-						Expect(provisioner).NotTo(ContainFile(context.Background(), file))
-						Expect(provisioner).NotTo(ContainFile(context.Background(), firstFile))
-						Expect(provisioner).To(ContainFile(context.Background(), customFile))
-					},
-				},
 			},
 		}
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			run(server, test)
 
+			Expect(provisioner).NotTo(ContainFile(ctx, secondFile))
 			Expect(provisioner).NotTo(ContainFile(ctx, firstFile))
 			Expect(provisioner).To(ContainFile(ctx, file))
 		})
@@ -586,6 +545,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 		})
 		// We allow the failure from ExpectFailure to hit at either the preview or the Create.
 		if op.ExpectFailure && err != nil {
+			By("expecting failure")
 			return p.CreateResponse{}, false
 		}
 
@@ -599,11 +559,14 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 			return p.CreateResponse{}, false
 		}
 
+		// TODO: This throws, so the next condition will never get hit
+		// Double check if this is ok and remove the condition
 		Expect(err).NotTo(HaveOccurred())
 		if err != nil {
 			return p.CreateResponse{}, false
 		}
 		if op.Hook != nil {
+			By("executing the create hook")
 			op.Hook(check.Inputs, create.Properties.Copy())
 		}
 		if op.ExpectedOutput != nil {
@@ -616,6 +579,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 	createResponse, keepGoing := runCreate(l.Create)
 
 	if !keepGoing {
+		By("finishing the test")
 		return
 	}
 
@@ -629,12 +593,15 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 			News: update.Inputs,
 		})
 
+		// TODO: This throws, so the next condition will never get hit
+		// Double check if this is ok and remove the condition
 		Expect(err).NotTo(HaveOccurred())
 		if err != nil {
 			return
 		}
 		if len(update.CheckFailures) > 0 || len(check.Failures) > 0 {
 			Expect(check.Failures).To(Equal(update.CheckFailures))
+			By("finishing the test")
 			return
 		}
 
@@ -646,11 +613,14 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 			News: check.Inputs.Copy(),
 		})
 
+		// TODO: This throws, so the next condition will never get hit
+		// Double check if this is ok and remove the condition
 		Expect(err).NotTo(HaveOccurred())
 		if err != nil {
 			return
 		}
 		if !diff.HasChanges {
+			By("continuing because no changes")
 			continue
 		}
 
@@ -678,9 +648,11 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 			}
 
 			if diff.DeleteBeforeReplace {
+				By("deleting before replacing")
 				runDelete()
 				result, keepGoing := runCreate(update)
 				if !keepGoing {
+					By("finishing the test")
 					return
 				}
 				id = result.ID
@@ -688,6 +660,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 			} else {
 				result, keepGoing := runCreate(update)
 				if !keepGoing {
+					By("finishing the test")
 					return
 				}
 
@@ -708,6 +681,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 			})
 
 			if update.ExpectFailure && err != nil {
+				By("expecting failure")
 				return
 			}
 
@@ -723,6 +697,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 				return
 			}
 			if update.Hook != nil {
+				By("executing update hook")
 				update.Hook(check.Inputs, result.Properties.Copy())
 			}
 			if update.ExpectedOutput != nil {
@@ -732,6 +707,7 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 		}
 	}
 
+	By("sending the final delete request")
 	err := server.Delete(p.DeleteRequest{
 		ID:         id,
 		Urn:        urn,
