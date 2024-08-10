@@ -275,7 +275,7 @@ func (s *CommandState[T]) Copy() CommandState[T] {
 }
 
 func parseCommand(args []string) (*pb.Command, error) {
-	bin := pb.Bin_BIN_UNSPECIFIED
+	var bin pb.Bin
 	switch args[0] {
 	case "chmod":
 		bin = pb.Bin_BIN_CHMOD
