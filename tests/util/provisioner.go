@@ -53,6 +53,9 @@ func NewProvisioner(
 				{ContainerFilePath: certPath, Reader: bytes.NewReader(certs.Cert.Bytes)},
 				{ContainerFilePath: keyPath, Reader: bytes.NewReader(certs.Cert.KeyBytes)},
 			},
+			Env: map[string]string{
+				"GRPC_GO_LOG_SEVERITY_LEVEL": "info",
+			},
 			Cmd: []string{
 				"--network", defaultProtocol,
 				"--address", fmt.Sprintf("%s:%s", "0.0.0.0", port),

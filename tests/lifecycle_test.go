@@ -102,7 +102,8 @@ var _ = Describe("Command Resources", func() {
 
 	Describe("Mv", Ordered, func() {
 		file := containerPath("mv.txt")
-		newFile := containerPath("mv-new.txt")
+		firstFile := containerPath("mv-new.txt")
+		secondFile := containerPath("mv-2.txt")
 
 		BeforeAll(func(ctx context.Context) {
 			By("creating a file to be moved")
@@ -116,23 +117,23 @@ var _ = Describe("Command Resources", func() {
 				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
 					"args": map[string]interface{}{
 						"source":      []string{file},
-						"destination": newFile,
+						"destination": firstFile,
 					},
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
 					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
-					Expect(provisioner).To(ContainFile(context.Background(), newFile))
+					Expect(provisioner).To(ContainFile(context.Background(), firstFile))
 				},
 				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
 					"exitCode":     0,
 					"stdout":       "",
 					"stderr":       "",
 					"createdFiles": []string{},
-					"movedFiles":   map[string]string{file: newFile},
+					"movedFiles":   map[string]string{file: firstFile},
 					"args": map[string]interface{}{
 						"source":      []string{file},
-						"destination": newFile,
+						"destination": firstFile,
 
 						// Defaults
 						"backup":               "",
@@ -150,13 +151,28 @@ var _ = Describe("Command Resources", func() {
 					},
 				}),
 			},
+			Updates: []integration.Operation{{
+				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+					"args": map[string]interface{}{
+						"source":      []string{file},
+						"destination": secondFile,
+					},
+				}),
+				Hook: func(inputs, output resource.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(output["stdout"]).To(HavePropertyValue(""))
+					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
+					Expect(provisioner).NotTo(ContainFile(context.Background(), firstFile))
+					Expect(provisioner).To(ContainFile(context.Background(), secondFile))
+				},
+			}},
 		}
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			run(server, test)
 
 			Expect(provisioner).To(ContainFile(ctx, file))
-			Expect(provisioner).NotTo(ContainFile(ctx, newFile))
+			Expect(provisioner).NotTo(ContainFile(ctx, firstFile))
 		})
 	})
 
