@@ -141,7 +141,6 @@ func (s *CommandState[T]) Update(ctx context.Context, inputs CommandArgs[T], pre
 	expectMoved := map[string]string{}
 
 	if len(inputs.CustomUpdate) > 0 {
-		command, err = parseCommand(s.CustomUpdate)
 		command, err = parseCommand(inputs.CustomUpdate)
 		if err != nil {
 			log.Errorf("Failed to parse custom update: %s", err)
@@ -204,7 +203,6 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 
 	var command *pb.Command
 	if len(s.CustomDelete) > 0 {
-		command, err = parseCommand(s.CustomUpdate)
 		command, err = parseCommand(s.CustomDelete)
 		if err != nil {
 			log.Errorf("Failed to parse custom delete: %s", err)
