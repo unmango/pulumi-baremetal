@@ -35,6 +35,7 @@ message UpdateResponse {
 
 message DeleteRequest {
   Operation previous = 1;
+  optional Command command = 2;
 }
 
 message DeleteResponse {
