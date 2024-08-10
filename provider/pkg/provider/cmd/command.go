@@ -103,18 +103,13 @@ func (s *CommandState[T]) Create(ctx context.Context, inputs CommandArgs[T], pre
 	return nil
 }
 
-func (s *CommandState[T]) Diff(ctx context.Context, inputs CommandArgs[T]) (provider.DiffResponse, error) {
+func (s *CommandState[T]) Diff(ctx context.Context, inputs CommandArgs[T]) (map[string]provider.PropertyDiff, error) {
 	diff := map[string]provider.PropertyDiff{}
-
 	if !slices.Equal(s.Triggers, inputs.Triggers) {
 		diff["triggers"] = provider.PropertyDiff{Kind: provider.Update}
 	}
 
-	return provider.DiffResponse{
-		DeleteBeforeReplace: true,
-		HasChanges:          len(diff) > 0,
-		DetailedDiff:        diff,
-	}, nil
+	return diff, nil
 }
 
 func (s *CommandState[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bool) (CommandState[T], error) {

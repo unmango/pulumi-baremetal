@@ -15,6 +15,7 @@ Pulumi.*.yaml
 
 .make/
 .test/
+*.test
 .envrc
 
 # Build Artifacts

@@ -229,6 +229,7 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 		--out ${WORKING_DIR}/examples/$*
 	@touch $@
 
+export GRPC_GO_LOG_SEVERITY_LEVEL ?=
 TEST_FLAGS ?=
 
 .test/provider: .make/provisioner_test_docker_build
