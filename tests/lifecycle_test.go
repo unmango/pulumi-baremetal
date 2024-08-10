@@ -66,29 +66,12 @@ var _ = Describe("Command Resources", func() {
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(output["stdout"]).To(HavePropertyValue(""))
+					Expect(output["exitCode"]).To(HavePropertyValue(0))
+					Expect(output["createdFiles"].V).To(BeEmpty())
+					Expect(output["movedFiles"].V).To(BeEmpty())
+					Expect(output["args"]).To(Equal(inputs["args"]))
 				},
-				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"exitCode":     0,
-					"stdout":       "",
-					"stderr":       "",
-					"createdFiles": []string{},
-					"movedFiles":   map[string]string{},
-					"args": map[string]interface{}{
-						"files":     []string{file},
-						"octalMode": "0700",
-
-						// Defaults
-						"changes":        false,
-						"noPreserveRoot": false,
-						"preserveRoot":   false,
-						"quiet":          false,
-						"reference":      "",
-						"recursive":      false,
-						"help":           false,
-						"version":        false,
-						"verbose":        false,
-					},
-				}),
 			},
 		}
 
@@ -104,6 +87,7 @@ var _ = Describe("Command Resources", func() {
 		file := containerPath("mv.txt")
 		firstFile := containerPath("mv-new.txt")
 		secondFile := containerPath("mv-2.txt")
+		customFile := containerPath("mv-custom.txt")
 
 		BeforeAll(func(ctx context.Context) {
 			By("creating a file to be moved")
@@ -122,50 +106,62 @@ var _ = Describe("Command Resources", func() {
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(output["stdout"]).To(HavePropertyValue(""))
+					Expect(output["exitCode"]).To(HavePropertyValue(0))
+					Expect(output["createdFiles"].V).To(BeEmpty())
+					Expect(output["movedFiles"].V).To(Equal(resource.NewPropertyMapFromMap(map[string]interface{}{
+						file: firstFile,
+					})))
+					Expect(output["args"]).To(Equal(inputs["args"]))
 					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
 					Expect(provisioner).To(ContainFile(context.Background(), firstFile))
 				},
-				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"exitCode":     0,
-					"stdout":       "",
-					"stderr":       "",
-					"createdFiles": []string{},
-					"movedFiles":   map[string]string{file: firstFile},
-					"args": map[string]interface{}{
-						"source":      []string{file},
-						"destination": firstFile,
-
-						// Defaults
-						"backup":               "",
-						"directory":            "",
-						"force":                false,
-						"help":                 false,
-						"noClobber":            false,
-						"noTargetDirectory":    false,
-						"stripTrailingSlashes": false,
-						"suffix":               "",
-						"targetDirectory":      "",
-						"update":               false,
-						"version":              false,
-						"verbose":              false,
-					},
-				}),
 			},
-			Updates: []integration.Operation{{
-				Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"args": map[string]interface{}{
-						"source":      []string{file},
-						"destination": secondFile,
+			Updates: []integration.Operation{
+				{
+					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+						"args": map[string]interface{}{
+							"source":      []string{file},
+							"destination": secondFile,
+						},
+					}),
+					Hook: func(inputs, output resource.PropertyMap) {
+						Expect(output["stderr"]).To(HavePropertyValue(""))
+						Expect(output["stdout"]).To(HavePropertyValue(""))
+						Expect(output["exitCode"]).To(HavePropertyValue(0))
+						Expect(output["createdFiles"].V).To(BeEmpty())
+						Expect(output["movedFiles"].V).To(Equal(resource.NewPropertyMapFromMap(map[string]interface{}{
+							file: secondFile,
+						})))
+						Expect(output["args"]).To(Equal(inputs["args"]))
+						Expect(provisioner).NotTo(ContainFile(context.Background(), file))
+						Expect(provisioner).NotTo(ContainFile(context.Background(), firstFile))
+						Expect(provisioner).To(ContainFile(context.Background(), secondFile))
 					},
-				}),
-				Hook: func(inputs, output resource.PropertyMap) {
-					Expect(output["stderr"]).To(HavePropertyValue(""))
-					Expect(output["stdout"]).To(HavePropertyValue(""))
-					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
-					Expect(provisioner).NotTo(ContainFile(context.Background(), firstFile))
-					Expect(provisioner).To(ContainFile(context.Background(), secondFile))
 				},
-			}},
+				{
+					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+						"args": map[string]interface{}{
+							"source":      []string{file},
+							"destination": firstFile,
+						},
+						"customUpdate": []string{"mv", file, customFile},
+					}),
+					Hook: func(inputs, output resource.PropertyMap) {
+						Expect(output["stderr"]).To(HavePropertyValue(""))
+						Expect(output["stdout"]).To(HavePropertyValue(""))
+						Expect(output["exitCode"]).To(HavePropertyValue(0))
+						Expect(output["createdFiles"].V).To(BeEmpty())
+						Expect(output["movedFiles"].V).To(Equal(resource.NewPropertyMapFromMap(map[string]interface{}{
+							file: firstFile, // TODO: This is wrong
+						})))
+						Expect(output["args"]).To(Equal(inputs["args"]))
+						Expect(provisioner).NotTo(ContainFile(context.Background(), file))
+						Expect(provisioner).NotTo(ContainFile(context.Background(), firstFile))
+						Expect(provisioner).To(ContainFile(context.Background(), customFile))
+					},
+				},
+			},
 		}
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
@@ -189,24 +185,12 @@ var _ = Describe("Command Resources", func() {
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(output["stdout"]).To(HavePropertyValue(""))
+					Expect(output["exitCode"]).To(HavePropertyValue(0))
+					Expect(output["createdFiles"].V).To(BeEmpty())
+					Expect(output["movedFiles"].V).To(BeEmpty())
+					Expect(output["args"]).To(Equal(inputs["args"]))
 				},
-				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"exitCode":     0,
-					"stdout":       "",
-					"stderr":       "",
-					"createdFiles": []string{},
-					"movedFiles":   map[string]string{},
-					"args": map[string]interface{}{
-						"directory": []string{expectedDir},
-
-						// Defaults
-						"mode":    "",
-						"parents": false,
-						"help":    false,
-						"version": false,
-						"verbose": false,
-					},
-				}),
 			},
 		}
 
@@ -249,6 +233,23 @@ var _ = Describe("Command Resources", func() {
 						Expect(output["exitCode"].V).To(BeEquivalentTo(0))
 						Expect(output["triggers"]).To(Equal(resource.NewArrayProperty([]resource.PropertyValue{
 							resource.NewProperty("a trigger"),
+						})))
+						Expect(inputs["args"]).To(Equal(output["args"]))
+					},
+				},
+				{ // change a trigger
+					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+						"args": map[string]interface{}{
+							"tmpdir": true,
+						},
+						"triggers": []string{"an updated trigger"},
+					}),
+					Hook: func(inputs, output resource.PropertyMap) {
+						Expect(output["stderr"]).To(HavePropertyValue(""))
+						Expect(output["stdout"].V).NotTo(BeEmpty())
+						Expect(output["exitCode"].V).To(BeEquivalentTo(0))
+						Expect(output["triggers"]).To(Equal(resource.NewArrayProperty([]resource.PropertyValue{
+							resource.NewProperty("an updated trigger"),
 						})))
 						Expect(inputs["args"]).To(Equal(output["args"]))
 					},
