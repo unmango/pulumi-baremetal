@@ -18,6 +18,8 @@ type Chmod struct {
 
 	Args         pulumix.GPtrOutput[ChmodArgsType, ChmodArgsTypeOutput] `pulumi:"args"`
 	CreatedFiles pulumix.ArrayOutput[string]                            `pulumi:"createdFiles"`
+	CustomDelete pulumix.ArrayOutput[string]                            `pulumi:"customDelete"`
+	CustomUpdate pulumix.ArrayOutput[string]                            `pulumi:"customUpdate"`
 	ExitCode     pulumix.Output[int]                                    `pulumi:"exitCode"`
 	MovedFiles   pulumix.MapOutput[string]                              `pulumi:"movedFiles"`
 	Stderr       pulumix.Output[string]                                 `pulumi:"stderr"`
@@ -68,14 +70,18 @@ func (ChmodState) ElementType() reflect.Type {
 }
 
 type chmodArgs struct {
-	Args     ChmodArgsType `pulumi:"args"`
-	Triggers []interface{} `pulumi:"triggers"`
+	Args         ChmodArgsType `pulumi:"args"`
+	CustomDelete []string      `pulumi:"customDelete"`
+	CustomUpdate []string      `pulumi:"customUpdate"`
+	Triggers     []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Chmod resource.
 type ChmodArgs struct {
-	Args     pulumix.Input[*ChmodArgsTypeArgs]
-	Triggers pulumix.Input[[]any]
+	Args         pulumix.Input[*ChmodArgsTypeArgs]
+	CustomDelete pulumix.Input[[]string]
+	CustomUpdate pulumix.Input[[]string]
+	Triggers     pulumix.Input[[]any]
 }
 
 func (ChmodArgs) ElementType() reflect.Type {
@@ -110,6 +116,18 @@ func (o ChmodOutput) Args() pulumix.GPtrOutput[ChmodArgsType, ChmodArgsTypeOutpu
 
 func (o ChmodOutput) CreatedFiles() pulumix.ArrayOutput[string] {
 	value := pulumix.Apply[Chmod](o, func(v Chmod) pulumix.ArrayOutput[string] { return v.CreatedFiles })
+	unwrapped := pulumix.Flatten[[]string, pulumix.ArrayOutput[string]](value)
+	return pulumix.ArrayOutput[string]{OutputState: unwrapped.OutputState}
+}
+
+func (o ChmodOutput) CustomDelete() pulumix.ArrayOutput[string] {
+	value := pulumix.Apply[Chmod](o, func(v Chmod) pulumix.ArrayOutput[string] { return v.CustomDelete })
+	unwrapped := pulumix.Flatten[[]string, pulumix.ArrayOutput[string]](value)
+	return pulumix.ArrayOutput[string]{OutputState: unwrapped.OutputState}
+}
+
+func (o ChmodOutput) CustomUpdate() pulumix.ArrayOutput[string] {
+	value := pulumix.Apply[Chmod](o, func(v Chmod) pulumix.ArrayOutput[string] { return v.CustomUpdate })
 	unwrapped := pulumix.Flatten[[]string, pulumix.ArrayOutput[string]](value)
 	return pulumix.ArrayOutput[string]{OutputState: unwrapped.OutputState}
 }

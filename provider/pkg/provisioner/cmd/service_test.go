@@ -75,7 +75,7 @@ var _ = Describe("Grpc Server", func() {
 
 			By("deleting the command")
 			res, err := service.Delete(ctx, &pb.DeleteRequest{
-				Create: &pb.Operation{
+				Previous: &pb.Operation{
 					Command:      command,
 					Result:       create.Result,
 					CreatedFiles: create.CreatedFiles,

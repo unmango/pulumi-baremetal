@@ -18,6 +18,8 @@ type Chmod struct {
 
 	Args         ChmodArgsTypeOutput      `pulumi:"args"`
 	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
+	CustomDelete pulumi.StringArrayOutput `pulumi:"customDelete"`
+	CustomUpdate pulumi.StringArrayOutput `pulumi:"customUpdate"`
 	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
@@ -68,14 +70,18 @@ func (ChmodState) ElementType() reflect.Type {
 }
 
 type chmodArgs struct {
-	Args     ChmodArgsType `pulumi:"args"`
-	Triggers []interface{} `pulumi:"triggers"`
+	Args         ChmodArgsType `pulumi:"args"`
+	CustomDelete []string      `pulumi:"customDelete"`
+	CustomUpdate []string      `pulumi:"customUpdate"`
+	Triggers     []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Chmod resource.
 type ChmodArgs struct {
-	Args     ChmodArgsTypeInput
-	Triggers pulumi.ArrayInput
+	Args         ChmodArgsTypeInput
+	CustomDelete pulumi.StringArrayInput
+	CustomUpdate pulumi.StringArrayInput
+	Triggers     pulumi.ArrayInput
 }
 
 func (ChmodArgs) ElementType() reflect.Type {
@@ -133,6 +139,14 @@ func (o ChmodOutput) Args() ChmodArgsTypeOutput {
 
 func (o ChmodOutput) CreatedFiles() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Chmod) pulumi.StringArrayOutput { return v.CreatedFiles }).(pulumi.StringArrayOutput)
+}
+
+func (o ChmodOutput) CustomDelete() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Chmod) pulumi.StringArrayOutput { return v.CustomDelete }).(pulumi.StringArrayOutput)
+}
+
+func (o ChmodOutput) CustomUpdate() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Chmod) pulumi.StringArrayOutput { return v.CustomUpdate }).(pulumi.StringArrayOutput)
 }
 
 func (o ChmodOutput) ExitCode() pulumi.IntOutput {

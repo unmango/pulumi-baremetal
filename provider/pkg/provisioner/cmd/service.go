@@ -103,7 +103,7 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.Cr
 }
 
 func (s *service) Update(ctx context.Context, req *pb.UpdateRequest) (res *pb.UpdateResponse, err error) {
-	log := s.Log.With("op", "update", "create", req.Create)
+	log := s.Log.With("op", "update", "prev", req.Previous)
 
 	create, err := s.Create(ctx, &pb.CreateRequest{
 		Command:       req.Command,
@@ -119,16 +119,35 @@ func (s *service) Update(ctx context.Context, req *pb.UpdateRequest) (res *pb.Up
 		Result:       create.Result,
 		CreatedFiles: create.CreatedFiles,
 		MovedFiles:   create.MovedFiles,
-		Deletes:      []*pb.Operation{},
 	}, nil
 }
 
 func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.DeleteResponse, error) {
-	log := s.Log.With("op", "delete", "create", req.Create)
+	log := s.Log.With("op", "delete", "prev", req.Previous)
+
+	if req.Command != nil {
+		log.Info("executing custom delete")
+		create, err := s.Create(ctx, &pb.CreateRequest{
+			Command:       req.Command,
+			ExpectCreated: []string{},
+			ExpectMoved:   map[string]string{},
+		})
+		if err != nil {
+			log.ErrorContext(ctx, "failed performing create", "err", err)
+			return nil, fmt.Errorf("failed creating: %w", err)
+		}
+
+		return &pb.DeleteResponse{Commands: []*pb.Operation{{
+			Result:       create.Result,
+			Command:      req.Command,
+			CreatedFiles: create.CreatedFiles,
+			MovedFiles:   create.MovedFiles,
+		}}}, nil
+	}
 
 	commands := []*pb.Operation{}
-	toDelete := req.Create.CreatedFiles
-	toMove := req.Create.MovedFiles
+	toDelete := req.Previous.CreatedFiles
+	toMove := req.Previous.MovedFiles
 	if len(toDelete) == 0 && len(toMove) == 0 {
 		log.InfoContext(ctx, "nothing to do")
 		return &pb.DeleteResponse{Commands: commands}, nil
@@ -162,7 +181,7 @@ func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.Delete
 		})
 	}
 
-	for src, dest := range req.Create.MovedFiles {
+	for src, dest := range req.Previous.MovedFiles {
 		log.DebugContext(ctx, "building command")
 		cmd := exec.CommandContext(ctx, "mv", dest, src)
 		stderr, stdout := &bytes.Buffer{}, &bytes.Buffer{}
