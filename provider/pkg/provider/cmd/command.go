@@ -108,7 +108,11 @@ func (s *CommandState[T]) Create(ctx context.Context, inputs CommandArgs[T], pre
 func (s *CommandState[T]) Diff(ctx context.Context, inputs CommandArgs[T]) (map[string]provider.PropertyDiff, error) {
 	diff := map[string]provider.PropertyDiff{}
 	if !slices.Equal(s.Triggers, inputs.Triggers) {
-		diff["triggers"] = provider.PropertyDiff{Kind: provider.Update}
+		diff["triggers"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if !slices.Equal(s.CustomUpdate, inputs.CustomUpdate) {
+		diff["customUpdate"] = provider.PropertyDiff{Kind: provider.Update}
 	}
 
 	return diff, nil
@@ -242,6 +246,18 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 	return nil
 }
 
+func (a CommandArgs[T]) UpdateKind() provider.DiffKind {
+	if len(a.CustomUpdate) > 0 {
+		return provider.Update
+	} else {
+		return provider.UpdateReplace
+	}
+}
+
+func (a CommandArgs[T]) DeleteBeforeReplace() bool {
+	return len(a.CustomUpdate) == 0
+}
+
 func (s *CommandState[T]) Copy() CommandState[T] {
 	return CommandState[T]{
 		CommandArgs:  s.CommandArgs,
@@ -254,13 +270,30 @@ func (s *CommandState[T]) Copy() CommandState[T] {
 }
 
 func parseCommand(args []string) (*pb.Command, error) {
-	bin, ok := pb.Bin_value[args[0]]
-	if !ok {
+	bin := pb.Bin_BIN_UNSPECIFIED
+	switch args[0] {
+	case "chmod":
+		bin = pb.Bin_BIN_CHMOD
+	case "mkdir":
+		bin = pb.Bin_BIN_MKDIR
+	case "mktemp":
+		bin = pb.Bin_BIN_MKTEMP
+	case "mv":
+		bin = pb.Bin_BIN_MV
+	case "rm":
+		bin = pb.Bin_BIN_RM
+	case "tar":
+		bin = pb.Bin_BIN_TAR
+	case "tee":
+		bin = pb.Bin_BIN_TEE
+	case "wget":
+		bin = pb.Bin_BIN_WGET
+	default:
 		return nil, fmt.Errorf("unsupported command: %s", args[0])
 	}
 
 	return &pb.Command{
-		Bin:   pb.Bin(bin),
+		Bin:   bin,
 		Args:  args[1:],
 		Stdin: nil, // TODO
 	}, nil
