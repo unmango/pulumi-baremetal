@@ -84,8 +84,10 @@ func (Chmod) Delete(ctx context.Context, id string, props ChmodState) error {
 		return fmt.Errorf("chmod: %w", err)
 	}
 
+	// TODO: Provisioner: Read current perms before modifying them
 	return nil
 }
 
 var _ = (infer.CustomCreate[CommandArgs[ChmodArgs], ChmodState])((*Chmod)(nil))
 var _ = (infer.CustomUpdate[CommandArgs[ChmodArgs], ChmodState])((*Chmod)(nil))
+var _ = (infer.CustomDelete[MkdirState])((*Mkdir)(nil))

@@ -171,8 +171,8 @@ var _ = Describe("Command Resources", func() {
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			run(server, test)
 
-			Expect(provisioner).To(ContainFile(ctx, file))
 			Expect(provisioner).NotTo(ContainFile(ctx, firstFile))
+			Expect(provisioner).To(ContainFile(ctx, file))
 		})
 	})
 
@@ -279,6 +279,7 @@ var _ = Describe("Command Resources", func() {
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(output["stdout"]).To(HavePropertyValue(""))
 					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
 				},
 				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
@@ -346,59 +347,16 @@ var _ = Describe("Command Resources", func() {
 					},
 				}),
 				Hook: func(inputs, output resource.PropertyMap) {
+					Expect(output["exitCode"]).To(HavePropertyValue(0))
 					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(output["stdout"]).To(HavePropertyValue(""))
+					Expect(output["createdFiles"]).To(Equal(resource.NewArrayProperty([]resource.PropertyValue{
+						resource.NewProperty(expectedFile),
+					})))
+					Expect(output["movedFiles"].V).To(Equal(resource.PropertyMap{}))
+					Expect(output["args"].V).To(Equal(inputs["args"].V))
 					Expect(provisioner).To(ContainFile(context.Background(), expectedFile))
 				},
-				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"exitCode":     0,
-					"stdout":       "",
-					"stderr":       "",
-					"createdFiles": []string{expectedFile},
-					"movedFiles":   map[string]string{},
-					"args": map[string]interface{}{
-						"extract":   true,
-						"file":      archive,
-						"directory": dest,
-						"args":      []string{fileName},
-
-						// Defaults
-						"gzip":                 false,
-						"keepDirectorySymlink": false,
-						"unlinkFirst":          false,
-						"xz":                   false,
-						"list":                 false,
-						"ignoreCommandError":   false,
-						"excludeFrom":          "",
-						"lzop":                 false,
-						"append":               false,
-						"update":               false,
-						"delete":               false,
-						"excludeVcs":           false,
-						"verbose":              false,
-						"lzip":                 false,
-						"overwriteDir":         false,
-						"transform":            "",
-						"create":               false,
-						"skipOldFiles":         false,
-						"excludeVcsIgnores":    false,
-						"verify":               false,
-						"suffix":               "",
-						"diff":                 false,
-						"exclude":              "",
-						"stripComponents":      0,
-						"bzip2":                false,
-						"keepNewerFiles":       false,
-						"removeFiles":          false,
-						"noSeek":               false,
-						"zstd":                 false,
-						"overwrite":            false,
-						"sparse":               false,
-						"toStdout":             false,
-						"lzma":                 false,
-						"keepOldfiles":         false,
-						"noOverwriteDir":       false,
-					},
-				}),
 			},
 		}
 
@@ -538,8 +496,8 @@ var _ = Describe("Command Resources", func() {
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			run(server, test)
 
-			Expect(provisioner).NotTo(ContainFile(ctx, file))
 			Expect(provisioner).NotTo(ContainFile(ctx, newFile))
+			Expect(provisioner).NotTo(ContainFile(ctx, file))
 		})
 	})
 

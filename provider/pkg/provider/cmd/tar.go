@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"path"
+	"slices"
 
+	provider "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 )
@@ -161,6 +163,92 @@ func (Tar) Create(ctx context.Context, name string, inputs CommandArgs[TarArgs],
 	return name, state, nil
 }
 
+// Diff implements infer.CustomDiff.
+func (Tar) Diff(ctx context.Context, id string, olds TarState, news CommandArgs[TarArgs]) (provider.DiffResponse, error) {
+	diff, err := olds.Diff(ctx, news)
+	if err != nil {
+		return provider.DiffResponse{}, fmt.Errorf("rm: %w", err)
+	}
+
+	if news.Args.Append != olds.Args.Append {
+		diff["args.append"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if !slices.Equal(news.Args.Args, olds.Args.Args) { // lol
+		diff["args.args"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.Bzip2 != olds.Args.Bzip2 {
+		diff["args.bzip2"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.Create != olds.Args.Create {
+		diff["args.create"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.Delete != olds.Args.Delete {
+		diff["args.delete"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.Diff != olds.Args.Diff {
+		diff["args.diff"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.ExcludeVcs != olds.Args.ExcludeVcs {
+		diff["args.excludeVcs"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.ExcludeVcsIgnores != olds.Args.ExcludeVcsIgnores {
+		diff["args.excludeVcsIgnoes"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.Extract != olds.Args.Extract {
+		diff["args.extract"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.Gzip != olds.Args.Gzip {
+		diff["args.gzip"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.IgnoreCommandError != olds.Args.IgnoreCommandError {
+		diff["args.ignoreCommandError"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.NoOverwriteDir != olds.Args.OverwriteDir {
+		diff["args.noOverwriteDir"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.RemoveFiles != olds.Args.RemoveFiles {
+		diff["args.removeFiles"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.Directory != olds.Args.Directory {
+		diff["args.directory"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.Exclude != olds.Args.Exclude {
+		diff["args.exclude"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.File != olds.Args.File {
+		diff["args.file"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.StripComponents != olds.Args.StripComponents {
+		diff["args.stripComponents"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.Transform != olds.Args.Transform {
+		diff["args.transform"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	return provider.DiffResponse{
+		DeleteBeforeReplace: true,
+		HasChanges:          len(diff) > 0,
+		DetailedDiff:        diff,
+	}, nil
+}
+
 // Update implements infer.CustomUpdate.
 func (Tar) Update(ctx context.Context, id string, olds TarState, news CommandArgs[TarArgs], preview bool) (TarState, error) {
 	state, err := olds.Update(ctx, news, preview)
@@ -181,5 +269,6 @@ func (Tar) Delete(ctx context.Context, id string, props TarState) error {
 }
 
 var _ = (infer.CustomCreate[CommandArgs[TarArgs], TarState])((*Tar)(nil))
+var _ = (infer.CustomDiff[CommandArgs[TarArgs], TarState])((*Tar)(nil))
 var _ = (infer.CustomUpdate[CommandArgs[TarArgs], TarState])((*Tar)(nil))
 var _ = (infer.CustomDelete[TarState])((*Tar)(nil))

@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	provider "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
@@ -54,7 +55,36 @@ func (Rm) Create(ctx context.Context, name string, inputs CommandArgs[RmArgs], p
 
 // Diff implements infer.CustomDiff.
 func (Rm) Diff(ctx context.Context, id string, olds RmState, news CommandArgs[RmArgs]) (provider.DiffResponse, error) {
-	panic("unimplemented")
+	diff, err := olds.Diff(ctx, news)
+	if err != nil {
+		return provider.DiffResponse{}, fmt.Errorf("rm: %w", err)
+	}
+
+	if news.Args.Dir != olds.Args.Dir {
+		diff["args.dir"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if !slices.Equal(news.Args.Files, olds.Args.Files) {
+		diff["args.files"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.Force != olds.Args.Force {
+		diff["args.force"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.OneFileSystem != olds.Args.OneFileSystem {
+		diff["args.oneFileSystem"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.Recursive != olds.Args.Recursive {
+		diff["args.recursive"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	return provider.DiffResponse{
+		DeleteBeforeReplace: true,
+		HasChanges:          len(diff) > 0,
+		DetailedDiff:        diff,
+	}, nil
 }
 
 // Update implements infer.CustomUpdate.

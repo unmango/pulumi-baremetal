@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"path"
+	"slices"
 
+	provider "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 )
@@ -152,6 +154,52 @@ func (Wget) Create(ctx context.Context, name string, inputs CommandArgs[WgetArgs
 	return name, state, nil
 }
 
+// Diff implements infer.CustomDiff.
+func (Wget) Diff(ctx context.Context, id string, olds WgetState, news CommandArgs[WgetArgs]) (provider.DiffResponse, error) {
+	diff, err := olds.Diff(ctx, news)
+	if err != nil {
+		return provider.DiffResponse{}, fmt.Errorf("wget: %w", err)
+	}
+
+	if !slices.Equal(news.Args.Urls, olds.Args.Urls) {
+		diff["args.urls"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.Quiet != olds.Args.Quiet {
+		diff["args.quiet"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.Base != olds.Args.Base {
+		diff["args.base"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.DirectoryPrefix != olds.Args.DirectoryPrefix {
+		diff["args.directoryPrefix"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.ForceDirectories != olds.Args.ForceDirectories {
+		diff["args.foreceDirectories"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.OutputFile != olds.Args.OutputFile {
+		diff["args.outputFile"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.OutputDocument != olds.Args.OutputDocument {
+		diff["args.outputDocument"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.Timestamping != olds.Args.Timestamping {
+		diff["args.timestamping"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	return provider.DiffResponse{
+		DeleteBeforeReplace: true,
+		HasChanges:          len(diff) > 0,
+		DetailedDiff:        diff,
+	}, nil
+}
+
 // Update implements infer.CustomUpdate.
 func (Wget) Update(ctx context.Context, id string, olds WgetState, news CommandArgs[WgetArgs], preview bool) (WgetState, error) {
 	state, err := olds.Update(ctx, news, preview)
@@ -172,5 +220,6 @@ func (Wget) Delete(ctx context.Context, id string, props WgetState) error {
 }
 
 var _ = (infer.CustomCreate[CommandArgs[WgetArgs], WgetState])((*Wget)(nil))
+var _ = (infer.CustomDiff[CommandArgs[WgetArgs], WgetState])((*Wget)(nil))
 var _ = (infer.CustomUpdate[CommandArgs[WgetArgs], WgetState])((*Wget)(nil))
 var _ = (infer.CustomDelete[WgetState])((*Wget)(nil))

@@ -4,7 +4,9 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"slices"
 
+	provider "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 )
@@ -56,6 +58,32 @@ func (Tee) Create(ctx context.Context, name string, inputs CommandArgs[TeeArgs],
 	return name, state, nil
 }
 
+// Diff implements infer.CustomDiff.
+func (Tee) Diff(ctx context.Context, id string, olds TeeState, news CommandArgs[TeeArgs]) (provider.DiffResponse, error) {
+	diff, err := olds.Diff(ctx, news)
+	if err != nil {
+		return provider.DiffResponse{}, fmt.Errorf("tee: %w", err)
+	}
+
+	if news.Args.Append != olds.Args.Append {
+		diff["args.append"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if news.Args.Content != olds.Args.Content {
+		diff["args.content"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	if !slices.Equal(news.Args.Files, olds.Args.Files) {
+		diff["args.files"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	}
+
+	return provider.DiffResponse{
+		DeleteBeforeReplace: true,
+		HasChanges:          len(diff) > 0,
+		DetailedDiff:        diff,
+	}, nil
+}
+
 // Update implements infer.CustomUpdate.
 func (Tee) Update(ctx context.Context, id string, olds TeeState, news CommandArgs[TeeArgs], preview bool) (TeeState, error) {
 	state, err := olds.Update(ctx, news, preview)
@@ -76,5 +104,6 @@ func (Tee) Delete(ctx context.Context, id string, props TeeState) error {
 }
 
 var _ = (infer.CustomCreate[CommandArgs[TeeArgs], TeeState])((*Tee)(nil))
+var _ = (infer.CustomDiff[CommandArgs[TeeArgs], TeeState])((*Tee)(nil))
 var _ = (infer.CustomUpdate[CommandArgs[TeeArgs], TeeState])((*Tee)(nil))
 var _ = (infer.CustomDelete[TeeState])((*Tee)(nil))
