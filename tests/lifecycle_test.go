@@ -235,21 +235,25 @@ var _ = Describe("Command Resources", func() {
 					Expect(output["movedFiles"].V).To(BeEmpty())
 				},
 			},
-			// This seems to be crashing the provisioner
-			// Updates: []integration.Operation{
-			// 	{ // Add a trigger
-			// 		Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
-			// 			"args": map[string]interface{}{
-			// 				"tmpdir": true,
-			// 			},
-			// 			"triggers": []interface{}{"a trigger"},
-			// 		}),
-			// 		Hook: func(inputs, output resource.PropertyMap) {
-			// 			Expect(output["triggers"]).To(Equal([]interface{}{"a trigger"}))
-			// 			Expect(inputs).To(Equal(output))
-			// 		},
-			// 	},
-			// },
+			Updates: []integration.Operation{
+				{ // Add a trigger
+					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+						"args": map[string]interface{}{
+							"tmpdir": true,
+						},
+						"triggers": []string{"a trigger"},
+					}),
+					Hook: func(inputs, output resource.PropertyMap) {
+						Expect(output["stderr"]).To(HavePropertyValue(""))
+						Expect(output["stdout"].V).NotTo(BeEmpty())
+						Expect(output["exitCode"].V).To(BeEquivalentTo(0))
+						Expect(output["triggers"]).To(Equal(resource.NewArrayProperty([]resource.PropertyValue{
+							resource.NewProperty("a trigger"),
+						})))
+						Expect(inputs["args"]).To(Equal(output["args"]))
+					},
+				},
+			},
 		}
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
@@ -280,26 +284,12 @@ var _ = Describe("Command Resources", func() {
 				Hook: func(inputs, output resource.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
 					Expect(output["stdout"]).To(HavePropertyValue(""))
+					Expect(output["exitCode"].V).To(BeEquivalentTo(0))
+					Expect(output["createdFiles"].V).To(BeEmpty())
+					Expect(output["movedFiles"].V).To(BeEmpty())
+					Expect(output["args"]).To(Equal(inputs["args"]))
 					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
 				},
-				ExpectedOutput: resource.NewPropertyMapFromMap(map[string]interface{}{
-					"exitCode":     0,
-					"stdout":       "",
-					"stderr":       "",
-					"createdFiles": []string{},
-					"movedFiles":   map[string]string{},
-					"args": map[string]interface{}{
-						"files": []string{file},
-
-						// Defaults
-						"force":         false,
-						"help":          false,
-						"oneFileSystem": false,
-						"recursive":     false,
-						"verbose":       false,
-						"dir":           false,
-					},
-				}),
 			},
 		}
 
