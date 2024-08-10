@@ -32,8 +32,10 @@ type CommandBuilder interface {
 }
 
 type CommandArgs[T CommandBuilder] struct {
-	Args     T     `pulumi:"args"`
-	Triggers []any `pulumi:"triggers,optional"`
+	Args         T        `pulumi:"args"`
+	Triggers     []any    `pulumi:"triggers,optional"`
+	CustomUpdate []string `pulumi:"customUpdate,optional"`
+	CustomDelete []string `pulumi:"customDelete,optional"`
 }
 
 func (a *CommandArgs[T]) Cmd() *pb.Command {
@@ -121,9 +123,20 @@ func (s *CommandState[T]) Update(ctx context.Context, inputs CommandArgs[T], pre
 		return s.Copy(), fmt.Errorf("creating provisioner: %w", err)
 	}
 
+	var command *pb.Command
+	if len(s.CustomUpdate) > 0 {
+		command, err = parseCommand(s.CustomUpdate)
+		if err != nil {
+			log.Errorf("Failed to parse custom update: %s", err)
+			return s.Copy(), fmt.Errorf("parsing custom command: %w", err)
+		}
+	} else {
+		command = inputs.Cmd()
+	}
+
 	log.DebugStatus("Sending update request to provisioner")
 	res, err := p.Update(ctx, &pb.UpdateRequest{
-		Command:       inputs.Cmd(),
+		Command:       command,
 		ExpectCreated: inputs.ExpectCreated(),
 		ExpectMoved:   inputs.ExpectMoved(),
 		Create: &pb.Operation{
@@ -170,10 +183,21 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 		return fmt.Errorf("creating provisioner: %w", err)
 	}
 
+	var command *pb.Command
+	if len(s.CustomUpdate) > 0 {
+		command, err = parseCommand(s.CustomUpdate)
+		if err != nil {
+			log.Errorf("Failed to parse custom delete: %s", err)
+			return fmt.Errorf("parsing custom command: %w", err)
+		}
+	} else {
+		command = s.Cmd()
+	}
+
 	log.InfoStatus("Sending delete request to provisioner")
 	res, err := p.Delete(ctx, &pb.DeleteRequest{
 		Create: &pb.Operation{
-			Command:      s.Args.Cmd(),
+			Command:      command,
 			CreatedFiles: s.CreatedFiles,
 			MovedFiles:   s.MovedFiles,
 			Result: &pb.Result{
@@ -217,4 +241,17 @@ func (s *CommandState[T]) Copy() CommandState[T] {
 		CreatedFiles: s.CreatedFiles,
 		MovedFiles:   s.MovedFiles,
 	}
+}
+
+func parseCommand(args []string) (*pb.Command, error) {
+	bin, ok := pb.Bin_value[args[0]]
+	if !ok {
+		return nil, fmt.Errorf("unsupported command: %s", args[0])
+	}
+
+	return &pb.Command{
+		Bin:   pb.Bin(bin),
+		Args:  args[1:],
+		Stdin: nil, // TODO
+	}, nil
 }
