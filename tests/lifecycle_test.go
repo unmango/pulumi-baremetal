@@ -3,6 +3,7 @@ package tests
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"path"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -143,18 +144,37 @@ var _ = Describe("Command Resources", func() {
 					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
 						"args": map[string]interface{}{
 							"source":      []string{file},
-							"destination": firstFile,
+							"destination": secondFile,
 						},
-						"customUpdate": []string{"mv", file, customFile},
+						"customUpdate": []string{"mv", secondFile, customFile},
 					}),
 					Hook: func(inputs, output resource.PropertyMap) {
 						Expect(output["stderr"]).To(HavePropertyValue(""))
 						Expect(output["stdout"]).To(HavePropertyValue(""))
 						Expect(output["exitCode"]).To(HavePropertyValue(0))
 						Expect(output["createdFiles"].V).To(BeEmpty())
-						Expect(output["movedFiles"].V).To(Equal(resource.NewPropertyMapFromMap(map[string]interface{}{
-							file: firstFile, // TODO: This is wrong
-						})))
+						Expect(output["movedFiles"].V).To(BeEmpty())
+						Expect(output["args"]).To(Equal(inputs["args"]))
+						Expect(provisioner).NotTo(ContainFile(context.Background(), file))
+						Expect(provisioner).NotTo(ContainFile(context.Background(), firstFile))
+						Expect(provisioner).To(ContainFile(context.Background(), customFile))
+					},
+				},
+				{
+					Inputs: resource.NewPropertyMapFromMap(map[string]interface{}{
+						"args": map[string]interface{}{
+							"source":      []string{file},
+							"destination": secondFile,
+						},
+						"customUpdate": []string{"mv", secondFile, customFile},
+						"customDelete": []string{"mv", customFile, file},
+					}),
+					Hook: func(inputs, output resource.PropertyMap) {
+						Expect(output["stderr"]).To(HavePropertyValue(""))
+						Expect(output["stdout"]).To(HavePropertyValue(""))
+						Expect(output["exitCode"]).To(HavePropertyValue(0))
+						Expect(output["createdFiles"].V).To(BeEmpty())
+						Expect(output["movedFiles"].V).To(BeEmpty())
 						Expect(output["args"]).To(Equal(inputs["args"]))
 						Expect(provisioner).NotTo(ContainFile(context.Background(), file))
 						Expect(provisioner).NotTo(ContainFile(context.Background(), firstFile))
@@ -631,17 +651,18 @@ func run(server integration.Server, l integration.LifeCycleTest) {
 			return
 		}
 		if !diff.HasChanges {
-			return
+			continue
 		}
 
 		isDelete := false
-		for _, v := range diff.DetailedDiff {
+		for d, v := range diff.DetailedDiff {
 			switch v.Kind {
 			case p.AddReplace:
 				fallthrough
 			case p.DeleteReplace:
 				fallthrough
 			case p.UpdateReplace:
+				By(fmt.Sprintf("changing `%s` to trigger %s", d, v.Kind))
 				isDelete = true
 			}
 		}

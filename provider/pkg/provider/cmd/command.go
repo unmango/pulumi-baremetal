@@ -115,6 +115,10 @@ func (s *CommandState[T]) Diff(ctx context.Context, inputs CommandArgs[T]) (map[
 		diff["customUpdate"] = provider.PropertyDiff{Kind: provider.Update}
 	}
 
+	if len(inputs.CustomDelete) > len(s.CustomDelete) {
+		diff["customDelete"] = provider.PropertyDiff{Kind: provider.Add}
+	}
+
 	return diff, nil
 }
 
@@ -136,8 +140,9 @@ func (s *CommandState[T]) Update(ctx context.Context, inputs CommandArgs[T], pre
 	expectCreated := []string{}
 	expectMoved := map[string]string{}
 
-	if len(s.CustomUpdate) > 0 {
+	if len(inputs.CustomUpdate) > 0 {
 		command, err = parseCommand(s.CustomUpdate)
+		command, err = parseCommand(inputs.CustomUpdate)
 		if err != nil {
 			log.Errorf("Failed to parse custom update: %s", err)
 			return s.Copy(), fmt.Errorf("parsing custom command: %w", err)
@@ -198,20 +203,22 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 	}
 
 	var command *pb.Command
-	if len(s.CustomUpdate) > 0 {
+	if len(s.CustomDelete) > 0 {
 		command, err = parseCommand(s.CustomUpdate)
+		command, err = parseCommand(s.CustomDelete)
 		if err != nil {
 			log.Errorf("Failed to parse custom delete: %s", err)
 			return fmt.Errorf("parsing custom command: %w", err)
 		}
 	} else {
-		command = s.Cmd()
+		log.InfoStatus("Normal delete")
 	}
 
 	log.InfoStatus("Sending delete request to provisioner")
 	res, err := p.Delete(ctx, &pb.DeleteRequest{
+		Command: command,
 		Previous: &pb.Operation{
-			Command:      command,
+			Command:      s.Cmd(),
 			CreatedFiles: s.CreatedFiles,
 			MovedFiles:   s.MovedFiles,
 			Result: &pb.Result{

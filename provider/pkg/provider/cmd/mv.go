@@ -97,53 +97,69 @@ func (Mv) Diff(ctx context.Context, id string, olds MvState, news CommandArgs[Mv
 		return provider.DiffResponse{}, fmt.Errorf("mv: %w", err)
 	}
 
+	defaultKind := news.UpdateKind()
+
 	if news.Args.Backup != olds.Args.Backup {
-		diff["args.backup"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+		diff["args.backup"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
 	if news.Args.Destination != olds.Args.Destination {
-		diff["args.destination"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+		diff["args.destination"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
 	if news.Args.Directory != olds.Args.Directory {
-		diff["args.directory"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+		diff["args.directory"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
 	if news.Args.Force != olds.Args.Force {
-		diff["args.force"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+		diff["args.force"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
 	if news.Args.NoClobber != olds.Args.NoClobber {
-		diff["args.noClobber"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+		diff["args.noClobber"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
 	if news.Args.NoTargetDirectory != olds.Args.NoTargetDirectory {
-		diff["args.noTargetDirectory"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+		diff["args.noTargetDirectory"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
 	if !slices.Equal(news.Args.Source, olds.Args.Source) {
-		diff["args.source"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+		diff["args.source"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
 	if news.Args.StripTrailingSlashes != olds.Args.StripTrailingSlashes {
-		diff["args.stripTrailingSlashes"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+		diff["args.stripTrailingSlashes"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
 	if news.Args.Suffix != olds.Args.Suffix {
-		diff["args.suffix"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+		diff["args.suffix"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
 	if news.Args.TargetDirectory != olds.Args.TargetDirectory {
-		diff["args.targetDirectory"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+		diff["args.targetDirectory"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
 	if news.Args.Update != olds.Args.Update {
-		diff["args.update"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+		diff["args.update"] = provider.PropertyDiff{Kind: defaultKind}
+	}
+
+	changes := false
+	for k, v := range diff {
+		if k == "customDelete" {
+			continue
+		}
+
+		switch v.Kind {
+		case provider.Update:
+			fallthrough
+		case provider.UpdateReplace:
+			changes = true
+		}
 	}
 
 	return provider.DiffResponse{
 		DeleteBeforeReplace: true,
-		HasChanges:          len(diff) > 0,
+		HasChanges:          changes,
 		DetailedDiff:        diff,
 	}, nil
 }
