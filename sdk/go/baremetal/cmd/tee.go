@@ -87,6 +87,8 @@ type Tee struct {
 
 	Args         TeeArgsTypeOutput        `pulumi:"args"`
 	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
+	CustomDelete pulumi.StringArrayOutput `pulumi:"customDelete"`
+	CustomUpdate pulumi.StringArrayOutput `pulumi:"customUpdate"`
 	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
@@ -137,14 +139,18 @@ func (TeeState) ElementType() reflect.Type {
 }
 
 type teeArgs struct {
-	Args     TeeArgsType   `pulumi:"args"`
-	Triggers []interface{} `pulumi:"triggers"`
+	Args         TeeArgsType   `pulumi:"args"`
+	CustomDelete []string      `pulumi:"customDelete"`
+	CustomUpdate []string      `pulumi:"customUpdate"`
+	Triggers     []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Tee resource.
 type TeeArgs struct {
-	Args     TeeArgsTypeInput
-	Triggers pulumi.ArrayInput
+	Args         TeeArgsTypeInput
+	CustomDelete pulumi.StringArrayInput
+	CustomUpdate pulumi.StringArrayInput
+	Triggers     pulumi.ArrayInput
 }
 
 func (TeeArgs) ElementType() reflect.Type {
@@ -202,6 +208,14 @@ func (o TeeOutput) Args() TeeArgsTypeOutput {
 
 func (o TeeOutput) CreatedFiles() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Tee) pulumi.StringArrayOutput { return v.CreatedFiles }).(pulumi.StringArrayOutput)
+}
+
+func (o TeeOutput) CustomDelete() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Tee) pulumi.StringArrayOutput { return v.CustomDelete }).(pulumi.StringArrayOutput)
+}
+
+func (o TeeOutput) CustomUpdate() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Tee) pulumi.StringArrayOutput { return v.CustomUpdate }).(pulumi.StringArrayOutput)
 }
 
 func (o TeeOutput) ExitCode() pulumi.IntOutput {
