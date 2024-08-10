@@ -116,14 +116,22 @@ func (s *CommandState[T]) Diff(ctx context.Context, inputs CommandArgs[T]) (map[
 
 func (s *CommandState[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bool) (CommandState[T], error) {
 	log := logger.FromContext(ctx)
-	p, err := provisioner.FromContext(ctx)
+	if preview {
+		// Could dial the host and warn if the connection fails
+		log.DebugStatus("skipping during preview")
+		return s.Copy(), nil
+	}
 
+	p, err := provisioner.FromContext(ctx)
 	if err != nil {
 		log.Error("failed creating provisioner")
 		return s.Copy(), fmt.Errorf("creating provisioner: %w", err)
 	}
 
 	var command *pb.Command
+	expectCreated := []string{}
+	expectMoved := map[string]string{}
+
 	if len(s.CustomUpdate) > 0 {
 		command, err = parseCommand(s.CustomUpdate)
 		if err != nil {
@@ -132,15 +140,17 @@ func (s *CommandState[T]) Update(ctx context.Context, inputs CommandArgs[T], pre
 		}
 	} else {
 		command = inputs.Cmd()
+		expectCreated = inputs.ExpectCreated()
+		expectMoved = inputs.ExpectMoved()
 	}
 
 	log.DebugStatus("Sending update request to provisioner")
 	res, err := p.Update(ctx, &pb.UpdateRequest{
 		Command:       command,
-		ExpectCreated: inputs.ExpectCreated(),
-		ExpectMoved:   inputs.ExpectMoved(),
-		Create: &pb.Operation{
-			Command:      s.Args.Cmd(),
+		ExpectCreated: expectCreated,
+		ExpectMoved:   expectMoved,
+		Previous: &pb.Operation{
+			Command:      s.Cmd(),
 			CreatedFiles: s.CreatedFiles,
 			MovedFiles:   s.MovedFiles,
 			Result: &pb.Result{
@@ -196,7 +206,7 @@ func (s *CommandState[T]) Delete(ctx context.Context) error {
 
 	log.InfoStatus("Sending delete request to provisioner")
 	res, err := p.Delete(ctx, &pb.DeleteRequest{
-		Create: &pb.Operation{
+		Previous: &pb.Operation{
 			Command:      command,
 			CreatedFiles: s.CreatedFiles,
 			MovedFiles:   s.MovedFiles,
