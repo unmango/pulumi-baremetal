@@ -1107,11 +1107,14 @@ class TeeArgsArgs:
     def __init__(__self__, *,
                  content: pulumi.Input[Union[pulumi.Asset, pulumi.Archive]],
                  files: pulumi.Input[Sequence[pulumi.Input[str]]],
-                 append: Optional[pulumi.Input[bool]] = None):
+                 append: Optional[pulumi.Input[bool]] = None,
+                 stdin: Optional[pulumi.Input[str]] = None):
         pulumi.set(__self__, "content", content)
         pulumi.set(__self__, "files", files)
         if append is not None:
             pulumi.set(__self__, "append", append)
+        if stdin is not None:
+            pulumi.set(__self__, "stdin", stdin)
 
     @property
     @pulumi.getter
@@ -1139,6 +1142,15 @@ class TeeArgsArgs:
     @append.setter
     def append(self, value: Optional[pulumi.Input[bool]]):
         pulumi.set(self, "append", value)
+
+    @property
+    @pulumi.getter
+    def stdin(self) -> Optional[pulumi.Input[str]]:
+        return pulumi.get(self, "stdin")
+
+    @stdin.setter
+    def stdin(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "stdin", value)
 
 
 @pulumi.input_type

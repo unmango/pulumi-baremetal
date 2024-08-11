@@ -27,6 +27,9 @@ namespace UnMango.Baremetal.Coreutils.Inputs
             set => _files = value;
         }
 
+        [Input("stdin")]
+        public Input<string>? Stdin { get; set; }
+
         public TeeArgsArgs()
         {
         }

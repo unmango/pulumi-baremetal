@@ -804,12 +804,14 @@ type TeeArgsType struct {
 	Append  *bool                 `pulumi:"append"`
 	Content pulumi.AssetOrArchive `pulumi:"content"`
 	Files   []string              `pulumi:"files"`
+	Stdin   *string               `pulumi:"stdin"`
 }
 
 type TeeArgsTypeArgs struct {
 	Append  pulumix.Input[*bool]                 `pulumi:"append"`
 	Content pulumix.Input[pulumi.AssetOrArchive] `pulumi:"content"`
 	Files   pulumix.Input[[]string]              `pulumi:"files"`
+	Stdin   pulumix.Input[*string]               `pulumi:"stdin"`
 }
 
 func (TeeArgsTypeArgs) ElementType() reflect.Type {
@@ -859,6 +861,10 @@ func (o TeeArgsTypeOutput) Content() pulumix.Output[pulumi.AssetOrArchive] {
 func (o TeeArgsTypeOutput) Files() pulumix.ArrayOutput[string] {
 	value := pulumix.Apply[TeeArgsType](o, func(v TeeArgsType) []string { return v.Files })
 	return pulumix.ArrayOutput[string]{OutputState: value.OutputState}
+}
+
+func (o TeeArgsTypeOutput) Stdin() pulumix.Output[*string] {
+	return pulumix.Apply[TeeArgsType](o, func(v TeeArgsType) *string { return v.Stdin })
 }
 
 type WgetArgsType struct {

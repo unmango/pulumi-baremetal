@@ -116,6 +116,7 @@ export namespace coreutils {
         append?: pulumi.Input<boolean>;
         content: pulumi.Input<pulumi.asset.Asset | pulumi.asset.Archive>;
         files: pulumi.Input<pulumi.Input<string>[]>;
+        stdin?: pulumi.Input<string>;
     }
 
     export interface WgetArgsArgs {

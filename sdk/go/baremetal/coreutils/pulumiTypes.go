@@ -876,6 +876,7 @@ type TeeArgsType struct {
 	Append  *bool                 `pulumi:"append"`
 	Content pulumi.AssetOrArchive `pulumi:"content"`
 	Files   []string              `pulumi:"files"`
+	Stdin   *string               `pulumi:"stdin"`
 }
 
 // TeeArgsTypeInput is an input type that accepts TeeArgsTypeArgs and TeeArgsTypeOutput values.
@@ -893,6 +894,7 @@ type TeeArgsTypeArgs struct {
 	Append  pulumi.BoolPtrInput        `pulumi:"append"`
 	Content pulumi.AssetOrArchiveInput `pulumi:"content"`
 	Files   pulumi.StringArrayInput    `pulumi:"files"`
+	Stdin   pulumi.StringPtrInput      `pulumi:"stdin"`
 }
 
 func (TeeArgsTypeArgs) ElementType() reflect.Type {
@@ -943,6 +945,10 @@ func (o TeeArgsTypeOutput) Content() pulumi.AssetOrArchiveOutput {
 
 func (o TeeArgsTypeOutput) Files() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v TeeArgsType) []string { return v.Files }).(pulumi.StringArrayOutput)
+}
+
+func (o TeeArgsTypeOutput) Stdin() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v TeeArgsType) *string { return v.Stdin }).(pulumi.StringPtrOutput)
 }
 
 type WgetArgsType struct {
