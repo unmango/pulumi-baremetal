@@ -19,6 +19,12 @@ namespace UnMango.Baremetal.Cmd
         [Output("createdFiles")]
         public Output<ImmutableArray<string>> CreatedFiles { get; private set; } = null!;
 
+        [Output("customDelete")]
+        public Output<ImmutableArray<string>> CustomDelete { get; private set; } = null!;
+
+        [Output("customUpdate")]
+        public Output<ImmutableArray<string>> CustomUpdate { get; private set; } = null!;
+
         [Output("exitCode")]
         public Output<int> ExitCode { get; private set; } = null!;
 
@@ -82,6 +88,22 @@ namespace UnMango.Baremetal.Cmd
     {
         [Input("args", required: true)]
         public Input<Inputs.MvArgsArgs> Args { get; set; } = null!;
+
+        [Input("customDelete")]
+        private InputList<string>? _customDelete;
+        public InputList<string> CustomDelete
+        {
+            get => _customDelete ?? (_customDelete = new InputList<string>());
+            set => _customDelete = value;
+        }
+
+        [Input("customUpdate")]
+        private InputList<string>? _customUpdate;
+        public InputList<string> CustomUpdate
+        {
+            get => _customUpdate ?? (_customUpdate = new InputList<string>());
+            set => _customUpdate = value;
+        }
 
         [Input("triggers")]
         private InputList<object>? _triggers;

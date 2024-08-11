@@ -1105,7 +1105,7 @@ class TarArgsArgs:
 @pulumi.input_type
 class TeeArgsArgs:
     def __init__(__self__, *,
-                 content: pulumi.Input[str],
+                 content: pulumi.Input[Union[pulumi.Asset, pulumi.Archive]],
                  files: pulumi.Input[Sequence[pulumi.Input[str]]],
                  append: Optional[pulumi.Input[bool]] = None):
         pulumi.set(__self__, "content", content)
@@ -1115,11 +1115,11 @@ class TeeArgsArgs:
 
     @property
     @pulumi.getter
-    def content(self) -> pulumi.Input[str]:
+    def content(self) -> pulumi.Input[Union[pulumi.Asset, pulumi.Archive]]:
         return pulumi.get(self, "content")
 
     @content.setter
-    def content(self, value: pulumi.Input[str]):
+    def content(self, value: pulumi.Input[Union[pulumi.Asset, pulumi.Archive]]):
         pulumi.set(self, "content", value)
 
     @property

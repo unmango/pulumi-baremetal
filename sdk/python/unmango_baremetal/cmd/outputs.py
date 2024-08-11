@@ -876,7 +876,7 @@ class TarArgs(dict):
 @pulumi.output_type
 class TeeArgs(dict):
     def __init__(__self__, *,
-                 content: str,
+                 content: Union[pulumi.Asset, pulumi.Archive],
                  files: Sequence[str],
                  append: Optional[bool] = None):
         pulumi.set(__self__, "content", content)
@@ -886,7 +886,7 @@ class TeeArgs(dict):
 
     @property
     @pulumi.getter
-    def content(self) -> str:
+    def content(self) -> Union[pulumi.Asset, pulumi.Archive]:
         return pulumi.get(self, "content")
 
     @property

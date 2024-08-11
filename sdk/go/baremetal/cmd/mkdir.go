@@ -18,6 +18,8 @@ type Mkdir struct {
 
 	Args         MkdirArgsTypeOutput      `pulumi:"args"`
 	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
+	CustomDelete pulumi.StringArrayOutput `pulumi:"customDelete"`
+	CustomUpdate pulumi.StringArrayOutput `pulumi:"customUpdate"`
 	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
@@ -68,14 +70,18 @@ func (MkdirState) ElementType() reflect.Type {
 }
 
 type mkdirArgs struct {
-	Args     MkdirArgsType `pulumi:"args"`
-	Triggers []interface{} `pulumi:"triggers"`
+	Args         MkdirArgsType `pulumi:"args"`
+	CustomDelete []string      `pulumi:"customDelete"`
+	CustomUpdate []string      `pulumi:"customUpdate"`
+	Triggers     []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Mkdir resource.
 type MkdirArgs struct {
-	Args     MkdirArgsTypeInput
-	Triggers pulumi.ArrayInput
+	Args         MkdirArgsTypeInput
+	CustomDelete pulumi.StringArrayInput
+	CustomUpdate pulumi.StringArrayInput
+	Triggers     pulumi.ArrayInput
 }
 
 func (MkdirArgs) ElementType() reflect.Type {
@@ -133,6 +139,14 @@ func (o MkdirOutput) Args() MkdirArgsTypeOutput {
 
 func (o MkdirOutput) CreatedFiles() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Mkdir) pulumi.StringArrayOutput { return v.CreatedFiles }).(pulumi.StringArrayOutput)
+}
+
+func (o MkdirOutput) CustomDelete() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Mkdir) pulumi.StringArrayOutput { return v.CustomDelete }).(pulumi.StringArrayOutput)
+}
+
+func (o MkdirOutput) CustomUpdate() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Mkdir) pulumi.StringArrayOutput { return v.CustomUpdate }).(pulumi.StringArrayOutput)
 }
 
 func (o MkdirOutput) ExitCode() pulumi.IntOutput {

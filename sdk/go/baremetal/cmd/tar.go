@@ -18,6 +18,8 @@ type Tar struct {
 
 	Args         TarArgsTypeOutput        `pulumi:"args"`
 	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
+	CustomDelete pulumi.StringArrayOutput `pulumi:"customDelete"`
+	CustomUpdate pulumi.StringArrayOutput `pulumi:"customUpdate"`
 	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
@@ -68,14 +70,18 @@ func (TarState) ElementType() reflect.Type {
 }
 
 type tarArgs struct {
-	Args     TarArgsType   `pulumi:"args"`
-	Triggers []interface{} `pulumi:"triggers"`
+	Args         TarArgsType   `pulumi:"args"`
+	CustomDelete []string      `pulumi:"customDelete"`
+	CustomUpdate []string      `pulumi:"customUpdate"`
+	Triggers     []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Tar resource.
 type TarArgs struct {
-	Args     TarArgsTypeInput
-	Triggers pulumi.ArrayInput
+	Args         TarArgsTypeInput
+	CustomDelete pulumi.StringArrayInput
+	CustomUpdate pulumi.StringArrayInput
+	Triggers     pulumi.ArrayInput
 }
 
 func (TarArgs) ElementType() reflect.Type {
@@ -133,6 +139,14 @@ func (o TarOutput) Args() TarArgsTypeOutput {
 
 func (o TarOutput) CreatedFiles() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Tar) pulumi.StringArrayOutput { return v.CreatedFiles }).(pulumi.StringArrayOutput)
+}
+
+func (o TarOutput) CustomDelete() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Tar) pulumi.StringArrayOutput { return v.CustomDelete }).(pulumi.StringArrayOutput)
+}
+
+func (o TarOutput) CustomUpdate() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Tar) pulumi.StringArrayOutput { return v.CustomUpdate }).(pulumi.StringArrayOutput)
 }
 
 func (o TarOutput) ExitCode() pulumi.IntOutput {

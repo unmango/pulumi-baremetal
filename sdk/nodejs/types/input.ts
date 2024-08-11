@@ -114,7 +114,7 @@ export namespace cmd {
 
     export interface TeeArgsArgs {
         append?: pulumi.Input<boolean>;
-        content: pulumi.Input<string>;
+        content: pulumi.Input<pulumi.asset.Asset | pulumi.asset.Archive>;
         files: pulumi.Input<pulumi.Input<string>[]>;
     }
 

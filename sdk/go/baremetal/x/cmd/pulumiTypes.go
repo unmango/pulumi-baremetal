@@ -801,15 +801,15 @@ func (o TarArgsTypeOutput) Zstd() pulumix.Output[*bool] {
 }
 
 type TeeArgsType struct {
-	Append  *bool    `pulumi:"append"`
-	Content string   `pulumi:"content"`
-	Files   []string `pulumi:"files"`
+	Append  *bool                 `pulumi:"append"`
+	Content pulumi.AssetOrArchive `pulumi:"content"`
+	Files   []string              `pulumi:"files"`
 }
 
 type TeeArgsTypeArgs struct {
-	Append  pulumix.Input[*bool]    `pulumi:"append"`
-	Content pulumix.Input[string]   `pulumi:"content"`
-	Files   pulumix.Input[[]string] `pulumi:"files"`
+	Append  pulumix.Input[*bool]                 `pulumi:"append"`
+	Content pulumix.Input[pulumi.AssetOrArchive] `pulumi:"content"`
+	Files   pulumix.Input[[]string]              `pulumi:"files"`
 }
 
 func (TeeArgsTypeArgs) ElementType() reflect.Type {
@@ -852,8 +852,8 @@ func (o TeeArgsTypeOutput) Append() pulumix.Output[*bool] {
 	return pulumix.Apply[TeeArgsType](o, func(v TeeArgsType) *bool { return v.Append })
 }
 
-func (o TeeArgsTypeOutput) Content() pulumix.Output[string] {
-	return pulumix.Apply[TeeArgsType](o, func(v TeeArgsType) string { return v.Content })
+func (o TeeArgsTypeOutput) Content() pulumix.Output[pulumi.AssetOrArchive] {
+	return pulumix.Apply[TeeArgsType](o, func(v TeeArgsType) pulumi.AssetOrArchive { return v.Content })
 }
 
 func (o TeeArgsTypeOutput) Files() pulumix.ArrayOutput[string] {
