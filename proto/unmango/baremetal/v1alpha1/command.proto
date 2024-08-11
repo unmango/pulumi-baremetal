@@ -72,4 +72,5 @@ enum Bin {
   BIN_MKTEMP = 7;
   BIN_CHMOD = 8;
   BIN_TOUCH = 9;
+  BIN_KUBEADM = 10;
 }
