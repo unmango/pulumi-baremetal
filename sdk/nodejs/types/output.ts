@@ -168,3 +168,10 @@ export namespace coreutils {
     }
 
 }
+
+export namespace kubeadm {
+    export interface KubeadmArgs {
+        commands: string[];
+    }
+
+}

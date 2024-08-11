@@ -13,9 +13,12 @@ if typing.TYPE_CHECKING:
     config = __config
     import unmango_baremetal.coreutils as __coreutils
     coreutils = __coreutils
+    import unmango_baremetal.kubeadm as __kubeadm
+    kubeadm = __kubeadm
 else:
     config = _utilities.lazy_import('unmango_baremetal.config')
     coreutils = _utilities.lazy_import('unmango_baremetal.coreutils')
+    kubeadm = _utilities.lazy_import('unmango_baremetal.kubeadm')
 
 _utilities.register(
     resource_modules="""
@@ -33,6 +36,14 @@ _utilities.register(
    "baremetal:coreutils:Tar": "Tar",
    "baremetal:coreutils:Tee": "Tee",
    "baremetal:coreutils:Wget": "Wget"
+  }
+ },
+ {
+  "pkg": "baremetal",
+  "mod": "kubeadm",
+  "fqn": "unmango_baremetal.kubeadm",
+  "classes": {
+   "baremetal:kubeadm:Kubeadm": "Kubeadm"
   }
  }
 ]

@@ -14,11 +14,13 @@ utilities.lazyLoad(exports, ["Provider"], () => require("./provider"));
 // Export sub-modules:
 import * as config from "./config";
 import * as coreutils from "./coreutils";
+import * as kubeadm from "./kubeadm";
 import * as types from "./types";
 
 export {
     config,
     coreutils,
+    kubeadm,
     types,
 };
 pulumi.runtime.registerResourcePackage("baremetal", {
