@@ -114,7 +114,7 @@ export namespace cmd {
 
     export interface TeeArgs {
         append?: boolean;
-        content: string;
+        content: pulumi.asset.Asset | pulumi.asset.Archive;
         files: string[];
     }
 

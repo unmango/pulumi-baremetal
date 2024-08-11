@@ -8,15 +8,16 @@ import (
 
 	provider "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
+	"github.com/pulumi/pulumi/sdk/v3/go/common/resource/asset"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 )
 
 type TeeArgs struct {
 	CommandArgsBase
 
-	Append  bool     `pulumi:"append,optional"`
-	Content string   `pulumi:"content"`
-	Files   []string `pulumi:"files"`
+	Append  bool        `pulumi:"append,optional"`
+	Content asset.Asset `pulumi:"content"`
+	Files   []string    `pulumi:"files"`
 }
 
 func (o TeeArgs) Cmd() *pb.Command {
@@ -25,10 +26,16 @@ func (o TeeArgs) Cmd() *pb.Command {
 		args = append(args, "--append")
 	}
 
+	data, err := o.Content.Bytes()
+	if err != nil {
+		panic(err)
+	}
+
+	stdin := string(data)
 	return &pb.Command{
 		Bin:   pb.Bin_BIN_TEE,
 		Args:  append(args, o.Files...),
-		Stdin: &o.Content,
+		Stdin: &stdin,
 	}
 }
 

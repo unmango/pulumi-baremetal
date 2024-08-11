@@ -15,14 +15,14 @@ namespace UnMango.Baremetal.Cmd.Outputs
     public sealed class TeeArgs
     {
         public readonly bool? Append;
-        public readonly string Content;
+        public readonly AssetOrArchive Content;
         public readonly ImmutableArray<string> Files;
 
         [OutputConstructor]
         private TeeArgs(
             bool? append,
 
-            string content,
+            AssetOrArchive content,
 
             ImmutableArray<string> files)
         {

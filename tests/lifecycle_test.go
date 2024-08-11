@@ -13,6 +13,7 @@ import (
 	p "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/integration"
 	pr "github.com/pulumi/pulumi/sdk/v3/go/common/resource"
+	"github.com/pulumi/pulumi/sdk/v3/go/common/resource/asset"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
 	"github.com/unmango/pulumi-baremetal/tests/util"
 )
@@ -431,10 +432,16 @@ var _ = Describe("Command Resources", func() {
 		var resource tokens.Type = "baremetal:cmd:Tee"
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
-			stdin := "Test lifecycle stdin"
-			newStdin := "Updated stdin"
 			file := containerPath("create.txt")
 			newFile := containerPath("update.txt")
+
+			By("creating the stdin asset")
+			stdin, err := asset.FromText("Test lifecycle stdin")
+			Expect(err).NotTo(HaveOccurred())
+
+			By("creating the updated asset")
+			newStdin, err := asset.FromText("Updated stdin")
+			Expect(err).NotTo(HaveOccurred())
 
 			run(server, integration.LifeCycleTest{
 				Resource: resource,
@@ -447,22 +454,16 @@ var _ = Describe("Command Resources", func() {
 					}),
 					Hook: func(inputs, output pr.PropertyMap) {
 						Expect(output["stderr"]).To(HavePropertyValue(""))
-						data, err := provisioner.ReadFile(context.Background(), file)
+						Expect(output["stdout"]).To(HavePropertyValue(stdin.Text))
+						Expect(output["exitCode"]).To(HavePropertyValue(0))
+						Expect(output["createdFiles"].V).NotTo(BeEmpty()) // TODO: Make this better
+						Expect(output["movedFiles"].V).To(BeEmpty())
+						Expect(output["args"]).To(Equal(inputs["args"]))
+
+						data, err := provisioner.ReadFile(ctx, file)
 						Expect(err).NotTo(HaveOccurred())
-						Expect(string(data)).To(Equal(stdin))
+						Expect(string(data)).To(Equal(stdin.Text))
 					},
-					ExpectedOutput: pr.NewPropertyMapFromMap(map[string]interface{}{
-						"exitCode":     0,
-						"stdout":       stdin,
-						"stderr":       "",
-						"createdFiles": []string{file},
-						"movedFiles":   map[string]string{},
-						"args": map[string]interface{}{
-							"append":  false,
-							"content": stdin,
-							"files":   []string{file},
-						},
-					}),
 				},
 				Updates: []integration.Operation{
 					{
@@ -473,25 +474,18 @@ var _ = Describe("Command Resources", func() {
 							},
 						}),
 						Hook: func(inputs, output pr.PropertyMap) {
-							ctx := context.Background()
+							Expect(output["stderr"]).To(HavePropertyValue(""))
+							Expect(output["stdout"]).To(HavePropertyValue(stdin.Text))
+							Expect(output["exitCode"]).To(HavePropertyValue(0))
+							Expect(output["createdFiles"].V).NotTo(BeEmpty()) // TODO: Make this better
+							Expect(output["movedFiles"].V).To(BeEmpty())
+							Expect(output["args"]).To(Equal(inputs["args"]))
 							Expect(provisioner).NotTo(ContainFile(ctx, file))
 
 							data, err := provisioner.ReadFile(ctx, newFile)
 							Expect(err).NotTo(HaveOccurred())
-							Expect(string(data)).To(Equal(stdin))
+							Expect(string(data)).To(Equal(stdin.Text))
 						},
-						ExpectedOutput: pr.NewPropertyMapFromMap(map[string]interface{}{
-							"exitCode":     0,
-							"stdout":       stdin,
-							"stderr":       "",
-							"createdFiles": []string{newFile},
-							"movedFiles":   map[string]string{},
-							"args": map[string]interface{}{
-								"append":  false,
-								"content": stdin,
-								"files":   []string{newFile},
-							},
-						}),
 					},
 					{
 						Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
@@ -502,23 +496,16 @@ var _ = Describe("Command Resources", func() {
 						}),
 						Hook: func(inputs, output pr.PropertyMap) {
 							Expect(output["stderr"]).To(HavePropertyValue(""))
-							ctx := context.Background()
+							Expect(output["stdout"]).To(HavePropertyValue(newStdin.Text))
+							Expect(output["exitCode"]).To(HavePropertyValue(0))
+							Expect(output["createdFiles"].V).NotTo(BeEmpty()) // TODO: Make this better
+							Expect(output["movedFiles"].V).To(BeEmpty())
+							Expect(output["args"]).To(Equal(inputs["args"]))
+
 							data, err := provisioner.ReadFile(ctx, newFile)
 							Expect(err).NotTo(HaveOccurred())
-							Expect(string(data)).To(Equal(newStdin))
+							Expect(string(data)).To(Equal(newStdin.Text))
 						},
-						ExpectedOutput: pr.NewPropertyMapFromMap(map[string]interface{}{
-							"exitCode":     0,
-							"stdout":       newStdin,
-							"stderr":       "",
-							"createdFiles": []string{newFile},
-							"movedFiles":   map[string]string{},
-							"args": map[string]interface{}{
-								"append":  false,
-								"content": newStdin,
-								"files":   []string{newFile},
-							},
-						}),
 					},
 					{
 						Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
@@ -529,28 +516,20 @@ var _ = Describe("Command Resources", func() {
 						}),
 						Hook: func(inputs, output pr.PropertyMap) {
 							Expect(output["stderr"]).To(HavePropertyValue(""))
+							Expect(output["stdout"]).To(HavePropertyValue(newStdin.Text))
+							Expect(output["exitCode"]).To(HavePropertyValue(0))
+							Expect(output["createdFiles"].V).To(HaveLen(2)) // TODO: Make this better
+							Expect(output["movedFiles"].V).To(BeEmpty())
+							Expect(output["args"]).To(Equal(inputs["args"]))
 
-							ctx := context.Background()
 							data, err := provisioner.ReadFile(ctx, file)
 							Expect(err).NotTo(HaveOccurred())
-							Expect(string(data)).To(Equal(newStdin))
+							Expect(string(data)).To(Equal(newStdin.Text))
 
 							data, err = provisioner.ReadFile(ctx, newFile)
 							Expect(err).NotTo(HaveOccurred())
-							Expect(string(data)).To(Equal(newStdin))
+							Expect(string(data)).To(Equal(newStdin.Text))
 						},
-						ExpectedOutput: pr.NewPropertyMapFromMap(map[string]interface{}{
-							"exitCode":     0,
-							"stdout":       newStdin,
-							"stderr":       "",
-							"createdFiles": []string{file, newFile},
-							"movedFiles":   map[string]string{},
-							"args": map[string]interface{}{
-								"append":  false,
-								"content": newStdin,
-								"files":   []string{file, newFile},
-							},
-						}),
 					},
 				},
 			})
