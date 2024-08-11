@@ -1,4 +1,4 @@
-package gnu
+package coreutils
 
 import (
 	"context"

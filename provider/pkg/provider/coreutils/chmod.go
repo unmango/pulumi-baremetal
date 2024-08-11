@@ -1,4 +1,4 @@
-package posix
+package coreutils
 
 import (
 	"context"
