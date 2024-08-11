@@ -1,4 +1,4 @@
-package cmd
+package posix
 
 import (
 	"context"
@@ -10,10 +10,11 @@ import (
 	"github.com/pulumi/pulumi-go-provider/infer"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/resource/asset"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/cmd"
 )
 
 type TeeArgs struct {
-	CommandArgsBase
+	cmd.CommandArgsBase
 
 	Append  bool        `pulumi:"append,optional"`
 	Content asset.Asset `pulumi:"content"`
@@ -53,10 +54,10 @@ func (t *Tee) Annotate(a infer.Annotator) {
 	a.Describe(&t, teeMan)
 }
 
-type TeeState = CommandState[TeeArgs]
+type TeeState = cmd.CommandState[TeeArgs]
 
 // Create implements infer.CustomCreate.
-func (Tee) Create(ctx context.Context, name string, inputs CommandArgs[TeeArgs], preview bool) (string, TeeState, error) {
+func (Tee) Create(ctx context.Context, name string, inputs cmd.CommandArgs[TeeArgs], preview bool) (string, TeeState, error) {
 	state := TeeState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("tee: %w", err)
@@ -66,7 +67,7 @@ func (Tee) Create(ctx context.Context, name string, inputs CommandArgs[TeeArgs],
 }
 
 // Diff implements infer.CustomDiff.
-func (Tee) Diff(ctx context.Context, id string, olds TeeState, news CommandArgs[TeeArgs]) (provider.DiffResponse, error) {
+func (Tee) Diff(ctx context.Context, id string, olds TeeState, news cmd.CommandArgs[TeeArgs]) (provider.DiffResponse, error) {
 	diff, err := olds.Diff(ctx, news)
 	if err != nil {
 		return provider.DiffResponse{}, fmt.Errorf("tee: %w", err)
@@ -92,7 +93,7 @@ func (Tee) Diff(ctx context.Context, id string, olds TeeState, news CommandArgs[
 }
 
 // Update implements infer.CustomUpdate.
-func (Tee) Update(ctx context.Context, id string, olds TeeState, news CommandArgs[TeeArgs], preview bool) (TeeState, error) {
+func (Tee) Update(ctx context.Context, id string, olds TeeState, news cmd.CommandArgs[TeeArgs], preview bool) (TeeState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
 		return olds, fmt.Errorf("tee: %w", err)
@@ -110,7 +111,7 @@ func (Tee) Delete(ctx context.Context, id string, props TeeState) error {
 	return nil
 }
 
-var _ = (infer.CustomCreate[CommandArgs[TeeArgs], TeeState])((*Tee)(nil))
-var _ = (infer.CustomDiff[CommandArgs[TeeArgs], TeeState])((*Tee)(nil))
-var _ = (infer.CustomUpdate[CommandArgs[TeeArgs], TeeState])((*Tee)(nil))
+var _ = (infer.CustomCreate[cmd.CommandArgs[TeeArgs], TeeState])((*Tee)(nil))
+var _ = (infer.CustomDiff[cmd.CommandArgs[TeeArgs], TeeState])((*Tee)(nil))
+var _ = (infer.CustomUpdate[cmd.CommandArgs[TeeArgs], TeeState])((*Tee)(nil))
 var _ = (infer.CustomDelete[TeeState])((*Tee)(nil))

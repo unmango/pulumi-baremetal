@@ -1,4 +1,4 @@
-package cmd
+package gnu
 
 import (
 	"context"
@@ -6,13 +6,15 @@ import (
 	"path"
 	"slices"
 
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/cmd"
+
 	provider "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 )
 
 type WgetArgs struct {
-	CommandArgsBase
+	cmd.CommandArgsBase
 
 	AppendOutput       string   `pulumi:"appendOutput,optional"`
 	Background         bool     `pulumi:"background,optional"`
@@ -64,57 +66,58 @@ type WgetArgs struct {
 
 // Cmd implements CommandArgs.
 func (w WgetArgs) Cmd() *pb.Command {
-	b := &builder{w.Urls}
-	b.opv(w.AppendOutput, "--append-output")
-	b.op(w.Background, "--background")
-	b.opv(w.Base, "--base")
-	b.opv(w.CaCertificateFile, "--ca-certificate-file")
-	b.opv(w.CaDirectory, "--ca-directory")
-	b.opv(w.Certificate, "--certificate")
-	b.opv(w.CertificateType, "--certificate-type")
-	b.opv(w.Config, "--config")
-	b.op(w.Continue, "--continue")
-	b.opv(w.CrlFile, "--crl-file")
-	b.op(w.Debug, "--debug")
-	b.opv(w.DirectoryPrefix, "--directory-prefix")
-	b.op(w.ForceDirectories, "--force-directories")
-	b.op(w.ForceHtml, "--force-html")
-	b.op(w.Help, "--help")
-	b.op(w.HttpsOnly, "--https-only")
-	b.op(w.Inet4Only, "--inet4-only")
-	b.opv(w.InputFile, "--input-file")
-	b.op(w.KeepSessionCookies, "--keep-session-cookies")
-	b.op(w.NoClobber, "--no-clobber")
-	b.op(w.NoDirectories, "--no-directories")
-	b.op(w.NoDnsCache, "--no-dns-cache")
-	b.op(w.NoVerbose, "--no-verbose")
-	b.opv(w.OutputDocument, "--output-document")
-	b.opv(w.OutputFile, "--output-file")
-	b.opv(w.Password, "--password")
-	b.opv(w.PrivateKey, "--private-key")
-	b.opv(w.PrivateKeyType, "--private-key-type")
-	b.opv(w.Progress, "--progress")
-	b.op(w.Quiet, "--quiet")
-	b.op(w.RandomWait, "--random-wait")
-	b.opv(w.ReportSpeed, "--report-speed")
-	b.opv(w.SaveCookies, "--save-cookies")
-	b.op(w.ShowProgress, "--show-progress")
-	b.opv(w.StartPos, "--start-pos")
-	b.opv(w.Timeout, "--timeout")
-	b.op(w.Timestamping, "--timestamping")
-	b.opv(w.User, "--user")
-	b.opv(w.UserAgent, "--user-agent")
-	b.op(w.Verbose, "--verbose")
-	b.opv(w.Version, "--version")
-	b.opv(w.Wait, "--wait")
+	b := &cmd.Builder{Args: w.Urls}
+
+	b.Opv(w.AppendOutput, "--append-output")
+	b.Op(w.Background, "--background")
+	b.Opv(w.Base, "--base")
+	b.Opv(w.CaCertificateFile, "--ca-certificate-file")
+	b.Opv(w.CaDirectory, "--ca-directory")
+	b.Opv(w.Certificate, "--certificate")
+	b.Opv(w.CertificateType, "--certificate-type")
+	b.Opv(w.Config, "--config")
+	b.Op(w.Continue, "--continue")
+	b.Opv(w.CrlFile, "--crl-file")
+	b.Op(w.Debug, "--debug")
+	b.Opv(w.DirectoryPrefix, "--directory-prefix")
+	b.Op(w.ForceDirectories, "--force-directories")
+	b.Op(w.ForceHtml, "--force-html")
+	b.Op(w.Help, "--help")
+	b.Op(w.HttpsOnly, "--https-only")
+	b.Op(w.Inet4Only, "--inet4-only")
+	b.Opv(w.InputFile, "--input-file")
+	b.Op(w.KeepSessionCookies, "--keep-session-cookies")
+	b.Op(w.NoClobber, "--no-clobber")
+	b.Op(w.NoDirectories, "--no-directories")
+	b.Op(w.NoDnsCache, "--no-dns-cache")
+	b.Op(w.NoVerbose, "--no-verbose")
+	b.Opv(w.OutputDocument, "--output-document")
+	b.Opv(w.OutputFile, "--output-file")
+	b.Opv(w.Password, "--password")
+	b.Opv(w.PrivateKey, "--private-key")
+	b.Opv(w.PrivateKeyType, "--private-key-type")
+	b.Opv(w.Progress, "--progress")
+	b.Op(w.Quiet, "--quiet")
+	b.Op(w.RandomWait, "--random-wait")
+	b.Opv(w.ReportSpeed, "--report-speed")
+	b.Opv(w.SaveCookies, "--save-cookies")
+	b.Op(w.ShowProgress, "--show-progress")
+	b.Opv(w.StartPos, "--start-pos")
+	b.Opv(w.Timeout, "--timeout")
+	b.Op(w.Timestamping, "--timestamping")
+	b.Opv(w.User, "--user")
+	b.Opv(w.UserAgent, "--user-agent")
+	b.Op(w.Verbose, "--verbose")
+	b.Opv(w.Version, "--version")
+	b.Opv(w.Wait, "--wait")
 
 	for _, e := range w.Execute {
-		b.opv(e, "--execute")
+		b.Opv(e, "--execute")
 	}
 
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_WGET,
-		Args: b.args,
+		Args: b.Args,
 	}
 }
 
@@ -142,10 +145,10 @@ func (w WgetArgs) ExpectCreated() []string {
 
 type Wget struct{}
 
-type WgetState = CommandState[WgetArgs]
+type WgetState = cmd.CommandState[WgetArgs]
 
 // Create implements infer.CustomCreate.
-func (Wget) Create(ctx context.Context, name string, inputs CommandArgs[WgetArgs], preview bool) (id string, output WgetState, err error) {
+func (Wget) Create(ctx context.Context, name string, inputs cmd.CommandArgs[WgetArgs], preview bool) (id string, output WgetState, err error) {
 	state := WgetState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("wget: %w", err)
@@ -155,7 +158,7 @@ func (Wget) Create(ctx context.Context, name string, inputs CommandArgs[WgetArgs
 }
 
 // Diff implements infer.CustomDiff.
-func (Wget) Diff(ctx context.Context, id string, olds WgetState, news CommandArgs[WgetArgs]) (provider.DiffResponse, error) {
+func (Wget) Diff(ctx context.Context, id string, olds WgetState, news cmd.CommandArgs[WgetArgs]) (provider.DiffResponse, error) {
 	diff, err := olds.Diff(ctx, news)
 	if err != nil {
 		return provider.DiffResponse{}, fmt.Errorf("wget: %w", err)
@@ -201,7 +204,7 @@ func (Wget) Diff(ctx context.Context, id string, olds WgetState, news CommandArg
 }
 
 // Update implements infer.CustomUpdate.
-func (Wget) Update(ctx context.Context, id string, olds WgetState, news CommandArgs[WgetArgs], preview bool) (WgetState, error) {
+func (Wget) Update(ctx context.Context, id string, olds WgetState, news cmd.CommandArgs[WgetArgs], preview bool) (WgetState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
 		return olds, fmt.Errorf("wget: %w", err)
@@ -219,7 +222,7 @@ func (Wget) Delete(ctx context.Context, id string, props WgetState) error {
 	return nil
 }
 
-var _ = (infer.CustomCreate[CommandArgs[WgetArgs], WgetState])((*Wget)(nil))
-var _ = (infer.CustomDiff[CommandArgs[WgetArgs], WgetState])((*Wget)(nil))
-var _ = (infer.CustomUpdate[CommandArgs[WgetArgs], WgetState])((*Wget)(nil))
+var _ = (infer.CustomCreate[cmd.CommandArgs[WgetArgs], WgetState])((*Wget)(nil))
+var _ = (infer.CustomDiff[cmd.CommandArgs[WgetArgs], WgetState])((*Wget)(nil))
+var _ = (infer.CustomUpdate[cmd.CommandArgs[WgetArgs], WgetState])((*Wget)(nil))
 var _ = (infer.CustomDelete[WgetState])((*Wget)(nil))

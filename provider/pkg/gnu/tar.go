@@ -1,4 +1,4 @@
-package cmd
+package gnu
 
 import (
 	"context"
@@ -6,13 +6,15 @@ import (
 	"path"
 	"slices"
 
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/cmd"
+
 	provider "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 )
 
 type TarArgs struct {
-	CommandArgsBase
+	cmd.CommandArgsBase
 
 	Args []string `pulumi:"args,optional"`
 
@@ -76,53 +78,54 @@ type TarArgs struct {
 
 // Cmd implements CommandArgs.
 func (t TarArgs) Cmd() *pb.Command {
-	b := builder{t.Args}
-	b.op(t.Append, "--append")
-	b.op(t.Create, "--create")
-	b.op(t.Delete, "--delete")
-	b.op(t.Diff, "--diff")
-	b.op(t.Extract, "--extract")
-	b.op(t.List, "--list")
+	b := cmd.Builder{Args: t.Args}
 
-	b.opv(t.File, "--file")
+	b.Op(t.Append, "--append")
+	b.Op(t.Create, "--create")
+	b.Op(t.Delete, "--delete")
+	b.Op(t.Diff, "--diff")
+	b.Op(t.Extract, "--extract")
+	b.Op(t.List, "--list")
 
-	b.op(t.Bzip2, "--bzip2")
-	b.op(t.Gzip, "--gzip")
-	b.op(t.Lzip, "--lzip")
-	b.op(t.Lzma, "--lzma")
-	b.op(t.Lzop, "--lzop")
-	b.op(t.Xz, "--xz")
-	b.op(t.Zstd, "--zstd")
+	b.Opv(t.File, "--file")
 
-	b.op(t.ExcludeVcs, "--exclude-vcs")
-	b.op(t.ExcludeVcsIgnores, "--exclude-vcs-ignores")
-	b.op(t.IgnoreCommandError, "--ignore-command-error")
-	b.op(t.KeepDirectorySymlink, "--keep-directory-symlink")
-	b.op(t.KeepNewerFiles, "--keep-newer-files")
-	b.op(t.KeepOldFiles, "--keep-old-files")
-	b.op(t.NoOverwriteDir, "--no-overwrite-dir")
-	b.op(t.NoSeek, "--no-seek")
-	b.op(t.Overwrite, "--overwrite")
-	b.op(t.OverwriteDir, "--overwrite-dir")
-	b.op(t.RemoveFiles, "--remove-files")
-	b.op(t.SkipOldFiles, "--skip-old-files")
-	b.op(t.Sparse, "--sparse")
-	b.op(t.ToStdout, "--to-stdout")
-	b.op(t.UnlinkFirst, "--unlink-first")
-	b.op(t.Update, "--update")
-	b.op(t.Verbose, "--verbose")
-	b.op(t.Verify, "--verify")
-	b.op(t.Version, "--version")
+	b.Op(t.Bzip2, "--bzip2")
+	b.Op(t.Gzip, "--gzip")
+	b.Op(t.Lzip, "--lzip")
+	b.Op(t.Lzma, "--lzma")
+	b.Op(t.Lzop, "--lzop")
+	b.Op(t.Xz, "--xz")
+	b.Op(t.Zstd, "--zstd")
 
-	b.opv(t.Directory, "--directory")
-	b.opv(t.Exclude, "--exclude")
-	b.opv(t.ExcludeFrom, "--exclude-from")
-	b.opv(t.Suffix, "--suffix")
-	b.opv(t.Transform, "--transform")
+	b.Op(t.ExcludeVcs, "--exclude-vcs")
+	b.Op(t.ExcludeVcsIgnores, "--exclude-vcs-ignores")
+	b.Op(t.IgnoreCommandError, "--ignore-command-error")
+	b.Op(t.KeepDirectorySymlink, "--keep-directory-symlink")
+	b.Op(t.KeepNewerFiles, "--keep-newer-files")
+	b.Op(t.KeepOldFiles, "--keep-old-files")
+	b.Op(t.NoOverwriteDir, "--no-overwrite-dir")
+	b.Op(t.NoSeek, "--no-seek")
+	b.Op(t.Overwrite, "--overwrite")
+	b.Op(t.OverwriteDir, "--overwrite-dir")
+	b.Op(t.RemoveFiles, "--remove-files")
+	b.Op(t.SkipOldFiles, "--skip-old-files")
+	b.Op(t.Sparse, "--sparse")
+	b.Op(t.ToStdout, "--to-stdout")
+	b.Op(t.UnlinkFirst, "--unlink-first")
+	b.Op(t.Update, "--update")
+	b.Op(t.Verbose, "--verbose")
+	b.Op(t.Verify, "--verify")
+	b.Op(t.Version, "--version")
+
+	b.Opv(t.Directory, "--directory")
+	b.Opv(t.Exclude, "--exclude")
+	b.Opv(t.ExcludeFrom, "--exclude-from")
+	b.Opv(t.Suffix, "--suffix")
+	b.Opv(t.Transform, "--transform")
 
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_TAR,
-		Args: b.args,
+		Args: b.Args,
 	}
 }
 
@@ -147,14 +150,14 @@ func (t TarArgs) ExpectCreated() []string {
 	return []string{}
 }
 
-var _ CommandBuilder = TarArgs{}
+var _ cmd.CommandBuilder = TarArgs{}
 
 type Tar struct{}
 
-type TarState = CommandState[TarArgs]
+type TarState = cmd.CommandState[TarArgs]
 
 // Create implements infer.CustomCreate.
-func (Tar) Create(ctx context.Context, name string, inputs CommandArgs[TarArgs], preview bool) (id string, output TarState, err error) {
+func (Tar) Create(ctx context.Context, name string, inputs cmd.CommandArgs[TarArgs], preview bool) (id string, output TarState, err error) {
 	state := TarState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("tar: %w", err)
@@ -164,7 +167,7 @@ func (Tar) Create(ctx context.Context, name string, inputs CommandArgs[TarArgs],
 }
 
 // Diff implements infer.CustomDiff.
-func (Tar) Diff(ctx context.Context, id string, olds TarState, news CommandArgs[TarArgs]) (provider.DiffResponse, error) {
+func (Tar) Diff(ctx context.Context, id string, olds TarState, news cmd.CommandArgs[TarArgs]) (provider.DiffResponse, error) {
 	diff, err := olds.Diff(ctx, news)
 	if err != nil {
 		return provider.DiffResponse{}, fmt.Errorf("rm: %w", err)
@@ -250,7 +253,7 @@ func (Tar) Diff(ctx context.Context, id string, olds TarState, news CommandArgs[
 }
 
 // Update implements infer.CustomUpdate.
-func (Tar) Update(ctx context.Context, id string, olds TarState, news CommandArgs[TarArgs], preview bool) (TarState, error) {
+func (Tar) Update(ctx context.Context, id string, olds TarState, news cmd.CommandArgs[TarArgs], preview bool) (TarState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
 		return olds, fmt.Errorf("tar: %w", err)
@@ -268,7 +271,7 @@ func (Tar) Delete(ctx context.Context, id string, props TarState) error {
 	return nil
 }
 
-var _ = (infer.CustomCreate[CommandArgs[TarArgs], TarState])((*Tar)(nil))
-var _ = (infer.CustomDiff[CommandArgs[TarArgs], TarState])((*Tar)(nil))
-var _ = (infer.CustomUpdate[CommandArgs[TarArgs], TarState])((*Tar)(nil))
+var _ = (infer.CustomCreate[cmd.CommandArgs[TarArgs], TarState])((*Tar)(nil))
+var _ = (infer.CustomDiff[cmd.CommandArgs[TarArgs], TarState])((*Tar)(nil))
+var _ = (infer.CustomUpdate[cmd.CommandArgs[TarArgs], TarState])((*Tar)(nil))
 var _ = (infer.CustomDelete[TarState])((*Tar)(nil))

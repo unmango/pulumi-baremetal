@@ -1,4 +1,4 @@
-package cmd
+package posix
 
 import (
 	"context"
@@ -9,10 +9,11 @@ import (
 	provider "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/cmd"
 )
 
 type MvArgs struct {
-	CommandArgsBase
+	cmd.CommandArgsBase
 
 	Backup               string   `pulumi:"backup,optional"`
 	Destination          string   `pulumi:"destination,optional"`
@@ -32,25 +33,26 @@ type MvArgs struct {
 
 // Cmd implements CommandArgs.
 func (m MvArgs) Cmd() *pb.Command {
-	b := builder{m.Source}
-	b.opv(m.Backup, "--backup")
-	b.op(m.Force, "--force")
-	b.op(m.NoClobber, "--no-clobber")
-	b.op(m.StripTrailingSlashes, "--strip-trailing-slashes")
-	b.opv(m.Suffix, "--suffix")
-	b.op(m.Update, "--update")
-	b.op(m.Verbose, "--verbose")
-	b.op(m.Version, "--version")
+	b := cmd.Builder{Args: m.Source}
 
-	b.opv(m.TargetDirectory, "--target-directory")
-	b.op(m.NoTargetDirectory, "--no-target-directory")
+	b.Opv(m.Backup, "--backup")
+	b.Op(m.Force, "--force")
+	b.Op(m.NoClobber, "--no-clobber")
+	b.Op(m.StripTrailingSlashes, "--strip-trailing-slashes")
+	b.Opv(m.Suffix, "--suffix")
+	b.Op(m.Update, "--update")
+	b.Op(m.Verbose, "--verbose")
+	b.Op(m.Version, "--version")
 
-	b.arg(m.Destination)
-	b.arg(m.Directory)
+	b.Opv(m.TargetDirectory, "--target-directory")
+	b.Op(m.NoTargetDirectory, "--no-target-directory")
+
+	b.Arg(m.Destination)
+	b.Arg(m.Directory)
 
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_MV,
-		Args: b.args,
+		Args: b.Args,
 	}
 }
 
@@ -74,14 +76,14 @@ func (m MvArgs) ExpectMoved() map[string]string {
 	return files
 }
 
-var _ CommandBuilder = MvArgs{}
+var _ cmd.CommandBuilder = MvArgs{}
 
 type Mv struct{}
 
-type MvState = CommandState[MvArgs]
+type MvState = cmd.CommandState[MvArgs]
 
 // Create implements infer.CustomCreate.
-func (Mv) Create(ctx context.Context, name string, inputs CommandArgs[MvArgs], preview bool) (id string, output MvState, err error) {
+func (Mv) Create(ctx context.Context, name string, inputs cmd.CommandArgs[MvArgs], preview bool) (id string, output MvState, err error) {
 	state := MvState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("mv: %w", err)
@@ -91,7 +93,7 @@ func (Mv) Create(ctx context.Context, name string, inputs CommandArgs[MvArgs], p
 }
 
 // Diff implements infer.CustomDiff.
-func (Mv) Diff(ctx context.Context, id string, olds MvState, news CommandArgs[MvArgs]) (provider.DiffResponse, error) {
+func (Mv) Diff(ctx context.Context, id string, olds MvState, news cmd.CommandArgs[MvArgs]) (provider.DiffResponse, error) {
 	diff, err := olds.Diff(ctx, news)
 	if err != nil {
 		return provider.DiffResponse{}, fmt.Errorf("mv: %w", err)
@@ -165,7 +167,7 @@ func (Mv) Diff(ctx context.Context, id string, olds MvState, news CommandArgs[Mv
 }
 
 // Update implements infer.CustomUpdate.
-func (Mv) Update(ctx context.Context, id string, olds MvState, news CommandArgs[MvArgs], preview bool) (MvState, error) {
+func (Mv) Update(ctx context.Context, id string, olds MvState, news cmd.CommandArgs[MvArgs], preview bool) (MvState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
 		return olds, fmt.Errorf("mv: %w", err)
@@ -183,7 +185,7 @@ func (Mv) Delete(ctx context.Context, id string, props MvState) error {
 	return nil
 }
 
-var _ = (infer.CustomCreate[CommandArgs[MvArgs], MvState])((*Mv)(nil))
-var _ = (infer.CustomDiff[CommandArgs[MvArgs], MvState])((*Mv)(nil))
-var _ = (infer.CustomUpdate[CommandArgs[MvArgs], MvState])((*Mv)(nil))
+var _ = (infer.CustomCreate[cmd.CommandArgs[MvArgs], MvState])((*Mv)(nil))
+var _ = (infer.CustomDiff[cmd.CommandArgs[MvArgs], MvState])((*Mv)(nil))
+var _ = (infer.CustomUpdate[cmd.CommandArgs[MvArgs], MvState])((*Mv)(nil))
 var _ = (infer.CustomDelete[MvState])((*Mv)(nil))

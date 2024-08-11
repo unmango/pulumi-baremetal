@@ -1,4 +1,4 @@
-package cmd
+package posix
 
 import (
 	"context"
@@ -7,10 +7,11 @@ import (
 
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/cmd"
 )
 
 type ChmodArgs struct {
-	CommandArgsBase
+	cmd.CommandArgsBase
 
 	Files          []string `pulumi:"files"`
 	Mode           []string `pulumi:"mode,optional"`
@@ -28,38 +29,38 @@ type ChmodArgs struct {
 
 // Cmd implements CommandArgs.
 func (m ChmodArgs) Cmd() *pb.Command {
-	b := builder{}
-	b.op(m.Changes, "--changes")
-	b.op(m.NoPreserveRoot, "--no-preserve-root")
-	b.op(m.PreserveRoot, "--preserve-root")
-	b.op(m.Quiet, "--quiet")
-	b.opv(m.Reference, "--reference")
-	b.op(m.Recursive, "--recursive")
-	b.op(m.Verbose, "--verbose")
-	b.op(m.Help, "--help")
-	b.op(m.Version, "--version")
+	b := cmd.Builder{}
+	b.Op(m.Changes, "--changes")
+	b.Op(m.NoPreserveRoot, "--no-preserve-root")
+	b.Op(m.PreserveRoot, "--preserve-root")
+	b.Op(m.Quiet, "--quiet")
+	b.Opv(m.Reference, "--reference")
+	b.Op(m.Recursive, "--recursive")
+	b.Op(m.Verbose, "--verbose")
+	b.Op(m.Help, "--help")
+	b.Op(m.Version, "--version")
 
-	b.arg(strings.Join(m.Mode, ","))
-	b.arg(m.OctalMode)
+	b.Arg(strings.Join(m.Mode, ","))
+	b.Arg(m.OctalMode)
 
 	for _, f := range m.Files {
-		b.arg(f)
+		b.Arg(f)
 	}
 
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_CHMOD,
-		Args: b.args,
+		Args: b.Args,
 	}
 }
 
-var _ CommandBuilder = ChmodArgs{}
+var _ cmd.CommandBuilder = ChmodArgs{}
 
 type Chmod struct{}
 
-type ChmodState = CommandState[ChmodArgs]
+type ChmodState = cmd.CommandState[ChmodArgs]
 
 // Create implements infer.CustomCreate.
-func (Chmod) Create(ctx context.Context, name string, inputs CommandArgs[ChmodArgs], preview bool) (id string, output ChmodState, err error) {
+func (Chmod) Create(ctx context.Context, name string, inputs cmd.CommandArgs[ChmodArgs], preview bool) (id string, output ChmodState, err error) {
 	state := ChmodState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("chmod: %w", err)
@@ -69,7 +70,7 @@ func (Chmod) Create(ctx context.Context, name string, inputs CommandArgs[ChmodAr
 }
 
 // Update implements infer.CustomUpdate.
-func (Chmod) Update(ctx context.Context, id string, olds ChmodState, news CommandArgs[ChmodArgs], preview bool) (ChmodState, error) {
+func (Chmod) Update(ctx context.Context, id string, olds ChmodState, news cmd.CommandArgs[ChmodArgs], preview bool) (ChmodState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
 		return olds, fmt.Errorf("chmod: %w", err)
@@ -88,6 +89,6 @@ func (Chmod) Delete(ctx context.Context, id string, props ChmodState) error {
 	return nil
 }
 
-var _ = (infer.CustomCreate[CommandArgs[ChmodArgs], ChmodState])((*Chmod)(nil))
-var _ = (infer.CustomUpdate[CommandArgs[ChmodArgs], ChmodState])((*Chmod)(nil))
+var _ = (infer.CustomCreate[cmd.CommandArgs[ChmodArgs], ChmodState])((*Chmod)(nil))
+var _ = (infer.CustomUpdate[cmd.CommandArgs[ChmodArgs], ChmodState])((*Chmod)(nil))
 var _ = (infer.CustomDelete[MkdirState])((*Mkdir)(nil))

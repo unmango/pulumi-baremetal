@@ -1,4 +1,4 @@
-package cmd
+package gnu
 
 import (
 	"context"
@@ -7,10 +7,11 @@ import (
 	provider "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/cmd"
 )
 
 type MktempArgs struct {
-	CommandArgsBase
+	cmd.CommandArgsBase
 
 	Template  string `pulumi:"template,optional"`
 	Directory bool   `pulumi:"directory,optional"`
@@ -26,35 +27,36 @@ type MktempArgs struct {
 
 // Cmd implements CommandArgs.
 func (m MktempArgs) Cmd() *pb.Command {
-	b := builder{}
-	b.op(m.Directory, "--directory")
-	b.op(m.DryRun, "--dry-run")
-	b.op(m.Quiet, "--quiet")
-	b.opv(m.Suffix, "--suffix")
-	b.opv(m.P, "-p")
-	b.op(m.TmpDir, "--tmpdir")
-	b.op(m.T, "-t")
-	b.op(m.Help, "--help")
-	b.op(m.Version, "--version")
+	b := cmd.Builder{}
+
+	b.Op(m.Directory, "--directory")
+	b.Op(m.DryRun, "--dry-run")
+	b.Op(m.Quiet, "--quiet")
+	b.Opv(m.Suffix, "--suffix")
+	b.Opv(m.P, "-p")
+	b.Op(m.TmpDir, "--tmpdir")
+	b.Op(m.T, "-t")
+	b.Op(m.Help, "--help")
+	b.Op(m.Version, "--version")
 
 	if m.Template != "" {
-		b.arg(m.Template)
+		b.Arg(m.Template)
 	}
 
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_MKTEMP,
-		Args: b.args,
+		Args: b.Args,
 	}
 }
 
-var _ CommandBuilder = MktempArgs{}
+var _ cmd.CommandBuilder = MktempArgs{}
 
 type Mktemp struct{}
 
-type MktempState = CommandState[MktempArgs]
+type MktempState = cmd.CommandState[MktempArgs]
 
 // Create implements infer.CustomCreate.
-func (Mktemp) Create(ctx context.Context, name string, inputs CommandArgs[MktempArgs], preview bool) (id string, output MktempState, err error) {
+func (Mktemp) Create(ctx context.Context, name string, inputs cmd.CommandArgs[MktempArgs], preview bool) (id string, output MktempState, err error) {
 	state := MktempState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("mktemp: %w", err)
@@ -64,7 +66,7 @@ func (Mktemp) Create(ctx context.Context, name string, inputs CommandArgs[Mktemp
 }
 
 // Diff implements infer.CustomDiff.
-func (Mktemp) Diff(ctx context.Context, id string, olds MktempState, news CommandArgs[MktempArgs]) (provider.DiffResponse, error) {
+func (Mktemp) Diff(ctx context.Context, id string, olds MktempState, news cmd.CommandArgs[MktempArgs]) (provider.DiffResponse, error) {
 	diff, err := olds.Diff(ctx, news)
 	if err != nil {
 		return provider.DiffResponse{}, fmt.Errorf("mv: %w", err)
@@ -110,7 +112,7 @@ func (Mktemp) Diff(ctx context.Context, id string, olds MktempState, news Comman
 }
 
 // Update implements infer.CustomUpdate.
-func (Mktemp) Update(ctx context.Context, id string, olds MktempState, news CommandArgs[MktempArgs], preview bool) (MktempState, error) {
+func (Mktemp) Update(ctx context.Context, id string, olds MktempState, news cmd.CommandArgs[MktempArgs], preview bool) (MktempState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
 		return olds, fmt.Errorf("mktemp: %w", err)
@@ -128,7 +130,7 @@ func (Mktemp) Delete(ctx context.Context, id string, props MktempState) error {
 	return nil
 }
 
-var _ = (infer.CustomCreate[CommandArgs[MktempArgs], MktempState])((*Mktemp)(nil))
-var _ = (infer.CustomDiff[CommandArgs[MktempArgs], MktempState])((*Mktemp)(nil))
-var _ = (infer.CustomUpdate[CommandArgs[MktempArgs], MktempState])((*Mktemp)(nil))
+var _ = (infer.CustomCreate[cmd.CommandArgs[MktempArgs], MktempState])((*Mktemp)(nil))
+var _ = (infer.CustomDiff[cmd.CommandArgs[MktempArgs], MktempState])((*Mktemp)(nil))
+var _ = (infer.CustomUpdate[cmd.CommandArgs[MktempArgs], MktempState])((*Mktemp)(nil))
 var _ = (infer.CustomDelete[MktempState])((*Mktemp)(nil))

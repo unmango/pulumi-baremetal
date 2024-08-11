@@ -1,4 +1,4 @@
-package cmd
+package posix
 
 import (
 	"context"
@@ -8,10 +8,11 @@ import (
 	provider "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/cmd"
 )
 
 type RmArgs struct {
-	CommandArgsBase
+	cmd.CommandArgsBase
 
 	Dir           bool     `pulumi:"dir,optional"`
 	Files         []string `pulumi:"files"`
@@ -24,27 +25,28 @@ type RmArgs struct {
 
 // Cmd implements CommandArgs.
 func (r RmArgs) Cmd() *pb.Command {
-	b := builder{r.Files}
-	b.op(r.Dir, "--dir")
-	b.op(r.Force, "--force")
-	b.op(r.Help, "--help")
-	b.op(r.OneFileSystem, "--one-file-system")
-	b.op(r.Verbose, "--verbose")
+	b := cmd.Builder{Args: r.Files}
+
+	b.Op(r.Dir, "--dir")
+	b.Op(r.Force, "--force")
+	b.Op(r.Help, "--help")
+	b.Op(r.OneFileSystem, "--one-file-system")
+	b.Op(r.Verbose, "--verbose")
 
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_RM,
-		Args: b.args,
+		Args: b.Args,
 	}
 }
 
-var _ CommandBuilder = RmArgs{}
+var _ cmd.CommandBuilder = RmArgs{}
 
 type Rm struct{}
 
-type RmState = CommandState[RmArgs]
+type RmState = cmd.CommandState[RmArgs]
 
 // Create implements infer.CustomCreate.
-func (Rm) Create(ctx context.Context, name string, inputs CommandArgs[RmArgs], preview bool) (id string, output RmState, err error) {
+func (Rm) Create(ctx context.Context, name string, inputs cmd.CommandArgs[RmArgs], preview bool) (id string, output RmState, err error) {
 	state := RmState{}
 	if err := state.Create(ctx, inputs, preview); err != nil {
 		return name, state, fmt.Errorf("rm: %w", err)
@@ -54,7 +56,7 @@ func (Rm) Create(ctx context.Context, name string, inputs CommandArgs[RmArgs], p
 }
 
 // Diff implements infer.CustomDiff.
-func (Rm) Diff(ctx context.Context, id string, olds RmState, news CommandArgs[RmArgs]) (provider.DiffResponse, error) {
+func (Rm) Diff(ctx context.Context, id string, olds RmState, news cmd.CommandArgs[RmArgs]) (provider.DiffResponse, error) {
 	diff, err := olds.Diff(ctx, news)
 	if err != nil {
 		return provider.DiffResponse{}, fmt.Errorf("rm: %w", err)
@@ -88,7 +90,7 @@ func (Rm) Diff(ctx context.Context, id string, olds RmState, news CommandArgs[Rm
 }
 
 // Update implements infer.CustomUpdate.
-func (Rm) Update(ctx context.Context, id string, olds RmState, news CommandArgs[RmArgs], preview bool) (RmState, error) {
+func (Rm) Update(ctx context.Context, id string, olds RmState, news cmd.CommandArgs[RmArgs], preview bool) (RmState, error) {
 	state, err := olds.Update(ctx, news, preview)
 	if err != nil {
 		return olds, fmt.Errorf("rm: %w", err)
@@ -106,7 +108,7 @@ func (Rm) Delete(ctx context.Context, id string, props RmState) error {
 	return nil
 }
 
-var _ = (infer.CustomCreate[CommandArgs[RmArgs], RmState])((*Rm)(nil))
-var _ = (infer.CustomDiff[CommandArgs[RmArgs], RmState])((*Rm)(nil))
-var _ = (infer.CustomUpdate[CommandArgs[RmArgs], RmState])((*Rm)(nil))
+var _ = (infer.CustomCreate[cmd.CommandArgs[RmArgs], RmState])((*Rm)(nil))
+var _ = (infer.CustomDiff[cmd.CommandArgs[RmArgs], RmState])((*Rm)(nil))
+var _ = (infer.CustomUpdate[cmd.CommandArgs[RmArgs], RmState])((*Rm)(nil))
 var _ = (infer.CustomDelete[RmState])((*Rm)(nil))
