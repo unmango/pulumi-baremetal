@@ -2,6 +2,11 @@ package cmd
 
 import pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 
+type Builder interface {
+	FsManipulator
+	Cmd() *pb.Command
+}
+
 type B struct {
 	bin   *pb.Bin
 	stdin *string
