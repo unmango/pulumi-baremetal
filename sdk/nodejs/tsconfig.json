@@ -25,6 +25,8 @@
         "coreutils/tee.ts",
         "coreutils/wget.ts",
         "index.ts",
+        "kubeadm/index.ts",
+        "kubeadm/kubeadm.ts",
         "provider.ts",
         "types/index.ts",
         "types/input.ts",

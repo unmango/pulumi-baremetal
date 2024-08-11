@@ -7,6 +7,7 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/coreutils"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/kubeadm"
 )
 
 const Name string = "baremetal"
@@ -51,6 +52,7 @@ func Provider() p.Provider {
 			infer.Resource[coreutils.Mv](),
 			infer.Resource[coreutils.Rm](),
 			infer.Resource[coreutils.Tee](),
+			infer.Resource[kubeadm.Kubeadm](),
 		},
 		Components: []infer.InferredComponent{
 			// Consuming external resources is no bueno atm

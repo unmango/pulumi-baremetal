@@ -167,3 +167,9 @@ export namespace coreutils {
         wait?: pulumi.Input<string>;
     }
 }
+
+export namespace kubeadm {
+    export interface KubeadmArgsArgs {
+        commands: pulumi.Input<pulumi.Input<string>[]>;
+    }
+}
