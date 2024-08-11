@@ -15,12 +15,12 @@ type KubeadmArgs struct {
 	Commands []string `pulumi:"commands"`
 }
 
-func (a KubeadmArgs) Cmd() *pb.Command {
+func (a KubeadmArgs) Cmd() (*pb.Command, error) {
 	return Builder(func(b *cmd.B) {
 		for _, c := range a.Commands {
 			b.Arg(c)
 		}
-	})
+	}), nil
 }
 
 type Kubeadm struct{}

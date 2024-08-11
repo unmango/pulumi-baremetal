@@ -28,19 +28,16 @@ func (s *State[T]) Delete(ctx context.Context) error {
 		log.InfoStatus("Normal delete")
 	}
 
+	prev, err := s.Operation()
+	if err != nil {
+		log.Errorf("Failed generating operation from state: %s", err)
+		return fmt.Errorf("failed to generate operation from state: %w", err)
+	}
+
 	log.InfoStatus("Sending delete request to provisioner")
 	res, err := p.Delete(ctx, &pb.DeleteRequest{
-		Command: command,
-		Previous: &pb.Operation{
-			Command:      s.Cmd(),
-			CreatedFiles: s.CreatedFiles,
-			MovedFiles:   s.MovedFiles,
-			Result: &pb.Result{
-				ExitCode: int32(s.ExitCode),
-				Stdout:   s.Stdout,
-				Stderr:   s.Stderr,
-			},
-		},
+		Command:  command,
+		Previous: prev,
 	})
 	if err != nil {
 		return fmt.Errorf("sending delete request: %w", err)

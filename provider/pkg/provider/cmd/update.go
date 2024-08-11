@@ -34,9 +34,20 @@ func (s *State[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bo
 			return s.Copy(), fmt.Errorf("parsing custom command: %w", err)
 		}
 	} else {
-		command = inputs.Cmd()
+		command, err = inputs.Cmd()
+		if err != nil {
+			log.Errorf("Failed to build command from inputs: %s", err)
+			return s.Copy(), fmt.Errorf("failed to build command from inputs: %w", err)
+		}
+
 		expectCreated = inputs.ExpectCreated()
 		expectMoved = inputs.ExpectMoved()
+	}
+
+	prev, err := s.Operation()
+	if err != nil {
+		log.Errorf("Failed generating operation from state: %s", err)
+		return s.Copy(), fmt.Errorf("failed to generate operation from state: %w", err)
 	}
 
 	log.DebugStatus("Sending update request to provisioner")
@@ -44,18 +55,10 @@ func (s *State[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bo
 		Command:       command,
 		ExpectCreated: expectCreated,
 		ExpectMoved:   expectMoved,
-		Previous: &pb.Operation{
-			Command:      s.Cmd(),
-			CreatedFiles: s.CreatedFiles,
-			MovedFiles:   s.MovedFiles,
-			Result: &pb.Result{
-				ExitCode: int32(s.ExitCode),
-				Stdout:   s.Stdout,
-				Stderr:   s.Stderr,
-			},
-		},
+		Previous:      prev,
 	})
 	if err != nil {
+		log.Errorf("Failed sending update request: %s", err)
 		return s.Copy(), fmt.Errorf("sending update request: %w", err)
 	}
 

@@ -28,7 +28,7 @@ type ChmodArgs struct {
 }
 
 // Cmd implements CommandArgs.
-func (m ChmodArgs) Cmd() *pb.Command {
+func (m ChmodArgs) Cmd() (*pb.Command, error) {
 	b := cmd.B{}
 	b.Op(m.Changes, "--changes")
 	b.Op(m.NoPreserveRoot, "--no-preserve-root")
@@ -50,7 +50,7 @@ func (m ChmodArgs) Cmd() *pb.Command {
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_CHMOD,
 		Args: b.Args,
-	}
+	}, nil
 }
 
 var _ cmd.Builder = ChmodArgs{}

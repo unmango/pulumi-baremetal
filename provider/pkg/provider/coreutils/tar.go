@@ -77,7 +77,7 @@ type TarArgs struct {
 }
 
 // Cmd implements CommandArgs.
-func (t TarArgs) Cmd() *pb.Command {
+func (t TarArgs) Cmd() (*pb.Command, error) {
 	b := cmd.B{Args: t.Args}
 
 	b.Op(t.Append, "--append")
@@ -126,7 +126,7 @@ func (t TarArgs) Cmd() *pb.Command {
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_TAR,
 		Args: b.Args,
-	}
+	}, nil
 }
 
 // ExpectCreated implements CommandArgs.

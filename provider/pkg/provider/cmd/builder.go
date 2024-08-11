@@ -4,7 +4,7 @@ import pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1
 
 type Builder interface {
 	FsManipulator
-	Cmd() *pb.Command
+	Cmd() (*pb.Command, error)
 }
 
 type B struct {

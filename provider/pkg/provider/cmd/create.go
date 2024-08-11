@@ -17,6 +17,12 @@ func (s *State[T]) Create(ctx context.Context, inputs CommandArgs[T], preview bo
 		return nil
 	}
 
+	command, err := inputs.Cmd()
+	if err != nil {
+		log.Errorf("Failed constructing command: %s", err)
+		return err
+	}
+
 	p, err := provisioner.FromContext(ctx)
 	if err != nil {
 		log.Error("failed creating provisioner")
@@ -25,7 +31,7 @@ func (s *State[T]) Create(ctx context.Context, inputs CommandArgs[T], preview bo
 
 	log.InfoStatus("Sending create request to provisioner")
 	res, err := p.Create(ctx, &pb.CreateRequest{
-		Command:       inputs.Cmd(),
+		Command:       command,
 		ExpectCreated: inputs.ExpectCreated(),
 		ExpectMoved:   inputs.ExpectMoved(),
 	})

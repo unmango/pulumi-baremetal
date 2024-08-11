@@ -32,7 +32,7 @@ type MvArgs struct {
 }
 
 // Cmd implements CommandArgs.
-func (m MvArgs) Cmd() *pb.Command {
+func (m MvArgs) Cmd() (*pb.Command, error) {
 	b := cmd.B{Args: m.Source}
 
 	b.Opv(m.Backup, "--backup")
@@ -53,7 +53,7 @@ func (m MvArgs) Cmd() *pb.Command {
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_MV,
 		Args: b.Args,
-	}
+	}, nil
 }
 
 // ExpectMoved implements FileManipulator.
