@@ -10,7 +10,7 @@ import (
 )
 
 type MkdirArgs struct {
-	cmd.CommandArgsBase
+	cmd.ArgsBase
 
 	Directory []string `pulumi:"directory"`
 	Mode      string   `pulumi:"mode,optional"`
@@ -22,7 +22,7 @@ type MkdirArgs struct {
 
 // Cmd implements CommandArgs.
 func (m MkdirArgs) Cmd() *pb.Command {
-	b := cmd.Builder{Args: m.Directory}
+	b := cmd.B{Args: m.Directory}
 
 	b.Opv(m.Mode, "--mode")
 	b.Op(m.Parents, "--parents")
@@ -36,11 +36,11 @@ func (m MkdirArgs) Cmd() *pb.Command {
 	}
 }
 
-var _ cmd.CommandBuilder = MkdirArgs{}
+var _ cmd.Builder = MkdirArgs{}
 
 type Mkdir struct{}
 
-type MkdirState = cmd.CommandState[MkdirArgs]
+type MkdirState = cmd.State[MkdirArgs]
 
 // Create implements infer.CustomCreate.
 func (Mkdir) Create(ctx context.Context, name string, inputs cmd.CommandArgs[MkdirArgs], preview bool) (id string, output MkdirState, err error) {

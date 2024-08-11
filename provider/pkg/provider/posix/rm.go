@@ -12,7 +12,7 @@ import (
 )
 
 type RmArgs struct {
-	cmd.CommandArgsBase
+	cmd.ArgsBase
 
 	Dir           bool     `pulumi:"dir,optional"`
 	Files         []string `pulumi:"files"`
@@ -25,7 +25,7 @@ type RmArgs struct {
 
 // Cmd implements CommandArgs.
 func (r RmArgs) Cmd() *pb.Command {
-	b := cmd.Builder{Args: r.Files}
+	b := cmd.B{Args: r.Files}
 
 	b.Op(r.Dir, "--dir")
 	b.Op(r.Force, "--force")
@@ -39,11 +39,11 @@ func (r RmArgs) Cmd() *pb.Command {
 	}
 }
 
-var _ cmd.CommandBuilder = RmArgs{}
+var _ cmd.Builder = RmArgs{}
 
 type Rm struct{}
 
-type RmState = cmd.CommandState[RmArgs]
+type RmState = cmd.State[RmArgs]
 
 // Create implements infer.CustomCreate.
 func (Rm) Create(ctx context.Context, name string, inputs cmd.CommandArgs[RmArgs], preview bool) (id string, output RmState, err error) {

@@ -11,7 +11,7 @@ import (
 )
 
 type MktempArgs struct {
-	cmd.CommandArgsBase
+	cmd.ArgsBase
 
 	Template  string `pulumi:"template,optional"`
 	Directory bool   `pulumi:"directory,optional"`
@@ -27,7 +27,7 @@ type MktempArgs struct {
 
 // Cmd implements CommandArgs.
 func (m MktempArgs) Cmd() *pb.Command {
-	b := cmd.Builder{}
+	b := cmd.B{}
 
 	b.Op(m.Directory, "--directory")
 	b.Op(m.DryRun, "--dry-run")
@@ -49,11 +49,11 @@ func (m MktempArgs) Cmd() *pb.Command {
 	}
 }
 
-var _ cmd.CommandBuilder = MktempArgs{}
+var _ cmd.Builder = MktempArgs{}
 
 type Mktemp struct{}
 
-type MktempState = cmd.CommandState[MktempArgs]
+type MktempState = cmd.State[MktempArgs]
 
 // Create implements infer.CustomCreate.
 func (Mktemp) Create(ctx context.Context, name string, inputs cmd.CommandArgs[MktempArgs], preview bool) (id string, output MktempState, err error) {

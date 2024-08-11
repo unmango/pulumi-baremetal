@@ -14,7 +14,7 @@ import (
 )
 
 type TarArgs struct {
-	cmd.CommandArgsBase
+	cmd.ArgsBase
 
 	Args []string `pulumi:"args,optional"`
 
@@ -78,7 +78,7 @@ type TarArgs struct {
 
 // Cmd implements CommandArgs.
 func (t TarArgs) Cmd() *pb.Command {
-	b := cmd.Builder{Args: t.Args}
+	b := cmd.B{Args: t.Args}
 
 	b.Op(t.Append, "--append")
 	b.Op(t.Create, "--create")
@@ -150,11 +150,11 @@ func (t TarArgs) ExpectCreated() []string {
 	return []string{}
 }
 
-var _ cmd.CommandBuilder = TarArgs{}
+var _ cmd.Builder = TarArgs{}
 
 type Tar struct{}
 
-type TarState = cmd.CommandState[TarArgs]
+type TarState = cmd.State[TarArgs]
 
 // Create implements infer.CustomCreate.
 func (Tar) Create(ctx context.Context, name string, inputs cmd.CommandArgs[TarArgs], preview bool) (id string, output TarState, err error) {

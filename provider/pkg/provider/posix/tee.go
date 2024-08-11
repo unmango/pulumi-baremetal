@@ -14,7 +14,7 @@ import (
 )
 
 type TeeArgs struct {
-	cmd.CommandArgsBase
+	cmd.ArgsBase
 
 	Append  bool        `pulumi:"append,optional"`
 	Content asset.Asset `pulumi:"content"`
@@ -54,7 +54,7 @@ func (t *Tee) Annotate(a infer.Annotator) {
 	a.Describe(&t, teeMan)
 }
 
-type TeeState = cmd.CommandState[TeeArgs]
+type TeeState = cmd.State[TeeArgs]
 
 // Create implements infer.CustomCreate.
 func (Tee) Create(ctx context.Context, name string, inputs cmd.CommandArgs[TeeArgs], preview bool) (string, TeeState, error) {

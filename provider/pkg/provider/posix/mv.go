@@ -13,7 +13,7 @@ import (
 )
 
 type MvArgs struct {
-	cmd.CommandArgsBase
+	cmd.ArgsBase
 
 	Backup               string   `pulumi:"backup,optional"`
 	Destination          string   `pulumi:"destination,optional"`
@@ -33,7 +33,7 @@ type MvArgs struct {
 
 // Cmd implements CommandArgs.
 func (m MvArgs) Cmd() *pb.Command {
-	b := cmd.Builder{Args: m.Source}
+	b := cmd.B{Args: m.Source}
 
 	b.Opv(m.Backup, "--backup")
 	b.Op(m.Force, "--force")
@@ -76,11 +76,11 @@ func (m MvArgs) ExpectMoved() map[string]string {
 	return files
 }
 
-var _ cmd.CommandBuilder = MvArgs{}
+var _ cmd.Builder = MvArgs{}
 
 type Mv struct{}
 
-type MvState = cmd.CommandState[MvArgs]
+type MvState = cmd.State[MvArgs]
 
 // Create implements infer.CustomCreate.
 func (Mv) Create(ctx context.Context, name string, inputs cmd.CommandArgs[MvArgs], preview bool) (id string, output MvState, err error) {

@@ -11,7 +11,7 @@ import (
 )
 
 type ChmodArgs struct {
-	cmd.CommandArgsBase
+	cmd.ArgsBase
 
 	Files          []string `pulumi:"files"`
 	Mode           []string `pulumi:"mode,optional"`
@@ -29,7 +29,7 @@ type ChmodArgs struct {
 
 // Cmd implements CommandArgs.
 func (m ChmodArgs) Cmd() *pb.Command {
-	b := cmd.Builder{}
+	b := cmd.B{}
 	b.Op(m.Changes, "--changes")
 	b.Op(m.NoPreserveRoot, "--no-preserve-root")
 	b.Op(m.PreserveRoot, "--preserve-root")
@@ -53,11 +53,11 @@ func (m ChmodArgs) Cmd() *pb.Command {
 	}
 }
 
-var _ cmd.CommandBuilder = ChmodArgs{}
+var _ cmd.Builder = ChmodArgs{}
 
 type Chmod struct{}
 
-type ChmodState = cmd.CommandState[ChmodArgs]
+type ChmodState = cmd.State[ChmodArgs]
 
 // Create implements infer.CustomCreate.
 func (Chmod) Create(ctx context.Context, name string, inputs cmd.CommandArgs[ChmodArgs], preview bool) (id string, output ChmodState, err error) {

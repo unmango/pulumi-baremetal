@@ -14,7 +14,7 @@ import (
 )
 
 type WgetArgs struct {
-	cmd.CommandArgsBase
+	cmd.ArgsBase
 
 	AppendOutput       string   `pulumi:"appendOutput,optional"`
 	Background         bool     `pulumi:"background,optional"`
@@ -66,7 +66,7 @@ type WgetArgs struct {
 
 // Cmd implements CommandArgs.
 func (w WgetArgs) Cmd() *pb.Command {
-	b := &cmd.Builder{Args: w.Urls}
+	b := &cmd.B{Args: w.Urls}
 
 	b.Opv(w.AppendOutput, "--append-output")
 	b.Op(w.Background, "--background")
@@ -145,7 +145,7 @@ func (w WgetArgs) ExpectCreated() []string {
 
 type Wget struct{}
 
-type WgetState = cmd.CommandState[WgetArgs]
+type WgetState = cmd.State[WgetArgs]
 
 // Create implements infer.CustomCreate.
 func (Wget) Create(ctx context.Context, name string, inputs cmd.CommandArgs[WgetArgs], preview bool) (id string, output WgetState, err error) {
