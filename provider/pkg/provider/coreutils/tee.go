@@ -8,6 +8,7 @@ import (
 
 	provider "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
+	"github.com/pulumi/pulumi-go-provider/infer/types"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/cmd"
 )
@@ -15,19 +16,31 @@ import (
 type TeeArgs struct {
 	cmd.ArgsBase
 
-	Append *bool    `pulumi:"append,optional"`
-	Files  []string `pulumi:"files"`
-	Stdin  *string  `pulumi:"stdin,optional"`
+	Append  *bool                 `pulumi:"append,optional"`
+	Content *types.AssetOrArchive `pulumi:"content,optional"`
+	Files   []string              `pulumi:"files"`
+	Stdin   *string               `pulumi:"stdin,optional"`
 }
 
 func (o TeeArgs) Cmd() (*pb.Command, error) {
 	b := cmd.B{Args: o.Files}
 	b.OpP(o.Append, "--append")
 
+	var stdin string
+	if o.Stdin != nil && len(*o.Stdin) > 0 {
+		stdin = *o.Stdin
+	} else {
+		data, err := o.Content.Asset.Bytes()
+		if err != nil {
+			return nil, fmt.Errorf("failed to read asset bytes: %w", err)
+		}
+		stdin = string(data)
+	}
+
 	return &pb.Command{
 		Bin:   pb.Bin_BIN_TEE,
 		Args:  b.Args,
-		Stdin: o.Stdin,
+		Stdin: &stdin,
 	}, nil
 }
 

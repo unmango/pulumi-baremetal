@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 	. "github.com/unmango/pulumi-baremetal/tests/expect"
 
+	"github.com/pulumi/pulumi-go-provider/infer/types"
 	"github.com/pulumi/pulumi-go-provider/integration"
 	pr "github.com/pulumi/pulumi/sdk/v3/go/common/resource"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/resource/asset"
@@ -21,7 +22,7 @@ var _ = Describe("Tee", func() {
 		server = prepareIntegrationServer(ctx)
 	})
 
-	It("should complete a full lifecycle with content", Pending, func(ctx context.Context) {
+	FIt("should complete a full lifecycle with content", func(ctx context.Context) {
 		file := containerPath("create.txt")
 		newFile := containerPath("update.txt")
 
@@ -38,7 +39,7 @@ var _ = Describe("Tee", func() {
 			Create: integration.Operation{
 				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
 					"args": map[string]interface{}{
-						"content": content,
+						"content": types.AssetOrArchive{Asset: content},
 						"files":   []string{file},
 					},
 				}),
@@ -59,7 +60,7 @@ var _ = Describe("Tee", func() {
 				{
 					Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
 						"args": map[string]interface{}{
-							"content": content,
+							"content": pr.NewAssetProperty(content),
 							"files":   []string{newFile},
 						},
 					}),
@@ -80,7 +81,7 @@ var _ = Describe("Tee", func() {
 				{
 					Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
 						"args": map[string]interface{}{
-							"content": newContent,
+							"content": pr.NewAssetProperty(newContent),
 							"files":   []string{newFile},
 						},
 					}),
@@ -100,7 +101,7 @@ var _ = Describe("Tee", func() {
 				{
 					Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
 						"args": map[string]interface{}{
-							"content": newContent,
+							"content": pr.NewAssetProperty(newContent),
 							"files":   []string{file, newFile},
 						},
 					}),
