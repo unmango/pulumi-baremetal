@@ -17,17 +17,11 @@ __all__ = ['MktempArgs', 'Mktemp']
 class MktempArgs:
     def __init__(__self__, *,
                  args: pulumi.Input['MktempArgsArgs'],
-                 custom_delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 custom_update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None):
         """
         The set of arguments for constructing a Mktemp resource.
         """
         pulumi.set(__self__, "args", args)
-        if custom_delete is not None:
-            pulumi.set(__self__, "custom_delete", custom_delete)
-        if custom_update is not None:
-            pulumi.set(__self__, "custom_update", custom_update)
         if triggers is not None:
             pulumi.set(__self__, "triggers", triggers)
 
@@ -39,24 +33,6 @@ class MktempArgs:
     @args.setter
     def args(self, value: pulumi.Input['MktempArgsArgs']):
         pulumi.set(self, "args", value)
-
-    @property
-    @pulumi.getter(name="customDelete")
-    def custom_delete(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
-        return pulumi.get(self, "custom_delete")
-
-    @custom_delete.setter
-    def custom_delete(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
-        pulumi.set(self, "custom_delete", value)
-
-    @property
-    @pulumi.getter(name="customUpdate")
-    def custom_update(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
-        return pulumi.get(self, "custom_update")
-
-    @custom_update.setter
-    def custom_update(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
-        pulumi.set(self, "custom_update", value)
 
     @property
     @pulumi.getter
@@ -74,8 +50,6 @@ class Mktemp(pulumi.CustomResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  args: Optional[pulumi.Input[Union['MktempArgsArgs', 'MktempArgsArgsDict']]] = None,
-                 custom_delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 custom_update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
                  __props__=None):
         """
@@ -107,8 +81,6 @@ class Mktemp(pulumi.CustomResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  args: Optional[pulumi.Input[Union['MktempArgsArgs', 'MktempArgsArgsDict']]] = None,
-                 custom_delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 custom_update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
@@ -122,8 +94,6 @@ class Mktemp(pulumi.CustomResource):
             if args is None and not opts.urn:
                 raise TypeError("Missing required property 'args'")
             __props__.__dict__["args"] = args
-            __props__.__dict__["custom_delete"] = custom_delete
-            __props__.__dict__["custom_update"] = custom_update
             __props__.__dict__["triggers"] = triggers
             __props__.__dict__["created_files"] = None
             __props__.__dict__["exit_code"] = None
@@ -154,8 +124,6 @@ class Mktemp(pulumi.CustomResource):
 
         __props__.__dict__["args"] = None
         __props__.__dict__["created_files"] = None
-        __props__.__dict__["custom_delete"] = None
-        __props__.__dict__["custom_update"] = None
         __props__.__dict__["exit_code"] = None
         __props__.__dict__["moved_files"] = None
         __props__.__dict__["stderr"] = None
@@ -172,16 +140,6 @@ class Mktemp(pulumi.CustomResource):
     @pulumi.getter(name="createdFiles")
     def created_files(self) -> pulumi.Output[Sequence[str]]:
         return pulumi.get(self, "created_files")
-
-    @property
-    @pulumi.getter(name="customDelete")
-    def custom_delete(self) -> pulumi.Output[Optional[Sequence[str]]]:
-        return pulumi.get(self, "custom_delete")
-
-    @property
-    @pulumi.getter(name="customUpdate")
-    def custom_update(self) -> pulumi.Output[Optional[Sequence[str]]]:
-        return pulumi.get(self, "custom_update")
 
     @property
     @pulumi.getter(name="exitCode")

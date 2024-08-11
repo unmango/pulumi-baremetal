@@ -18,8 +18,6 @@ type Wget struct {
 
 	Args         WgetArgsTypeOutput       `pulumi:"args"`
 	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
-	CustomDelete pulumi.StringArrayOutput `pulumi:"customDelete"`
-	CustomUpdate pulumi.StringArrayOutput `pulumi:"customUpdate"`
 	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
@@ -70,18 +68,14 @@ func (WgetState) ElementType() reflect.Type {
 }
 
 type wgetArgs struct {
-	Args         WgetArgsType  `pulumi:"args"`
-	CustomDelete []string      `pulumi:"customDelete"`
-	CustomUpdate []string      `pulumi:"customUpdate"`
-	Triggers     []interface{} `pulumi:"triggers"`
+	Args     WgetArgsType  `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Wget resource.
 type WgetArgs struct {
-	Args         WgetArgsTypeInput
-	CustomDelete pulumi.StringArrayInput
-	CustomUpdate pulumi.StringArrayInput
-	Triggers     pulumi.ArrayInput
+	Args     WgetArgsTypeInput
+	Triggers pulumi.ArrayInput
 }
 
 func (WgetArgs) ElementType() reflect.Type {
@@ -139,14 +133,6 @@ func (o WgetOutput) Args() WgetArgsTypeOutput {
 
 func (o WgetOutput) CreatedFiles() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Wget) pulumi.StringArrayOutput { return v.CreatedFiles }).(pulumi.StringArrayOutput)
-}
-
-func (o WgetOutput) CustomDelete() pulumi.StringArrayOutput {
-	return o.ApplyT(func(v *Wget) pulumi.StringArrayOutput { return v.CustomDelete }).(pulumi.StringArrayOutput)
-}
-
-func (o WgetOutput) CustomUpdate() pulumi.StringArrayOutput {
-	return o.ApplyT(func(v *Wget) pulumi.StringArrayOutput { return v.CustomUpdate }).(pulumi.StringArrayOutput)
 }
 
 func (o WgetOutput) ExitCode() pulumi.IntOutput {

@@ -18,8 +18,6 @@ type Mktemp struct {
 
 	Args         MktempArgsTypeOutput     `pulumi:"args"`
 	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
-	CustomDelete pulumi.StringArrayOutput `pulumi:"customDelete"`
-	CustomUpdate pulumi.StringArrayOutput `pulumi:"customUpdate"`
 	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
@@ -70,18 +68,14 @@ func (MktempState) ElementType() reflect.Type {
 }
 
 type mktempArgs struct {
-	Args         MktempArgsType `pulumi:"args"`
-	CustomDelete []string       `pulumi:"customDelete"`
-	CustomUpdate []string       `pulumi:"customUpdate"`
-	Triggers     []interface{}  `pulumi:"triggers"`
+	Args     MktempArgsType `pulumi:"args"`
+	Triggers []interface{}  `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Mktemp resource.
 type MktempArgs struct {
-	Args         MktempArgsTypeInput
-	CustomDelete pulumi.StringArrayInput
-	CustomUpdate pulumi.StringArrayInput
-	Triggers     pulumi.ArrayInput
+	Args     MktempArgsTypeInput
+	Triggers pulumi.ArrayInput
 }
 
 func (MktempArgs) ElementType() reflect.Type {
@@ -139,14 +133,6 @@ func (o MktempOutput) Args() MktempArgsTypeOutput {
 
 func (o MktempOutput) CreatedFiles() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Mktemp) pulumi.StringArrayOutput { return v.CreatedFiles }).(pulumi.StringArrayOutput)
-}
-
-func (o MktempOutput) CustomDelete() pulumi.StringArrayOutput {
-	return o.ApplyT(func(v *Mktemp) pulumi.StringArrayOutput { return v.CustomDelete }).(pulumi.StringArrayOutput)
-}
-
-func (o MktempOutput) CustomUpdate() pulumi.StringArrayOutput {
-	return o.ApplyT(func(v *Mktemp) pulumi.StringArrayOutput { return v.CustomUpdate }).(pulumi.StringArrayOutput)
 }
 
 func (o MktempOutput) ExitCode() pulumi.IntOutput {

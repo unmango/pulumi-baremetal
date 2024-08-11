@@ -35,8 +35,6 @@ export class Mv extends pulumi.CustomResource {
 
     public readonly args!: pulumi.Output<outputs.cmd.MvArgs>;
     public /*out*/ readonly createdFiles!: pulumi.Output<string[]>;
-    public readonly customDelete!: pulumi.Output<string[] | undefined>;
-    public readonly customUpdate!: pulumi.Output<string[] | undefined>;
     public /*out*/ readonly exitCode!: pulumi.Output<number>;
     public /*out*/ readonly movedFiles!: pulumi.Output<{[key: string]: string}>;
     public /*out*/ readonly stderr!: pulumi.Output<string>;
@@ -58,8 +56,6 @@ export class Mv extends pulumi.CustomResource {
                 throw new Error("Missing required property 'args'");
             }
             resourceInputs["args"] = args ? args.args : undefined;
-            resourceInputs["customDelete"] = args ? args.customDelete : undefined;
-            resourceInputs["customUpdate"] = args ? args.customUpdate : undefined;
             resourceInputs["triggers"] = args ? args.triggers : undefined;
             resourceInputs["createdFiles"] = undefined /*out*/;
             resourceInputs["exitCode"] = undefined /*out*/;
@@ -69,8 +65,6 @@ export class Mv extends pulumi.CustomResource {
         } else {
             resourceInputs["args"] = undefined /*out*/;
             resourceInputs["createdFiles"] = undefined /*out*/;
-            resourceInputs["customDelete"] = undefined /*out*/;
-            resourceInputs["customUpdate"] = undefined /*out*/;
             resourceInputs["exitCode"] = undefined /*out*/;
             resourceInputs["movedFiles"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
@@ -87,7 +81,5 @@ export class Mv extends pulumi.CustomResource {
  */
 export interface MvArgs {
     args: pulumi.Input<inputs.cmd.MvArgsArgs>;
-    customDelete?: pulumi.Input<pulumi.Input<string>[]>;
-    customUpdate?: pulumi.Input<pulumi.Input<string>[]>;
     triggers?: pulumi.Input<any[]>;
 }

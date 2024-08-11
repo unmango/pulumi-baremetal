@@ -18,8 +18,6 @@ type Mktemp struct {
 
 	Args         pulumix.GPtrOutput[MktempArgsType, MktempArgsTypeOutput] `pulumi:"args"`
 	CreatedFiles pulumix.ArrayOutput[string]                              `pulumi:"createdFiles"`
-	CustomDelete pulumix.ArrayOutput[string]                              `pulumi:"customDelete"`
-	CustomUpdate pulumix.ArrayOutput[string]                              `pulumi:"customUpdate"`
 	ExitCode     pulumix.Output[int]                                      `pulumi:"exitCode"`
 	MovedFiles   pulumix.MapOutput[string]                                `pulumi:"movedFiles"`
 	Stderr       pulumix.Output[string]                                   `pulumi:"stderr"`
@@ -70,18 +68,14 @@ func (MktempState) ElementType() reflect.Type {
 }
 
 type mktempArgs struct {
-	Args         MktempArgsType `pulumi:"args"`
-	CustomDelete []string       `pulumi:"customDelete"`
-	CustomUpdate []string       `pulumi:"customUpdate"`
-	Triggers     []interface{}  `pulumi:"triggers"`
+	Args     MktempArgsType `pulumi:"args"`
+	Triggers []interface{}  `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Mktemp resource.
 type MktempArgs struct {
-	Args         pulumix.Input[*MktempArgsTypeArgs]
-	CustomDelete pulumix.Input[[]string]
-	CustomUpdate pulumix.Input[[]string]
-	Triggers     pulumix.Input[[]any]
+	Args     pulumix.Input[*MktempArgsTypeArgs]
+	Triggers pulumix.Input[[]any]
 }
 
 func (MktempArgs) ElementType() reflect.Type {
@@ -116,18 +110,6 @@ func (o MktempOutput) Args() pulumix.GPtrOutput[MktempArgsType, MktempArgsTypeOu
 
 func (o MktempOutput) CreatedFiles() pulumix.ArrayOutput[string] {
 	value := pulumix.Apply[Mktemp](o, func(v Mktemp) pulumix.ArrayOutput[string] { return v.CreatedFiles })
-	unwrapped := pulumix.Flatten[[]string, pulumix.ArrayOutput[string]](value)
-	return pulumix.ArrayOutput[string]{OutputState: unwrapped.OutputState}
-}
-
-func (o MktempOutput) CustomDelete() pulumix.ArrayOutput[string] {
-	value := pulumix.Apply[Mktemp](o, func(v Mktemp) pulumix.ArrayOutput[string] { return v.CustomDelete })
-	unwrapped := pulumix.Flatten[[]string, pulumix.ArrayOutput[string]](value)
-	return pulumix.ArrayOutput[string]{OutputState: unwrapped.OutputState}
-}
-
-func (o MktempOutput) CustomUpdate() pulumix.ArrayOutput[string] {
-	value := pulumix.Apply[Mktemp](o, func(v Mktemp) pulumix.ArrayOutput[string] { return v.CustomUpdate })
 	unwrapped := pulumix.Flatten[[]string, pulumix.ArrayOutput[string]](value)
 	return pulumix.ArrayOutput[string]{OutputState: unwrapped.OutputState}
 }

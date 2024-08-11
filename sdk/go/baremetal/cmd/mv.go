@@ -18,8 +18,6 @@ type Mv struct {
 
 	Args         MvArgsTypeOutput         `pulumi:"args"`
 	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
-	CustomDelete pulumi.StringArrayOutput `pulumi:"customDelete"`
-	CustomUpdate pulumi.StringArrayOutput `pulumi:"customUpdate"`
 	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
@@ -70,18 +68,14 @@ func (MvState) ElementType() reflect.Type {
 }
 
 type mvArgs struct {
-	Args         MvArgsType    `pulumi:"args"`
-	CustomDelete []string      `pulumi:"customDelete"`
-	CustomUpdate []string      `pulumi:"customUpdate"`
-	Triggers     []interface{} `pulumi:"triggers"`
+	Args     MvArgsType    `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Mv resource.
 type MvArgs struct {
-	Args         MvArgsTypeInput
-	CustomDelete pulumi.StringArrayInput
-	CustomUpdate pulumi.StringArrayInput
-	Triggers     pulumi.ArrayInput
+	Args     MvArgsTypeInput
+	Triggers pulumi.ArrayInput
 }
 
 func (MvArgs) ElementType() reflect.Type {
@@ -139,14 +133,6 @@ func (o MvOutput) Args() MvArgsTypeOutput {
 
 func (o MvOutput) CreatedFiles() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Mv) pulumi.StringArrayOutput { return v.CreatedFiles }).(pulumi.StringArrayOutput)
-}
-
-func (o MvOutput) CustomDelete() pulumi.StringArrayOutput {
-	return o.ApplyT(func(v *Mv) pulumi.StringArrayOutput { return v.CustomDelete }).(pulumi.StringArrayOutput)
-}
-
-func (o MvOutput) CustomUpdate() pulumi.StringArrayOutput {
-	return o.ApplyT(func(v *Mv) pulumi.StringArrayOutput { return v.CustomUpdate }).(pulumi.StringArrayOutput)
 }
 
 func (o MvOutput) ExitCode() pulumi.IntOutput {

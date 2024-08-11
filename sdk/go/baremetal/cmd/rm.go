@@ -18,8 +18,6 @@ type Rm struct {
 
 	Args         RmArgsTypeOutput         `pulumi:"args"`
 	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
-	CustomDelete pulumi.StringArrayOutput `pulumi:"customDelete"`
-	CustomUpdate pulumi.StringArrayOutput `pulumi:"customUpdate"`
 	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
 	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
 	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
@@ -70,18 +68,14 @@ func (RmState) ElementType() reflect.Type {
 }
 
 type rmArgs struct {
-	Args         RmArgsType    `pulumi:"args"`
-	CustomDelete []string      `pulumi:"customDelete"`
-	CustomUpdate []string      `pulumi:"customUpdate"`
-	Triggers     []interface{} `pulumi:"triggers"`
+	Args     RmArgsType    `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Rm resource.
 type RmArgs struct {
-	Args         RmArgsTypeInput
-	CustomDelete pulumi.StringArrayInput
-	CustomUpdate pulumi.StringArrayInput
-	Triggers     pulumi.ArrayInput
+	Args     RmArgsTypeInput
+	Triggers pulumi.ArrayInput
 }
 
 func (RmArgs) ElementType() reflect.Type {
@@ -139,14 +133,6 @@ func (o RmOutput) Args() RmArgsTypeOutput {
 
 func (o RmOutput) CreatedFiles() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Rm) pulumi.StringArrayOutput { return v.CreatedFiles }).(pulumi.StringArrayOutput)
-}
-
-func (o RmOutput) CustomDelete() pulumi.StringArrayOutput {
-	return o.ApplyT(func(v *Rm) pulumi.StringArrayOutput { return v.CustomDelete }).(pulumi.StringArrayOutput)
-}
-
-func (o RmOutput) CustomUpdate() pulumi.StringArrayOutput {
-	return o.ApplyT(func(v *Rm) pulumi.StringArrayOutput { return v.CustomUpdate }).(pulumi.StringArrayOutput)
 }
 
 func (o RmOutput) ExitCode() pulumi.IntOutput {

@@ -18,8 +18,6 @@ type Mv struct {
 
 	Args         pulumix.GPtrOutput[MvArgsType, MvArgsTypeOutput] `pulumi:"args"`
 	CreatedFiles pulumix.ArrayOutput[string]                      `pulumi:"createdFiles"`
-	CustomDelete pulumix.ArrayOutput[string]                      `pulumi:"customDelete"`
-	CustomUpdate pulumix.ArrayOutput[string]                      `pulumi:"customUpdate"`
 	ExitCode     pulumix.Output[int]                              `pulumi:"exitCode"`
 	MovedFiles   pulumix.MapOutput[string]                        `pulumi:"movedFiles"`
 	Stderr       pulumix.Output[string]                           `pulumi:"stderr"`
@@ -70,18 +68,14 @@ func (MvState) ElementType() reflect.Type {
 }
 
 type mvArgs struct {
-	Args         MvArgsType    `pulumi:"args"`
-	CustomDelete []string      `pulumi:"customDelete"`
-	CustomUpdate []string      `pulumi:"customUpdate"`
-	Triggers     []interface{} `pulumi:"triggers"`
+	Args     MvArgsType    `pulumi:"args"`
+	Triggers []interface{} `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Mv resource.
 type MvArgs struct {
-	Args         pulumix.Input[*MvArgsTypeArgs]
-	CustomDelete pulumix.Input[[]string]
-	CustomUpdate pulumix.Input[[]string]
-	Triggers     pulumix.Input[[]any]
+	Args     pulumix.Input[*MvArgsTypeArgs]
+	Triggers pulumix.Input[[]any]
 }
 
 func (MvArgs) ElementType() reflect.Type {
@@ -116,18 +110,6 @@ func (o MvOutput) Args() pulumix.GPtrOutput[MvArgsType, MvArgsTypeOutput] {
 
 func (o MvOutput) CreatedFiles() pulumix.ArrayOutput[string] {
 	value := pulumix.Apply[Mv](o, func(v Mv) pulumix.ArrayOutput[string] { return v.CreatedFiles })
-	unwrapped := pulumix.Flatten[[]string, pulumix.ArrayOutput[string]](value)
-	return pulumix.ArrayOutput[string]{OutputState: unwrapped.OutputState}
-}
-
-func (o MvOutput) CustomDelete() pulumix.ArrayOutput[string] {
-	value := pulumix.Apply[Mv](o, func(v Mv) pulumix.ArrayOutput[string] { return v.CustomDelete })
-	unwrapped := pulumix.Flatten[[]string, pulumix.ArrayOutput[string]](value)
-	return pulumix.ArrayOutput[string]{OutputState: unwrapped.OutputState}
-}
-
-func (o MvOutput) CustomUpdate() pulumix.ArrayOutput[string] {
-	value := pulumix.Apply[Mv](o, func(v Mv) pulumix.ArrayOutput[string] { return v.CustomUpdate })
 	unwrapped := pulumix.Flatten[[]string, pulumix.ArrayOutput[string]](value)
 	return pulumix.ArrayOutput[string]{OutputState: unwrapped.OutputState}
 }
