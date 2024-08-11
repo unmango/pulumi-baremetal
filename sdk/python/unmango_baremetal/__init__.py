@@ -9,30 +9,30 @@ from .provider import *
 
 # Make subpackages available:
 if typing.TYPE_CHECKING:
-    import unmango_baremetal.cmd as __cmd
-    cmd = __cmd
     import unmango_baremetal.config as __config
     config = __config
+    import unmango_baremetal.coreutils as __coreutils
+    coreutils = __coreutils
 else:
-    cmd = _utilities.lazy_import('unmango_baremetal.cmd')
     config = _utilities.lazy_import('unmango_baremetal.config')
+    coreutils = _utilities.lazy_import('unmango_baremetal.coreutils')
 
 _utilities.register(
     resource_modules="""
 [
  {
   "pkg": "baremetal",
-  "mod": "cmd",
-  "fqn": "unmango_baremetal.cmd",
+  "mod": "coreutils",
+  "fqn": "unmango_baremetal.coreutils",
   "classes": {
-   "baremetal:cmd:Chmod": "Chmod",
-   "baremetal:cmd:Mkdir": "Mkdir",
-   "baremetal:cmd:Mktemp": "Mktemp",
-   "baremetal:cmd:Mv": "Mv",
-   "baremetal:cmd:Rm": "Rm",
-   "baremetal:cmd:Tar": "Tar",
-   "baremetal:cmd:Tee": "Tee",
-   "baremetal:cmd:Wget": "Wget"
+   "baremetal:coreutils:Chmod": "Chmod",
+   "baremetal:coreutils:Mkdir": "Mkdir",
+   "baremetal:coreutils:Mktemp": "Mktemp",
+   "baremetal:coreutils:Mv": "Mv",
+   "baremetal:coreutils:Rm": "Rm",
+   "baremetal:coreutils:Tar": "Tar",
+   "baremetal:coreutils:Tee": "Tee",
+   "baremetal:coreutils:Wget": "Wget"
   }
  }
 ]

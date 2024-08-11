@@ -50,7 +50,7 @@ var _ = Describe("Command Resources", func() {
 	})
 
 	Describe("Chmod", func() {
-		var resource tokens.Type = "baremetal:cmd:Chmod"
+		var resource tokens.Type = "baremetal:coreutils:Chmod"
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			file := containerPath("chmod.txt")
@@ -85,7 +85,7 @@ var _ = Describe("Command Resources", func() {
 	})
 
 	Describe("Mv", func() {
-		var resource tokens.Type = "baremetal:cmd:Mv"
+		var resource tokens.Type = "baremetal:coreutils:Mv"
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			file := containerPath("mv.txt")
@@ -246,7 +246,7 @@ var _ = Describe("Command Resources", func() {
 	})
 
 	Describe("Mkdir", func() {
-		var resource tokens.Type = "baremetal:cmd:Mkdir"
+		var resource tokens.Type = "baremetal:coreutils:Mkdir"
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			expectedDir := containerPath("mkdir-test")
@@ -276,7 +276,7 @@ var _ = Describe("Command Resources", func() {
 	})
 
 	Describe("Mktemp", func() {
-		var resource tokens.Type = "baremetal:cmd:Mktemp"
+		var resource tokens.Type = "baremetal:coreutils:Mktemp"
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			run(server, integration.LifeCycleTest{
@@ -339,7 +339,7 @@ var _ = Describe("Command Resources", func() {
 	})
 
 	Describe("Rm", func() {
-		var resource tokens.Type = "baremetal:cmd:Rm"
+		var resource tokens.Type = "baremetal:coreutils:Rm"
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			file := containerPath("rm.txt")
@@ -373,7 +373,7 @@ var _ = Describe("Command Resources", func() {
 	})
 
 	Describe("Tar", func() {
-		var resource tokens.Type = "baremetal:cmd:Tar"
+		var resource tokens.Type = "baremetal:coreutils:Tar"
 		work := containerPath("tar")
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
@@ -429,7 +429,7 @@ var _ = Describe("Command Resources", func() {
 	})
 
 	Describe("Tee", func() {
-		var resource tokens.Type = "baremetal:cmd:Tee"
+		var resource tokens.Type = "baremetal:coreutils:Tee"
 
 		It("should complete a full lifecycle", func(ctx context.Context) {
 			file := containerPath("create.txt")
@@ -540,7 +540,7 @@ var _ = Describe("Command Resources", func() {
 	})
 
 	Describe("Wget", Ordered, func() {
-		var resource tokens.Type = "baremetal:cmd:Wget"
+		var resource tokens.Type = "baremetal:coreutils:Wget"
 		dir := containerPath("wget")
 
 		It("should complete a full lifecycle", func(ctx context.Context) {

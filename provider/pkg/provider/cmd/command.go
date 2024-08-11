@@ -16,22 +16,22 @@ type FsManipulator interface {
 	ExpectMoved() map[string]string
 }
 
-type CommandArgsBase struct{}
+type ArgsBase struct{}
 
-func (CommandArgsBase) ExpectCreated() []string {
+func (ArgsBase) ExpectCreated() []string {
 	return []string{}
 }
 
-func (CommandArgsBase) ExpectMoved() map[string]string {
+func (ArgsBase) ExpectMoved() map[string]string {
 	return map[string]string{}
 }
 
-type CommandBuilder interface {
+type Builder interface {
 	FsManipulator
 	Cmd() *pb.Command
 }
 
-type CommandArgs[T CommandBuilder] struct {
+type CommandArgs[T Builder] struct {
 	Args         T        `pulumi:"args"`
 	Triggers     []any    `pulumi:"triggers,optional"`
 	CustomUpdate []string `pulumi:"customUpdate,optional"`
@@ -50,7 +50,7 @@ func (a *CommandArgs[T]) ExpectMoved() map[string]string {
 	return a.Args.ExpectMoved()
 }
 
-type CommandState[T CommandBuilder] struct {
+type State[T Builder] struct {
 	CommandArgs[T]
 
 	ExitCode     int               `pulumi:"exitCode"`
@@ -60,7 +60,7 @@ type CommandState[T CommandBuilder] struct {
 	MovedFiles   map[string]string `pulumi:"movedFiles"`
 }
 
-func (s *CommandState[T]) Create(ctx context.Context, inputs CommandArgs[T], preview bool) error {
+func (s *State[T]) Create(ctx context.Context, inputs CommandArgs[T], preview bool) error {
 	log := logger.FromContext(ctx)
 	if preview {
 		// Could dial the host and warn if the connection fails
@@ -105,7 +105,7 @@ func (s *CommandState[T]) Create(ctx context.Context, inputs CommandArgs[T], pre
 	return nil
 }
 
-func (s *CommandState[T]) Diff(ctx context.Context, inputs CommandArgs[T]) (map[string]provider.PropertyDiff, error) {
+func (s *State[T]) Diff(ctx context.Context, inputs CommandArgs[T]) (map[string]provider.PropertyDiff, error) {
 	diff := map[string]provider.PropertyDiff{}
 	if !slices.Equal(s.Triggers, inputs.Triggers) {
 		diff["triggers"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
@@ -122,7 +122,7 @@ func (s *CommandState[T]) Diff(ctx context.Context, inputs CommandArgs[T]) (map[
 	return diff, nil
 }
 
-func (s *CommandState[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bool) (CommandState[T], error) {
+func (s *State[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bool) (State[T], error) {
 	log := logger.FromContext(ctx)
 	if preview {
 		// Could dial the host and warn if the connection fails
@@ -183,7 +183,7 @@ func (s *CommandState[T]) Update(ctx context.Context, inputs CommandArgs[T], pre
 	}
 
 	log.InfoStatus("Update success")
-	return CommandState[T]{
+	return State[T]{
 		CommandArgs:  inputs,
 		ExitCode:     int(res.Result.ExitCode),
 		Stdout:       res.Result.Stdout,
@@ -193,7 +193,7 @@ func (s *CommandState[T]) Update(ctx context.Context, inputs CommandArgs[T], pre
 	}, nil
 }
 
-func (s *CommandState[T]) Delete(ctx context.Context) error {
+func (s *State[T]) Delete(ctx context.Context) error {
 	log := logger.FromContext(ctx)
 	p, err := provisioner.FromContext(ctx)
 	if err != nil {
@@ -263,8 +263,8 @@ func (a CommandArgs[T]) DeleteBeforeReplace() bool {
 	return len(a.CustomUpdate) == 0
 }
 
-func (s *CommandState[T]) Copy() CommandState[T] {
-	return CommandState[T]{
+func (s *State[T]) Copy() State[T] {
+	return State[T]{
 		CommandArgs:  s.CommandArgs,
 		ExitCode:     s.ExitCode,
 		Stderr:       s.Stderr,

@@ -5,7 +5,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as inputs from "../types/input";
 import * as outputs from "../types/output";
 
-export namespace cmd {
+export namespace coreutils {
     export interface ChmodArgs {
         changes?: boolean;
         files: string[];

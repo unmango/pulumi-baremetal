@@ -29,9 +29,6 @@ OS := $(shell uname)
 
 BUF_CONFIG := buf.yaml buf.gen.yaml
 
-MANS    := tee
-MAN_SRC := $(MANS:%=$(PKG_DIR)/provider/cmd/%.man)
-
 GO_MODULES   := gen provider sdk tests
 GO_SRC       := $(subst ./,,$(shell find . -type f -name '*.go'))
 PROVIDER_SRC := $(filter $(PROVIDER_PATH)/%,$(GO_SRC))
@@ -65,12 +62,10 @@ test_provider:: .test/provider
 test_sdks:: .test/sdks
 
 docker:: .make/provisioner_docker_build .make/provisioner_test_docker_build
-mans:: gen_mans
 proto:: gen_proto
 
-gen:: gen_proto gen_mans gen_sdks gen_examples
+gen:: gen_proto gen_sdks gen_examples
 gen_proto:: $(GEN_SRC)
-gen_mans:: $(MAN_SRC)
 gen_sdks:: $(SUPPORTED_SDKS:%=%_sdk)
 gen_examples: $(SUPPORTED_SDKS:%=.make/examples/%)
 
@@ -163,7 +158,7 @@ out/install.sh: $(PROVIDER_PATH)/cmd/provisioner/install.sh
 out/baremetal-provisioner.service: $(PROVIDER_PATH)/cmd/provisioner/baremetal-provisioner.service
 	mkdir -p '${@D}' && cp '$<' '$@'
 
-bin/$(PROVIDER):: $(GEN_SRC) $(MAN_SRC) $(PKG_SRC) provider/*go*
+bin/$(PROVIDER):: $(GEN_SRC) $(PKG_SRC) provider/*go*
 	go -C provider build \
 		-o $(WORKING_DIR)/$@ \
 		-ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" \
@@ -177,11 +172,6 @@ bin/provisioner:: $(GEN_SRC) provider/cmd/provisioner/*.go $(PKG_SRC)
 
 gen/go/%.pb.go gen/go/%_grpc.pb.go: $(BUF_CONFIG) proto/%.proto
 	buf generate --clean --path proto/$*.proto
-
-provider/pkg/%.man: provider/pkg/%.go
-	@# man $(notdir $*) > $@
-	@# This is a terrible idea when the output depends on the terminal size
-	@touch $@
 
 buf.lock: $(BUF_CONFIG)
 	buf dep update

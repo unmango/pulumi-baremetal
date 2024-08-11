@@ -6,7 +6,7 @@ import (
 	"github.com/pulumi/pulumi-go-provider/middleware/schema"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/cmd"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/coreutils"
 )
 
 const Name string = "baremetal"
@@ -43,14 +43,14 @@ func Provider() p.Provider {
 		},
 		Config: infer.Config[provider.Config](),
 		Resources: []infer.InferredResource{
-			infer.Resource[cmd.Chmod](),
-			infer.Resource[cmd.Mkdir](),
-			infer.Resource[cmd.Mktemp](),
-			infer.Resource[cmd.Mv](),
-			infer.Resource[cmd.Rm](),
-			infer.Resource[cmd.Tar](),
-			infer.Resource[cmd.Tee](),
-			infer.Resource[cmd.Wget](),
+			infer.Resource[coreutils.Mktemp](),
+			infer.Resource[coreutils.Tar](),
+			infer.Resource[coreutils.Wget](),
+			infer.Resource[coreutils.Chmod](),
+			infer.Resource[coreutils.Mkdir](),
+			infer.Resource[coreutils.Mv](),
+			infer.Resource[coreutils.Rm](),
+			infer.Resource[coreutils.Tee](),
 		},
 		Components: []infer.InferredComponent{
 			// Consuming external resources is no bueno atm
