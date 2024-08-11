@@ -14,11 +14,6 @@ type provisioner struct {
 	conn *grpc.ClientConn
 }
 
-func New(conn *grpc.ClientConn) *provisioner {
-	cmd := pb.NewCommandServiceClient(conn)
-	return &provisioner{cmd, conn}
-}
-
 // Close implements io.Closer.
 func (p *provisioner) Close() error {
 	return p.conn.Close()
@@ -35,5 +30,10 @@ func FromConfig(config provider.Config) (*provisioner, error) {
 		return nil, err
 	}
 
-	return New(conn), nil
+	return new(conn), nil
+}
+
+func new(conn *grpc.ClientConn) *provisioner {
+	cmd := pb.NewCommandServiceClient(conn)
+	return &provisioner{cmd, conn}
 }
