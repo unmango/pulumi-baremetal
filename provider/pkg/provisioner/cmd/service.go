@@ -214,6 +214,7 @@ func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.Delete
 
 func binPath(b pb.Bin) (string, error) {
 	switch b {
+	// coreutils
 	case pb.Bin_BIN_CHMOD:
 		return "chmod", nil
 	case pb.Bin_BIN_MKDIR:
@@ -230,6 +231,10 @@ func binPath(b pb.Bin) (string, error) {
 		return "tee", nil
 	case pb.Bin_BIN_WGET:
 		return "wget", nil
+
+	// other
+	case pb.Bin_BIN_KUBEADM:
+		return "kubeadm", nil
 	}
 
 	return "", fmt.Errorf("unrecognized bin: %s", b)
