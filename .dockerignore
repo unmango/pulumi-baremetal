@@ -2,4 +2,3 @@
 !bin/
 !gen/
 !provider/
-!tests/provisioner.Dockerfile

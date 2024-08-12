@@ -25,6 +25,17 @@ COPY provider/pkg/ ./pkg/
 
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /out/provisioner cmd/main.go
 
+FROM --platform=$BUILDPLATFORM ubuntu:noble-20240605 AS test
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update \
+    && apt install -y \
+        wget \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /out/provisioner /
+ENTRYPOINT ["/provisioner"]
+
 FROM --platform=$BUILDPLATFORM scratch
 COPY --from=build /out/provisioner /
 ENTRYPOINT ["/provisioner"]

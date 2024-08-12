@@ -14,7 +14,7 @@ SUPPORTED_SDKS  := dotnet go nodejs python
 PROTO_VERSION   := v1alpha1
 PROVIDER_PATH   := provider
 VERSION_PATH    := ${PROVIDER_PATH}.Version
-VERSION_TAG     ?= $(shell cut -d'.' -f-3 <<<'${VERSION}' | sed 's/+dirty//')
+DOCKER_TAG      ?= $(shell cut -d'.' -f-3 <<<'${VERSION}' | sed 's/+dirty//')
 
 GOPATH			:= $(shell go env GOPATH)
 
@@ -200,12 +200,8 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 	buf lint --path $?
 	@touch $@
 
-.make/provisioner_docker_build: provider/cmd/provisioner/Dockerfile .dockerignore
-	docker build ${WORKING_DIR} -f $< -t ${PROVISIONER_NAME}:local-${VERSION_TAG}
-	@touch $@
-
-.make/provisioner_test_docker_build: tests/provisioner.Dockerfile .dockerignore bin/provisioner
-	docker build ${WORKING_DIR} -f $< -t ${PROVISIONER_NAME}:test
+.make/provisioner_docker: provider/cmd/provisioner/Dockerfile .dockerignore
+	docker build ${WORKING_DIR} -f $< -t ${PROVISIONER_NAME}:${DOCKER_TAG}
 	@touch $@
 
 .make/examples/%: examples/yaml/** bin/$(PROVIDER)
