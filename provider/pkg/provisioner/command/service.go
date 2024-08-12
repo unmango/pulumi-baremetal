@@ -5,9 +5,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"slices"
+	"strings"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/internal"
@@ -238,4 +240,16 @@ func binPath(b pb.Bin) (string, error) {
 	}
 
 	return "", fmt.Errorf("unrecognized bin: %s", b)
+}
+
+func stdinReader(stdin *string) io.Reader {
+	if stdin == nil {
+		return nil
+	}
+
+	return strings.NewReader(*stdin)
+}
+
+func prepend[T any](x T, xs []T) []T {
+	return slices.Insert(xs, 0, x)
 }
