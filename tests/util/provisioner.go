@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 	"path"
 
 	"github.com/mdelapenya/tlscert"
@@ -13,7 +14,7 @@ import (
 )
 
 const (
-	defaultProtocol string = "tcp"
+	defaultProtocol string = "tcp4"
 )
 
 type TestProvisioner interface {
@@ -44,10 +45,15 @@ func NewProvisioner(
 	certPath := path.Join(certDir, "cert.pem")
 	keyPath := path.Join(certDir, "key.pem")
 
+	image := "baremetal-provisioner:test"
+	if env, ok := os.LookupEnv("PROVISIONER_IMAGE"); ok {
+		image = env
+	}
+
 	req := tc.GenericContainerRequest{
 		Logger: NewLogger(logger),
 		ContainerRequest: tc.ContainerRequest{
-			Image: "baremetal-provisioner:test",
+			Image: image,
 			Files: []tc.ContainerFile{
 				{ContainerFilePath: clientCaPath, Reader: bytes.NewReader(clientCa.Bytes)},
 				{ContainerFilePath: certPath, Reader: bytes.NewReader(certs.Cert.Bytes)},
