@@ -114,7 +114,6 @@ export namespace coreutils {
 
     export interface TeeArgsArgs {
         append?: pulumi.Input<boolean>;
-        content?: pulumi.Input<pulumi.asset.Asset | pulumi.asset.Archive>;
         files: pulumi.Input<pulumi.Input<string>[]>;
         stdin?: pulumi.Input<string>;
     }

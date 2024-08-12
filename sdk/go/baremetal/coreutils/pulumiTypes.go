@@ -873,10 +873,9 @@ func (o TarArgsTypeOutput) Zstd() pulumi.BoolPtrOutput {
 }
 
 type TeeArgsType struct {
-	Append  *bool                 `pulumi:"append"`
-	Content pulumi.AssetOrArchive `pulumi:"content"`
-	Files   []string              `pulumi:"files"`
-	Stdin   *string               `pulumi:"stdin"`
+	Append *bool    `pulumi:"append"`
+	Files  []string `pulumi:"files"`
+	Stdin  *string  `pulumi:"stdin"`
 }
 
 // TeeArgsTypeInput is an input type that accepts TeeArgsTypeArgs and TeeArgsTypeOutput values.
@@ -891,10 +890,9 @@ type TeeArgsTypeInput interface {
 }
 
 type TeeArgsTypeArgs struct {
-	Append  pulumi.BoolPtrInput        `pulumi:"append"`
-	Content pulumi.AssetOrArchiveInput `pulumi:"content"`
-	Files   pulumi.StringArrayInput    `pulumi:"files"`
-	Stdin   pulumi.StringPtrInput      `pulumi:"stdin"`
+	Append pulumi.BoolPtrInput     `pulumi:"append"`
+	Files  pulumi.StringArrayInput `pulumi:"files"`
+	Stdin  pulumi.StringPtrInput   `pulumi:"stdin"`
 }
 
 func (TeeArgsTypeArgs) ElementType() reflect.Type {
@@ -937,10 +935,6 @@ func (o TeeArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[TeeArgsT
 
 func (o TeeArgsTypeOutput) Append() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v TeeArgsType) *bool { return v.Append }).(pulumi.BoolPtrOutput)
-}
-
-func (o TeeArgsTypeOutput) Content() pulumi.AssetOrArchiveOutput {
-	return o.ApplyT(func(v TeeArgsType) pulumi.AssetOrArchive { return v.Content }).(pulumi.AssetOrArchiveOutput)
 }
 
 func (o TeeArgsTypeOutput) Files() pulumi.StringArrayOutput {
