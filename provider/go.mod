@@ -9,7 +9,7 @@ require (
 	github.com/onsi/gomega v1.34.1
 	github.com/pulumi/pulumi-command/sdk v1.0.1
 	github.com/pulumi/pulumi-go-provider v0.21.0
-	github.com/pulumi/pulumi/sdk/v3 v3.128.0
+	github.com/pulumi/pulumi/sdk/v3 v3.129.0
 	github.com/spf13/cobra v1.8.1
 	github.com/unmango/pulumi-baremetal/gen v0.0.0-00010101000000-000000000000
 	google.golang.org/grpc v1.65.0
