@@ -114,7 +114,7 @@ export namespace coreutils {
 
     export interface TeeArgs {
         append?: boolean;
-        content: pulumi.asset.Asset | pulumi.asset.Archive;
+        content?: pulumi.asset.Asset | pulumi.asset.Archive;
         files: string[];
         stdin?: string;
     }

@@ -15,7 +15,7 @@ namespace UnMango.Baremetal.Coreutils.Outputs
     public sealed class TeeArgs
     {
         public readonly bool? Append;
-        public readonly AssetOrArchive Content;
+        public readonly AssetOrArchive? Content;
         public readonly ImmutableArray<string> Files;
         public readonly string? Stdin;
 
@@ -23,7 +23,7 @@ namespace UnMango.Baremetal.Coreutils.Outputs
         private TeeArgs(
             bool? append,
 
-            AssetOrArchive content,
+            AssetOrArchive? content,
 
             ImmutableArray<string> files,
 

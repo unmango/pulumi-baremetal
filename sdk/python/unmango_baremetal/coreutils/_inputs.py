@@ -1105,25 +1105,17 @@ class TarArgsArgs:
 @pulumi.input_type
 class TeeArgsArgs:
     def __init__(__self__, *,
-                 content: pulumi.Input[Union[pulumi.Asset, pulumi.Archive]],
                  files: pulumi.Input[Sequence[pulumi.Input[str]]],
                  append: Optional[pulumi.Input[bool]] = None,
+                 content: Optional[pulumi.Input[Union[pulumi.Asset, pulumi.Archive]]] = None,
                  stdin: Optional[pulumi.Input[str]] = None):
-        pulumi.set(__self__, "content", content)
         pulumi.set(__self__, "files", files)
         if append is not None:
             pulumi.set(__self__, "append", append)
+        if content is not None:
+            pulumi.set(__self__, "content", content)
         if stdin is not None:
             pulumi.set(__self__, "stdin", stdin)
-
-    @property
-    @pulumi.getter
-    def content(self) -> pulumi.Input[Union[pulumi.Asset, pulumi.Archive]]:
-        return pulumi.get(self, "content")
-
-    @content.setter
-    def content(self, value: pulumi.Input[Union[pulumi.Asset, pulumi.Archive]]):
-        pulumi.set(self, "content", value)
 
     @property
     @pulumi.getter
@@ -1142,6 +1134,15 @@ class TeeArgsArgs:
     @append.setter
     def append(self, value: Optional[pulumi.Input[bool]]):
         pulumi.set(self, "append", value)
+
+    @property
+    @pulumi.getter
+    def content(self) -> Optional[pulumi.Input[Union[pulumi.Asset, pulumi.Archive]]]:
+        return pulumi.get(self, "content")
+
+    @content.setter
+    def content(self, value: Optional[pulumi.Input[Union[pulumi.Asset, pulumi.Archive]]]):
+        pulumi.set(self, "content", value)
 
     @property
     @pulumi.getter
