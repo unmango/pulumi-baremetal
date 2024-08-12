@@ -12,7 +12,7 @@ import (
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/internal"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/provisioner/cmd"
+	cmd "github.com/unmango/pulumi-baremetal/provider/pkg/provisioner/command"
 )
 
 var _ = Describe("Grpc Server", func() {
