@@ -8,7 +8,6 @@ import (
 
 	provider "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
-	"github.com/pulumi/pulumi/sdk/v3/go/common/resource/asset"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/cmd"
 )
@@ -16,10 +15,9 @@ import (
 type TeeArgs struct {
 	cmd.ArgsBase
 
-	Append  bool        `pulumi:"append,optional"`
-	Content asset.Asset `pulumi:"content,optional"`
-	Files   []string    `pulumi:"files"`
-	Stdin   string      `pulumi:"stdin,optional"`
+	Append bool     `pulumi:"append,optional"`
+	Files  []string `pulumi:"files"`
+	Stdin  string   `pulumi:"stdin,optional"`
 }
 
 func (o TeeArgs) Cmd() (*pb.Command, error) {
@@ -28,21 +26,10 @@ func (o TeeArgs) Cmd() (*pb.Command, error) {
 		args = append(args, "--append")
 	}
 
-	var stdin string
-	if len(o.Stdin) > 0 {
-		stdin = o.Stdin
-	} else {
-		data, err := o.Content.Bytes()
-		if err != nil {
-			return nil, fmt.Errorf("failed to read asset bytes: %w", err)
-		}
-		stdin = string(data)
-	}
-
 	return &pb.Command{
 		Bin:   pb.Bin_BIN_TEE,
 		Args:  append(args, o.Files...),
-		Stdin: &stdin,
+		Stdin: &o.Stdin,
 	}, nil
 }
 
@@ -83,8 +70,8 @@ func (Tee) Diff(ctx context.Context, id string, olds TeeState, news cmd.CommandA
 		diff["args.append"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 
-	if news.Args.Content != olds.Args.Content {
-		diff["args.content"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	if news.Args.Stdin != olds.Args.Stdin {
+		diff["args.stdin"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 
 	if !slices.Equal(news.Args.Files, olds.Args.Files) {

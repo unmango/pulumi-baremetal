@@ -431,7 +431,7 @@ var _ = Describe("Command Resources", func() {
 	Describe("Tee", func() {
 		var resource tokens.Type = "baremetal:coreutils:Tee"
 
-		It("should complete a full lifecycle with content", func(ctx context.Context) {
+		It("should complete a full lifecycle with content", Pending, func(ctx context.Context) {
 			file := containerPath("create.txt")
 			newFile := containerPath("update.txt")
 
