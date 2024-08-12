@@ -17,27 +17,33 @@ type TeeArgs struct {
 	cmd.ArgsBase
 
 	Append  bool        `pulumi:"append,optional"`
-	Content asset.Asset `pulumi:"content"`
+	Content asset.Asset `pulumi:"content,optional"`
 	Files   []string    `pulumi:"files"`
+	Stdin   string      `pulumi:"stdin,optional"`
 }
 
-func (o TeeArgs) Cmd() *pb.Command {
+func (o TeeArgs) Cmd() (*pb.Command, error) {
 	args := []string{}
 	if o.Append {
 		args = append(args, "--append")
 	}
 
-	data, err := o.Content.Bytes()
-	if err != nil {
-		panic(err)
+	var stdin string
+	if len(o.Stdin) > 0 {
+		stdin = o.Stdin
+	} else {
+		data, err := o.Content.Bytes()
+		if err != nil {
+			return nil, fmt.Errorf("failed to read asset bytes: %w", err)
+		}
+		stdin = string(data)
 	}
 
-	stdin := string(data)
 	return &pb.Command{
 		Bin:   pb.Bin_BIN_TEE,
 		Args:  append(args, o.Files...),
 		Stdin: &stdin,
-	}
+	}, nil
 }
 
 // ExpectCreated implements FileManipulator.

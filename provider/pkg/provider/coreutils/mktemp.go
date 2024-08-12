@@ -26,7 +26,7 @@ type MktempArgs struct {
 }
 
 // Cmd implements CommandArgs.
-func (m MktempArgs) Cmd() *pb.Command {
+func (m MktempArgs) Cmd() (*pb.Command, error) {
 	b := cmd.B{}
 
 	b.Op(m.Directory, "--directory")
@@ -46,7 +46,7 @@ func (m MktempArgs) Cmd() *pb.Command {
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_MKTEMP,
 		Args: b.Args,
-	}
+	}, nil
 }
 
 var _ cmd.Builder = MktempArgs{}

@@ -21,7 +21,7 @@ type MkdirArgs struct {
 }
 
 // Cmd implements CommandArgs.
-func (m MkdirArgs) Cmd() *pb.Command {
+func (m MkdirArgs) Cmd() (*pb.Command, error) {
 	b := cmd.B{Args: m.Directory}
 
 	b.Opv(m.Mode, "--mode")
@@ -33,7 +33,7 @@ func (m MkdirArgs) Cmd() *pb.Command {
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_MKDIR,
 		Args: b.Args,
-	}
+	}, nil
 }
 
 var _ cmd.Builder = MkdirArgs{}

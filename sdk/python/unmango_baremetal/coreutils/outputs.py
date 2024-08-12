@@ -876,18 +876,17 @@ class TarArgs(dict):
 @pulumi.output_type
 class TeeArgs(dict):
     def __init__(__self__, *,
-                 content: Union[pulumi.Asset, pulumi.Archive],
                  files: Sequence[str],
-                 append: Optional[bool] = None):
-        pulumi.set(__self__, "content", content)
+                 append: Optional[bool] = None,
+                 content: Optional[Union[pulumi.Asset, pulumi.Archive]] = None,
+                 stdin: Optional[str] = None):
         pulumi.set(__self__, "files", files)
         if append is not None:
             pulumi.set(__self__, "append", append)
-
-    @property
-    @pulumi.getter
-    def content(self) -> Union[pulumi.Asset, pulumi.Archive]:
-        return pulumi.get(self, "content")
+        if content is not None:
+            pulumi.set(__self__, "content", content)
+        if stdin is not None:
+            pulumi.set(__self__, "stdin", stdin)
 
     @property
     @pulumi.getter
@@ -898,6 +897,16 @@ class TeeArgs(dict):
     @pulumi.getter
     def append(self) -> Optional[bool]:
         return pulumi.get(self, "append")
+
+    @property
+    @pulumi.getter
+    def content(self) -> Optional[Union[pulumi.Asset, pulumi.Archive]]:
+        return pulumi.get(self, "content")
+
+    @property
+    @pulumi.getter
+    def stdin(self) -> Optional[str]:
+        return pulumi.get(self, "stdin")
 
 
 @pulumi.output_type

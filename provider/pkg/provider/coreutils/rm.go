@@ -24,7 +24,7 @@ type RmArgs struct {
 }
 
 // Cmd implements CommandArgs.
-func (r RmArgs) Cmd() *pb.Command {
+func (r RmArgs) Cmd() (*pb.Command, error) {
 	b := cmd.B{Args: r.Files}
 
 	b.Op(r.Dir, "--dir")
@@ -36,7 +36,7 @@ func (r RmArgs) Cmd() *pb.Command {
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_RM,
 		Args: b.Args,
-	}
+	}, nil
 }
 
 var _ cmd.Builder = RmArgs{}

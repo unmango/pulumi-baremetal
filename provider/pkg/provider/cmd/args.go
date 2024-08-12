@@ -12,7 +12,7 @@ type CommandArgs[T Builder] struct {
 	CustomDelete []string `pulumi:"customDelete,optional"`
 }
 
-func (a *CommandArgs[T]) Cmd() *pb.Command {
+func (a *CommandArgs[T]) Cmd() (*pb.Command, error) {
 	return a.Args.Cmd()
 }
 

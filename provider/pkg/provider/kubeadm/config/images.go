@@ -38,7 +38,7 @@ type ImagesArgs struct {
 	Rootfs            string            `pulumi:"rootfs,optional"`
 }
 
-func (a ImagesArgs) Cmd() *pb.Command {
+func (a ImagesArgs) Cmd() (*pb.Command, error) {
 	return builder(func(b *cmd.B) {
 		b.Arg("images")
 		b.Arg(string(a.Command))
@@ -48,7 +48,7 @@ func (a ImagesArgs) Cmd() *pb.Command {
 		b.Opv(a.KubernetesVersion, "--kubernetes-version")
 		b.Opv(a.Kubeconfig, "--kubeconfig")
 		b.Opv(a.Rootfs, "--rootfs")
-	})
+	}), nil
 }
 
 type Images struct{}

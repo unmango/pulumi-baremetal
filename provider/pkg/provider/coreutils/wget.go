@@ -65,7 +65,7 @@ type WgetArgs struct {
 }
 
 // Cmd implements CommandArgs.
-func (w WgetArgs) Cmd() *pb.Command {
+func (w WgetArgs) Cmd() (*pb.Command, error) {
 	b := &cmd.B{Args: w.Urls}
 
 	b.Opv(w.AppendOutput, "--append-output")
@@ -118,7 +118,7 @@ func (w WgetArgs) Cmd() *pb.Command {
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_WGET,
 		Args: b.Args,
-	}
+	}, nil
 }
 
 // ExpectCreated implements FileManipulator.
