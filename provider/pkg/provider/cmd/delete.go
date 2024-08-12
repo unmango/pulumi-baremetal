@@ -62,6 +62,6 @@ func (s *State[T]) Delete(ctx context.Context) error {
 		}
 	}
 
-	log.InfoStatusf("✅ %s", res.String())
+	log.InfoStatusf("✅ %s", res)
 	return nil
 }

@@ -62,6 +62,11 @@ func (s *State[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bo
 		return s.Copy(), fmt.Errorf("sending update request: %w", err)
 	}
 
+	if res.Result.ExitCode > 0 {
+		log.Errorf("Failed provisioning: %s", res.Result)
+		return s.Copy(), fmt.Errorf("sending update request: %s", res.Result)
+	}
+
 	if res.CreatedFiles == nil {
 		log.DebugStatusf("%#v was empty, this is probably a bug somewhere else", res.CreatedFiles)
 		res.CreatedFiles = []string{}
@@ -72,7 +77,7 @@ func (s *State[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bo
 		res.MovedFiles = map[string]string{}
 	}
 
-	log.InfoStatusf("✅ %s", res.String())
+	log.InfoStatusf("✅ %s", res.Result)
 	return State[T]{
 		CommandArgs:  inputs,
 		ExitCode:     int(res.Result.ExitCode),
