@@ -13,13 +13,13 @@ func (s *State[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bo
 	log := logger.FromContext(ctx)
 	if preview {
 		// Could dial the host and warn if the connection fails
-		log.DebugStatus("skipping during preview")
+		log.DebugStatus("Skipping during preview")
 		return s.Copy(), nil
 	}
 
 	p, err := provisioner.FromContext(ctx)
 	if err != nil {
-		log.Error("failed creating provisioner")
+		log.Error("Failed creating provisioner")
 		return s.Copy(), fmt.Errorf("creating provisioner: %w", err)
 	}
 
@@ -30,14 +30,14 @@ func (s *State[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bo
 	if len(inputs.CustomUpdate) > 0 {
 		command, err = parseCommand(inputs.CustomUpdate)
 		if err != nil {
-			log.Errorf("Failed to parse custom update: %s", err)
+			log.Errorf("Failed parsing custom update: %s", err)
 			return s.Copy(), fmt.Errorf("parsing custom command: %w", err)
 		}
 	} else {
 		command, err = inputs.Cmd()
 		if err != nil {
-			log.Errorf("Failed to build command from inputs: %s", err)
-			return s.Copy(), fmt.Errorf("failed to build command from inputs: %w", err)
+			log.Errorf("Failed building command from inputs: %s", err)
+			return s.Copy(), fmt.Errorf("failed building command from inputs: %w", err)
 		}
 
 		expectCreated = inputs.ExpectCreated()
@@ -58,7 +58,7 @@ func (s *State[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bo
 		Previous:      prev,
 	})
 	if err != nil {
-		log.Errorf("Failed sending update request: %s", err)
+		log.Errorf("Failed provisioning: %s", err)
 		return s.Copy(), fmt.Errorf("sending update request: %w", err)
 	}
 
@@ -72,7 +72,7 @@ func (s *State[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bo
 		res.MovedFiles = map[string]string{}
 	}
 
-	log.InfoStatus("Update success")
+	log.InfoStatusf("✅ %s", res.String())
 	return State[T]{
 		CommandArgs:  inputs,
 		ExitCode:     int(res.Result.ExitCode),
