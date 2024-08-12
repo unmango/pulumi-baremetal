@@ -176,4 +176,18 @@ var _ = Describe("Mv", func() {
 		Expect(provisioner).NotTo(ContainFile(ctx, dest))
 		Expect(provisioner).To(ContainFile(ctx, final))
 	})
+
+	It("should fail when source doesn't exist", func() {
+		run(server, integration.LifeCycleTest{
+			Resource: resource,
+			Create: integration.Operation{
+				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+					"args": map[string]interface{}{
+						"source": []string{"/does/not/exist"},
+					},
+				}),
+				ExpectFailure: true,
+			},
+		})
+	})
 })

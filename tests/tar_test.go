@@ -73,4 +73,18 @@ var _ = Describe("Tar", func() {
 		Expect(provisioner).To(ContainFile(ctx, archive))
 		Expect(provisioner).NotTo(ContainFile(ctx, expectedFile))
 	})
+
+	It("should fail when archive doesn't exist", func() {
+		run(server, integration.LifeCycleTest{
+			Resource: resource,
+			Create: integration.Operation{
+				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+					"args": map[string]interface{}{
+						"file": "/does/not/exist",
+					},
+				}),
+				ExpectFailure: true,
+			},
+		})
+	})
 })

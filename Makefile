@@ -200,7 +200,7 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 	buf lint --path $?
 	@touch $@
 
-.make/provisioner_docker: provider/cmd/provisioner/Dockerfile .dockerignore
+.make/provisioner_docker: provider/cmd/provisioner/Dockerfile .dockerignore $(PROVIDER_SRC)
 	docker build ${WORKING_DIR} -f $< -t ${PROVISIONER_NAME}:${DOCKER_TAG}
 	@touch $@
 

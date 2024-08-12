@@ -45,4 +45,18 @@ var _ = Describe("Mkdir", func() {
 		_, err := provisioner.Exec(ctx, "touch", "blah")
 		Expect(err).NotTo(HaveOccurred())
 	})
+
+	It("should fail when path doesn't exist", func() {
+		run(server, integration.LifeCycleTest{
+			Resource: resource,
+			Create: integration.Operation{
+				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+					"args": map[string]interface{}{
+						"directory": []string{"/does/not/exist"},
+					},
+				}),
+				ExpectFailure: true,
+			},
+		})
+	})
 })

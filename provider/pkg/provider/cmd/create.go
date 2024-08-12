@@ -13,7 +13,7 @@ func (s *State[T]) Create(ctx context.Context, inputs CommandArgs[T], preview bo
 	log := logger.FromContext(ctx)
 	if preview {
 		// Could dial the host and warn if the connection fails
-		log.DebugStatus("skipping during preview")
+		log.DebugStatus("Skipping during preview")
 		return nil
 	}
 
@@ -25,18 +25,24 @@ func (s *State[T]) Create(ctx context.Context, inputs CommandArgs[T], preview bo
 
 	p, err := provisioner.FromContext(ctx)
 	if err != nil {
-		log.Error("failed creating provisioner")
+		log.Error("Failed creating provisioner")
 		return fmt.Errorf("creating provisioner: %w", err)
 	}
 
-	log.InfoStatus("Sending create request to provisioner")
+	log.DebugStatus("Sending create request to provisioner")
 	res, err := p.Create(ctx, &pb.CreateRequest{
 		Command:       command,
 		ExpectCreated: inputs.ExpectCreated(),
 		ExpectMoved:   inputs.ExpectMoved(),
 	})
 	if err != nil {
+		log.Errorf("Failed provisioning: %s", err)
 		return fmt.Errorf("sending create request: %w", err)
+	}
+
+	if res.Result.ExitCode > 0 {
+		log.Errorf("Failed provisioning: %s", res.Result)
+		return fmt.Errorf("sending create request: %s", res.Result)
 	}
 
 	if res.CreatedFiles == nil {
@@ -56,6 +62,6 @@ func (s *State[T]) Create(ctx context.Context, inputs CommandArgs[T], preview bo
 	s.CreatedFiles = res.CreatedFiles
 	s.MovedFiles = res.MovedFiles
 
-	log.InfoStatus("Create success")
+	log.InfoStatusf("✅ %s", res.Result)
 	return nil
 }

@@ -228,4 +228,19 @@ var _ = Describe("Tee", func() {
 		Expect(provisioner).NotTo(ContainFile(ctx, newFile))
 		Expect(provisioner).NotTo(ContainFile(ctx, file))
 	})
+
+	It("should fail when file doesn't exist", func() {
+		run(server, integration.LifeCycleTest{
+			Resource: resource,
+			Create: integration.Operation{
+				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+					"args": map[string]interface{}{
+						"stdin": "does not matter for this test",
+						"files": []string{"/does/not/exist"},
+					},
+				}),
+				ExpectFailure: true,
+			},
+		})
+	})
 })

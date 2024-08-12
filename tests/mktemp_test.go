@@ -78,4 +78,18 @@ var _ = Describe("Mktemp", func() {
 		_, err := provisioner.Exec(ctx, "touch", "blah")
 		Expect(err).NotTo(HaveOccurred())
 	})
+
+	It("should fail when template is invalid", func() {
+		run(server, integration.LifeCycleTest{
+			Resource: resource,
+			Create: integration.Operation{
+				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+					"args": map[string]interface{}{
+						"template": "does-not-have-enough-x",
+					},
+				}),
+				ExpectFailure: true,
+			},
+		})
+	})
 })

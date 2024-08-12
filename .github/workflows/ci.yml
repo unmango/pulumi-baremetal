@@ -204,8 +204,6 @@ jobs:
   docker:
     name: Docker
     uses: ./.github/workflows/docker.yml
-    with:
-      tags: baremetal-provisioner:ci
 
   provider:
     name: Provider
