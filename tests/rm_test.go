@@ -49,4 +49,18 @@ var _ = Describe("Rm", func() {
 
 		Expect(provisioner).NotTo(ContainFile(ctx, file))
 	})
+
+	It("should fail when file doesn't exist", func() {
+		run(server, integration.LifeCycleTest{
+			Resource: resource,
+			Create: integration.Operation{
+				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+					"args": map[string]interface{}{
+						"files": []string{"/does/not/exist"},
+					},
+				}),
+				ExpectFailure: true,
+			},
+		})
+	})
 })

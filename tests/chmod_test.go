@@ -55,21 +55,13 @@ var _ = Describe("Chmod", func() {
 		run(server, integration.LifeCycleTest{
 			Resource: resource,
 			Create: integration.Operation{
-				ExpectFailure: true,
 				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
 					"args": map[string]interface{}{
 						"files":     []string{"/does/not/exist"},
 						"octalMode": "0700",
 					},
 				}),
-				Hook: func(inputs, output pr.PropertyMap) {
-					Expect(output["stderr"]).To(HavePropertyValue(""))
-					Expect(output["stdout"]).To(HavePropertyValue(""))
-					Expect(output["exitCode"]).To(HavePropertyValue(0))
-					Expect(output["createdFiles"].V).To(BeEmpty())
-					Expect(output["movedFiles"].V).To(BeEmpty())
-					Expect(output["args"]).To(Equal(inputs["args"]))
-				},
+				ExpectFailure: true,
 			},
 		})
 	})
