@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package unmango.baremetal.v1alpha1;
+
+service MetaService {
+  rpc Ping(PingRequest) returns (PingResponse);
+}
+
+message PingRequest {}
+
+message PingResponse {}
