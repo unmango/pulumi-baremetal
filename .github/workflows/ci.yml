@@ -201,6 +201,12 @@ jobs:
           name: provisioner
           path: bin/provisioner
 
+  provisioner-docker:
+    name: Provisioner Docker
+    uses: ./.github/workflows/docker.yml
+    with:
+      tag: baremetal-provisioner:test
+
   provider:
     name: Provider
     runs-on: ubuntu-latest
