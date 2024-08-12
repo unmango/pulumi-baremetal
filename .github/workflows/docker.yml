@@ -3,9 +3,9 @@ name: Docker
 on:
   workflow_call:
     inputs:
-      tag:
+      tags:
         type: string
-        description: Override the tag on the image
+        description: Override the tags on the image
         required: false
   push:
     branches: [main]
@@ -13,8 +13,8 @@ on:
       - v*.*.*
 
 jobs:
-  provisioner-docker:
-    name: Provisioner Docker
+  provisioner:
+    name: Provisioner Build
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
@@ -28,7 +28,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: baremetal-provisioner
+          images: ghcr.io/${{ github.repository_owner }}/baremetal-provisioner
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -52,7 +52,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           file: provider/cmd/provisioner/Dockerfile
-          tags: ${{ github.event_name == 'push' && steps.meta.outputs.tags || inputs.tag }}
+          tags: ${{ github.event_name == 'push' && steps.meta.outputs.tags || inputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name == 'push' }}

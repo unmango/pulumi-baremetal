@@ -205,7 +205,7 @@ jobs:
     name: Provisioner Docker
     uses: ./.github/workflows/docker.yml
     with:
-      tag: baremetal-provisioner:test
+      tags: ghcr.io/${{ github.repository_owner }}/baremetal-provisioner:test
 
   provider:
     name: Provider
