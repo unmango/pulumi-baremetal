@@ -6,6 +6,7 @@ import (
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	cmd "github.com/unmango/pulumi-baremetal/provider/pkg/command"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/operation"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
@@ -65,10 +66,17 @@ func (s *State[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bo
 		return s.Copy(), fmt.Errorf("sending update request: %w", err)
 	}
 
+	op := operation.FromUpdate(command, res)
+	display := operation.Display(op)
+
 	if res.Result.ExitCode > 0 {
-		log.Errorf("Failed provisioning: %s", res.Result)
-		return s.Copy(), fmt.Errorf("sending update request: %s", res.Result)
+		log.Error(display)
+		return s.Copy(), fmt.Errorf("update failed: %s", res.Result)
 	}
+
+	// Thought it might be nice to have a brief check mark on success.
+	// In practice, this will probably happen too fast to be noticed. We'll see.
+	log.InfoStatusf("✅ %s", display)
 
 	if res.CreatedFiles == nil {
 		log.DebugStatusf("%#v was empty, this is probably a bug somewhere else", res.CreatedFiles)
@@ -80,7 +88,7 @@ func (s *State[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bo
 		res.MovedFiles = map[string]string{}
 	}
 
-	log.InfoStatusf("✅ %s", res.Result)
+	log.InfoStatus(display)
 	return State[T]{
 		CommandArgs:  inputs,
 		ExitCode:     int(res.Result.ExitCode),

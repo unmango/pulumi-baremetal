@@ -6,6 +6,7 @@ import (
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	cmd "github.com/unmango/pulumi-baremetal/provider/pkg/command"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/operation"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
@@ -49,20 +50,24 @@ func (s *State[T]) Delete(ctx context.Context) error {
 		log.DebugStatus("Provisioner did not perform any operations")
 	} else {
 		failed := []*pb.Operation{}
-		for _, c := range res.Commands {
-			exitCode := c.Result.ExitCode
+		for _, o := range res.Commands {
+			exitCode := o.Result.ExitCode
+			display := operation.Display(o)
+
 			if exitCode != 0 {
-				log.Errorf("Provisioner returned non-zero exit code: %d", exitCode)
-				failed = append(failed, c)
+				log.Errorf(display)
+				failed = append(failed, o)
+			} else {
+				log.InfoStatusf("✅ %s", display)
 			}
 		}
 
 		if len(failed) > 0 {
-			log.ErrorStatusf("A delete operation failed: %s", failed)
-			return fmt.Errorf("a delete operation failed: %s", failed)
+			log.ErrorStatusf("%d delete operation(s) failed", len(failed))
+			return fmt.Errorf("a delete operation failed: %v", failed)
 		}
 	}
 
-	log.InfoStatusf("✅ %s", res)
+	log.InfoStatus(operation.DisplayAll(res.Commands))
 	return nil
 }
