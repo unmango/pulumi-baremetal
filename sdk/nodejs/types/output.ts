@@ -71,6 +71,7 @@ export namespace coreutils {
     }
 
     export interface TarArgs {
+        anchored?: boolean;
         append?: boolean;
         args?: string[];
         bzip2?: boolean;
@@ -93,6 +94,7 @@ export namespace coreutils {
         lzip?: boolean;
         lzma?: boolean;
         lzop?: boolean;
+        noAnchored?: boolean;
         noOverwriteDir?: boolean;
         noSeek?: boolean;
         overwrite?: boolean;
@@ -108,6 +110,7 @@ export namespace coreutils {
         update?: boolean;
         verbose?: boolean;
         verify?: boolean;
+        version?: boolean;
         xz?: boolean;
         zstd?: boolean;
     }

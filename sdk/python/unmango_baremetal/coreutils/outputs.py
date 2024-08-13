@@ -530,6 +530,8 @@ class TarArgs(dict):
             suggest = "keep_newer_files"
         elif key == "keepOldfiles":
             suggest = "keep_oldfiles"
+        elif key == "noAnchored":
+            suggest = "no_anchored"
         elif key == "noOverwriteDir":
             suggest = "no_overwrite_dir"
         elif key == "noSeek":
@@ -559,6 +561,7 @@ class TarArgs(dict):
         return super().get(key, default)
 
     def __init__(__self__, *,
+                 anchored: Optional[bool] = None,
                  append: Optional[bool] = None,
                  args: Optional[Sequence[str]] = None,
                  bzip2: Optional[bool] = None,
@@ -581,6 +584,7 @@ class TarArgs(dict):
                  lzip: Optional[bool] = None,
                  lzma: Optional[bool] = None,
                  lzop: Optional[bool] = None,
+                 no_anchored: Optional[bool] = None,
                  no_overwrite_dir: Optional[bool] = None,
                  no_seek: Optional[bool] = None,
                  overwrite: Optional[bool] = None,
@@ -596,8 +600,11 @@ class TarArgs(dict):
                  update: Optional[bool] = None,
                  verbose: Optional[bool] = None,
                  verify: Optional[bool] = None,
+                 version: Optional[bool] = None,
                  xz: Optional[bool] = None,
                  zstd: Optional[bool] = None):
+        if anchored is not None:
+            pulumi.set(__self__, "anchored", anchored)
         if append is not None:
             pulumi.set(__self__, "append", append)
         if args is not None:
@@ -642,6 +649,8 @@ class TarArgs(dict):
             pulumi.set(__self__, "lzma", lzma)
         if lzop is not None:
             pulumi.set(__self__, "lzop", lzop)
+        if no_anchored is not None:
+            pulumi.set(__self__, "no_anchored", no_anchored)
         if no_overwrite_dir is not None:
             pulumi.set(__self__, "no_overwrite_dir", no_overwrite_dir)
         if no_seek is not None:
@@ -672,10 +681,17 @@ class TarArgs(dict):
             pulumi.set(__self__, "verbose", verbose)
         if verify is not None:
             pulumi.set(__self__, "verify", verify)
+        if version is not None:
+            pulumi.set(__self__, "version", version)
         if xz is not None:
             pulumi.set(__self__, "xz", xz)
         if zstd is not None:
             pulumi.set(__self__, "zstd", zstd)
+
+    @property
+    @pulumi.getter
+    def anchored(self) -> Optional[bool]:
+        return pulumi.get(self, "anchored")
 
     @property
     @pulumi.getter
@@ -788,6 +804,11 @@ class TarArgs(dict):
         return pulumi.get(self, "lzop")
 
     @property
+    @pulumi.getter(name="noAnchored")
+    def no_anchored(self) -> Optional[bool]:
+        return pulumi.get(self, "no_anchored")
+
+    @property
     @pulumi.getter(name="noOverwriteDir")
     def no_overwrite_dir(self) -> Optional[bool]:
         return pulumi.get(self, "no_overwrite_dir")
@@ -861,6 +882,11 @@ class TarArgs(dict):
     @pulumi.getter
     def verify(self) -> Optional[bool]:
         return pulumi.get(self, "verify")
+
+    @property
+    @pulumi.getter
+    def version(self) -> Optional[bool]:
+        return pulumi.get(self, "version")
 
     @property
     @pulumi.getter

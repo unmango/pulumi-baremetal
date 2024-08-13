@@ -71,6 +71,7 @@ export namespace coreutils {
     }
 
     export interface TarArgsArgs {
+        anchored?: pulumi.Input<boolean>;
         append?: pulumi.Input<boolean>;
         args?: pulumi.Input<pulumi.Input<string>[]>;
         bzip2?: pulumi.Input<boolean>;
@@ -93,6 +94,7 @@ export namespace coreutils {
         lzip?: pulumi.Input<boolean>;
         lzma?: pulumi.Input<boolean>;
         lzop?: pulumi.Input<boolean>;
+        noAnchored?: pulumi.Input<boolean>;
         noOverwriteDir?: pulumi.Input<boolean>;
         noSeek?: pulumi.Input<boolean>;
         overwrite?: pulumi.Input<boolean>;
@@ -108,6 +110,7 @@ export namespace coreutils {
         update?: pulumi.Input<boolean>;
         verbose?: pulumi.Input<boolean>;
         verify?: pulumi.Input<boolean>;
+        version?: pulumi.Input<boolean>;
         xz?: pulumi.Input<boolean>;
         zstd?: pulumi.Input<boolean>;
     }
