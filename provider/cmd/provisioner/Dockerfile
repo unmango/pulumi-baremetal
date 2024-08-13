@@ -25,14 +25,18 @@ COPY provider/pkg/ ./pkg/
 
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /out/provisioner cmd/main.go
 
-FROM --platform=$BUILDPLATFORM ubuntu:noble-20240605 AS test
+FROM --platform=$BUILDPLATFORM ubuntu:noble-20240605 AS test-base
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update \
     && apt install -y \
+        curl \
         wget \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+		&& mkdir /testdata \
+		&& curl -fLo /testdata/cni-plugins-linux-amd64-v1.5.1.tgz https://github.com/containernetworking/plugins/releases/download/v1.5.1/cni-plugins-linux-amd64-v1.5.1.tgz
 
+FROM test-base AS test
 COPY --from=build /out/provisioner /
 ENTRYPOINT ["/provisioner"]
 

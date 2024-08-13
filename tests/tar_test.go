@@ -6,6 +6,7 @@ import (
 	"compress/gzip"
 	"context"
 	"io"
+	"path"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -159,6 +160,53 @@ var _ = Describe("Tar", func() {
 		})
 	})
 
+	When("cni plugins are downloaded", func() {
+		dest := containerPath(work, "cni-plugins")
+		archive := path.Join("/testdata", "cni-plugins-linux-amd64-v1.5.1.tgz")
+
+		BeforeEach(func(ctx context.Context) {
+			By("ensuring container directories exist")
+			_, err := provisioner.Exec(ctx, "mkdir", "-p", work, dest)
+			Expect(err).NotTo(HaveOccurred())
+
+			By("ensuring the cni-plugins exist")
+			Expect(provisioner).To(ContainFile(ctx, archive))
+		})
+
+		It("should complete a full lifecycle", func(ctx context.Context) {
+			run(server, integration.LifeCycleTest{
+				Resource: resource,
+				Create: integration.Operation{
+					Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+						"args": map[string]interface{}{
+							"extract":    true,
+							"gzip":       true,
+							"file":       archive,
+							"directory":  dest,
+							"args":       []string{"macvlan", "vlan"},
+							"verbose":    true,
+							"noAnchored": true,
+						},
+					}),
+					Hook: func(inputs, output pr.PropertyMap) {
+						Expect(output["exitCode"]).To(HavePropertyValue(0))
+						Expect(output["stderr"]).To(HavePropertyValue(""))
+						Expect(output["stdout"]).To(HavePropertyValue("./vlan\n./macvlan\n"))
+						Expect(output["createdFiles"]).To(Equal(pr.NewArrayProperty([]pr.PropertyValue{
+							pr.NewProperty(containerPath(dest, "macvlan")),
+							pr.NewProperty(containerPath(dest, "vlan")),
+						})))
+						Expect(output["movedFiles"].V).To(Equal(pr.PropertyMap{}))
+						Expect(output["args"]).To(Equal(inputs["args"]))
+						Expect(provisioner).To(ContainFile(ctx, containerPath(dest, "macvlan")))
+						Expect(provisioner).To(ContainFile(ctx, containerPath(dest, "vlan")))
+					},
+				},
+			})
+
+			Expect(provisioner).To(ContainFile(ctx, archive))
+		})
+	})
 })
 
 func createTar(c map[string]string) (*bytes.Buffer, error) {

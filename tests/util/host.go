@@ -167,6 +167,6 @@ func (h *host) ensureContainer(ctx context.Context) (tc.Container, error) {
 var _ = (TestHost)((*host)(nil))
 
 func FileExists(ctx context.Context, ctr tc.Container, path string) (bool, error) {
-	_, err := ctr.CopyFileFromContainer(ctx, path)
-	return err == nil, nil
+	exitCode, _, err := ctr.Exec(ctx, []string{"stat", path})
+	return err == nil && exitCode == 0, nil
 }

@@ -1,6 +1,10 @@
 package cmd
 
-import pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+import (
+	"strconv"
+
+	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+)
 
 type Builder interface {
 	FsManipulator
@@ -40,6 +44,12 @@ func (b *B) Op(input bool, name string) {
 func (b *B) Opv(value, name string) {
 	if value != "" {
 		b.add(name, value)
+	}
+}
+
+func (b *B) Opi(value int, name string) {
+	if value > 0 {
+		b.add(name, strconv.Itoa(value))
 	}
 }
 
