@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+	cmd "github.com/unmango/pulumi-baremetal/provider/pkg/command"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
@@ -30,7 +31,7 @@ func (s *State[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bo
 	expectMoved := map[string]string{}
 
 	if len(inputs.CustomUpdate) > 0 {
-		command, err = parseCommand(inputs.CustomUpdate)
+		command, err = cmd.Parse(inputs.CustomUpdate)
 		if err != nil {
 			log.Errorf("Failed parsing custom update: %s", err)
 			return s.Copy(), fmt.Errorf("parsing custom command: %w", err)
