@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+	cmd "github.com/unmango/pulumi-baremetal/provider/pkg/command"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/operation"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
@@ -38,14 +40,21 @@ func (s *State[T]) Create(ctx context.Context, inputs CommandArgs[T], preview bo
 		ExpectMoved:   inputs.ExpectMoved(),
 	})
 	if err != nil {
-		log.Errorf("command:%s %s", command, err)
+		log.Errorf("command:%s %s", cmd.Display(command), err)
 		return fmt.Errorf("sending create request: %w", err)
 	}
 
+	op := operation.FromCreate(command, res)
+	display := operation.Display(op)
+
 	if res.Result.ExitCode > 0 {
-		log.Errorf("%s %s", command, res.Result)
-		return fmt.Errorf("sending create request: %s", res.Result)
+		log.Error(display)
+		return fmt.Errorf("create failed: %s", res.Result)
 	}
+
+	// Thought it might be nice to have a brief check mark on success.
+	// In practice, this will probably happen too fast to be noticed. We'll see.
+	log.InfoStatusf("✅ %s", display)
 
 	if res.CreatedFiles == nil {
 		log.DebugStatusf("%#v was empty, this is probably a bug somewhere else", res.CreatedFiles)
@@ -64,6 +73,6 @@ func (s *State[T]) Create(ctx context.Context, inputs CommandArgs[T], preview bo
 	s.CreatedFiles = res.CreatedFiles
 	s.MovedFiles = res.MovedFiles
 
-	log.InfoStatusf("✅ command:%v, %v", command, res.Result)
+	log.InfoStatus(display)
 	return nil
 }
