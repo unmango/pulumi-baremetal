@@ -11,16 +11,18 @@ import (
 
 func (s *State[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bool) (State[T], error) {
 	log := logger.FromContext(ctx)
-	if preview {
-		// Could dial the host and warn if the connection fails
-		log.DebugStatus("Skipping during preview")
-		return s.Copy(), nil
-	}
-
 	p, err := provisioner.FromContext(ctx)
 	if err != nil {
 		log.Error("Failed creating provisioner")
 		return s.Copy(), fmt.Errorf("creating provisioner: %w", err)
+	}
+
+	if preview {
+		if _, err = p.Ping(ctx, &pb.PingRequest{}); err != nil {
+			log.WarningStatusf("Failed pinging provisioner: %s", err)
+		}
+
+		return s.Copy(), nil
 	}
 
 	var command *pb.Command

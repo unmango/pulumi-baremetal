@@ -11,9 +11,17 @@ import (
 
 func (s *State[T]) Create(ctx context.Context, inputs CommandArgs[T], preview bool) error {
 	log := logger.FromContext(ctx)
+	p, err := provisioner.FromContext(ctx)
+	if err != nil {
+		log.Error("Failed creating provisioner")
+		return fmt.Errorf("creating provisioner: %w", err)
+	}
+
 	if preview {
-		// Could dial the host and warn if the connection fails
-		log.DebugStatus("Skipping during preview")
+		if _, err = p.Ping(ctx, &pb.PingRequest{}); err != nil {
+			log.WarningStatusf("Failed pinging provisioner: %s", err)
+		}
+
 		return nil
 	}
 
@@ -21,12 +29,6 @@ func (s *State[T]) Create(ctx context.Context, inputs CommandArgs[T], preview bo
 	if err != nil {
 		log.Errorf("Failed constructing command: %s", err)
 		return err
-	}
-
-	p, err := provisioner.FromContext(ctx)
-	if err != nil {
-		log.Error("Failed creating provisioner")
-		return fmt.Errorf("creating provisioner: %w", err)
 	}
 
 	log.DebugStatus("Sending create request to provisioner")
