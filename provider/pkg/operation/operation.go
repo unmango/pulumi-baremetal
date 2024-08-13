@@ -21,10 +21,12 @@ func DisplayAll(ops []*pb.Operation) string {
 	b := strings.Builder{}
 	b.WriteRune('[')
 
-	for _, o := range ops {
-		_, _ = b.WriteString(Display(o) + ", ")
+	d := make([]string, len(ops))
+	for i, o := range ops {
+		d[i] = Display(o)
 	}
 
+	b.WriteString(strings.Join(d, ", "))
 	b.WriteRune(']')
 	return b.String()
 }
