@@ -42,7 +42,7 @@ var _ = Describe("Rm", func() {
 					Expect(output["createdFiles"].V).To(BeEmpty())
 					Expect(output["movedFiles"].V).To(BeEmpty())
 					Expect(output["args"]).To(Equal(inputs["args"]))
-					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
+					Expect(provisioner).NotTo(ContainFile(ctx, file))
 				},
 			},
 		})

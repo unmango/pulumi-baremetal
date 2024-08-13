@@ -47,8 +47,8 @@ var _ = Describe("Mv", func() {
 						file: firstFile,
 					})))
 					Expect(output["args"]).To(Equal(inputs["args"]))
-					Expect(provisioner).NotTo(ContainFile(context.Background(), file))
-					Expect(provisioner).To(ContainFile(context.Background(), firstFile))
+					Expect(provisioner).NotTo(ContainFile(ctx, file))
+					Expect(provisioner).To(ContainFile(ctx, firstFile))
 				},
 			},
 			Updates: []integration.Operation{{

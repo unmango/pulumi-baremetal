@@ -17,8 +17,11 @@ import (
 const workRoot = "/tmp/lifecycle"
 
 func containerPath(elem ...string) string {
-	parts := append([]string{workRoot}, elem...)
-	return path.Join(parts...)
+	if len(elem) > 0 && !path.IsAbs(elem[0]) {
+		elem = append([]string{workRoot}, elem...)
+	}
+
+	return path.Join(elem...)
 }
 
 func prepareIntegrationServer(ctx context.Context) integration.Server {
