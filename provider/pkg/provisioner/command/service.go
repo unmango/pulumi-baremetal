@@ -175,7 +175,10 @@ func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.Delete
 
 		log.InfoContext(ctx, "finished executing command", "cmd", cmd.String())
 		commands = append(commands, &pb.Operation{
-			Command: &pb.Command{Bin: pb.Bin_BIN_RM, Args: cmd.Args},
+			Command: &pb.Command{
+				Bin:  pb.Bin_BIN_RM,
+				Args: cmd.Args[1:],
+			},
 			Result: &pb.Result{
 				ExitCode: int32(cmd.ProcessState.ExitCode()),
 				Stdout:   stdout.String(),
@@ -201,7 +204,10 @@ func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.Delete
 
 		log.InfoContext(ctx, "finished executing command", "cmd", cmd.String())
 		commands = append(commands, &pb.Operation{
-			Command: &pb.Command{Bin: pb.Bin_BIN_MV, Args: cmd.Args},
+			Command: &pb.Command{
+				Bin:  pb.Bin_BIN_MV,
+				Args: cmd.Args[1:],
+			},
 			Result: &pb.Result{
 				ExitCode: int32(cmd.ProcessState.ExitCode()),
 				Stdout:   stdout.String(),
