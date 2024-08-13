@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+	cmd "github.com/unmango/pulumi-baremetal/provider/pkg/command"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
@@ -19,7 +20,7 @@ func (s *State[T]) Delete(ctx context.Context) error {
 
 	var command *pb.Command
 	if len(s.CustomDelete) > 0 {
-		command, err = parseCommand(s.CustomDelete)
+		command, err = cmd.Parse(s.CustomDelete)
 		if err != nil {
 			log.Errorf("Failed to parse custom delete: %s", err)
 			return fmt.Errorf("parsing custom command: %w", err)

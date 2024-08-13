@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+	cmd "github.com/unmango/pulumi-baremetal/provider/pkg/command"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/internal"
 )
 
@@ -28,14 +29,14 @@ func NewServer(state internal.State) pb.CommandServiceServer {
 func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.CreateResponse, err error) {
 	log := s.Log.With("op", "create")
 	if req.Command == nil {
-		log.Error("no command found in request")
+		log.ErrorContext(ctx, "no command found in request")
 		return nil, fmt.Errorf("no command found in request")
 	}
 
 	args := req.Command.Args
-	bin, err := binPath(req.Command.Bin)
+	bin, err := cmd.BinValue(req.Command.Bin)
 	if err != nil {
-		log.Error("unable to map bin", "err", err)
+		log.ErrorContext(ctx, "unable to map bin", "err", err)
 		return nil, fmt.Errorf("mapping bin: %w", err)
 	}
 
@@ -212,34 +213,6 @@ func (s *service) Delete(ctx context.Context, req *pb.DeleteRequest) (*pb.Delete
 	}
 
 	return &pb.DeleteResponse{Commands: commands}, nil
-}
-
-func binPath(b pb.Bin) (string, error) {
-	switch b {
-	// coreutils
-	case pb.Bin_BIN_CHMOD:
-		return "chmod", nil
-	case pb.Bin_BIN_MKDIR:
-		return "mkdir", nil
-	case pb.Bin_BIN_MKTEMP:
-		return "mktemp", nil
-	case pb.Bin_BIN_MV:
-		return "mv", nil
-	case pb.Bin_BIN_RM:
-		return "rm", nil
-	case pb.Bin_BIN_TAR:
-		return "tar", nil
-	case pb.Bin_BIN_TEE:
-		return "tee", nil
-	case pb.Bin_BIN_WGET:
-		return "wget", nil
-
-	// other
-	case pb.Bin_BIN_KUBEADM:
-		return "kubeadm", nil
-	}
-
-	return "", fmt.Errorf("unrecognized bin: %s", b)
 }
 
 func stdinReader(stdin *string) io.Reader {

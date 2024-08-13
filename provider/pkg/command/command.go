@@ -11,14 +11,15 @@ import (
 
 var (
 	BinToValue = map[pb.Bin]string{
-		pb.Bin_BIN_CHMOD:  "chmod",
-		pb.Bin_BIN_MKDIR:  "mkdir",
-		pb.Bin_BIN_MKTEMP: "mktemp",
-		pb.Bin_BIN_MV:     "mv",
-		pb.Bin_BIN_RM:     "rm",
-		pb.Bin_BIN_TAR:    "tar",
-		pb.Bin_BIN_TEE:    "tee",
-		pb.Bin_BIN_WGET:   "wget",
+		pb.Bin_BIN_CHMOD:   "chmod",
+		pb.Bin_BIN_MKDIR:   "mkdir",
+		pb.Bin_BIN_MKTEMP:  "mktemp",
+		pb.Bin_BIN_MV:      "mv",
+		pb.Bin_BIN_RM:      "rm",
+		pb.Bin_BIN_TAR:     "tar",
+		pb.Bin_BIN_TEE:     "tee",
+		pb.Bin_BIN_WGET:    "wget",
+		pb.Bin_BIN_KUBEADM: "kubeadm",
 	}
 	ValueToBin = make(map[string]pb.Bin, len(BinToValue))
 )
@@ -26,6 +27,14 @@ var (
 func init() {
 	for k, v := range BinToValue {
 		ValueToBin[v] = k
+	}
+}
+
+func BinValue(bin pb.Bin) (string, error) {
+	if value, ok := BinToValue[bin]; ok {
+		return value, nil
+	} else {
+		return "", fmt.Errorf("unrecognized bin: %#v", bin)
 	}
 }
 
