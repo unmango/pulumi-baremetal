@@ -17,14 +17,12 @@ type containFile struct {
 
 // Match implements types.GomegaMatcher.
 func (e *containFile) Match(actual interface{}) (success bool, err error) {
-	ctx := context.Background()
-
 	if host, ok := actual.(util.TestHost); ok {
-		return host.FileExists(ctx, e.File)
+		return host.FileExists(e.Context, e.File)
 	}
 
 	if ctr, ok := actual.(tc.Container); ok {
-		return util.FileExists(ctx, ctr, e.File)
+		return util.FileExists(e.Context, ctr, e.File)
 	}
 
 	return false, fmt.Errorf("unupported match target: %s", reflect.TypeOf(actual))

@@ -204,6 +204,10 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 	docker build ${WORKING_DIR} -f $< -t ${PROVISIONER_NAME}:${DOCKER_TAG}
 	@touch $@
 
+.make/provisioner_docker_test: provider/cmd/provisioner/Dockerfile .dockerignore $(PROVIDER_SRC)
+	docker build ${WORKING_DIR} -f $< --target test -t ${PROVISIONER_NAME}:test
+	@touch $@
+
 .make/examples/%: examples/yaml/** bin/$(PROVIDER)
 	rm -rf ${WORKING_DIR}/examples/$*
 	pulumi convert \
@@ -218,7 +222,7 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 export GRPC_GO_LOG_SEVERITY_LEVEL ?=
 TEST_FLAGS ?=
 
-.test/provider: .make/provisioner_test_docker_build
+.test/provider: .make/provisioner_docker_test
 	cd tests && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}
 
 .test/pkg: $(PKG_SRC)

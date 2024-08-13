@@ -14,6 +14,7 @@ namespace UnMango.Baremetal.Coreutils.Outputs
     [OutputType]
     public sealed class TarArgs
     {
+        public readonly bool? Anchored;
         public readonly bool? Append;
         public readonly ImmutableArray<string> Args;
         public readonly bool? Bzip2;
@@ -36,6 +37,7 @@ namespace UnMango.Baremetal.Coreutils.Outputs
         public readonly bool? Lzip;
         public readonly bool? Lzma;
         public readonly bool? Lzop;
+        public readonly bool? NoAnchored;
         public readonly bool? NoOverwriteDir;
         public readonly bool? NoSeek;
         public readonly bool? Overwrite;
@@ -51,11 +53,14 @@ namespace UnMango.Baremetal.Coreutils.Outputs
         public readonly bool? Update;
         public readonly bool? Verbose;
         public readonly bool? Verify;
+        public readonly bool? Version;
         public readonly bool? Xz;
         public readonly bool? Zstd;
 
         [OutputConstructor]
         private TarArgs(
+            bool? anchored,
+
             bool? append,
 
             ImmutableArray<string> args,
@@ -100,6 +105,8 @@ namespace UnMango.Baremetal.Coreutils.Outputs
 
             bool? lzop,
 
+            bool? noAnchored,
+
             bool? noOverwriteDir,
 
             bool? noSeek,
@@ -130,10 +137,13 @@ namespace UnMango.Baremetal.Coreutils.Outputs
 
             bool? verify,
 
+            bool? version,
+
             bool? xz,
 
             bool? zstd)
         {
+            Anchored = anchored;
             Append = append;
             Args = args;
             Bzip2 = bzip2;
@@ -156,6 +166,7 @@ namespace UnMango.Baremetal.Coreutils.Outputs
             Lzip = lzip;
             Lzma = lzma;
             Lzop = lzop;
+            NoAnchored = noAnchored;
             NoOverwriteDir = noOverwriteDir;
             NoSeek = noSeek;
             Overwrite = overwrite;
@@ -171,6 +182,7 @@ namespace UnMango.Baremetal.Coreutils.Outputs
             Update = update;
             Verbose = verbose;
             Verify = verify;
+            Version = version;
             Xz = xz;
             Zstd = zstd;
         }

@@ -26,7 +26,7 @@ type TarArgs struct {
 	Extract bool `pulumi:"extract,optional"`
 	List    bool `pulumi:"list,optional"`
 	Update  bool `pulumi:"update,optional"`
-	Version bool `pulummi:"version,optional"`
+	Version bool `pulumi:"version,optional"`
 
 	// Operation modifiers
 	NoSeek bool `pulumi:"noSeek,optional"`
@@ -69,8 +69,10 @@ type TarArgs struct {
 	ExcludeFrom       string `pulumi:"excludeFrom,optional"`
 
 	// File name transformations
+	Anchored        bool   `pulumi:"anchored,optional"`
 	StripComponents int    `pulumi:"stripComponents,optional"`
 	Transform       string `pulumi:"transform,optional"`
+	NoAnchored      bool   `pulumi:"noAnchored,optional"`
 
 	// Informative output
 	Verbose bool `pulumi:"verbose,optional"`
@@ -122,6 +124,10 @@ func (t TarArgs) Cmd() (*pb.Command, error) {
 	b.Opv(t.ExcludeFrom, "--exclude-from")
 	b.Opv(t.Suffix, "--suffix")
 	b.Opv(t.Transform, "--transform")
+
+	b.Op(t.Anchored, "--anchored")
+	b.Op(t.NoAnchored, "--no-anchored")
+	b.Opi(t.StripComponents, "--strip-components")
 
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_TAR,

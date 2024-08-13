@@ -524,6 +524,7 @@ func (o RmArgsTypeOutput) Verbose() pulumix.Output[*bool] {
 }
 
 type TarArgsType struct {
+	Anchored             *bool    `pulumi:"anchored"`
 	Append               *bool    `pulumi:"append"`
 	Args                 []string `pulumi:"args"`
 	Bzip2                *bool    `pulumi:"bzip2"`
@@ -546,6 +547,7 @@ type TarArgsType struct {
 	Lzip                 *bool    `pulumi:"lzip"`
 	Lzma                 *bool    `pulumi:"lzma"`
 	Lzop                 *bool    `pulumi:"lzop"`
+	NoAnchored           *bool    `pulumi:"noAnchored"`
 	NoOverwriteDir       *bool    `pulumi:"noOverwriteDir"`
 	NoSeek               *bool    `pulumi:"noSeek"`
 	Overwrite            *bool    `pulumi:"overwrite"`
@@ -561,11 +563,13 @@ type TarArgsType struct {
 	Update               *bool    `pulumi:"update"`
 	Verbose              *bool    `pulumi:"verbose"`
 	Verify               *bool    `pulumi:"verify"`
+	Version              *bool    `pulumi:"version"`
 	Xz                   *bool    `pulumi:"xz"`
 	Zstd                 *bool    `pulumi:"zstd"`
 }
 
 type TarArgsTypeArgs struct {
+	Anchored             pulumix.Input[*bool]    `pulumi:"anchored"`
 	Append               pulumix.Input[*bool]    `pulumi:"append"`
 	Args                 pulumix.Input[[]string] `pulumi:"args"`
 	Bzip2                pulumix.Input[*bool]    `pulumi:"bzip2"`
@@ -588,6 +592,7 @@ type TarArgsTypeArgs struct {
 	Lzip                 pulumix.Input[*bool]    `pulumi:"lzip"`
 	Lzma                 pulumix.Input[*bool]    `pulumi:"lzma"`
 	Lzop                 pulumix.Input[*bool]    `pulumi:"lzop"`
+	NoAnchored           pulumix.Input[*bool]    `pulumi:"noAnchored"`
 	NoOverwriteDir       pulumix.Input[*bool]    `pulumi:"noOverwriteDir"`
 	NoSeek               pulumix.Input[*bool]    `pulumi:"noSeek"`
 	Overwrite            pulumix.Input[*bool]    `pulumi:"overwrite"`
@@ -603,6 +608,7 @@ type TarArgsTypeArgs struct {
 	Update               pulumix.Input[*bool]    `pulumi:"update"`
 	Verbose              pulumix.Input[*bool]    `pulumi:"verbose"`
 	Verify               pulumix.Input[*bool]    `pulumi:"verify"`
+	Version              pulumix.Input[*bool]    `pulumi:"version"`
 	Xz                   pulumix.Input[*bool]    `pulumi:"xz"`
 	Zstd                 pulumix.Input[*bool]    `pulumi:"zstd"`
 }
@@ -641,6 +647,10 @@ func (o TarArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[TarArgsT
 	return pulumix.Output[TarArgsType]{
 		OutputState: o.OutputState,
 	}
+}
+
+func (o TarArgsTypeOutput) Anchored() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Anchored })
 }
 
 func (o TarArgsTypeOutput) Append() pulumix.Output[*bool] {
@@ -732,6 +742,10 @@ func (o TarArgsTypeOutput) Lzop() pulumix.Output[*bool] {
 	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Lzop })
 }
 
+func (o TarArgsTypeOutput) NoAnchored() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.NoAnchored })
+}
+
 func (o TarArgsTypeOutput) NoOverwriteDir() pulumix.Output[*bool] {
 	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.NoOverwriteDir })
 }
@@ -790,6 +804,10 @@ func (o TarArgsTypeOutput) Verbose() pulumix.Output[*bool] {
 
 func (o TarArgsTypeOutput) Verify() pulumix.Output[*bool] {
 	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Verify })
+}
+
+func (o TarArgsTypeOutput) Version() pulumix.Output[*bool] {
+	return pulumix.Apply[TarArgsType](o, func(v TarArgsType) *bool { return v.Version })
 }
 
 func (o TarArgsTypeOutput) Xz() pulumix.Output[*bool] {

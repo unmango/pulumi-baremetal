@@ -13,6 +13,9 @@ namespace UnMango.Baremetal.Coreutils.Inputs
 
     public sealed class TarArgsArgs : global::Pulumi.ResourceArgs
     {
+        [Input("anchored")]
+        public Input<bool>? Anchored { get; set; }
+
         [Input("append")]
         public Input<bool>? Append { get; set; }
 
@@ -84,6 +87,9 @@ namespace UnMango.Baremetal.Coreutils.Inputs
         [Input("lzop")]
         public Input<bool>? Lzop { get; set; }
 
+        [Input("noAnchored")]
+        public Input<bool>? NoAnchored { get; set; }
+
         [Input("noOverwriteDir")]
         public Input<bool>? NoOverwriteDir { get; set; }
 
@@ -128,6 +134,9 @@ namespace UnMango.Baremetal.Coreutils.Inputs
 
         [Input("verify")]
         public Input<bool>? Verify { get; set; }
+
+        [Input("version")]
+        public Input<bool>? Version { get; set; }
 
         [Input("xz")]
         public Input<bool>? Xz { get; set; }
