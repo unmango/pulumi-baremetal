@@ -27,3 +27,10 @@ func If[V O[T], T any](predicate bool, o V) V {
 		return NoOp[V]()
 	}
 }
+
+func Safe[V O[T], T any](f func(*T)) V {
+	return func(o *T) error {
+		f(o)
+		return nil
+	}
+}

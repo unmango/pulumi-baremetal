@@ -2,20 +2,38 @@ package meta
 
 import (
 	"context"
+	"log/slog"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	"github.com/unmango/pulumi-baremetal/provider"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/internal"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/internal/opts"
+	"google.golang.org/grpc"
 )
 
 type service struct {
 	pb.UnimplementedMetaServiceServer
-	internal.State
+	Log *slog.Logger
 }
 
-func NewServer(state internal.State) pb.MetaServiceServer {
-	log := state.Log.With("service", "meta")
-	return &service{State: state.WithLogger(log)}
+type opt func(*service) error
+
+func NewServer(options ...opt) *service {
+	s := &service{Log: slog.Default()}
+	if err := opts.Apply(s, options...); err != nil {
+		panic(err) // TODO
+	}
+
+	return s
+}
+
+func WithLogger(logger *slog.Logger) opt {
+	return opts.Safe[opt](func(s *service) {
+		s.Log = logger
+	})
+}
+
+func (s *service) Register(server *grpc.Server) {
+	pb.RegisterMetaServiceServer(server, s)
 }
 
 func (s *service) Ping(ctx context.Context, req *pb.PingRequest) (*pb.PingResponse, error) {
