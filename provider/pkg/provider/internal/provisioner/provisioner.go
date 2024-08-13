@@ -11,6 +11,7 @@ import (
 
 type provisioner struct {
 	pb.CommandServiceClient
+	pb.MetaServiceClient
 	conn *grpc.ClientConn
 }
 
@@ -35,5 +36,6 @@ func FromConfig(config provider.Config) (*provisioner, error) {
 
 func new(conn *grpc.ClientConn) *provisioner {
 	cmd := pb.NewCommandServiceClient(conn)
-	return &provisioner{cmd, conn}
+	meta := pb.NewMetaServiceClient(conn)
+	return &provisioner{cmd, meta, conn}
 }

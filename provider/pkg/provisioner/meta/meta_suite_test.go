@@ -1,4 +1,4 @@
-package cmd_test
+package meta_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestCmd(t *testing.T) {
+func TestMeta(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Provisioner Command Service Suite")
+	RunSpecs(t, "Provisioner Meta Service Suite")
 }

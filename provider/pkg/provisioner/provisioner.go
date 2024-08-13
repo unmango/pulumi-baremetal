@@ -9,7 +9,8 @@ import (
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/internal"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/internal/opts"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/provisioner/cmd"
+	cmd "github.com/unmango/pulumi-baremetal/provider/pkg/provisioner/command"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provisioner/meta"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
@@ -101,9 +102,11 @@ func (p *provisioner) Serve() error {
 		reflection.Register(p.server)
 	}
 
-	p.Log.Debug("registering command server")
+	p.Log.Debug("registering services")
 	p.registerCommandService(cmd.NewServer(p.State))
+	p.registerMetaService(meta.NewServer(p.State))
 
+	p.Log.Debug("serving")
 	return p.server.Serve(p.listener)
 }
 
@@ -126,4 +129,8 @@ func (o *Options) tlsConfig(config *tls.Config) {
 
 func (p *provisioner) registerCommandService(srv pb.CommandServiceServer) {
 	pb.RegisterCommandServiceServer(p.server, srv)
+}
+
+func (p *provisioner) registerMetaService(srv pb.MetaServiceServer) {
+	pb.RegisterMetaServiceServer(p.server, srv)
 }
