@@ -14,7 +14,7 @@ type service struct {
 }
 
 func NewServer(state internal.State) pb.MetaServiceServer {
-	log := state.Log.With("service", "command")
+	log := state.Log.With("service", "meta")
 	return &service{State: state.WithLogger(log)}
 }
 
