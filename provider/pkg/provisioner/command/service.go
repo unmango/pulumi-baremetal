@@ -1,4 +1,4 @@
-package cmd
+package command
 
 import (
 	"bytes"
@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
-	cmd "github.com/unmango/pulumi-baremetal/provider/pkg/command"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/internal"
 )
 
@@ -28,35 +27,11 @@ func NewServer(state internal.State) pb.CommandServiceServer {
 
 func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.CreateResponse, err error) {
 	log := s.Log.With("op", "create")
-	if req.Command == nil {
-		log.ErrorContext(ctx, "no command found in request")
-		return nil, fmt.Errorf("no command found in request")
-	}
-
-	args := req.Command.Args
-	bin, err := cmd.BinValue(req.Command.Bin)
-	if err != nil {
-		log.ErrorContext(ctx, "unable to map bin", "err", err)
-		return nil, fmt.Errorf("mapping bin: %w", err)
-	}
-
-	log = log.With("bin", bin, "args", args)
-	log.DebugContext(ctx, "building command")
-	cmd := exec.CommandContext(ctx, bin, args...)
-	cmd.Stdin = stdinReader(req.Command.Stdin)
-
-	if cmd.Err != nil {
-		log.ErrorContext(ctx, "failed building command", "err", cmd.Err)
-		return nil, fmt.Errorf("failed building command: %w", cmd.Err)
-	}
-
 	createdFiles := make([]string, len(req.ExpectCreated))
 	movedFiles := make(map[string]string, len(req.ExpectMoved))
-	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
-	cmd.Stdout, cmd.Stderr = stdout, stderr
 
-	log.DebugContext(ctx, "running command", "cmd", cmd.String())
-	if err = cmd.Run(); err != nil {
+	result, err := execute(ctx, req.Command, log)
+	if err != nil || result.ExitCode > 0 {
 		log.WarnContext(ctx, "command failed", "err", err)
 	} else {
 		for i, file := range req.ExpectCreated {
@@ -82,26 +57,15 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.Cr
 		}
 	}
 
-	if cmd.ProcessState == nil {
-		return nil, errors.New("failed to start command")
-	}
-
-	exitCode := cmd.ProcessState.ExitCode()
-	log.InfoContext(ctx, "finished executing command",
-		"cmd", cmd.String(),
-		"exit_code", exitCode,
+	log.InfoContext(ctx, "processed command result",
 		"created", createdFiles,
 		"moved", movedFiles,
 	)
 
 	return &pb.CreateResponse{
+		Result:       result,
 		CreatedFiles: createdFiles,
 		MovedFiles:   movedFiles,
-		Result: &pb.Result{
-			ExitCode: int32(exitCode),
-			Stdout:   stdout.String(),
-			Stderr:   stderr.String(),
-		},
 	}, nil
 }
 
