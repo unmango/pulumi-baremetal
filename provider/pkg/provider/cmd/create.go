@@ -36,12 +36,12 @@ func (s *State[T]) Create(ctx context.Context, inputs CommandArgs[T], preview bo
 		ExpectMoved:   inputs.ExpectMoved(),
 	})
 	if err != nil {
-		log.Errorf("Failed provisioning: %s", err)
+		log.Errorf("command:%s %s", command, err)
 		return fmt.Errorf("sending create request: %w", err)
 	}
 
 	if res.Result.ExitCode > 0 {
-		log.Errorf("Failed provisioning: %s", res.Result)
+		log.Errorf("%s %s", command, res.Result)
 		return fmt.Errorf("sending create request: %s", res.Result)
 	}
 
@@ -62,6 +62,6 @@ func (s *State[T]) Create(ctx context.Context, inputs CommandArgs[T], preview bo
 	s.CreatedFiles = res.CreatedFiles
 	s.MovedFiles = res.MovedFiles
 
-	log.InfoStatusf("✅ %s", res.Result)
+	log.InfoStatusf("✅ command:%v, %v", command, res.Result)
 	return nil
 }

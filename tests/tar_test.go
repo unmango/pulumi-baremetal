@@ -1,8 +1,11 @@
 package tests
 
 import (
+	"archive/tar"
 	"bytes"
+	"compress/gzip"
 	"context"
+	"io"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -23,68 +26,169 @@ var _ = Describe("Tar", func() {
 		server = prepareIntegrationServer(ctx)
 	})
 
-	It("should complete a full lifecycle", func(ctx context.Context) {
-		fileName := "someFile.txt"
-		contents := "Some text that really doesn't matter"
-		archive := containerPath("tar", "test-archive.tar.gz")
-		dest := containerPath("tar", "destination")
-		expectedFile := containerPath("tar", "destination", fileName)
-
-		By("ensuring container directories exist")
-		_, err := provisioner.Exec(ctx, "mkdir", "-p", work, dest)
-		Expect(err).NotTo(HaveOccurred())
-
-		By("creating an archive to operate on")
-		buf := &bytes.Buffer{}
-		err = util.CreateTarArchive(buf, map[string]string{
-			fileName: contents,
-		})
-		Expect(err).NotTo(HaveOccurred())
-
-		By("writing the archive to the container")
-		err = provisioner.WriteFile(ctx, archive, buf.Bytes())
-		Expect(err).NotTo(HaveOccurred())
-
-		run(server, integration.LifeCycleTest{
-			Resource: resource,
-			Create: integration.Operation{
-				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
-					"args": map[string]interface{}{
-						"extract":   true,
-						"file":      archive,
-						"directory": dest,
-						"args":      []string{fileName},
-					},
-				}),
-				Hook: func(inputs, output pr.PropertyMap) {
-					Expect(output["exitCode"]).To(HavePropertyValue(0))
-					Expect(output["stderr"]).To(HavePropertyValue(""))
-					Expect(output["stdout"]).To(HavePropertyValue(""))
-					Expect(output["createdFiles"]).To(Equal(pr.NewArrayProperty([]pr.PropertyValue{
-						pr.NewProperty(expectedFile),
-					})))
-					Expect(output["movedFiles"].V).To(Equal(pr.PropertyMap{}))
-					Expect(output["args"].V).To(Equal(inputs["args"].V))
-					Expect(provisioner).To(ContainFile(context.Background(), expectedFile))
+	When("archive doesn't exist", func() {
+		It("should fail", func() {
+			run(server, integration.LifeCycleTest{
+				Resource: resource,
+				Create: integration.Operation{
+					Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+						"args": map[string]interface{}{
+							"file": "/does/not/exist",
+						},
+					}),
+					ExpectFailure: true,
 				},
-			},
+			})
 		})
-
-		Expect(provisioner).To(ContainFile(ctx, archive))
-		Expect(provisioner).NotTo(ContainFile(ctx, expectedFile))
 	})
 
-	It("should fail when archive doesn't exist", func() {
-		run(server, integration.LifeCycleTest{
-			Resource: resource,
-			Create: integration.Operation{
-				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
-					"args": map[string]interface{}{
-						"file": "/does/not/exist",
+	When("archive contains a single file", func() {
+		fileName := "someFile.txt"
+		text := "Some text that really doesn't matter"
+
+		archive := containerPath(work, "archive-contains-a-single-file.tar")
+		dest := containerPath(work, "destinationA")
+		expectedFile := containerPath(dest, fileName)
+
+		BeforeEach(func(ctx context.Context) {
+			By("ensuring container directories exist")
+			_, err := provisioner.Exec(ctx, "mkdir", "-p", work, dest)
+			Expect(err).NotTo(HaveOccurred())
+
+			By("creating an archive to operate on")
+			buf, err := createTar(map[string]string{
+				fileName: text,
+			})
+			Expect(err).NotTo(HaveOccurred())
+
+			By("writing the archive to the container")
+			err = provisioner.WriteFile(ctx, archive, buf.Bytes())
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("should complete a full lifecycle", func(ctx context.Context) {
+			run(server, integration.LifeCycleTest{
+				Resource: resource,
+				Create: integration.Operation{
+					Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+						"args": map[string]interface{}{
+							"extract":   true,
+							"file":      archive,
+							"directory": dest,
+							"args":      []string{fileName},
+						},
+					}),
+					Hook: func(inputs, output pr.PropertyMap) {
+						Expect(output["exitCode"]).To(HavePropertyValue(0))
+						Expect(output["stderr"]).To(HavePropertyValue(""))
+						Expect(output["stdout"]).To(HavePropertyValue(""))
+						Expect(output["createdFiles"]).To(Equal(pr.NewArrayProperty([]pr.PropertyValue{
+							pr.NewProperty(expectedFile),
+						})))
+						Expect(output["movedFiles"].V).To(Equal(pr.PropertyMap{}))
+						Expect(output["args"].V).To(Equal(inputs["args"].V))
+						Expect(provisioner).To(ContainFile(ctx, expectedFile))
 					},
-				}),
-				ExpectFailure: true,
-			},
+				},
+			})
+
+			Expect(provisioner).To(ContainFile(ctx, archive))
+			Expect(provisioner).NotTo(ContainFile(ctx, expectedFile))
 		})
 	})
+
+	When("archive contents are gzipped", func() {
+		fileA := "someFile"
+		contents := "Some text that really doesn't matter"
+		fileB := "a-different-file"
+
+		archive := containerPath(work, "archive-contents-are-gzipped.tar.gz")
+		dest := containerPath(work, "destinationB")
+		fileAPath := containerPath(dest, fileA)
+		fileBPath := containerPath(dest, fileB)
+
+		BeforeEach(func(ctx context.Context) {
+			By("ensuring container directories exist")
+			_, err := provisioner.Exec(ctx, "mkdir", "-p", work, dest)
+			Expect(err).NotTo(HaveOccurred())
+
+			By("creating an archive to operate on")
+			buf, err := createTarGz(map[string]string{
+				fileA: contents,
+				fileB: "I have a sense of humor",
+			})
+			Expect(err).NotTo(HaveOccurred())
+
+			By("writing the archive to the container")
+			err = provisioner.WriteFile(ctx, archive, buf.Bytes())
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("should complete a full lifecycle", func(ctx context.Context) {
+			run(server, integration.LifeCycleTest{
+				Resource: resource,
+				Create: integration.Operation{
+					Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+						"args": map[string]interface{}{
+							"extract":   true,
+							"gzip":      true,
+							"file":      archive,
+							"directory": dest,
+							"args":      []string{fileB},
+							"verbose":   true,
+						},
+					}),
+					Hook: func(inputs, output pr.PropertyMap) {
+						Expect(output["exitCode"]).To(HavePropertyValue(0))
+						Expect(output["stderr"]).To(HavePropertyValue(""))
+						Expect(output["stdout"]).To(HavePropertyValue(fileB + "\n"))
+						Expect(output["createdFiles"]).To(Equal(pr.NewArrayProperty([]pr.PropertyValue{
+							pr.NewProperty(fileBPath),
+						})))
+						Expect(output["movedFiles"].V).To(Equal(pr.PropertyMap{}))
+						Expect(output["args"]).To(Equal(inputs["args"]))
+						Expect(provisioner).NotTo(ContainFile(ctx, fileAPath))
+						Expect(provisioner).To(ContainFile(ctx, fileBPath))
+					},
+				},
+			})
+
+			Expect(provisioner).To(ContainFile(ctx, archive))
+			Expect(provisioner).NotTo(ContainFile(ctx, fileAPath))
+			Expect(provisioner).NotTo(ContainFile(ctx, fileBPath))
+		})
+	})
+
 })
+
+func createTar(c map[string]string) (*bytes.Buffer, error) {
+	buf := &bytes.Buffer{}
+	if err := writeContents(buf, c); err != nil {
+		return nil, err
+	}
+
+	return buf, nil
+}
+
+func createTarGz(c map[string]string) (*bytes.Buffer, error) {
+	buf := &bytes.Buffer{}
+	if err := writeArchive(buf, c); err != nil {
+		return nil, err
+	}
+
+	return buf, nil
+}
+
+func writeArchive(w io.Writer, c map[string]string) error {
+	writer := gzip.NewWriter(w)
+	defer writer.Close()
+
+	return writeContents(writer, c)
+}
+
+func writeContents(w io.Writer, c map[string]string) error {
+	writer := tar.NewWriter(w)
+	defer writer.Close()
+
+	return util.WriteTarContents(writer, c)
+}

@@ -52,7 +52,7 @@ var _ = Describe("Wget", Ordered, func() {
 					Expect(args["urls"].V).To(ContainElement(pr.NewProperty(url)))
 					Expect(args["quiet"]).To(HavePropertyValue(true))
 
-					_, err := provisioner.ReadFile(context.Background(), file)
+					_, err := provisioner.ReadFile(ctx, file)
 					Expect(err).NotTo(HaveOccurred())
 				},
 			},
