@@ -4,8 +4,17 @@ package unmango.baremetal.v1alpha1;
 
 service MetaService {
   rpc Ping(PingRequest) returns (PingResponse);
+  rpc Version(VersionRequest) returns (VersionResponse);
 }
 
 message PingRequest {}
 
-message PingResponse {}
+message PingResponse {
+  string message = 1;
+}
+
+message VersionRequest {}
+
+message VersionResponse {
+  string version = 1;
+}
