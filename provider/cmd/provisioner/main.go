@@ -52,6 +52,7 @@ var rootCmd = &cobra.Command{
 			p.WithLogger(log),
 			p.WithOptionalCertificates(clientCaFile, certFile, keyFile),
 			p.WithReflection(reflection),
+			p.WithWhitelist(whitelist),
 		)
 
 		log.Info("serving",

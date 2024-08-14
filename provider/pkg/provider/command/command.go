@@ -3,73 +3,74 @@ package command
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/cmd"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
-
-type Bin string
-
-var (
-	Chmod     Bin = "chmod"
-	Mkdir     Bin = "mkdir"
-	Mktemp    Bin = "mktemp"
-	Mv        Bin = "mv"
-	Rm        Bin = "rm"
-	Systemctl Bin = "systemctl"
-	Tar       Bin = "tar"
-	Tee       Bin = "tee"
-	Wget      Bin = "wget"
-)
-
-// Values implements infer.Enum.
-func (b *Bin) Values() []infer.EnumValue[Bin] {
-	return []infer.EnumValue[Bin]{
-		{Value: Chmod},
-		{Value: Mkdir},
-		{Value: Mktemp},
-		{Value: Mv},
-		{Value: Rm},
-		{Value: Systemctl},
-		{Value: Tar},
-		{Value: Tee},
-		{Value: Wget},
-	}
-}
-
-var _ = (infer.Enum[Bin])((*Bin)(nil))
 
 type CommandArgs struct {
-	cmd.ArgsBase
-
-	Bin  Bin      `pulumi:"bin"`
-	Args []string `pulumi:"args"`
-}
-
-func (a CommandArgs) Cmd() (*pb.Command, error) {
-	b := cmd.B{}
-
-	b.Arg(string(a.Bin))
-	for _, a := range a.Args {
-		b.Arg(a)
-	}
-
-	return b.Cmd(), nil
+	Args     []string `pulumi:"args"`
+	Triggers []any    `pulumi:"triggers,optional"`
 }
 
 type Command struct{}
 
-type CommandState = cmd.State[CommandArgs]
+type CommandState struct {
+	CommandArgs
+
+	ExitCode int    `pulumi:"exitCode"`
+	Stdout   string `pulumi:"stdout"`
+	Stderr   string `pulumi:"stderr"`
+}
 
 // Create implements infer.CustomCreate.
-func (Command) Create(ctx context.Context, name string, inputs cmd.CommandArgs[CommandArgs], preview bool) (string, CommandState, error) {
+func (Command) Create(ctx context.Context, name string, inputs CommandArgs, preview bool) (string, CommandState, error) {
+	log := logger.FromContext(ctx)
 	state := CommandState{}
-	if err := state.Create(ctx, inputs, preview); err != nil {
-		return name, state, fmt.Errorf("kubeadm: %w", err)
+
+	p, err := provisioner.FromContext(ctx)
+	if err != nil {
+		log.Error("Failed creating provisioner")
+		return name, state, fmt.Errorf("creating provisioner: %w", err)
 	}
 
+	if preview {
+		if _, err = p.Ping(ctx, &pb.PingRequest{}); err != nil {
+			log.WarningStatusf("Failed pinging provisioner: %s", err)
+		}
+
+		return name, state, nil
+	}
+
+	display := display(inputs.Args)
+	log.DebugStatus("Sending exec request to provisioner")
+	res, err := p.Exec(ctx, &pb.ExecRequest{
+		Args: inputs.Args,
+	})
+	if err != nil {
+		log.Errorf("command:%s %s", display, err)
+		return name, state, fmt.Errorf("sending exec request: %w", err)
+	}
+
+	if res.Result.ExitCode > 0 {
+		log.Error(display)
+		return name, state, fmt.Errorf("exec failed: %s", res.Result)
+	}
+
+	state.CommandArgs = inputs
+	state.ExitCode = int(res.Result.ExitCode)
+	state.Stdout = res.Result.Stdout
+	state.Stderr = res.Result.Stderr
+
+	log.InfoStatus(display)
 	return name, state, nil
 }
 
-var _ = (infer.CustomCreate[cmd.CommandArgs[CommandArgs], CommandState])((*Command)(nil))
+var _ = (infer.CustomCreate[CommandArgs, CommandState])((*Command)(nil))
+
+func display(args []string) string {
+	return strings.Join(args, " ")
+}

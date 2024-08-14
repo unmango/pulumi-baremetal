@@ -69,6 +69,7 @@ func NewProvisioner(
 				"--cert-file", certPath,
 				"--key-file", keyPath,
 				"--verbose",
+				"--whitelist", "perl",
 			},
 			ExposedPorts: []string{port},
 			WaitingFor:   wait.ForExposedPort(),
