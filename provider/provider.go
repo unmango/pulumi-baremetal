@@ -40,6 +40,9 @@ func Provider() p.Provider {
 					"requires": map[string]any{
 						"pulumi-command": ">=1.0.0,<2.0.0",
 					},
+					"pyproject": map[string]bool{
+						"enabled": true,
+					},
 				},
 			},
 		},
