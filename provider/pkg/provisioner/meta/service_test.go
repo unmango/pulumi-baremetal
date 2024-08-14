@@ -2,14 +2,12 @@ package meta_test
 
 import (
 	"context"
-	"log/slog"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
 	"github.com/unmango/pulumi-baremetal/provider"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/internal"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provisioner/meta"
 )
 
@@ -17,9 +15,7 @@ var _ = Describe("Grpc Server", func() {
 	var service pb.MetaServiceServer
 
 	BeforeEach(func() {
-		service = meta.NewServer(internal.State{
-			Log: slog.New(slog.NewJSONHandler(GinkgoWriter, nil)),
-		})
+		service = meta.NewServer()
 	})
 
 	It("should construct", func() {

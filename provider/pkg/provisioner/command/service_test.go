@@ -3,7 +3,6 @@ package command_test
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"os"
 	"path"
 
@@ -11,7 +10,6 @@ import (
 	. "github.com/onsi/gomega"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/internal"
 	cmd "github.com/unmango/pulumi-baremetal/provider/pkg/provisioner/command"
 )
 
@@ -19,9 +17,7 @@ var _ = Describe("Grpc Server", func() {
 	var service pb.CommandServiceServer
 
 	BeforeEach(func() {
-		service = cmd.NewServer(internal.State{
-			Log: slog.New(slog.NewJSONHandler(GinkgoWriter, nil)),
-		})
+		service = cmd.NewServer()
 	})
 
 	It("should construct", func() {

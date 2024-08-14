@@ -6,23 +6,48 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"os/exec"
 	"slices"
 	"strings"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/internal"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/internal/opts"
+	"google.golang.org/grpc"
 )
 
 type service struct {
 	pb.UnimplementedCommandServiceServer
-	internal.State
+	Log       *slog.Logger
+	Whitelist []string
 }
 
-func NewServer(state internal.State) pb.CommandServiceServer {
-	log := state.Log.With("service", "command")
-	return &service{State: state.WithLogger(log)}
+type opt func(*service) error
+
+func NewServer(options ...opt) *service {
+	s := &service{Log: slog.Default()}
+	if err := opts.Apply(s, options...); err != nil {
+		panic(err) // TODO
+	}
+
+	return s
+}
+
+func WithLogger(logger *slog.Logger) opt {
+	return opts.Safe[opt](func(s *service) {
+		s.Log = logger
+	})
+}
+
+func WithWhitelist(list []string) opt {
+	return opts.Safe[opt](func(s *service) {
+		s.Whitelist = list
+	})
+}
+
+func (s *service) Register(server *grpc.Server) {
+	pb.RegisterCommandServiceServer(server, s)
 }
 
 func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.CreateResponse, err error) {

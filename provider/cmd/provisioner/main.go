@@ -20,6 +20,7 @@ var (
 	reflection   bool
 	verbose      bool
 	version      bool
+	whitelist    []string
 )
 
 var rootCmd = &cobra.Command{
@@ -73,6 +74,7 @@ func main() {
 	rootCmd.Flags().BoolVar(&reflection, "reflection", false, "Enable gRPC reflection")
 	rootCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Log verbosity")
 	rootCmd.Flags().BoolVar(&version, "version", false, "Print version and exit")
+	rootCmd.Flags().StringSliceVarP(&whitelist, "whitelist", "w", []string{}, "Whitelist the specified command. Can be provided multiple times")
 
 	rootCmd.Flags().StringVar(&clientCaFile, "client-ca-file", "", "The path to the certificate authority file")
 	rootCmd.Flags().StringVar(&certFile, "cert-file", "", "The path to the server certificate file")
