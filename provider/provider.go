@@ -58,6 +58,7 @@ func Provider() p.Provider {
 			infer.Resource[coreutils.Rm](),
 			infer.Resource[coreutils.Tee](),
 			infer.Resource[kubeadm.Kubeadm](),
+			infer.Resource[provider.Bootstrap](),
 		},
 		Components: []infer.InferredComponent{
 			// Consuming external resources is no bueno atm
