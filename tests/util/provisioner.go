@@ -95,7 +95,7 @@ func (p *provisioner) ConnectionDetails(ctx context.Context) (address string, po
 		return
 	}
 
-	address, err = ctr.ContainerIP(ctx)
+	address, err = ctr.Host(ctx)
 	if err != nil {
 		return
 	}
