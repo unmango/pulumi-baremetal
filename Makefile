@@ -9,7 +9,7 @@ NUGET_PKG_NAME   := UnMango.Baremetal
 PROVISIONER_NAME := baremetal-provisioner
 
 PROVIDER        := pulumi-resource-${PACK}
-VERSION         ?= $(shell pulumictl get version)
+VERSION         ?= $(shell pulumictl get version --language generic)
 SUPPORTED_SDKS  := dotnet go nodejs python
 PROTO_VERSION   := v1alpha1
 PROVIDER_PATH   := provider
@@ -23,6 +23,9 @@ EXAMPLES_DIR := ${WORKING_DIR}/examples/yaml
 PROTO_PKG    := unmango/baremetal/${PROTO_VERSION}
 PROTO_DIR    := proto/${PROTO_PKG}
 PKG_DIR      := ${PROVIDER_PATH}/pkg
+
+# The schema file is currently embedded in the provider binary
+SCHEMA_FILE := bin/${PROVIDER}
 
 TESTPARALLELISM := 4
 OS := $(shell uname)
@@ -49,6 +52,7 @@ remake::
 
 provider:: bin/$(PROVIDER)
 provisioner:: bin/provisioner
+sdks:: $(SUPPORTED_SDKS:%=%_sdk)
 
 provider_debug::
 	go -C ${PROVIDER_PATH} build \
@@ -66,43 +70,40 @@ proto:: gen_proto
 
 gen:: gen_proto gen_sdks gen_examples
 gen_proto:: $(GEN_SRC)
-gen_sdks:: $(SUPPORTED_SDKS:%=%_sdk)
+gen_sdks:: $(SUPPORTED_SDKS:%=sdk/%)
 gen_examples: $(SUPPORTED_SDKS:%=.make/examples/%)
 
-dotnet_sdk:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
-dotnet_sdk::
-	rm -rf sdk/dotnet
-	pulumi package gen-sdk $(WORKING_DIR)/bin/$(PROVIDER) --language dotnet
-	cd ${PACKDIR}/dotnet/&& \
-		echo "${DOTNET_VERSION}" >version.txt && \
-		dotnet build /p:Version=${DOTNET_VERSION}
+.PHONY: sdk/%
+sdk/%: $(SCHEMA_FILE)
+	rm -rf $@
+	pulumi package gen-sdk --language $* $(SCHEMA_FILE) --version "${VERSION}"
 
-go_sdk::
-	rm -rf sdk/go
-	pulumi package gen-sdk $(WORKING_DIR)/bin/$(PROVIDER) --language go
+sdk/python: $(SCHEMA_FILE)
+	rm -rf $@
+	pulumi package gen-sdk --language python $(SCHEMA_FILE) --version "${VERSION}"
+	cp README.md ${PACKDIR}/python/
 
-nodejs_sdk:: VERSION := $(shell pulumictl get version --language javascript)
-nodejs_sdk::
-	rm -rf sdk/nodejs
-	pulumi package gen-sdk $(WORKING_DIR)/bin/$(PROVIDER) --language nodejs
+dotnet_sdk: sdk/dotnet
+	cd ${PACKDIR}/dotnet/ && \
+		echo "${VERSION}" >version.txt && \
+		dotnet build
+
+go_sdk: sdk/go
+
+nodejs_sdk: sdk/nodejs
 	cd ${PACKDIR}/nodejs/ && \
 		yarn install && \
 		yarn run tsc && \
-		cp ../../README.md ../../LICENSE package.json yarn.lock bin/ && \
-		sed -i.bak 's/$${VERSION}/$(VERSION)/g' bin/package.json && \
-		rm ./bin/package.json.bak
+		cp ../../README.md ../../LICENSE package.json yarn.lock bin/
 
-python_sdk:: PYPI_VERSION := $(shell pulumictl get version --language python)
-python_sdk::
-	rm -rf sdk/python
-	pulumi package gen-sdk $(WORKING_DIR)/bin/$(PROVIDER) --language python
+python_sdk: sdk/python
 	cp README.md ${PACKDIR}/python/
 	cd ${PACKDIR}/python/ && \
-		python3 setup.py clean --all 2>/dev/null && \
 		rm -rf ./bin/ ../python.bin/ && cp -R . ../python.bin && mv ../python.bin ./bin && \
-		sed -i.bak -e 's/^VERSION = .*/VERSION = "$(PYPI_VERSION)"/g' -e 's/^PLUGIN_VERSION = .*/PLUGIN_VERSION = "$(VERSION)"/g' ./bin/setup.py && \
-		rm ./bin/setup.py.bak && \
-		cd ./bin && python3 setup.py build sdist
+		python3 -m venv venv && \
+		./venv/bin/python -m pip install build && \
+		cd ./bin && \
+		../venv/bin/python -m build .
 
 define pulumi_login
     export PULUMI_CONFIG_PASSPHRASE=asdfqwerty1234; \
