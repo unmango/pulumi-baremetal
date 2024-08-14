@@ -9,6 +9,8 @@ from .provider import *
 
 # Make subpackages available:
 if typing.TYPE_CHECKING:
+    import unmango_baremetal.command as __command
+    command = __command
     import unmango_baremetal.config as __config
     config = __config
     import unmango_baremetal.coreutils as __coreutils
@@ -16,6 +18,7 @@ if typing.TYPE_CHECKING:
     import unmango_baremetal.kubeadm as __kubeadm
     kubeadm = __kubeadm
 else:
+    command = _utilities.lazy_import('unmango_baremetal.command')
     config = _utilities.lazy_import('unmango_baremetal.config')
     coreutils = _utilities.lazy_import('unmango_baremetal.coreutils')
     kubeadm = _utilities.lazy_import('unmango_baremetal.kubeadm')
@@ -23,6 +26,14 @@ else:
 _utilities.register(
     resource_modules="""
 [
+ {
+  "pkg": "baremetal",
+  "mod": "command",
+  "fqn": "unmango_baremetal.command",
+  "classes": {
+   "baremetal:command:Command": "Command"
+  }
+ },
  {
   "pkg": "baremetal",
   "mod": "coreutils",
