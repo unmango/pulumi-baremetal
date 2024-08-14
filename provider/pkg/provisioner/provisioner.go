@@ -56,8 +56,15 @@ func (p *provisioner) Serve() error {
 	}
 
 	log.Debug("registering services")
-	command.NewServer().Register(p.server)
-	meta.NewServer().Register(p.server)
+
+	command.NewServer(
+		command.WithLogger(p.logger),
+		command.WithWhitelist(p.whitelist),
+	).Register(p.server)
+
+	meta.NewServer(
+		meta.WithLogger(p.logger),
+	).Register(p.server)
 
 	log.Debug("serving")
 	return p.server.Serve(p.listener)
