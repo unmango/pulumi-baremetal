@@ -5,7 +5,6 @@ import (
 
 	"github.com/pulumi/pulumi-command/sdk/go/command/remote"
 	"github.com/pulumi/pulumi-go-provider/infer"
-	p "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	px "github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
@@ -15,8 +14,8 @@ type Bootstrap struct{}
 
 type BootstrapArgs struct {
 	Connection *remote.Connection `pulumi:"connection,optional" provider:"type=command@1.0.1:remote:Connection"`
-	Directory  p.StringInput      `pulumi:"directory,optional"`
-	Version    p.StringInput      `pulumi:"version"`
+	Directory  *string            `pulumi:"directory,optional"`
+	Version    *string            `pulumi:"version"`
 }
 
 // Annotate implements infer.Annotated.
@@ -43,6 +42,8 @@ func (b *BootstrapState) Annotate(a infer.Annotator) {
 	a.Describe(&b.Url, "Url of the provisioner release archive.")
 }
 
+var _ = (infer.Annotated)((*BootstrapState)(nil))
+
 // Create implements infer.CustomCreate.
 func (Bootstrap) Create(ctx context.Context, name string, inputs BootstrapArgs, preview bool) (id string, output BootstrapState, err error) {
 	state := BootstrapState{BootstrapArgs: inputs}
@@ -50,7 +51,6 @@ func (Bootstrap) Create(ctx context.Context, name string, inputs BootstrapArgs, 
 	return name, state, nil
 }
 
-var _ = (infer.Annotated)((*BootstrapState)(nil))
 var _ = (infer.CustomCreate[BootstrapArgs, BootstrapState])((*Bootstrap)(nil))
 
 // Construct implements infer.ComponentResource.

@@ -60,10 +60,6 @@ func Provider() p.Provider {
 			infer.Resource[kubeadm.Kubeadm](),
 			infer.Resource[provider.Bootstrap](),
 		},
-		Components: []infer.InferredComponent{
-			// Consuming external resources is no bueno atm
-			// infer.Component[*provider.Bootstrap](),
-		},
 		ModuleMap: map[tokens.ModuleName]tokens.ModuleName{
 			"provider": "index",
 		},
