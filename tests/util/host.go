@@ -25,6 +25,7 @@ type TestHost interface {
 	ReadFile(context.Context, string) ([]byte, error)
 	WriteFile(context.Context, string, []byte) error
 	WithCerts(context.Context, *CertBundle) (*HostCerts, error)
+	Ctr(context.Context) (tc.Container, error)
 
 	Start(context.Context) error
 	Stop(context.Context) error
@@ -128,6 +129,10 @@ func (h *host) WithCerts(ctx context.Context, bundle *CertBundle) (*HostCerts, e
 	}
 
 	return &HostCerts{*bundle, caFile, certFile, keyFile}, nil
+}
+
+func (h *host) Ctr(ctx context.Context) (tc.Container, error) {
+	return h.ensureContainer(ctx)
 }
 
 // Start implements TestHost.
