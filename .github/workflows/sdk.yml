@@ -91,7 +91,7 @@ jobs:
           name: provider
           path: bin
 
-        # Ensure you have consent first
+      # Ensure you have consent first
       - name: Touch the provider
         run: |
           make --touch bin/pulumi-resource-baremetal
