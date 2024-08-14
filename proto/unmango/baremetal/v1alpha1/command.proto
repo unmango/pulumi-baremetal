@@ -3,9 +3,19 @@ syntax = "proto3";
 package unmango.baremetal.v1alpha1;
 
 service CommandService {
+  rpc Exec(ExecRequest) returns (ExecResponse);
   rpc Create(CreateRequest) returns (CreateResponse);
   rpc Update(UpdateRequest) returns (UpdateResponse);
   rpc Delete(DeleteRequest) returns (DeleteResponse);
+}
+
+message ExecRequest {
+  repeated string args = 1;
+  optional string stdin = 2;
+}
+
+message ExecResponse {
+  Result result = 1;
 }
 
 message CreateRequest {

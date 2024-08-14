@@ -12,12 +12,14 @@ utilities.lazyLoad(exports, ["Provider"], () => require("./provider"));
 
 
 // Export sub-modules:
+import * as command from "./command";
 import * as config from "./config";
 import * as coreutils from "./coreutils";
 import * as kubeadm from "./kubeadm";
 import * as types from "./types";
 
 export {
+    command,
     config,
     coreutils,
     kubeadm,

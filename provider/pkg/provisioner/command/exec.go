@@ -17,7 +17,7 @@ import (
 // executing a gRPC endpoint from within another endpoint on the same service.
 
 // I'm not sure how I want to handle the filesystem expectations yet, so this function exists
-// but `Update` and `Delete` will continue to delgate to `Create` for now.
+// but `Update` and `Delete` will continue to delegate to `Create` for now.
 
 func execute(ctx context.Context, command *pb.Command, log *slog.Logger) (*pb.Result, error) {
 	if command == nil {

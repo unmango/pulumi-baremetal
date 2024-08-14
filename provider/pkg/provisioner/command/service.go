@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/command"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/internal/opts"
 	"google.golang.org/grpc"
 )
@@ -35,19 +36,67 @@ func NewServer(options ...opt) *service {
 }
 
 func WithLogger(logger *slog.Logger) opt {
-	return opts.Safe[opt](func(s *service) {
+	return func(s *service) error {
 		s.Log = logger
-	})
+		return nil
+	}
 }
 
 func WithWhitelist(list []string) opt {
-	return opts.Safe[opt](func(s *service) {
+	return func(s *service) error {
 		s.Whitelist = list
-	})
+		return nil
+	}
 }
 
 func (s *service) Register(server *grpc.Server) {
 	pb.RegisterCommandServiceServer(server, s)
+}
+
+func (s *service) Exec(ctx context.Context, req *pb.ExecRequest) (*pb.ExecResponse, error) {
+	log := s.Log.With("op", "exec")
+
+	bin := req.Args[0]
+	_, err := command.ParseBin(bin)
+	if err != nil && !slices.Contains(s.Whitelist, bin) {
+		log.WarnContext(ctx, "refusing to execute command", "bin", bin, "err", err)
+		return nil, fmt.Errorf("refusing to execute %s %#v", bin, s.Whitelist)
+	}
+
+	args := req.Args[1:]
+	log = log.With("bin", bin, "args", args)
+	log.DebugContext(ctx, "building command")
+	cmd := exec.CommandContext(ctx, bin, args...)
+	cmd.Stdin = stdinReader(req.Stdin)
+
+	if cmd.Err != nil {
+		log.ErrorContext(ctx, "failed building command", "err", cmd.Err)
+		return nil, fmt.Errorf("failed building command: %w", cmd.Err)
+	}
+
+	stdout, stderr := &bytes.Buffer{}, &bytes.Buffer{}
+	cmd.Stdout, cmd.Stderr = stdout, stderr
+
+	log.DebugContext(ctx, "running command", "cmd", cmd.String())
+	if err = cmd.Run(); err != nil {
+		log.WarnContext(ctx, "command failed", "err", err)
+	}
+
+	if cmd.ProcessState == nil {
+		return nil, errors.New("failed to start command")
+	}
+
+	exitCode := cmd.ProcessState.ExitCode()
+	log.InfoContext(ctx, "finished running command",
+		"cmd", cmd.String(),
+		"exit_code", exitCode,
+	)
+
+	return &pb.ExecResponse{Result: &pb.Result{
+		ExitCode: int32(exitCode),
+		Stdout:   stdout.String(),
+		Stderr:   stderr.String(),
+	}}, nil
 }
 
 func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.CreateResponse, err error) {

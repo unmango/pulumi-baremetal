@@ -6,6 +6,7 @@ import (
 	"github.com/pulumi/pulumi-go-provider/middleware/schema"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/command"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/coreutils"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/kubeadm"
 )
@@ -44,6 +45,7 @@ func Provider() p.Provider {
 		},
 		Config: infer.Config[provider.Config](),
 		Resources: []infer.InferredResource{
+			infer.Resource[command.Command](),
 			infer.Resource[coreutils.Mktemp](),
 			infer.Resource[coreutils.Tar](),
 			infer.Resource[coreutils.Wget](),
