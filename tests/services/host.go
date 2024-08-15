@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/docker/go-connections/nat"
 	tc "github.com/testcontainers/testcontainers-go"
 	"github.com/unmango/pulumi-baremetal/tests/util"
 )
@@ -95,6 +96,26 @@ func (h *Host) Ip(ctx context.Context) (string, error) {
 
 func (h *Host) Ctr(ctx context.Context) (tc.Container, error) {
 	return h.ensureContainer(ctx)
+}
+
+func (h *Host) ConnectionDetails(ctx context.Context, internalPort string) (address, port string, err error) {
+	ctr, err := h.ensureContainer(ctx)
+	if err != nil {
+		return
+	}
+
+	address, err = ctr.Host(ctx)
+	if err != nil {
+		return
+	}
+
+	np, err := ctr.MappedPort(ctx, nat.Port(internalPort))
+	if err != nil {
+		return
+	}
+
+	port = np.Port()
+	return
 }
 
 // Start implements TestHost.

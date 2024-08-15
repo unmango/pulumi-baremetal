@@ -8,7 +8,6 @@ import (
 	"os"
 	"path"
 
-	"github.com/docker/go-connections/nat"
 	"github.com/mdelapenya/tlscert"
 	tc "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
@@ -90,22 +89,6 @@ func (p *Provisioner) Ca() *tlscert.Certificate {
 }
 
 // ConnectionDetails implements TestProvisioner.
-func (p *Provisioner) ConnectionDetails(ctx context.Context) (address string, port string, err error) {
-	ctr, err := p.Ctr(ctx)
-	if err != nil {
-		return
-	}
-
-	address, err = ctr.Host(ctx)
-	if err != nil {
-		return
-	}
-
-	np, err := ctr.MappedPort(ctx, nat.Port(p.Port))
-	if err != nil {
-		return
-	}
-
-	port = np.Port()
-	return
+func (p *Provisioner) ConnectionDetails(ctx context.Context) (address, port string, err error) {
+	return p.Host.ConnectionDetails(ctx, p.Port)
 }

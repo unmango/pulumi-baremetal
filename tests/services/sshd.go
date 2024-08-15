@@ -65,3 +65,7 @@ func (s *Sshd) ConnectionProps(ctx context.Context) (resource.PropertyValue, err
 
 	return props, nil
 }
+
+func (s *Sshd) ConnectionDetails(ctx context.Context) (address, port string, err error) {
+	return s.Host.ConnectionDetails(ctx, fmt.Sprint(SshPort))
+}
