@@ -1,12 +1,16 @@
-package util
+package services
 
 import (
 	"context"
+	_ "embed"
 	"fmt"
+	"io"
+	"strings"
 
 	"github.com/pulumi/pulumi/sdk/v3/go/common/resource"
 	tc "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
+	"github.com/unmango/pulumi-baremetal/tests/util"
 )
 
 const (
@@ -15,24 +19,22 @@ const (
 	SshPort     int    = 2222
 )
 
-const version string = "version-9.7_p1-r4" // TODO: Go embed?
+//go:embed .versions/openssh-server
+var version string
 
-type SshServer interface {
-	TestHost
+type Sshd struct{ Host }
 
-	ConnectionProps(context.Context) (resource.PropertyValue, error)
-}
-
-type server struct{ host }
-
-var _ = (SshServer)((*server)(nil))
-
-func NewSshServer(ctx context.Context) (SshServer, error) {
+func NewSshd(ctx context.Context, logger io.Writer) (*Sshd, error) {
 	req := tc.GenericContainerRequest{
+		Logger: util.NewLogger(logger),
 		ContainerRequest: tc.ContainerRequest{
-			Image:        fmt.Sprintf("lscr.io/linuxserver/openssh-server:%s", version),
-			ExposedPorts: []string{fmt.Sprint(SshPort)},
-			WaitingFor:   wait.ForExposedPort(),
+			Image: fmt.Sprintf(
+				"lscr.io/linuxserver/openssh-server:%s",
+				strings.TrimSpace(version),
+			),
+			AlwaysPullImage: true,
+			ExposedPorts:    []string{fmt.Sprint(SshPort)},
+			WaitingFor:      wait.ForExposedPort(),
 			Env: map[string]string{
 				"PUID":            "1000",
 				"PGID":            "1000",
@@ -45,10 +47,10 @@ func NewSshServer(ctx context.Context) (SshServer, error) {
 		},
 	}
 
-	return &server{host{req, nil}}, nil
+	return &Sshd{Host{req, nil}}, nil
 }
 
-func (s *server) ConnectionProps(ctx context.Context) (resource.PropertyValue, error) {
+func (s *Sshd) ConnectionProps(ctx context.Context) (resource.PropertyValue, error) {
 	ip, err := s.Ip(ctx)
 	if err != nil {
 		return resource.PropertyValue{}, err
@@ -62,4 +64,8 @@ func (s *server) ConnectionProps(ctx context.Context) (resource.PropertyValue, e
 	})
 
 	return props, nil
+}
+
+func (s *Sshd) ConnectionDetails(ctx context.Context) (address, port string, err error) {
+	return s.Host.ConnectionDetails(ctx, fmt.Sprint(SshPort))
 }

@@ -1,4 +1,4 @@
-package util
+package services
 
 import (
 	"bytes"
@@ -8,37 +8,32 @@ import (
 	"os"
 	"path"
 
-	"github.com/docker/go-connections/nat"
 	"github.com/mdelapenya/tlscert"
 	tc "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
+	"github.com/unmango/pulumi-baremetal/tests/util"
 )
 
 const (
 	defaultProtocol string = "tcp4"
 )
 
-type TestProvisioner interface {
-	TestHost
+type Provisioner struct {
+	Host
 
-	Ca() *tlscert.Certificate
-	ConnectionDetails(context.Context) (address, port string, err error)
-}
-
-type provisioner struct {
-	host
-	port   string
-	bundle *CertBundle
+	Address string
+	Port    string
+	Certs   *util.CertBundle
 }
 
 func NewProvisioner(
 	port string,
 	clientCa *tlscert.Certificate,
 	logger io.Writer,
-) (TestProvisioner, error) {
-	certs, err := NewCertBundle("ca", "provisioner")
+) (*Provisioner, error) {
+	certs, err := util.NewCertBundle("ca", "provisioner")
 	if err != nil {
-		return nil, err
+		return &Provisioner{}, err
 	}
 
 	certDir := "/etc/baremetal/pki"
@@ -52,7 +47,7 @@ func NewProvisioner(
 	}
 
 	req := tc.GenericContainerRequest{
-		Logger: NewLogger(logger),
+		Logger: util.NewLogger(logger),
 		ContainerRequest: tc.ContainerRequest{
 			Image: image,
 			Files: []tc.ContainerFile{
@@ -75,36 +70,25 @@ func NewProvisioner(
 			ExposedPorts: []string{port},
 			WaitingFor:   wait.ForExposedPort(),
 			LogConsumerCfg: &tc.LogConsumerConfig{
-				Consumers: []tc.LogConsumer{LogToWriter(logger)},
+				Consumers: []tc.LogConsumer{util.LogToWriter(logger)},
 			},
 		},
 	}
 
-	return &provisioner{host{req, nil}, port, certs}, nil
+	return &Provisioner{
+		Host{req, nil},
+		"",
+		port,
+		certs,
+	}, nil
 }
 
 // CertBundle implements TestProvisioner.
-func (p *provisioner) Ca() *tlscert.Certificate {
-	return p.bundle.Ca
+func (p *Provisioner) Ca() *tlscert.Certificate {
+	return p.Certs.Ca
 }
 
 // ConnectionDetails implements TestProvisioner.
-func (p *provisioner) ConnectionDetails(ctx context.Context) (address string, port string, err error) {
-	ctr, err := p.Ctr(ctx)
-	if err != nil {
-		return
-	}
-
-	address, err = ctr.Host(ctx)
-	if err != nil {
-		return
-	}
-
-	np, err := ctr.MappedPort(ctx, nat.Port(p.port))
-	if err != nil {
-		return
-	}
-
-	port = np.Port()
-	return
+func (p *Provisioner) ConnectionDetails(ctx context.Context) (address, port string, err error) {
+	return p.Host.ConnectionDetails(ctx, p.Port)
 }
