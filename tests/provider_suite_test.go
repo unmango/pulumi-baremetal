@@ -39,12 +39,12 @@ var _ = BeforeSuite(func(ctx context.Context) {
 	provisioner = prov
 
 	By("creating an ssh server")
-	ssh, err := services.NewSshd(ctx)
+	ssh, err := services.NewSshd(ctx, GinkgoWriter)
 	Expect(err).NotTo(HaveOccurred())
 
-	// By("starting the ssh server")
-	// err = ssh.Start(ctx)
-	// Expect(err).NotTo(HaveOccurred())
+	By("starting the ssh server")
+	err = ssh.Start(ctx)
+	Expect(err).NotTo(HaveOccurred())
 	sshServer = ssh
 })
 
@@ -55,7 +55,9 @@ var _ = AfterSuite(func(ctx context.Context) {
 		Expect(err).NotTo(HaveOccurred())
 	}
 
-	// By("stopping the ssh server")
-	// err = sshServer.Stop(ctx)
-	// Expect(err).NotTo(HaveOccurred())
+	if sshServer != nil {
+		By("stopping the ssh server")
+		err := sshServer.Stop(ctx)
+		Expect(err).NotTo(HaveOccurred())
+	}
 })

@@ -4,10 +4,13 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"io"
+	"strings"
 
 	"github.com/pulumi/pulumi/sdk/v3/go/common/resource"
 	tc "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
+	"github.com/unmango/pulumi-baremetal/tests/util"
 )
 
 const (
@@ -21,12 +24,17 @@ var version string
 
 type Sshd struct{ Host }
 
-func NewSshd(ctx context.Context) (*Sshd, error) {
+func NewSshd(ctx context.Context, logger io.Writer) (*Sshd, error) {
 	req := tc.GenericContainerRequest{
+		Logger: util.NewLogger(logger),
 		ContainerRequest: tc.ContainerRequest{
-			Image:        fmt.Sprintf("lscr.io/linuxserver/openssh-server:%s", version),
-			ExposedPorts: []string{fmt.Sprint(SshPort)},
-			WaitingFor:   wait.ForExposedPort(),
+			Image: fmt.Sprintf(
+				"lscr.io/linuxserver/openssh-server:%s",
+				strings.TrimSpace(version),
+			),
+			AlwaysPullImage: true,
+			ExposedPorts:    []string{fmt.Sprint(SshPort)},
+			WaitingFor:      wait.ForExposedPort(),
 			Env: map[string]string{
 				"PUID":            "1000",
 				"PGID":            "1000",
