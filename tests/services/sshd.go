@@ -7,6 +7,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/docker/go-connections/nat"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/resource"
 	tc "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
@@ -66,6 +67,6 @@ func (s *Sshd) ConnectionProps(ctx context.Context) (resource.PropertyValue, err
 	return props, nil
 }
 
-func (s *Sshd) ConnectionDetails(ctx context.Context) (address, port string, err error) {
+func (s *Sshd) ConnectionDetails(ctx context.Context) (string, nat.Port, error) {
 	return s.Host.ConnectionDetails(ctx, fmt.Sprint(SshPort))
 }

@@ -89,6 +89,11 @@ func (p *Provisioner) Ca() *tlscert.Certificate {
 }
 
 // ConnectionDetails implements TestProvisioner.
-func (p *Provisioner) ConnectionDetails(ctx context.Context) (address, port string, err error) {
-	return p.Host.ConnectionDetails(ctx, p.Port)
+func (p *Provisioner) ConnectionDetails(ctx context.Context) (string, string, error) {
+	host, port, err := p.Host.ConnectionDetails(ctx, p.Port)
+	if err != nil {
+		return "", "", err
+	}
+
+	return host, port.Port(), nil
 }
