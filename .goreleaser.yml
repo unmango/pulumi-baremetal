@@ -53,4 +53,4 @@ release:
     - glob: out/baremetal-provisioner.service
 
 snapshot:
-  name_template: '{{ .Tag }}-SNAPSHOT'
+  version_template: '{{ .Tag }}-SNAPSHOT'
