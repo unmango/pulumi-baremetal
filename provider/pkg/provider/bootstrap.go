@@ -5,10 +5,7 @@ import (
 
 	"github.com/pulumi/pulumi-command/sdk/go/command/remote"
 	"github.com/pulumi/pulumi-go-provider/infer"
-	px "github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
-
-const binName string = "provisioner"
 
 type Bootstrap struct{}
 
@@ -30,9 +27,9 @@ var _ = (infer.Annotated)((*BootstrapArgs)(nil))
 type BootstrapState struct {
 	BootstrapArgs
 
-	ArchiveName px.Output[string] `pulumi:"archiveName"`
-	BinPath     px.Output[string] `pulumi:"binPath"`
-	Url         string            `pulumi:"url"`
+	ArchiveName string `pulumi:"archiveName"`
+	BinPath     string `pulumi:"binPath"`
+	Url         string `pulumi:"url"`
 }
 
 // Annotate implements infer.Annotated.

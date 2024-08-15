@@ -98,23 +98,18 @@ func (h *Host) Ctr(ctx context.Context) (tc.Container, error) {
 	return h.ensureContainer(ctx)
 }
 
-func (h *Host) ConnectionDetails(ctx context.Context, internalPort string) (address, port string, err error) {
+func (h *Host) ConnectionDetails(ctx context.Context, internalPort string) (host string, port nat.Port, err error) {
 	ctr, err := h.ensureContainer(ctx)
 	if err != nil {
 		return
 	}
 
-	address, err = ctr.Host(ctx)
+	host, err = ctr.Host(ctx)
 	if err != nil {
 		return
 	}
 
-	np, err := ctr.MappedPort(ctx, nat.Port(internalPort))
-	if err != nil {
-		return
-	}
-
-	port = np.Port()
+	port, err = ctr.MappedPort(ctx, nat.Port(internalPort))
 	return
 }
 

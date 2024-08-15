@@ -188,7 +188,7 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 .make/lint_go: $(patsubst %,.make/lint/%,provider sdk tests)
 .make/lint/provider: $(PROVIDER_SRC)
 .make/lint/tests: $(shell find tests -name '*.go')
-.make/lint/sdk: $(shell find sdk/go -name '*.go')
+# .make/lint/sdk: $(shell find sdk/go -name '*.go')
 .make/lint/%:
 	cd $* && golangci-lint run -c ${WORKING_DIR}/.golangci.yml --timeout 1m ./...
 	@touch $@
@@ -198,7 +198,7 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 	@touch $@
 
 .make/lint/buf: $(PROTO_SRC)
-	buf lint --path $?
+	buf lint $(?:%=--path %)
 	@touch $@
 
 .make/provisioner_docker: provider/cmd/provisioner/Dockerfile .dockerignore $(PROVIDER_SRC)
