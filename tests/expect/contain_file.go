@@ -17,7 +17,11 @@ type containFile struct {
 
 // Match implements types.GomegaMatcher.
 func (e *containFile) Match(actual interface{}) (success bool, err error) {
-	if host, ok := actual.(services.TestHost); ok {
+	if host, ok := actual.(*services.Host); ok {
+		return host.FileExists(e.Context, e.File)
+	}
+
+	if host, ok := actual.(*services.Provisioner); ok {
 		return host.FileExists(e.Context, e.File)
 	}
 

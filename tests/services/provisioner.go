@@ -19,27 +19,22 @@ const (
 	defaultProtocol string = "tcp4"
 )
 
-type TestProvisioner interface {
-	TestHost
+type Provisioner struct {
+	Host
 
-	Ca() *tlscert.Certificate
-	ConnectionDetails(context.Context) (address, port string, err error)
-}
-
-type provisioner struct {
-	host
-	port   string
-	bundle *util.CertBundle
+	Address string
+	Port    string
+	Certs   *util.CertBundle
 }
 
 func NewProvisioner(
 	port string,
 	clientCa *tlscert.Certificate,
 	logger io.Writer,
-) (TestProvisioner, error) {
+) (*Provisioner, error) {
 	certs, err := util.NewCertBundle("ca", "provisioner")
 	if err != nil {
-		return nil, err
+		return &Provisioner{}, err
 	}
 
 	certDir := "/etc/baremetal/pki"
@@ -81,16 +76,21 @@ func NewProvisioner(
 		},
 	}
 
-	return &provisioner{host{req, nil}, port, certs}, nil
+	return &Provisioner{
+		Host{req, nil},
+		"",
+		port,
+		certs,
+	}, nil
 }
 
 // CertBundle implements TestProvisioner.
-func (p *provisioner) Ca() *tlscert.Certificate {
-	return p.bundle.Ca
+func (p *Provisioner) Ca() *tlscert.Certificate {
+	return p.Certs.Ca
 }
 
 // ConnectionDetails implements TestProvisioner.
-func (p *provisioner) ConnectionDetails(ctx context.Context) (address string, port string, err error) {
+func (p *Provisioner) ConnectionDetails(ctx context.Context) (address string, port string, err error) {
 	ctr, err := p.Ctr(ctx)
 	if err != nil {
 		return
@@ -101,7 +101,7 @@ func (p *provisioner) ConnectionDetails(ctx context.Context) (address string, po
 		return
 	}
 
-	np, err := ctr.MappedPort(ctx, nat.Port(p.port))
+	np, err := ctr.MappedPort(ctx, nat.Port(p.Port))
 	if err != nil {
 		return
 	}

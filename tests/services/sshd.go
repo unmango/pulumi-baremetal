@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	_ "embed"
 	"fmt"
 
 	"github.com/pulumi/pulumi/sdk/v3/go/common/resource"
@@ -15,19 +16,12 @@ const (
 	SshPort     int    = 2222
 )
 
-const version string = "version-9.7_p1-r4" // TODO: Go embed?
+//go:embed .versions/openssh-server
+var version string
 
-type Sshd interface {
-	TestHost
+type Sshd struct{ Host }
 
-	ConnectionProps(context.Context) (resource.PropertyValue, error)
-}
-
-type server struct{ host }
-
-var _ = (Sshd)((*server)(nil))
-
-func NewSshd(ctx context.Context) (Sshd, error) {
+func NewSshd(ctx context.Context) (*Sshd, error) {
 	req := tc.GenericContainerRequest{
 		ContainerRequest: tc.ContainerRequest{
 			Image:        fmt.Sprintf("lscr.io/linuxserver/openssh-server:%s", version),
@@ -45,10 +39,10 @@ func NewSshd(ctx context.Context) (Sshd, error) {
 		},
 	}
 
-	return &server{host{req, nil}}, nil
+	return &Sshd{Host{req, nil}}, nil
 }
 
-func (s *server) ConnectionProps(ctx context.Context) (resource.PropertyValue, error) {
+func (s *Sshd) ConnectionProps(ctx context.Context) (resource.PropertyValue, error) {
 	ip, err := s.Ip(ctx)
 	if err != nil {
 		return resource.PropertyValue{}, err

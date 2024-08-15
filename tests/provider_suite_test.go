@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	provisioner services.TestProvisioner
-	sshServer   services.Sshd
+	provisioner *services.Provisioner
+	sshServer   *services.Sshd
 	clientCerts *util.CertBundle
 )
 

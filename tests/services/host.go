@@ -18,25 +18,13 @@ type HostCerts struct {
 	KeyPath  string
 }
 
-type TestHost interface {
-	Exec(context.Context, ...string) (string, error)
-	FileExists(context.Context, string) (bool, error)
-	Ip(context.Context) (string, error)
-	ReadFile(context.Context, string) ([]byte, error)
-	WriteFile(context.Context, string, []byte) error
-	Ctr(context.Context) (tc.Container, error)
-
-	Start(context.Context) error
-	Stop(context.Context) error
-}
-
-type host struct {
+type Host struct {
 	req tc.GenericContainerRequest
 	ctr *tc.Container
 }
 
 // Exec implements TestHost.
-func (h host) Exec(ctx context.Context, args ...string) (string, error) {
+func (h *Host) Exec(ctx context.Context, args ...string) (string, error) {
 	ctr, err := h.ensureContainer(ctx)
 	if err != nil {
 		return "", err
@@ -60,7 +48,7 @@ func (h host) Exec(ctx context.Context, args ...string) (string, error) {
 }
 
 // FileExists implements TestHost.
-func (h *host) FileExists(ctx context.Context, path string) (bool, error) {
+func (h *Host) FileExists(ctx context.Context, path string) (bool, error) {
 	ctr, err := h.ensureContainer(ctx)
 	if err != nil {
 		return false, err
@@ -70,7 +58,7 @@ func (h *host) FileExists(ctx context.Context, path string) (bool, error) {
 }
 
 // ReadFile implements TestHost.
-func (h *host) ReadFile(ctx context.Context, path string) ([]byte, error) {
+func (h *Host) ReadFile(ctx context.Context, path string) ([]byte, error) {
 	ctr, err := h.ensureContainer(ctx)
 	if err != nil {
 		return nil, err
@@ -86,7 +74,7 @@ func (h *host) ReadFile(ctx context.Context, path string) ([]byte, error) {
 }
 
 // WriteFile implements TestHost.
-func (h *host) WriteFile(ctx context.Context, path string, data []byte) error {
+func (h *Host) WriteFile(ctx context.Context, path string, data []byte) error {
 	ctr, err := h.ensureContainer(ctx)
 	if err != nil {
 		return err
@@ -96,7 +84,7 @@ func (h *host) WriteFile(ctx context.Context, path string, data []byte) error {
 }
 
 // Ip implements TestHost.
-func (h *host) Ip(ctx context.Context) (string, error) {
+func (h *Host) Ip(ctx context.Context) (string, error) {
 	ctr, err := h.ensureContainer(ctx)
 	if err != nil {
 		return "", err
@@ -105,12 +93,12 @@ func (h *host) Ip(ctx context.Context) (string, error) {
 	return ctr.ContainerIP(ctx)
 }
 
-func (h *host) Ctr(ctx context.Context) (tc.Container, error) {
+func (h *Host) Ctr(ctx context.Context) (tc.Container, error) {
 	return h.ensureContainer(ctx)
 }
 
 // Start implements TestHost.
-func (h *host) Start(ctx context.Context) error {
+func (h *Host) Start(ctx context.Context) error {
 	ctr, err := h.ensureContainer(ctx)
 	if err != nil {
 		return err
@@ -120,7 +108,7 @@ func (h *host) Start(ctx context.Context) error {
 }
 
 // Stop implements TestHost.
-func (h *host) Stop(ctx context.Context) error {
+func (h *Host) Stop(ctx context.Context) error {
 	ctr, err := h.ensureContainer(ctx)
 	if err != nil {
 		return err
@@ -130,7 +118,7 @@ func (h *host) Stop(ctx context.Context) error {
 	return ctr.Stop(ctx, &timeout)
 }
 
-func (h *host) ensureContainer(ctx context.Context) (tc.Container, error) {
+func (h *Host) ensureContainer(ctx context.Context) (tc.Container, error) {
 	if h.ctr == nil {
 		ctr, err := tc.GenericContainer(ctx, h.req)
 		if err != nil {
@@ -141,11 +129,4 @@ func (h *host) ensureContainer(ctx context.Context) (tc.Container, error) {
 	}
 
 	return *h.ctr, nil
-}
-
-var _ = (TestHost)((*host)(nil))
-
-func FileExists(ctx context.Context, ctr tc.Container, path string) (bool, error) {
-	exitCode, _, err := ctr.Exec(ctx, []string{"stat", path})
-	return err == nil && exitCode == 0, nil
 }
