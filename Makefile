@@ -41,6 +41,7 @@ GO_GRPC_SRC  := $(PROTO_SRC:proto/%.proto=gen/go/%_grpc.pb.go)
 GO_PB_SRC    := $(PROTO_SRC:proto/%.proto=gen/go/%.pb.go)
 GEN_SRC      := $(GO_GRPC_SRC) $(GO_PB_SRC)
 
+PULUMI ?= ${WORKING_DIR}/bin/pulumi/pulumi
 GINKGO ?= go run github.com/onsi/ginkgo/v2/ginkgo
 DOTNET ?= ${WORKING_DIR}/bin/dotnet/dotnet
 
@@ -77,11 +78,11 @@ gen_examples: $(SUPPORTED_SDKS:%=.make/examples/%)
 .PHONY: sdk/%
 sdk/%: $(SCHEMA_FILE)
 	rm -rf $@
-	pulumi package gen-sdk --language $* $(SCHEMA_FILE) --version "${VERSION}"
+	$(PULUMI) package gen-sdk --language $* $(SCHEMA_FILE) --version "${VERSION}"
 
 sdk/python: $(SCHEMA_FILE)
 	rm -rf $@
-	pulumi package gen-sdk --language python $(SCHEMA_FILE) --version "${VERSION}"
+	$(PULUMI) package gen-sdk --language python $(SCHEMA_FILE) --version "${VERSION}"
 	cp README.md ${PACKDIR}/python/
 
 dotnet_sdk: sdk/dotnet
@@ -108,23 +109,23 @@ python_sdk: sdk/python
 
 define pulumi_login
     export PULUMI_CONFIG_PASSPHRASE=asdfqwerty1234; \
-    pulumi login --local;
+    $(PULUMI) login --local;
 endef
 
 up::
 	$(call pulumi_login) \
 	cd ${EXAMPLES_DIR} && \
-	pulumi stack init dev && \
-	pulumi stack select dev && \
-	pulumi config set name dev && \
-	pulumi up -y
+	$(PULUMI) stack init dev && \
+	$(PULUMI) stack select dev && \
+	$(PULUMI) config set name dev && \
+	$(PULUMI) up -y
 
 down::
 	$(call pulumi_login) \
 	cd ${EXAMPLES_DIR} && \
-	pulumi stack select dev && \
-	pulumi destroy -y && \
-	pulumi stack rm dev -y
+	$(PULUMI) stack select dev && \
+	$(PULUMI) destroy -y && \
+	$(PULUMI) stack rm dev -y
 
 devcontainer::
 	git submodule update --remote --merge .github/devcontainer
@@ -160,13 +161,21 @@ out/install.sh: $(PROVIDER_PATH)/cmd/provisioner/install.sh
 out/baremetal-provisioner.service: $(PROVIDER_PATH)/cmd/provisioner/baremetal-provisioner.service
 	mkdir -p '${@D}' && cp '$<' '$@'
 
+bin/install-pulumi.sh: .versions/pulumi
+	curl -L https://get.pulumi.com -o $@ && chmod +x $@
+bin/pulumi: .versions/pulumi bin/install-pulumi.sh
+	bin/install-pulumi.sh \
+		--version $(shell cat $<) \
+		--install-root ${WORKING_DIR}/$@ \
+		--no-edit-path
+	cd $@ && mv bin/* . && rm -r bin
+
 bin/dotnet-install.sh: .versions/dotnet
 	curl -L https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh -o $@ && chmod +x $@
-
 bin/dotnet: .versions/dotnet bin/dotnet-install.sh
 	bin/dotnet-install.sh \
 		--channel $(shell cat $<) \
-		--install-dir $@ \
+		--install-dir ${WORKING_DIR}/$@ \
 		--verbose
 
 bin/$(PROVIDER):: $(GEN_SRC) $(PKG_SRC) provider/*go*
@@ -221,7 +230,7 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 
 .make/examples/%: examples/yaml/** bin/$(PROVIDER)
 	rm -rf ${WORKING_DIR}/examples/$*
-	pulumi convert \
+	$(PULUMI) convert \
 		--cwd $(<D) \
 		--logtostderr \
 		--generate-only \
