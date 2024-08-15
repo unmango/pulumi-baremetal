@@ -1,4 +1,4 @@
-package util
+package services
 
 import (
 	"bytes"
@@ -12,6 +12,7 @@ import (
 	"github.com/mdelapenya/tlscert"
 	tc "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
+	"github.com/unmango/pulumi-baremetal/tests/util"
 )
 
 const (
@@ -28,7 +29,7 @@ type TestProvisioner interface {
 type provisioner struct {
 	host
 	port   string
-	bundle *CertBundle
+	bundle *util.CertBundle
 }
 
 func NewProvisioner(
@@ -36,7 +37,7 @@ func NewProvisioner(
 	clientCa *tlscert.Certificate,
 	logger io.Writer,
 ) (TestProvisioner, error) {
-	certs, err := NewCertBundle("ca", "provisioner")
+	certs, err := util.NewCertBundle("ca", "provisioner")
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +53,7 @@ func NewProvisioner(
 	}
 
 	req := tc.GenericContainerRequest{
-		Logger: NewLogger(logger),
+		Logger: util.NewLogger(logger),
 		ContainerRequest: tc.ContainerRequest{
 			Image: image,
 			Files: []tc.ContainerFile{
@@ -75,7 +76,7 @@ func NewProvisioner(
 			ExposedPorts: []string{port},
 			WaitingFor:   wait.ForExposedPort(),
 			LogConsumerCfg: &tc.LogConsumerConfig{
-				Consumers: []tc.LogConsumer{LogToWriter(logger)},
+				Consumers: []tc.LogConsumer{util.LogToWriter(logger)},
 			},
 		},
 	}

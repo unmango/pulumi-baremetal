@@ -1,18 +1,18 @@
-package util
+package services
 
 import (
 	"context"
 	"fmt"
 	"io"
-	"path"
 	"strings"
 	"time"
 
 	tc "github.com/testcontainers/testcontainers-go"
+	"github.com/unmango/pulumi-baremetal/tests/util"
 )
 
 type HostCerts struct {
-	Bundle   CertBundle
+	Bundle   util.CertBundle
 	CaPath   string
 	CertPath string
 	KeyPath  string
@@ -24,7 +24,6 @@ type TestHost interface {
 	Ip(context.Context) (string, error)
 	ReadFile(context.Context, string) ([]byte, error)
 	WriteFile(context.Context, string, []byte) error
-	WithCerts(context.Context, *CertBundle) (*HostCerts, error)
 	Ctr(context.Context) (tc.Container, error)
 
 	Start(context.Context) error
@@ -104,31 +103,6 @@ func (h *host) Ip(ctx context.Context) (string, error) {
 	}
 
 	return ctr.ContainerIP(ctx)
-}
-
-// WithCerts implemnts TestHost.
-func (h *host) WithCerts(ctx context.Context, bundle *CertBundle) (*HostCerts, error) {
-	dir := "/etc/baremetal"
-	_, err := h.Exec(ctx, "mkdir", "--parents", dir)
-	if err != nil {
-		return nil, fmt.Errorf("creating cert directory: %w", err)
-	}
-
-	caFile := path.Join(dir, "ca.pem")
-	certFile := path.Join(dir, "cert.pem")
-	keyFile := path.Join(dir, "key.pem")
-
-	if err = h.WriteFile(ctx, caFile, bundle.Ca.Bytes); err != nil {
-		return nil, fmt.Errorf("writing ca file: %w", err)
-	}
-	if err = h.WriteFile(ctx, certFile, bundle.Cert.Bytes); err != nil {
-		return nil, fmt.Errorf("writing cert file: %w", err)
-	}
-	if err = h.WriteFile(ctx, keyFile, bundle.Cert.KeyBytes); err != nil {
-		return nil, fmt.Errorf("writing key file: %w", err)
-	}
-
-	return &HostCerts{*bundle, caFile, certFile, keyFile}, nil
 }
 
 func (h *host) Ctr(ctx context.Context) (tc.Container, error) {

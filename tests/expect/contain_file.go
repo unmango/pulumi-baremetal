@@ -7,7 +7,7 @@ import (
 
 	"github.com/onsi/gomega"
 	tc "github.com/testcontainers/testcontainers-go"
-	"github.com/unmango/pulumi-baremetal/tests/util"
+	"github.com/unmango/pulumi-baremetal/tests/services"
 )
 
 type containFile struct {
@@ -17,12 +17,12 @@ type containFile struct {
 
 // Match implements types.GomegaMatcher.
 func (e *containFile) Match(actual interface{}) (success bool, err error) {
-	if host, ok := actual.(util.TestHost); ok {
+	if host, ok := actual.(services.TestHost); ok {
 		return host.FileExists(e.Context, e.File)
 	}
 
 	if ctr, ok := actual.(tc.Container); ok {
-		return util.FileExists(e.Context, ctr, e.File)
+		return services.FileExists(e.Context, ctr, e.File)
 	}
 
 	return false, fmt.Errorf("unupported match target: %s", reflect.TypeOf(actual))

@@ -1,4 +1,4 @@
-package util
+package services
 
 import (
 	"context"
@@ -17,7 +17,7 @@ const (
 
 const version string = "version-9.7_p1-r4" // TODO: Go embed?
 
-type SshServer interface {
+type Sshd interface {
 	TestHost
 
 	ConnectionProps(context.Context) (resource.PropertyValue, error)
@@ -25,9 +25,9 @@ type SshServer interface {
 
 type server struct{ host }
 
-var _ = (SshServer)((*server)(nil))
+var _ = (Sshd)((*server)(nil))
 
-func NewSshServer(ctx context.Context) (SshServer, error) {
+func NewSshd(ctx context.Context) (Sshd, error) {
 	req := tc.GenericContainerRequest{
 		ContainerRequest: tc.ContainerRequest{
 			Image:        fmt.Sprintf("lscr.io/linuxserver/openssh-server:%s", version),
