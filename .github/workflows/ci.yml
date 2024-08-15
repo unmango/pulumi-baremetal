@@ -271,6 +271,8 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     needs: [setup]
+    env:
+      PROVISIONER_IMAGE: baremetal-provisioner:test
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -290,18 +292,16 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           file: provider/cmd/provisioner/Dockerfile
-          tags: baremetal-provisioner:test
+          tags: ${{ env.PROVISIONER_IMAGE }}
           target: test
           cache-from: type=gha
           cache-to: type=gha,mode=max
           load: true
 
-      - name: Test
-        working-directory: tests
+      - name: Lifecycle Tests
+        working-directory: tests/lifecycle
         run: |
           go run github.com/onsi/ginkgo/v2/ginkgo run -v --silence-skips --github-output
-        env:
-          PROVISIONER_IMAGE: baremetal-provisioner:test
 
   install-sh:
     if: needs.setup.outputs.install-sh == 'true'
