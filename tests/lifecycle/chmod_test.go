@@ -1,4 +1,4 @@
-package tests
+package lifecycle
 
 import (
 	"context"
@@ -12,8 +12,8 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
 )
 
-var _ = Describe("Command", func() {
-	var resource tokens.Type = "baremetal:command:Command"
+var _ = Describe("Chmod", func() {
+	var resource tokens.Type = "baremetal:coreutils:Chmod"
 	var server integration.Server
 
 	BeforeEach(func(ctx context.Context) {
@@ -22,7 +22,6 @@ var _ = Describe("Command", func() {
 
 	It("should complete a full lifecycle", func(ctx context.Context) {
 		file := containerPath("chmod.txt")
-		expectedFile := "/tmp/exec-test.txt"
 
 		By("creating a file to modify")
 		err := provisioner.WriteFile(ctx, file, []byte("some text"))
@@ -32,14 +31,18 @@ var _ = Describe("Command", func() {
 			Resource: resource,
 			Create: integration.Operation{
 				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
-					"args": []string{"mv", file, expectedFile},
+					"args": map[string]interface{}{
+						"files":     []string{file},
+						"octalMode": "0700",
+					},
 				}),
 				Hook: func(inputs, output pr.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
 					Expect(output["stdout"]).To(HavePropertyValue(""))
 					Expect(output["exitCode"]).To(HavePropertyValue(0))
+					Expect(output["createdFiles"].V).To(BeEmpty())
+					Expect(output["movedFiles"].V).To(BeEmpty())
 					Expect(output["args"]).To(Equal(inputs["args"]))
-					Expect(provisioner).To(ContainFile(ctx, expectedFile))
 				},
 			},
 		})
@@ -48,29 +51,15 @@ var _ = Describe("Command", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	It("should execute whitelisted command", func(ctx context.Context) {
+	It("should fail when file doesn't exist", func() {
 		run(server, integration.LifeCycleTest{
 			Resource: resource,
 			Create: integration.Operation{
 				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
-					"args": []string{"perl", "--help"},
-				}),
-				Hook: func(inputs, output pr.PropertyMap) {
-					Expect(output["stderr"]).To(HavePropertyValue(""))
-					Expect(output["stdout"].V).NotTo(BeEmpty())
-					Expect(output["exitCode"]).To(HavePropertyValue(0))
-					Expect(output["args"]).To(Equal(inputs["args"]))
-				},
-			},
-		})
-	})
-
-	It("should refuse to execute unknown bin", func() {
-		run(server, integration.LifeCycleTest{
-			Resource: resource,
-			Create: integration.Operation{
-				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
-					"args": []string{"really-hope-this-never-exists"},
+					"args": map[string]interface{}{
+						"files":     []string{"/does/not/exist"},
+						"octalMode": "0700",
+					},
 				}),
 				ExpectFailure: true,
 			},

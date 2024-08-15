@@ -1,4 +1,4 @@
-package tests
+package lifecycle
 
 import (
 	"context"
@@ -12,8 +12,8 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
 )
 
-var _ = Describe("Chmod", func() {
-	var resource tokens.Type = "baremetal:coreutils:Chmod"
+var _ = Describe("Mkdir", func() {
+	var resource tokens.Type = "baremetal:coreutils:Mkdir"
 	var server integration.Server
 
 	BeforeEach(func(ctx context.Context) {
@@ -21,19 +21,14 @@ var _ = Describe("Chmod", func() {
 	})
 
 	It("should complete a full lifecycle", func(ctx context.Context) {
-		file := containerPath("chmod.txt")
-
-		By("creating a file to modify")
-		err := provisioner.WriteFile(ctx, file, []byte("some text"))
-		Expect(err).NotTo(HaveOccurred())
+		expectedDir := containerPath("mkdir-test")
 
 		run(server, integration.LifeCycleTest{
 			Resource: resource,
 			Create: integration.Operation{
 				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
 					"args": map[string]interface{}{
-						"files":     []string{file},
-						"octalMode": "0700",
+						"directory": []string{expectedDir},
 					},
 				}),
 				Hook: func(inputs, output pr.PropertyMap) {
@@ -47,18 +42,17 @@ var _ = Describe("Chmod", func() {
 			},
 		})
 
-		_, err = provisioner.Exec(ctx, "touch", "blah")
+		_, err := provisioner.Exec(ctx, "touch", "blah")
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	It("should fail when file doesn't exist", func() {
+	It("should fail when path doesn't exist", func() {
 		run(server, integration.LifeCycleTest{
 			Resource: resource,
 			Create: integration.Operation{
 				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
 					"args": map[string]interface{}{
-						"files":     []string{"/does/not/exist"},
-						"octalMode": "0700",
+						"directory": []string{"/does/not/exist"},
 					},
 				}),
 				ExpectFailure: true,
