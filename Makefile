@@ -62,7 +62,7 @@ provider_debug::
 		$(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
 test_all:: test_provider test_sdks
-test_provider:: .test/provider
+test_provider:: .test/lifecycle
 test_sdks:: .test/sdks
 
 docker:: .make/provisioner_docker_build .make/provisioner_test_docker_build
@@ -223,8 +223,8 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 export GRPC_GO_LOG_SEVERITY_LEVEL ?=
 TEST_FLAGS ?=
 
-.test/provider: .make/provisioner_docker_test
-	cd tests && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}
+.test/lifecycle: .make/provisioner_docker_test
+	cd tests/lifecycle && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}
 
 .test/pkg: $(PKG_SRC)
 	cd provider && $(GINKGO) run -v -r

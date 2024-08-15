@@ -1,4 +1,4 @@
-package tests
+package lifecycle
 
 import (
 	"archive/tar"
