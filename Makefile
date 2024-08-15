@@ -44,6 +44,8 @@ GEN_SRC      := $(GO_GRPC_SRC) $(GO_PB_SRC)
 PULUMI ?= ${WORKING_DIR}/bin/pulumi/pulumi
 GINKGO ?= go run github.com/onsi/ginkgo/v2/ginkgo
 DOTNET ?= ${WORKING_DIR}/bin/dotnet/dotnet
+NVM    ?= ${WORKING_DIR}/bin/.nvm/nvm.sh
+NODE   ?= ${WORKING_DIR}/bin/node
 
 default:: provider provisioner
 
@@ -161,6 +163,7 @@ out/install.sh: $(PROVIDER_PATH)/cmd/provisioner/install.sh
 out/baremetal-provisioner.service: $(PROVIDER_PATH)/cmd/provisioner/baremetal-provisioner.service
 	mkdir -p '${@D}' && cp '$<' '$@'
 
+# ----------- Tools -----------
 bin/install-pulumi.sh: .versions/pulumi
 	curl -L https://get.pulumi.com -o $@ && chmod +x $@
 bin/pulumi: .versions/pulumi bin/install-pulumi.sh
@@ -177,6 +180,20 @@ bin/dotnet: .versions/dotnet bin/dotnet-install.sh
 		--channel $(shell cat $<) \
 		--install-dir ${WORKING_DIR}/$@ \
 		--verbose
+
+# What a headache this was https://github.com/nvm-sh/nvm/issues/1985
+export NVM_DIR := ${WORKING_DIR}/bin/.nvm
+bin/install-nvm.sh: .versions/nvm
+	curl https://raw.githubusercontent.com/nvm-sh/nvm/v$(shell cat $<)/install.sh -o $@ && chmod +x $@
+bin/.nvm: .versions/nvm bin/install-nvm.sh
+	mkdir -p $@ && PROFILE=/dev/null bin/install-nvm.sh --no-use
+bin/.nvm/versions/node/v$(shell cat .nvmrc): bin/.nvm
+	. ${NVM_DIR}/nvm.sh --no-use && nvm install && nvm use
+.make/bin_node: bin/.nvm/versions/node/v$(shell cat .nvmrc)
+	ln -sf ${WORKING_DIR}/$</bin/node ${WORKING_DIR}/bin
+	@touch $@
+.PHONY: bin/node
+bin/node: .make/bin_node
 
 bin/$(PROVIDER):: $(GEN_SRC) $(PKG_SRC) provider/*go*
 	go -C provider build \
