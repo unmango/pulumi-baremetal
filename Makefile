@@ -1,4 +1,4 @@
-_ := $(shell mkdir -p .make/{examples,lint,tidy} .test)
+_ := $(shell mkdir -p .make/{examples,lint,tidy} .test bin)
 PROJECT_NAME := Pulumi baremetal Resource Provider
 
 PACK             := baremetal
@@ -42,6 +42,7 @@ GO_PB_SRC    := $(PROTO_SRC:proto/%.proto=gen/go/%.pb.go)
 GEN_SRC      := $(GO_GRPC_SRC) $(GO_PB_SRC)
 
 GINKGO ?= go run github.com/onsi/ginkgo/v2/ginkgo
+DOTNET ?= ${WORKING_DIR}/bin/dotnet/dotnet
 
 default:: provider provisioner
 
@@ -86,7 +87,7 @@ sdk/python: $(SCHEMA_FILE)
 dotnet_sdk: sdk/dotnet
 	cd ${PACKDIR}/dotnet/ && \
 		echo "${VERSION}" >version.txt && \
-		dotnet build
+		$(DOTNET) build
 
 go_sdk: sdk/go
 
@@ -158,6 +159,15 @@ out/install.sh: $(PROVIDER_PATH)/cmd/provisioner/install.sh
 
 out/baremetal-provisioner.service: $(PROVIDER_PATH)/cmd/provisioner/baremetal-provisioner.service
 	mkdir -p '${@D}' && cp '$<' '$@'
+
+bin/dotnet-install.sh: .versions/dotnet
+	curl -L https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh -o $@ && chmod +x $@
+
+bin/dotnet: .versions/dotnet bin/dotnet-install.sh
+	bin/dotnet-install.sh \
+		--channel $(shell cat $<) \
+		--install-dir $@ \
+		--verbose
 
 bin/$(PROVIDER):: $(GEN_SRC) $(PKG_SRC) provider/*go*
 	go -C provider build \
