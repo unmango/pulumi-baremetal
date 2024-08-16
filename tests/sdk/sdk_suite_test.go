@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 	"path"
 	"testing"
 
@@ -18,9 +19,18 @@ import (
 var (
 	provisioner *services.Provisioner
 	newTester   func(integration.ProgramTestOptions) *integration.ProgramTester
+	wd          string
 )
 
+type configureTest func(integration.ProgramTestOptions) integration.ProgramTestOptions
+
 var _ = BeforeSuite(func(ctx context.Context) {
+	By("configuring the working directory")
+	cwd, err := os.Getwd()
+	Expect(err).NotTo(HaveOccurred())
+	wd = path.Join(cwd, "..", "..")
+	Expect(wd).NotTo(BeNil())
+
 	By("generating client certs")
 	clientCerts, err := util.NewCertBundle("ca", "pulumi")
 	Expect(err).NotTo(HaveOccurred())
@@ -44,11 +54,13 @@ func TestSdk(t *testing.T) {
 	RunSpecs(t, "Sdk Suite")
 }
 
-var _ = DescribeSdk("dotnet", baseOptions(GinkgoWriter).With(integration.ProgramTestOptions{
-	Dir:          path.Join("..", "..", "examples", "dotnet"),
-	DotNetBin:    path.Join("..", "..", "bin", "dotnet", "dotnet"),
-	Dependencies: []string{"UnMango.Baremetal"},
-}))
+var _ = DescribeSdk("dotnet", func(base integration.ProgramTestOptions) integration.ProgramTestOptions {
+	return base.With(integration.ProgramTestOptions{
+		Dir:          path.Join("..", "..", "examples", "dotnet"),
+		DotNetBin:    path.Join(wd, "bin", "dotnet", "dotnet"),
+		Dependencies: []string{"UnMango.Baremetal"},
+	})
+})
 
 var _ = AfterSuite(func(ctx context.Context) {
 	By("stopping the provisioner")
@@ -56,11 +68,14 @@ var _ = AfterSuite(func(ctx context.Context) {
 	Expect(err).NotTo(HaveOccurred())
 })
 
-func DescribeSdk(sdk string, test integration.ProgramTestOptions) bool {
+func DescribeSdk(sdk string, configure configureTest) bool {
 	return Describe(fmt.Sprintf("%s SDK test", sdk), Label(sdk), Ordered, func() {
 		var tester *integration.ProgramTester
 
 		BeforeAll(func() {
+			By("configuring the test")
+			test := configure(baseOptions(GinkgoWriter))
+
 			By("creating the program tester")
 			tester = newTester(test)
 		})
