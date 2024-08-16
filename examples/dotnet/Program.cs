@@ -5,11 +5,11 @@ using Baremetal = UnMango.Baremetal;
 
 return await Deployment.RunAsync(() => 
 {
-    var tee = new Baremetal.Cmd.Tee("tee", new()
+    var tee = new Baremetal.Coreutils.Tee("tee", new()
     {
-        Stdin = "whoops",
-        Create = new Baremetal.Cmd.Inputs.TeeOptsArgs
+        Args = new Baremetal.Coreutils.Inputs.TeeArgsArgs
         {
+            Stdin = "whoops",
             Files = new[]
             {
                 "/tmp/tee/test.txt",

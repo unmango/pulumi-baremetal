@@ -1,4 +1,4 @@
-_ := $(shell mkdir -p .make/{examples,lint,tidy} .test bin)
+_ := $(shell mkdir -p $(addprefix .make/,examples lint tidy) .test)
 PROJECT_NAME := Pulumi baremetal Resource Provider
 
 PACK             := baremetal
@@ -145,6 +145,9 @@ install_dotnet_sdk::
 	rm -rf $(WORKING_DIR)/nuget/$(NUGET_PKG_NAME).*.nupkg
 	mkdir -p $(WORKING_DIR)/nuget
 	find . -name '*.nupkg' -print -exec cp -p {} ${WORKING_DIR}/nuget \;
+	if ! dotnet nuget list source | grep ${WORKING_DIR}; then \
+		dotnet nuget add source ${WORKING_DIR}/nuget --name ${WORKING_DIR} \
+	; fi
 
 install_python_sdk::
 	#target intentionally blank
@@ -265,9 +268,12 @@ TEST_FLAGS ?=
 .test/pkg: $(PKG_SRC)
 	cd provider && $(GINKGO) run -v -r
 
+export PULUMI_LOCAL_NUGET := ${WORKING_DIR}/nuget
+
 .test/sdks: $(SUPPORTED_SDKS:%=.test/sdk_%)
-.test/sdk_%: tests/sdk/%/*.go sdk/%/**
-	go -C tests/sdk/$* test -v -count=1 -cover -timeout 15m ./...
+.test/sdk_dotnet: install_dotnet_sdk bin/dotnet
+$(SUPPORTED_SDKS:%=.test/sdk_%): .test/sdk_%:
+	cd tests/sdk && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}
 	@touch $@
 
 .test/install_script: out/install.sh $(PROVIDER_PATH)/cmd/provisioner/baremetal-provisioner.service Makefile
