@@ -2,3 +2,6 @@
 !bin/
 !gen/
 !provider/
+!tests/
+!examples/
+!nuget/

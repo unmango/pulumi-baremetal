@@ -56,8 +56,8 @@ func TestSdk(t *testing.T) {
 
 var _ = DescribeSdk("dotnet", func(base integration.ProgramTestOptions) integration.ProgramTestOptions {
 	return base.With(integration.ProgramTestOptions{
-		Dir:          path.Join("..", "..", "examples", "dotnet"),
-		DotNetBin:    path.Join(wd, "bin", "dotnet", "dotnet"),
+		Dir: path.Join("..", "..", "examples", "dotnet"),
+		// DotNetBin:    path.Join(wd, "bin", "dotnet", "dotnet"),
 		Dependencies: []string{"UnMango.Baremetal"},
 	})
 })
