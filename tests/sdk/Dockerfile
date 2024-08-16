@@ -24,6 +24,9 @@ COPY gen/ ./gen/
 COPY examples/${SDK}/ ./examples/${SDK}/
 COPY tests/ ./tests
 COPY provider/ ./provider/
+COPY nuget/ /root/.pulumi-dev/nuget/
+RUN dotnet nuget add source /root/.pulumi-dev/nuget/ --name docker
+COPY bin/pulumi-resource-baremetal ./bin/
 
 WORKDIR /work/tests/sdk
 ENTRYPOINT [ "ginkgo" ]
