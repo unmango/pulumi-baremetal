@@ -90,7 +90,7 @@ sdk/python: $(SCHEMA_FILE)
 dotnet_sdk: sdk/dotnet
 	cd ${PACKDIR}/dotnet/ && \
 		echo "${VERSION}" >version.txt && \
-		$(DOTNET) build
+		dotnet build
 
 go_sdk: sdk/go
 
@@ -111,23 +111,23 @@ python_sdk: sdk/python
 
 define pulumi_login
     export PULUMI_CONFIG_PASSPHRASE=asdfqwerty1234; \
-    pulumi login --local;
+    $(PULUMI) login --local;
 endef
 
 up::
 	$(call pulumi_login) \
 	cd ${EXAMPLES_DIR} && \
-	pulumi stack init dev && \
-	pulumi stack select dev && \
-	pulumi config set name dev && \
-	pulumi up -y
+	$(PULUMI) stack init dev && \
+	$(PULUMI) stack select dev && \
+	$(PULUMI) config set name dev && \
+	$(PULUMI) up -y
 
 down::
 	$(call pulumi_login) \
 	cd ${EXAMPLES_DIR} && \
-	pulumi stack select dev && \
-	pulumi destroy -y && \
-	pulumi stack rm dev -y
+	$(PULUMI) stack select dev && \
+	$(PULUMI) destroy -y && \
+	$(PULUMI) stack rm dev -y
 
 devcontainer::
 	git submodule update --remote --merge .github/devcontainer
