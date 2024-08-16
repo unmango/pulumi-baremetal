@@ -248,6 +248,12 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 	docker build ${WORKING_DIR} -f $< --target test -t ${PROVISIONER_NAME}:test
 	@touch $@
 
+.make/sdk_docker: tests/sdk/Dockerfile
+	docker build ${WORKING_DIR} -f $< -t sdk-test:dotnet
+	@touch $@
+.test/sdk_docker: .make/sdk_docker
+	docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock sdk-test:dotnet
+
 .make/examples/%: examples/yaml/** bin/$(PROVIDER)
 	rm -rf ${WORKING_DIR}/examples/$*
 	$(PULUMI) convert \
