@@ -1,0 +1,29 @@
+# syntax=docker/dockerfile:1
+FROM --platform=$BUILDPLATFORM golang:1.23.0-bookworm AS base
+ARG BUILDPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
+
+FROM --platform=$BUILDPLATFORM base AS download
+WORKDIR /build
+COPY gen/go.mod gen/go.sum ./gen/
+RUN go -C gen mod download
+
+COPY provider/go.mod provider/go.sum ./provider/
+RUN go -C provider mod download
+
+FROM --platform=$BUILDPLATFORM download AS build
+COPY gen/ ./gen/
+WORKDIR /build/provider
+COPY provider/cmd/pulumi-resource-baremetal/main.go ./cmd/
+COPY provider/ ./
+
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /out/pulumi-resource-baremetal cmd/main.go
+
+FROM --platform=$BUILDPLATFORM scratch AS bin
+COPY --from=build /out/pulumi-resource-baremetal /
+ENTRYPOINT [ "/pulumi-resource-baremetal" ]
+
+FROM --platform=$BUILDPLATFORM pulumi/pulumi-base:3.129.0-debian AS pulumi
+COPY --from=build /out/pulumi-resource-baremetal /plugins/
+ENTRYPOINT [ "/bin/bash" ]

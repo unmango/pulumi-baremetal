@@ -80,11 +80,11 @@ gen_examples: $(SUPPORTED_SDKS:%=.make/examples/%)
 .PHONY: sdk/%
 sdk/%: $(SCHEMA_FILE)
 	rm -rf $@
-	$(PULUMI) package gen-sdk --language $* $(SCHEMA_FILE) --version "${VERSION}"
+	pulumi package gen-sdk --language $* $(SCHEMA_FILE) --version "${VERSION}"
 
 sdk/python: $(SCHEMA_FILE)
 	rm -rf $@
-	$(PULUMI) package gen-sdk --language python $(SCHEMA_FILE) --version "${VERSION}"
+	pulumi package gen-sdk --language python $(SCHEMA_FILE) --version "${VERSION}"
 	cp README.md ${PACKDIR}/python/
 
 dotnet_sdk: sdk/dotnet
@@ -111,23 +111,23 @@ python_sdk: sdk/python
 
 define pulumi_login
     export PULUMI_CONFIG_PASSPHRASE=asdfqwerty1234; \
-    $(PULUMI) login --local;
+    pulumi login --local;
 endef
 
 up::
 	$(call pulumi_login) \
 	cd ${EXAMPLES_DIR} && \
-	$(PULUMI) stack init dev && \
-	$(PULUMI) stack select dev && \
-	$(PULUMI) config set name dev && \
-	$(PULUMI) up -y
+	pulumi stack init dev && \
+	pulumi stack select dev && \
+	pulumi config set name dev && \
+	pulumi up -y
 
 down::
 	$(call pulumi_login) \
 	cd ${EXAMPLES_DIR} && \
-	$(PULUMI) stack select dev && \
-	$(PULUMI) destroy -y && \
-	$(PULUMI) stack rm dev -y
+	pulumi stack select dev && \
+	pulumi destroy -y && \
+	pulumi stack rm dev -y
 
 devcontainer::
 	git submodule update --remote --merge .github/devcontainer
@@ -248,6 +248,10 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 	docker build ${WORKING_DIR} -f $< --target test -t ${PROVISIONER_NAME}:test
 	@touch $@
 
+.make/provider_docker: provider/cmd/$(PROVIDER)/Dockerfile .dockerignore $(PROVIDER_SRC)
+	docker build ${WORKING_DIR} -f $< --target bin -t ${PROVIDER}:${DOCKER_TAG}
+	@touch $@
+
 .make/sdk_docker: tests/sdk/Dockerfile .dockerignore $(PROVIDER_SRC) bin/$(PROVIDER)
 	docker build ${WORKING_DIR} -f $< -t sdk-test:dotnet
 	@touch $@
@@ -256,7 +260,7 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 
 .make/examples/%: examples/yaml/** bin/$(PROVIDER)
 	rm -rf ${WORKING_DIR}/examples/$*
-	$(PULUMI) convert \
+	pulumi convert \
 		--cwd $(<D) \
 		--logtostderr \
 		--generate-only \
