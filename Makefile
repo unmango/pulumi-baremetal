@@ -248,6 +248,10 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 	docker build ${WORKING_DIR} -f $< --target test -t ${PROVISIONER_NAME}:test
 	@touch $@
 
+.make/provider_docker: provider/cmd/$(PROVIDER)/Dockerfile .dockerignore $(PROVIDER_SRC)
+	docker build ${WORKING_DIR} -f $< --target bin -t ${PROVIDER}:${DOCKER_TAG}
+	@touch $@
+
 .make/sdk_docker: tests/sdk/Dockerfile .dockerignore $(PROVIDER_SRC) bin/$(PROVIDER)
 	docker build ${WORKING_DIR} -f $< -t sdk-test:dotnet
 	@touch $@

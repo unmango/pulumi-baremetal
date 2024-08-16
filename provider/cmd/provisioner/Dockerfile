@@ -8,7 +8,6 @@ FROM --platform=$BUILDPLATFORM base AS download
 WORKDIR /build/gen
 COPY gen/go.mod gen/go.sum ./
 RUN go mod download
-COPY gen/go ./go
 
 WORKDIR /build/provider
 COPY provider/go.mod provider/go.sum ./
