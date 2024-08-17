@@ -24,7 +24,7 @@ COPY provider/pkg/ ./pkg/
 
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /out/provisioner cmd/main.go
 
-FROM --platform=$BUILDPLATFORM ubuntu:noble-20240605 AS test-base
+FROM --platform=$BUILDPLATFORM ubuntu:noble-20240801 AS test-base
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update \
