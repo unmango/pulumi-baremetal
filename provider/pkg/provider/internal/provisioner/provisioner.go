@@ -5,7 +5,7 @@ import (
 
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/provider"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/config"
 	"google.golang.org/grpc"
 )
 
@@ -21,11 +21,11 @@ func (p *provisioner) Close() error {
 }
 
 func FromContext(ctx context.Context) (*provisioner, error) {
-	config := infer.GetConfig[provider.Config](ctx)
+	config := infer.GetConfig[config.Config](ctx)
 	return FromConfig(config)
 }
 
-func FromConfig(config provider.Config) (*provisioner, error) {
+func FromConfig(config config.Config) (*provisioner, error) {
 	conn, err := config.NewGrpcClient()
 	if err != nil {
 		return nil, err
