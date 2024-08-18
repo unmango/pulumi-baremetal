@@ -32,7 +32,7 @@ var _ = Describe("Command", func() {
 			Resource: resource,
 			Create: integration.Operation{
 				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
-					"args": []string{"mv", file, expectedFile},
+					"create": []string{"mv", file, expectedFile},
 				}),
 				Hook: func(inputs, output pr.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
@@ -53,7 +53,7 @@ var _ = Describe("Command", func() {
 			Resource: resource,
 			Create: integration.Operation{
 				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
-					"args": []string{"perl", "--help"},
+					"create": []string{"perl", "--help"},
 				}),
 				Hook: func(inputs, output pr.PropertyMap) {
 					Expect(output["stderr"]).To(HavePropertyValue(""))
@@ -70,9 +70,31 @@ var _ = Describe("Command", func() {
 			Resource: resource,
 			Create: integration.Operation{
 				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
-					"args": []string{"really-hope-this-never-exists"},
+					"create": []string{"really-hope-this-never-exists"},
 				}),
 				ExpectFailure: true,
+			},
+		})
+	})
+
+	It("should execute custom delete", func(ctx context.Context) {
+		expectedFile := "/tmp/custom-delete-test.txt"
+
+		run(server, integration.LifeCycleTest{
+			Resource: resource,
+			Create: integration.Operation{
+				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+					"create": []string{"touch", expectedFile},
+					"delete": []string{"rm", expectedFile},
+				}),
+				Hook: func(inputs, output pr.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(output["stdout"]).To(HavePropertyValue(""))
+					Expect(output["exitCode"]).To(HavePropertyValue(0))
+					Expect(output["create"]).To(Equal(inputs["create"]))
+					Expect(output["delete"]).To(Equal(inputs["delete"]))
+					Expect(provisioner).NotTo(ContainFile(ctx, expectedFile))
+				},
 			},
 		})
 	})

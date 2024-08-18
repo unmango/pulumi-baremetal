@@ -12,7 +12,8 @@ import (
 )
 
 type CommandArgs struct {
-	Args     []string `pulumi:"args"`
+	Create   []string `pulumi:"create"`
+	Delete   []string `pulumi:"delete,optional"`
 	Triggers []any    `pulumi:"triggers,optional"`
 }
 
@@ -45,10 +46,10 @@ func (Command) Create(ctx context.Context, name string, inputs CommandArgs, prev
 		return name, state, nil
 	}
 
-	display := display(inputs.Args)
+	display := display(inputs.Create)
 	log.DebugStatus("Sending exec request to provisioner")
 	res, err := p.Exec(ctx, &pb.ExecRequest{
-		Args: inputs.Args,
+		Args: inputs.Create,
 	})
 	if err != nil {
 		log.Errorf("command:%s %s", display, err)
