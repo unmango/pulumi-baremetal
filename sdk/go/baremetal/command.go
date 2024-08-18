@@ -22,6 +22,7 @@ type Command struct {
 	Stderr   pulumi.StringOutput      `pulumi:"stderr"`
 	Stdout   pulumi.StringOutput      `pulumi:"stdout"`
 	Triggers pulumi.ArrayOutput       `pulumi:"triggers"`
+	Update   pulumi.StringArrayOutput `pulumi:"update"`
 }
 
 // NewCommand registers a new resource with the given unique name, arguments, and options.
@@ -70,6 +71,7 @@ type commandArgs struct {
 	Create   []string      `pulumi:"create"`
 	Delete   []string      `pulumi:"delete"`
 	Triggers []interface{} `pulumi:"triggers"`
+	Update   []string      `pulumi:"update"`
 }
 
 // The set of arguments for constructing a Command resource.
@@ -77,6 +79,7 @@ type CommandArgs struct {
 	Create   pulumi.StringArrayInput
 	Delete   pulumi.StringArrayInput
 	Triggers pulumi.ArrayInput
+	Update   pulumi.StringArrayInput
 }
 
 func (CommandArgs) ElementType() reflect.Type {
@@ -150,6 +153,10 @@ func (o CommandOutput) Stdout() pulumi.StringOutput {
 
 func (o CommandOutput) Triggers() pulumi.ArrayOutput {
 	return o.ApplyT(func(v *Command) pulumi.ArrayOutput { return v.Triggers }).(pulumi.ArrayOutput)
+}
+
+func (o CommandOutput) Update() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Command) pulumi.StringArrayOutput { return v.Update }).(pulumi.StringArrayOutput)
 }
 
 func init() {
