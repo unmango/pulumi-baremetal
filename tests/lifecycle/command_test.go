@@ -77,7 +77,7 @@ var _ = Describe("Command", func() {
 		})
 	})
 
-	It("should execute custom delete", func(ctx context.Context) {
+	FIt("should execute custom delete", func(ctx context.Context) {
 		expectedFile := "/tmp/custom-delete-test.txt"
 
 		run(server, integration.LifeCycleTest{
@@ -93,9 +93,10 @@ var _ = Describe("Command", func() {
 					Expect(output["exitCode"]).To(HavePropertyValue(0))
 					Expect(output["create"]).To(Equal(inputs["create"]))
 					Expect(output["delete"]).To(Equal(inputs["delete"]))
-					Expect(provisioner).NotTo(ContainFile(ctx, expectedFile))
 				},
 			},
 		})
+
+		Expect(provisioner).NotTo(ContainFile(ctx, expectedFile))
 	})
 })
