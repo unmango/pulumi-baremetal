@@ -71,7 +71,7 @@ func (Command) Create(ctx context.Context, name string, inputs CommandArgs, prev
 }
 
 // Delete implements infer.CustomDelete.
-func (c *Command) Delete(ctx context.Context, id string, props CommandState) error {
+func (Command) Delete(ctx context.Context, id string, props CommandState) error {
 	log := logger.FromContext(ctx)
 	log.Error("WTF MAN")
 	if len(props.Delete) == 0 {

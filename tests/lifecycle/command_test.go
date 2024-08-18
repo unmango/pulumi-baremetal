@@ -77,7 +77,7 @@ var _ = Describe("Command", func() {
 		})
 	})
 
-	FIt("should execute custom delete", func(ctx context.Context) {
+	It("should execute custom delete", func(ctx context.Context) {
 		expectedFile := "/tmp/custom-delete-test.txt"
 
 		run(server, integration.LifeCycleTest{
