@@ -15,33 +15,33 @@ type ChmodArgs struct {
 
 	Files          []string `pulumi:"files"`
 	Mode           []string `pulumi:"mode,optional"`
-	OctalMode      string   `pulumi:"octalMode,optional"`
-	Changes        bool     `pulumi:"changes,optional"`
-	NoPreserveRoot bool     `pulumi:"noPreserveRoot,optional"`
-	PreserveRoot   bool     `pulumi:"preserveRoot,optional"`
-	Quiet          bool     `pulumi:"quiet,optional"`
-	Reference      string   `pulumi:"reference,optional"`
-	Recursive      bool     `pulumi:"recursive,optional"`
-	Verbose        bool     `pulumi:"verbose,optional"`
-	Help           bool     `pulumi:"help,optional"`
-	Version        bool     `pulumi:"version,optional"`
+	OctalMode      *string  `pulumi:"octalMode,optional"`
+	Changes        *bool    `pulumi:"changes,optional"`
+	NoPreserveRoot *bool    `pulumi:"noPreserveRoot,optional"`
+	PreserveRoot   *bool    `pulumi:"preserveRoot,optional"`
+	Quiet          *bool    `pulumi:"quiet,optional"`
+	Reference      *string  `pulumi:"reference,optional"`
+	Recursive      *bool    `pulumi:"recursive,optional"`
+	Verbose        *bool    `pulumi:"verbose,optional"`
+	Help           *bool    `pulumi:"help,optional"`
+	Version        *bool    `pulumi:"version,optional"`
 }
 
 // Cmd implements CommandArgs.
 func (m ChmodArgs) Cmd() (*pb.Command, error) {
 	b := cmd.B{}
-	b.Op(m.Changes, "--changes")
-	b.Op(m.NoPreserveRoot, "--no-preserve-root")
-	b.Op(m.PreserveRoot, "--preserve-root")
-	b.Op(m.Quiet, "--quiet")
-	b.Opv(m.Reference, "--reference")
-	b.Op(m.Recursive, "--recursive")
-	b.Op(m.Verbose, "--verbose")
-	b.Op(m.Help, "--help")
-	b.Op(m.Version, "--version")
+	b.OpP(m.Changes, "--changes")
+	b.OpP(m.NoPreserveRoot, "--no-preserve-root")
+	b.OpP(m.PreserveRoot, "--preserve-root")
+	b.OpP(m.Quiet, "--quiet")
+	b.OpvP(m.Reference, "--reference")
+	b.OpP(m.Recursive, "--recursive")
+	b.OpP(m.Verbose, "--verbose")
+	b.OpP(m.Help, "--help")
+	b.OpP(m.Version, "--version")
 
 	b.Arg(strings.Join(m.Mode, ","))
-	b.Arg(m.OctalMode)
+	b.ArgP(m.OctalMode)
 
 	for _, f := range m.Files {
 		b.Arg(f)

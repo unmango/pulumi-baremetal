@@ -15,21 +15,19 @@ import (
 type TeeArgs struct {
 	cmd.ArgsBase
 
-	Append bool     `pulumi:"append,optional"`
+	Append *bool    `pulumi:"append,optional"`
 	Files  []string `pulumi:"files"`
-	Stdin  string   `pulumi:"stdin,optional"`
+	Stdin  *string  `pulumi:"stdin,optional"`
 }
 
 func (o TeeArgs) Cmd() (*pb.Command, error) {
-	args := []string{}
-	if o.Append {
-		args = append(args, "--append")
-	}
+	b := cmd.B{Args: o.Files}
+	b.OpP(o.Append, "--append")
 
 	return &pb.Command{
 		Bin:   pb.Bin_BIN_TEE,
-		Args:  append(args, o.Files...),
-		Stdin: &o.Stdin,
+		Args:  b.Args,
+		Stdin: o.Stdin,
 	}, nil
 }
 

@@ -15,40 +15,40 @@ import (
 type MvArgs struct {
 	cmd.ArgsBase
 
-	Backup               string   `pulumi:"backup,optional"`
-	Destination          string   `pulumi:"destination,optional"`
-	Directory            string   `pulumi:"directory,optional"`
-	Force                bool     `pulumi:"force,optional"`
-	Help                 bool     `pulumi:"help,optional"`
-	NoClobber            bool     `pulumi:"noClobber,optional"`
-	NoTargetDirectory    bool     `pulumi:"noTargetDirectory,optional"`
+	Backup               *string  `pulumi:"backup,optional"`
+	Destination          *string  `pulumi:"destination,optional"`
+	Directory            *string  `pulumi:"directory,optional"`
+	Force                *bool    `pulumi:"force,optional"`
+	Help                 *bool    `pulumi:"help,optional"`
+	NoClobber            *bool    `pulumi:"noClobber,optional"`
+	NoTargetDirectory    *bool    `pulumi:"noTargetDirectory,optional"`
 	Source               []string `pulumi:"source"`
-	StripTrailingSlashes bool     `pulumi:"stripTrailingSlashes,optional"`
-	Suffix               string   `pulumi:"suffix,optional"`
-	TargetDirectory      string   `pulumi:"targetDirectory,optional"`
-	Update               bool     `pulumi:"update,optional"`
-	Verbose              bool     `pulumi:"verbose,optional"`
-	Version              bool     `pulumi:"version,optional"`
+	StripTrailingSlashes *bool    `pulumi:"stripTrailingSlashes,optional"`
+	Suffix               *string  `pulumi:"suffix,optional"`
+	TargetDirectory      *string  `pulumi:"targetDirectory,optional"`
+	Update               *bool    `pulumi:"update,optional"`
+	Verbose              *bool    `pulumi:"verbose,optional"`
+	Version              *bool    `pulumi:"version,optional"`
 }
 
 // Cmd implements CommandArgs.
 func (m MvArgs) Cmd() (*pb.Command, error) {
 	b := cmd.B{Args: m.Source}
 
-	b.Opv(m.Backup, "--backup")
-	b.Op(m.Force, "--force")
-	b.Op(m.NoClobber, "--no-clobber")
-	b.Op(m.StripTrailingSlashes, "--strip-trailing-slashes")
-	b.Opv(m.Suffix, "--suffix")
-	b.Op(m.Update, "--update")
-	b.Op(m.Verbose, "--verbose")
-	b.Op(m.Version, "--version")
+	b.OpvP(m.Backup, "--backup")
+	b.OpP(m.Force, "--force")
+	b.OpP(m.NoClobber, "--no-clobber")
+	b.OpP(m.StripTrailingSlashes, "--strip-trailing-slashes")
+	b.OpvP(m.Suffix, "--suffix")
+	b.OpP(m.Update, "--update")
+	b.OpP(m.Verbose, "--verbose")
+	b.OpP(m.Version, "--version")
 
-	b.Opv(m.TargetDirectory, "--target-directory")
-	b.Op(m.NoTargetDirectory, "--no-target-directory")
+	b.OpvP(m.TargetDirectory, "--target-directory")
+	b.OpP(m.NoTargetDirectory, "--no-target-directory")
 
-	b.Arg(m.Destination)
-	b.Arg(m.Directory)
+	b.ArgP(m.Destination)
+	b.ArgP(m.Directory)
 
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_MV,
@@ -65,12 +65,12 @@ func (m MvArgs) ExpectMoved() map[string]string {
 		}
 	}
 
-	if m.Destination != "" && len(m.Source) == 1 {
-		files[m.Source[0]] = m.Destination
-	} else if m.Directory != "" {
-		mvSrc(m.Directory)
-	} else if m.TargetDirectory != "" {
-		mvSrc(m.TargetDirectory)
+	if m.Destination != nil && len(m.Source) == 1 {
+		files[m.Source[0]] = *m.Destination
+	} else if m.Directory != nil && *m.Directory != "" {
+		mvSrc(*m.Directory)
+	} else if m.TargetDirectory != nil && *m.TargetDirectory != "" {
+		mvSrc(*m.TargetDirectory)
 	}
 
 	return files

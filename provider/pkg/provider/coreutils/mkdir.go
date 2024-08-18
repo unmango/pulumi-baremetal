@@ -13,22 +13,22 @@ type MkdirArgs struct {
 	cmd.ArgsBase
 
 	Directory []string `pulumi:"directory"`
-	Mode      string   `pulumi:"mode,optional"`
-	Parents   bool     `pulumi:"parents,optional"`
-	Verbose   bool     `pulumi:"verbose,optional"`
-	Help      bool     `pulumi:"help,optional"`
-	Version   bool     `pulumi:"version,optional"`
+	Mode      *string  `pulumi:"mode,optional"`
+	Parents   *bool    `pulumi:"parents,optional"`
+	Verbose   *bool    `pulumi:"verbose,optional"`
+	Help      *bool    `pulumi:"help,optional"`
+	Version   *bool    `pulumi:"version,optional"`
 }
 
 // Cmd implements CommandArgs.
 func (m MkdirArgs) Cmd() (*pb.Command, error) {
 	b := cmd.B{Args: m.Directory}
 
-	b.Opv(m.Mode, "--mode")
-	b.Op(m.Parents, "--parents")
-	b.Op(m.Verbose, "--verbose")
-	b.Op(m.Help, "--help")
-	b.Op(m.Version, "--version")
+	b.OpvP(m.Mode, "--mode")
+	b.OpP(m.Parents, "--parents")
+	b.OpP(m.Verbose, "--verbose")
+	b.OpP(m.Help, "--help")
+	b.OpP(m.Version, "--version")
 
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_MKDIR,
