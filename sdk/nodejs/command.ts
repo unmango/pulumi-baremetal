@@ -2,7 +2,7 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
-import * as utilities from "../utilities";
+import * as utilities from "./utilities";
 
 export class Command extends pulumi.CustomResource {
     /**
@@ -18,7 +18,7 @@ export class Command extends pulumi.CustomResource {
     }
 
     /** @internal */
-    public static readonly __pulumiType = 'baremetal:command:Command';
+    public static readonly __pulumiType = 'baremetal:index:Command';
 
     /**
      * Returns true if the given object is an instance of Command.  This is designed to work even
@@ -31,7 +31,8 @@ export class Command extends pulumi.CustomResource {
         return obj['__pulumiType'] === Command.__pulumiType;
     }
 
-    public readonly args!: pulumi.Output<string[]>;
+    public readonly create!: pulumi.Output<string[]>;
+    public readonly delete!: pulumi.Output<string[] | undefined>;
     public /*out*/ readonly exitCode!: pulumi.Output<number>;
     public /*out*/ readonly stderr!: pulumi.Output<string>;
     public /*out*/ readonly stdout!: pulumi.Output<string>;
@@ -48,16 +49,18 @@ export class Command extends pulumi.CustomResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.args === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'args'");
+            if ((!args || args.create === undefined) && !opts.urn) {
+                throw new Error("Missing required property 'create'");
             }
-            resourceInputs["args"] = args ? args.args : undefined;
+            resourceInputs["create"] = args ? args.create : undefined;
+            resourceInputs["delete"] = args ? args.delete : undefined;
             resourceInputs["triggers"] = args ? args.triggers : undefined;
             resourceInputs["exitCode"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
         } else {
-            resourceInputs["args"] = undefined /*out*/;
+            resourceInputs["create"] = undefined /*out*/;
+            resourceInputs["delete"] = undefined /*out*/;
             resourceInputs["exitCode"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
@@ -72,6 +75,7 @@ export class Command extends pulumi.CustomResource {
  * The set of arguments for constructing a Command resource.
  */
 export interface CommandArgs {
-    args: pulumi.Input<pulumi.Input<string>[]>;
+    create: pulumi.Input<pulumi.Input<string>[]>;
+    delete?: pulumi.Input<pulumi.Input<string>[]>;
     triggers?: pulumi.Input<any[]>;
 }

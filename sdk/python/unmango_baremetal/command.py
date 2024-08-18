@@ -7,30 +7,42 @@ import warnings
 import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
-from .. import _utilities
+from . import _utilities
 
 __all__ = ['CommandArgs', 'Command']
 
 @pulumi.input_type
 class CommandArgs:
     def __init__(__self__, *,
-                 args: pulumi.Input[Sequence[pulumi.Input[str]]],
+                 create: pulumi.Input[Sequence[pulumi.Input[str]]],
+                 delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None):
         """
         The set of arguments for constructing a Command resource.
         """
-        pulumi.set(__self__, "args", args)
+        pulumi.set(__self__, "create", create)
+        if delete is not None:
+            pulumi.set(__self__, "delete", delete)
         if triggers is not None:
             pulumi.set(__self__, "triggers", triggers)
 
     @property
     @pulumi.getter
-    def args(self) -> pulumi.Input[Sequence[pulumi.Input[str]]]:
-        return pulumi.get(self, "args")
+    def create(self) -> pulumi.Input[Sequence[pulumi.Input[str]]]:
+        return pulumi.get(self, "create")
 
-    @args.setter
-    def args(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
-        pulumi.set(self, "args", value)
+    @create.setter
+    def create(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
+        pulumi.set(self, "create", value)
+
+    @property
+    @pulumi.getter
+    def delete(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
+        return pulumi.get(self, "delete")
+
+    @delete.setter
+    def delete(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
+        pulumi.set(self, "delete", value)
 
     @property
     @pulumi.getter
@@ -47,7 +59,8 @@ class Command(pulumi.CustomResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 args: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 create: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
                  __props__=None):
         """
@@ -78,7 +91,8 @@ class Command(pulumi.CustomResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 args: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 create: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
@@ -89,15 +103,16 @@ class Command(pulumi.CustomResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = CommandArgs.__new__(CommandArgs)
 
-            if args is None and not opts.urn:
-                raise TypeError("Missing required property 'args'")
-            __props__.__dict__["args"] = args
+            if create is None and not opts.urn:
+                raise TypeError("Missing required property 'create'")
+            __props__.__dict__["create"] = create
+            __props__.__dict__["delete"] = delete
             __props__.__dict__["triggers"] = triggers
             __props__.__dict__["exit_code"] = None
             __props__.__dict__["stderr"] = None
             __props__.__dict__["stdout"] = None
         super(Command, __self__).__init__(
-            'baremetal:command:Command',
+            'baremetal:index:Command',
             resource_name,
             __props__,
             opts)
@@ -118,7 +133,8 @@ class Command(pulumi.CustomResource):
 
         __props__ = CommandArgs.__new__(CommandArgs)
 
-        __props__.__dict__["args"] = None
+        __props__.__dict__["create"] = None
+        __props__.__dict__["delete"] = None
         __props__.__dict__["exit_code"] = None
         __props__.__dict__["stderr"] = None
         __props__.__dict__["stdout"] = None
@@ -127,8 +143,13 @@ class Command(pulumi.CustomResource):
 
     @property
     @pulumi.getter
-    def args(self) -> pulumi.Output[Sequence[str]]:
-        return pulumi.get(self, "args")
+    def create(self) -> pulumi.Output[Sequence[str]]:
+        return pulumi.get(self, "create")
+
+    @property
+    @pulumi.getter
+    def delete(self) -> pulumi.Output[Optional[Sequence[str]]]:
+        return pulumi.get(self, "delete")
 
     @property
     @pulumi.getter(name="exitCode")

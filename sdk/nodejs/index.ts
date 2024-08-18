@@ -5,6 +5,11 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "./utilities";
 
 // Export members:
+export { CommandArgs } from "./command";
+export type Command = import("./command").Command;
+export const Command: typeof import("./command").Command = null as any;
+utilities.lazyLoad(exports, ["Command"], () => require("./command"));
+
 export { ProviderArgs } from "./provider";
 export type Provider = import("./provider").Provider;
 export const Provider: typeof import("./provider").Provider = null as any;
@@ -12,19 +17,30 @@ utilities.lazyLoad(exports, ["Provider"], () => require("./provider"));
 
 
 // Export sub-modules:
-import * as command from "./command";
 import * as config from "./config";
 import * as coreutils from "./coreutils";
 import * as kubeadm from "./kubeadm";
 import * as types from "./types";
 
 export {
-    command,
     config,
     coreutils,
     kubeadm,
     types,
 };
+
+const _module = {
+    version: utilities.getVersion(),
+    construct: (name: string, type: string, urn: string): pulumi.Resource => {
+        switch (type) {
+            case "baremetal:index:Command":
+                return new Command(name, <any>undefined, { urn })
+            default:
+                throw new Error(`unknown resource type ${type}`);
+        }
+    },
+};
+pulumi.runtime.registerResourceModule("baremetal", "index", _module)
 pulumi.runtime.registerResourcePackage("baremetal", {
     version: utilities.getVersion(),
     constructProvider: (name: string, type: string, urn: string): pulumi.ProviderResource => {
