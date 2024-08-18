@@ -8,13 +8,16 @@ using System.Threading.Tasks;
 using Pulumi.Serialization;
 using Pulumi;
 
-namespace UnMango.Baremetal.Command
+namespace UnMango.Baremetal
 {
-    [BaremetalResourceType("baremetal:command:Command")]
+    [BaremetalResourceType("baremetal:index:Command")]
     public partial class Command : global::Pulumi.CustomResource
     {
-        [Output("args")]
-        public Output<ImmutableArray<string>> Args { get; private set; } = null!;
+        [Output("create")]
+        public Output<ImmutableArray<string>> Create { get; private set; } = null!;
+
+        [Output("delete")]
+        public Output<ImmutableArray<string>> Delete { get; private set; } = null!;
 
         [Output("exitCode")]
         public Output<int> ExitCode { get; private set; } = null!;
@@ -37,12 +40,12 @@ namespace UnMango.Baremetal.Command
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
         public Command(string name, CommandArgs args, CustomResourceOptions? options = null)
-            : base("baremetal:command:Command", name, args ?? new CommandArgs(), MakeResourceOptions(options, ""))
+            : base("baremetal:index:Command", name, args ?? new CommandArgs(), MakeResourceOptions(options, ""))
         {
         }
 
         private Command(string name, Input<string> id, CustomResourceOptions? options = null)
-            : base("baremetal:command:Command", name, null, MakeResourceOptions(options, id))
+            : base("baremetal:index:Command", name, null, MakeResourceOptions(options, id))
         {
         }
 
@@ -74,12 +77,20 @@ namespace UnMango.Baremetal.Command
 
     public sealed class CommandArgs : global::Pulumi.ResourceArgs
     {
-        [Input("args", required: true)]
-        private InputList<string>? _args;
-        public InputList<string> Args
+        [Input("create", required: true)]
+        private InputList<string>? _create;
+        public InputList<string> Create
         {
-            get => _args ?? (_args = new InputList<string>());
-            set => _args = value;
+            get => _create ?? (_create = new InputList<string>());
+            set => _create = value;
+        }
+
+        [Input("delete")]
+        private InputList<string>? _delete;
+        public InputList<string> Delete
+        {
+            get => _delete ?? (_delete = new InputList<string>());
+            set => _delete = value;
         }
 
         [Input("triggers")]

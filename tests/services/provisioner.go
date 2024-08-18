@@ -66,6 +66,7 @@ func NewProvisioner(
 				"--key-file", keyPath,
 				"--verbose",
 				"--whitelist", "perl",
+				"--whitelist", "touch",
 			},
 			ExposedPorts: []string{port},
 			WaitingFor:   wait.ForExposedPort(),

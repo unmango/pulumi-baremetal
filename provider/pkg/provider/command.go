@@ -1,4 +1,4 @@
-package command
+package provider
 
 import (
 	"context"
@@ -12,7 +12,8 @@ import (
 )
 
 type CommandArgs struct {
-	Args     []string `pulumi:"args"`
+	Create   []string `pulumi:"create"`
+	Delete   []string `pulumi:"delete,optional"`
 	Triggers []any    `pulumi:"triggers,optional"`
 }
 
@@ -45,10 +46,10 @@ func (Command) Create(ctx context.Context, name string, inputs CommandArgs, prev
 		return name, state, nil
 	}
 
-	display := display(inputs.Args)
+	display := display(inputs.Create)
 	log.DebugStatus("Sending exec request to provisioner")
 	res, err := p.Exec(ctx, &pb.ExecRequest{
-		Args: inputs.Args,
+		Args: inputs.Create,
 	})
 	if err != nil {
 		log.Errorf("command:%s %s", display, err)
@@ -69,7 +70,42 @@ func (Command) Create(ctx context.Context, name string, inputs CommandArgs, prev
 	return name, state, nil
 }
 
+// Delete implements infer.CustomDelete.
+func (Command) Delete(ctx context.Context, id string, props CommandState) error {
+	log := logger.FromContext(ctx)
+	log.Error("WTF MAN")
+	if len(props.Delete) == 0 {
+		return nil
+	}
+	log.Error("WTF MAN2")
+
+	p, err := provisioner.FromContext(ctx)
+	if err != nil {
+		log.Error("Failed creating provisioner")
+		return fmt.Errorf("creating provisioner: %w", err)
+	}
+
+	display := display(props.Delete)
+	log.DebugStatus("Sending exec request to provisioner")
+	res, err := p.Exec(ctx, &pb.ExecRequest{
+		Args: props.Delete,
+	})
+	if err != nil {
+		log.Errorf("command:%s %s", display, err)
+		return fmt.Errorf("sending exec request: %w", err)
+	}
+
+	if res.Result.ExitCode > 0 {
+		log.Error(display)
+		return fmt.Errorf("exec failed: %s", res.Result)
+	}
+
+	log.InfoStatus(display)
+	return nil
+}
+
 var _ = (infer.CustomCreate[CommandArgs, CommandState])((*Command)(nil))
+var _ = (infer.CustomDelete[CommandState])((*Command)(nil))
 
 func display(args []string) string {
 	return strings.Join(args, " ")
