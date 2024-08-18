@@ -99,4 +99,42 @@ var _ = Describe("Command", func() {
 
 		Expect(provisioner).NotTo(ContainFile(ctx, expectedFile))
 	})
+
+	It("should execute custom update", func(ctx context.Context) {
+		expectedFile := "/tmp/custom-update-test.txt"
+
+		run(server, integration.LifeCycleTest{
+			Resource: resource,
+			Create: integration.Operation{
+				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+					"create":   []string{"touch", expectedFile},
+					"update":   []string{"rm", expectedFile},
+					"triggers": []string{"a"},
+				}),
+				Hook: func(inputs, output pr.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(output["stdout"]).To(HavePropertyValue(""))
+					Expect(output["exitCode"]).To(HavePropertyValue(0))
+					Expect(output["create"]).To(Equal(inputs["create"]))
+					Expect(output["delete"]).To(Equal(inputs["delete"]))
+				},
+			},
+			Updates: []integration.Operation{{
+				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+					"create":   []string{"touch", expectedFile},
+					"update":   []string{"rm", expectedFile},
+					"triggers": []string{"b"},
+				}),
+				Hook: func(inputs, output pr.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(output["stdout"]).To(HavePropertyValue(""))
+					Expect(output["exitCode"]).To(HavePropertyValue(0))
+					Expect(output["create"]).To(Equal(inputs["create"]))
+					Expect(output["delete"]).To(Equal(inputs["delete"]))
+				},
+			}},
+		})
+
+		Expect(provisioner).NotTo(ContainFile(ctx, expectedFile))
+	})
 })

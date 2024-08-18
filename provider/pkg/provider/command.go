@@ -13,6 +13,7 @@ import (
 
 type CommandArgs struct {
 	Create   []string `pulumi:"create"`
+	Update   []string `pulumi:"update,optional"`
 	Delete   []string `pulumi:"delete,optional"`
 	Triggers []any    `pulumi:"triggers,optional"`
 }
@@ -70,14 +71,61 @@ func (Command) Create(ctx context.Context, name string, inputs CommandArgs, prev
 	return name, state, nil
 }
 
+// Update implements infer.CustomUpdate.
+func (Command) Update(ctx context.Context, id string, olds CommandState, news CommandArgs, preview bool) (CommandState, error) {
+	log := logger.FromContext(ctx)
+	state := CommandState{
+		CommandArgs: olds.CommandArgs,
+		ExitCode:    olds.ExitCode,
+		Stdout:      olds.Stdout,
+		Stderr:      olds.Stderr,
+	}
+
+	p, err := provisioner.FromContext(ctx)
+	if err != nil {
+		log.Error("Failed creating provisioner")
+		return state, fmt.Errorf("creating provisioner: %w", err)
+	}
+
+	if preview {
+		if _, err = p.Ping(ctx, &pb.PingRequest{}); err != nil {
+			log.WarningStatusf("Failed pinging provisioner: %s", err)
+		}
+
+		return state, nil
+	}
+
+	display := display(news.Update)
+	log.DebugStatus("Sending exec request to provisioner")
+	res, err := p.Exec(ctx, &pb.ExecRequest{
+		Args: news.Update,
+	})
+	if err != nil {
+		log.Errorf("command:%s %s", display, err)
+		return state, fmt.Errorf("sending exec request: %w", err)
+	}
+
+	if res.Result.ExitCode > 0 {
+		log.Error(display)
+		return state, fmt.Errorf("exec failed: %s", res.Result)
+	}
+
+	state.CommandArgs = news
+	state.ExitCode = int(res.Result.ExitCode)
+	state.Stdout = res.Result.Stdout
+	state.Stderr = res.Result.Stderr
+
+	log.InfoStatus(display)
+	return state, nil
+}
+
 // Delete implements infer.CustomDelete.
 func (Command) Delete(ctx context.Context, id string, props CommandState) error {
 	log := logger.FromContext(ctx)
-	log.Error("WTF MAN")
 	if len(props.Delete) == 0 {
+		log.DebugStatus("No custom delete provided")
 		return nil
 	}
-	log.Error("WTF MAN2")
 
 	p, err := provisioner.FromContext(ctx)
 	if err != nil {
@@ -105,6 +153,7 @@ func (Command) Delete(ctx context.Context, id string, props CommandState) error 
 }
 
 var _ = (infer.CustomCreate[CommandArgs, CommandState])((*Command)(nil))
+var _ = (infer.CustomUpdate[CommandArgs, CommandState])((*Command)(nil))
 var _ = (infer.CustomDelete[CommandState])((*Command)(nil))
 
 func display(args []string) string {
