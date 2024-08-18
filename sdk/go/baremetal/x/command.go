@@ -22,6 +22,7 @@ type Command struct {
 	Stderr   pulumix.Output[string]      `pulumi:"stderr"`
 	Stdout   pulumix.Output[string]      `pulumi:"stdout"`
 	Triggers pulumix.ArrayOutput[any]    `pulumi:"triggers"`
+	Update   pulumix.ArrayOutput[string] `pulumi:"update"`
 }
 
 // NewCommand registers a new resource with the given unique name, arguments, and options.
@@ -70,6 +71,7 @@ type commandArgs struct {
 	Create   []string      `pulumi:"create"`
 	Delete   []string      `pulumi:"delete"`
 	Triggers []interface{} `pulumi:"triggers"`
+	Update   []string      `pulumi:"update"`
 }
 
 // The set of arguments for constructing a Command resource.
@@ -77,6 +79,7 @@ type CommandArgs struct {
 	Create   pulumix.Input[[]string]
 	Delete   pulumix.Input[[]string]
 	Triggers pulumix.Input[[]any]
+	Update   pulumix.Input[[]string]
 }
 
 func (CommandArgs) ElementType() reflect.Type {
@@ -134,6 +137,12 @@ func (o CommandOutput) Triggers() pulumix.ArrayOutput[any] {
 	value := pulumix.Apply[Command](o, func(v Command) pulumix.ArrayOutput[any] { return v.Triggers })
 	unwrapped := pulumix.Flatten[[]interface{}, pulumix.ArrayOutput[any]](value)
 	return pulumix.ArrayOutput[any]{OutputState: unwrapped.OutputState}
+}
+
+func (o CommandOutput) Update() pulumix.ArrayOutput[string] {
+	value := pulumix.Apply[Command](o, func(v Command) pulumix.ArrayOutput[string] { return v.Update })
+	unwrapped := pulumix.Flatten[[]string, pulumix.ArrayOutput[string]](value)
+	return pulumix.ArrayOutput[string]{OutputState: unwrapped.OutputState}
 }
 
 func init() {

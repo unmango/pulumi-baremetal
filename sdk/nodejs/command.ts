@@ -37,6 +37,7 @@ export class Command extends pulumi.CustomResource {
     public /*out*/ readonly stderr!: pulumi.Output<string>;
     public /*out*/ readonly stdout!: pulumi.Output<string>;
     public readonly triggers!: pulumi.Output<any[] | undefined>;
+    public readonly update!: pulumi.Output<string[] | undefined>;
 
     /**
      * Create a Command resource with the given unique name, arguments, and options.
@@ -55,6 +56,7 @@ export class Command extends pulumi.CustomResource {
             resourceInputs["create"] = args ? args.create : undefined;
             resourceInputs["delete"] = args ? args.delete : undefined;
             resourceInputs["triggers"] = args ? args.triggers : undefined;
+            resourceInputs["update"] = args ? args.update : undefined;
             resourceInputs["exitCode"] = undefined /*out*/;
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
@@ -65,6 +67,7 @@ export class Command extends pulumi.CustomResource {
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
             resourceInputs["triggers"] = undefined /*out*/;
+            resourceInputs["update"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Command.__pulumiType, name, resourceInputs, opts);
@@ -78,4 +81,5 @@ export interface CommandArgs {
     create: pulumi.Input<pulumi.Input<string>[]>;
     delete?: pulumi.Input<pulumi.Input<string>[]>;
     triggers?: pulumi.Input<any[]>;
+    update?: pulumi.Input<pulumi.Input<string>[]>;
 }

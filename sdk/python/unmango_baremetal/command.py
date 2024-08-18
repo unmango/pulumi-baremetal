@@ -16,7 +16,8 @@ class CommandArgs:
     def __init__(__self__, *,
                  create: pulumi.Input[Sequence[pulumi.Input[str]]],
                  delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 triggers: Optional[pulumi.Input[Sequence[Any]]] = None):
+                 triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
+                 update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None):
         """
         The set of arguments for constructing a Command resource.
         """
@@ -25,6 +26,8 @@ class CommandArgs:
             pulumi.set(__self__, "delete", delete)
         if triggers is not None:
             pulumi.set(__self__, "triggers", triggers)
+        if update is not None:
+            pulumi.set(__self__, "update", update)
 
     @property
     @pulumi.getter
@@ -53,6 +56,15 @@ class CommandArgs:
     def triggers(self, value: Optional[pulumi.Input[Sequence[Any]]]):
         pulumi.set(self, "triggers", value)
 
+    @property
+    @pulumi.getter
+    def update(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
+        return pulumi.get(self, "update")
+
+    @update.setter
+    def update(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
+        pulumi.set(self, "update", value)
+
 
 class Command(pulumi.CustomResource):
     @overload
@@ -62,6 +74,7 @@ class Command(pulumi.CustomResource):
                  create: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
+                 update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  __props__=None):
         """
         Create a Command resource with the given unique name, props, and options.
@@ -94,6 +107,7 @@ class Command(pulumi.CustomResource):
                  create: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
+                 update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  __props__=None):
         opts = pulumi.ResourceOptions.merge(_utilities.get_resource_opts_defaults(), opts)
         if not isinstance(opts, pulumi.ResourceOptions):
@@ -108,6 +122,7 @@ class Command(pulumi.CustomResource):
             __props__.__dict__["create"] = create
             __props__.__dict__["delete"] = delete
             __props__.__dict__["triggers"] = triggers
+            __props__.__dict__["update"] = update
             __props__.__dict__["exit_code"] = None
             __props__.__dict__["stderr"] = None
             __props__.__dict__["stdout"] = None
@@ -139,6 +154,7 @@ class Command(pulumi.CustomResource):
         __props__.__dict__["stderr"] = None
         __props__.__dict__["stdout"] = None
         __props__.__dict__["triggers"] = None
+        __props__.__dict__["update"] = None
         return Command(resource_name, opts=opts, __props__=__props__)
 
     @property
@@ -170,4 +186,9 @@ class Command(pulumi.CustomResource):
     @pulumi.getter
     def triggers(self) -> pulumi.Output[Optional[Sequence[Any]]]:
         return pulumi.get(self, "triggers")
+
+    @property
+    @pulumi.getter
+    def update(self) -> pulumi.Output[Optional[Sequence[str]]]:
+        return pulumi.get(self, "update")
 

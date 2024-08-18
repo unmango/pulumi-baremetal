@@ -31,6 +31,9 @@ namespace UnMango.Baremetal
         [Output("triggers")]
         public Output<ImmutableArray<object>> Triggers { get; private set; } = null!;
 
+        [Output("update")]
+        public Output<ImmutableArray<string>> Update { get; private set; } = null!;
+
 
         /// <summary>
         /// Create a Command resource with the given unique name, arguments, and options.
@@ -99,6 +102,14 @@ namespace UnMango.Baremetal
         {
             get => _triggers ?? (_triggers = new InputList<object>());
             set => _triggers = value;
+        }
+
+        [Input("update")]
+        private InputList<string>? _update;
+        public InputList<string> Update
+        {
+            get => _update ?? (_update = new InputList<string>());
+            set => _update = value;
         }
 
         public CommandArgs()
