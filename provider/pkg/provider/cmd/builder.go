@@ -31,6 +31,12 @@ func (b *B) Arg(value string) {
 	}
 }
 
+func (b *B) ArgP(value *string) {
+	if value != nil {
+		b.Arg(*value)
+	}
+}
+
 func (b *B) Bin(bin pb.Bin) {
 	b.bin = &bin
 }
@@ -41,15 +47,33 @@ func (b *B) Op(input bool, name string) {
 	}
 }
 
+func (b *B) OpP(input *bool, name string) {
+	if input != nil {
+		b.Op(*input, name)
+	}
+}
+
 func (b *B) Opv(value, name string) {
 	if value != "" {
 		b.add(name, value)
 	}
 }
 
+func (b *B) OpvP(value *string, name string) {
+	if value != nil {
+		b.Opv(*value, name)
+	}
+}
+
 func (b *B) Opi(value int, name string) {
 	if value > 0 {
 		b.add(name, strconv.Itoa(value))
+	}
+}
+
+func (b *B) OpiP(value *int, name string) {
+	if value != nil {
+		b.Opi(*value, name)
 	}
 }
 

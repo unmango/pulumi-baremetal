@@ -13,35 +13,32 @@ import (
 type MktempArgs struct {
 	cmd.ArgsBase
 
-	Template  string `pulumi:"template,optional"`
-	Directory bool   `pulumi:"directory,optional"`
-	DryRun    bool   `pulumi:"dryRun,optional"`
-	Quiet     bool   `pulumi:"quiet,optional"`
-	Suffix    string `pulumi:"suffix,optional"`
-	P         string `pulumi:"p,optional"`
-	TmpDir    bool   `pulumi:"tmpdir,optional"`
-	T         bool   `pulumi:"t,optional"`
-	Help      bool   `pulumi:"help,optional"`
-	Version   bool   `pulumi:"version,optional"`
+	Template  *string `pulumi:"template,optional"`
+	Directory *bool   `pulumi:"directory,optional"`
+	DryRun    *bool   `pulumi:"dryRun,optional"`
+	Quiet     *bool   `pulumi:"quiet,optional"`
+	Suffix    *string `pulumi:"suffix,optional"`
+	P         *string `pulumi:"p,optional"`
+	TmpDir    *bool   `pulumi:"tmpdir,optional"`
+	T         *bool   `pulumi:"t,optional"`
+	Help      *bool   `pulumi:"help,optional"`
+	Version   *bool   `pulumi:"version,optional"`
 }
 
 // Cmd implements CommandArgs.
 func (m MktempArgs) Cmd() (*pb.Command, error) {
 	b := cmd.B{}
 
-	b.Op(m.Directory, "--directory")
-	b.Op(m.DryRun, "--dry-run")
-	b.Op(m.Quiet, "--quiet")
-	b.Opv(m.Suffix, "--suffix")
-	b.Opv(m.P, "-p")
-	b.Op(m.TmpDir, "--tmpdir")
-	b.Op(m.T, "-t")
-	b.Op(m.Help, "--help")
-	b.Op(m.Version, "--version")
-
-	if m.Template != "" {
-		b.Arg(m.Template)
-	}
+	b.OpP(m.Directory, "--directory")
+	b.OpP(m.DryRun, "--dry-run")
+	b.OpP(m.Quiet, "--quiet")
+	b.OpvP(m.Suffix, "--suffix")
+	b.OpvP(m.P, "-p")
+	b.OpP(m.TmpDir, "--tmpdir")
+	b.OpP(m.T, "-t")
+	b.OpP(m.Help, "--help")
+	b.OpP(m.Version, "--version")
+	b.ArgP(m.Template)
 
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_MKTEMP,

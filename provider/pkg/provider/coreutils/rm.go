@@ -14,24 +14,24 @@ import (
 type RmArgs struct {
 	cmd.ArgsBase
 
-	Dir           bool     `pulumi:"dir,optional"`
+	Dir           *bool    `pulumi:"dir,optional"`
 	Files         []string `pulumi:"files"`
-	Force         bool     `pulumi:"force,optional"`
-	Help          bool     `pulumi:"help,optional"`
-	OneFileSystem bool     `pulumi:"oneFileSystem,optional"`
-	Recursive     bool     `pulumi:"recursive,optional"`
-	Verbose       bool     `pulumi:"verbose,optional"`
+	Force         *bool    `pulumi:"force,optional"`
+	Help          *bool    `pulumi:"help,optional"`
+	OneFileSystem *bool    `pulumi:"oneFileSystem,optional"`
+	Recursive     *bool    `pulumi:"recursive,optional"`
+	Verbose       *bool    `pulumi:"verbose,optional"`
 }
 
 // Cmd implements CommandArgs.
 func (r RmArgs) Cmd() (*pb.Command, error) {
 	b := cmd.B{Args: r.Files}
 
-	b.Op(r.Dir, "--dir")
-	b.Op(r.Force, "--force")
-	b.Op(r.Help, "--help")
-	b.Op(r.OneFileSystem, "--one-file-system")
-	b.Op(r.Verbose, "--verbose")
+	b.OpP(r.Dir, "--dir")
+	b.OpP(r.Force, "--force")
+	b.OpP(r.Help, "--help")
+	b.OpP(r.OneFileSystem, "--one-file-system")
+	b.OpP(r.Verbose, "--verbose")
 
 	return &pb.Command{
 		Bin:  pb.Bin_BIN_RM,
