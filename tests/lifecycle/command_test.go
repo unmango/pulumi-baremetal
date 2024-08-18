@@ -13,7 +13,7 @@ import (
 )
 
 var _ = Describe("Command", func() {
-	var resource tokens.Type = "baremetal:command:Command"
+	var resource tokens.Type = "baremetal:index:Command"
 	var server integration.Server
 
 	BeforeEach(func(ctx context.Context) {
