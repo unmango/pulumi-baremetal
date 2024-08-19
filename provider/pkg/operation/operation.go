@@ -10,6 +10,9 @@ import (
 
 func Display(o *pb.Operation) string {
 	cmd := command.Display(o.Command)
+	if o.Result == nil {
+		return cmd
+	}
 
 	return fmt.Sprintf(
 		"exitCode: %d, command: %s",
@@ -36,6 +39,14 @@ func DisplayCommand(c *pb.Command, r *pb.Result) string {
 }
 
 func FromCreate(command *pb.Command, res *pb.CreateResponse) *pb.Operation {
+	if res == nil {
+		return &pb.Operation{
+			Command:      command,
+			CreatedFiles: []string{},
+			MovedFiles:   map[string]string{},
+		}
+	}
+
 	return &pb.Operation{
 		Command:      command,
 		Result:       res.Result,

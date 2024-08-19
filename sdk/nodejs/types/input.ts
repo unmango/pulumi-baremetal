@@ -6,6 +6,21 @@ import * as inputs from "../types/input";
 import * as outputs from "../types/output";
 
 export namespace coreutils {
+    export interface CatArgsArgs {
+        e?: pulumi.Input<boolean>;
+        files: pulumi.Input<pulumi.Input<string>[]>;
+        help?: pulumi.Input<boolean>;
+        number?: pulumi.Input<boolean>;
+        numberNonblank?: pulumi.Input<boolean>;
+        showAll?: pulumi.Input<boolean>;
+        showEnds?: pulumi.Input<boolean>;
+        showNonprinting?: pulumi.Input<boolean>;
+        showTabs?: pulumi.Input<boolean>;
+        squeezeBlank?: pulumi.Input<boolean>;
+        t?: pulumi.Input<boolean>;
+        version?: pulumi.Input<boolean>;
+    }
+
     export interface ChmodArgsArgs {
         changes?: pulumi.Input<boolean>;
         files: pulumi.Input<pulumi.Input<string>[]>;

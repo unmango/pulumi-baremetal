@@ -132,6 +132,7 @@ func (s *service) Create(ctx context.Context, req *pb.CreateRequest) (res *pb.Cr
 	}
 
 	log.InfoContext(ctx, "processed command result",
+		"result", result,
 		"created", createdFiles,
 		"moved", movedFiles,
 	)

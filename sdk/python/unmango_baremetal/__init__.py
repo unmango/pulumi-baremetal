@@ -29,6 +29,7 @@ _utilities.register(
   "mod": "coreutils",
   "fqn": "unmango_baremetal.coreutils",
   "classes": {
+   "baremetal:coreutils:Cat": "Cat",
    "baremetal:coreutils:Chmod": "Chmod",
    "baremetal:coreutils:Mkdir": "Mkdir",
    "baremetal:coreutils:Mktemp": "Mktemp",

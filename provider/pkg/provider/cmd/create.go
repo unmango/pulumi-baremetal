@@ -47,7 +47,7 @@ func (s *State[T]) Create(ctx context.Context, inputs CommandArgs[T], preview bo
 	op := operation.FromCreate(command, res)
 	display := operation.Display(op)
 
-	if res.Result.ExitCode > 0 {
+	if res.Result == nil || res.Result.ExitCode > 0 {
 		log.Error(display)
 		return fmt.Errorf("create failed: %s", res.Result)
 	}

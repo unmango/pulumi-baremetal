@@ -6,6 +6,21 @@ import * as inputs from "../types/input";
 import * as outputs from "../types/output";
 
 export namespace coreutils {
+    export interface CatArgs {
+        e?: boolean;
+        files: string[];
+        help?: boolean;
+        number?: boolean;
+        numberNonblank?: boolean;
+        showAll?: boolean;
+        showEnds?: boolean;
+        showNonprinting?: boolean;
+        showTabs?: boolean;
+        squeezeBlank?: boolean;
+        t?: boolean;
+        version?: boolean;
+    }
+
     export interface ChmodArgs {
         changes?: boolean;
         files: string[];

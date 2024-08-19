@@ -83,4 +83,5 @@ enum Bin {
   BIN_CHMOD = 8;
   BIN_TOUCH = 9;
   BIN_KUBEADM = 10;
+  BIN_CAT = 11;
 }

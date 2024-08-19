@@ -53,6 +53,7 @@ func Provider() p.Provider {
 			infer.Resource[coreutils.Tar](),
 			infer.Resource[coreutils.Wget](),
 			infer.Resource[coreutils.Chmod](),
+			infer.Resource[coreutils.Cat](),
 			infer.Resource[coreutils.Mkdir](),
 			infer.Resource[coreutils.Mv](),
 			infer.Resource[coreutils.Rm](),

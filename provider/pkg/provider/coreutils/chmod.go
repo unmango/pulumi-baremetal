@@ -91,4 +91,4 @@ func (Chmod) Delete(ctx context.Context, id string, props ChmodState) error {
 
 var _ = (infer.CustomCreate[cmd.CommandArgs[ChmodArgs], ChmodState])((*Chmod)(nil))
 var _ = (infer.CustomUpdate[cmd.CommandArgs[ChmodArgs], ChmodState])((*Chmod)(nil))
-var _ = (infer.CustomDelete[MkdirState])((*Mkdir)(nil))
+var _ = (infer.CustomDelete[ChmodState])((*Chmod)(nil))
