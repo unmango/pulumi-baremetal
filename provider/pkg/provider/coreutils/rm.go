@@ -62,7 +62,7 @@ func (Rm) Diff(ctx context.Context, id string, olds RmState, news cmd.CommandArg
 		return provider.DiffResponse{}, fmt.Errorf("rm: %w", err)
 	}
 
-	if news.Args.Dir != olds.Args.Dir {
+	if cmd.Changed(news.Args.Dir, olds.Args.Dir) {
 		diff["args.dir"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 
@@ -70,15 +70,15 @@ func (Rm) Diff(ctx context.Context, id string, olds RmState, news cmd.CommandArg
 		diff["args.files"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 
-	if news.Args.Force != olds.Args.Force {
+	if cmd.Changed(news.Args.Force, olds.Args.Force) {
 		diff["args.force"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 
-	if news.Args.OneFileSystem != olds.Args.OneFileSystem {
+	if cmd.Changed(news.Args.OneFileSystem, olds.Args.OneFileSystem) {
 		diff["args.oneFileSystem"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 
-	if news.Args.Recursive != olds.Args.Recursive {
+	if cmd.Changed(news.Args.Recursive, olds.Args.Recursive) {
 		diff["args.recursive"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 

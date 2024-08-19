@@ -64,11 +64,11 @@ func (Tee) Diff(ctx context.Context, id string, olds TeeState, news cmd.CommandA
 		return provider.DiffResponse{}, fmt.Errorf("tee: %w", err)
 	}
 
-	if news.Args.Append != olds.Args.Append {
+	if cmd.Changed(news.Args.Append, olds.Args.Append) {
 		diff["args.append"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 
-	if news.Args.Stdin != olds.Args.Stdin {
+	if cmd.Changed(news.Args.Stdin, olds.Args.Stdin) {
 		diff["args.stdin"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 

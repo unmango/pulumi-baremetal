@@ -74,9 +74,48 @@ var _ = Describe("Mktemp", func() {
 				},
 			},
 		})
+	})
 
-		_, err := provisioner.Exec(ctx, "touch", "blah")
-		Expect(err).NotTo(HaveOccurred())
+	It("should not execute when unchanged", func(ctx context.Context) {
+		var firstDir string
+
+		run(server, integration.LifeCycleTest{
+			Resource: resource,
+			Create: integration.Operation{
+				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+					"args": map[string]interface{}{
+						"tmpdir": true,
+					},
+				}),
+				Hook: func(inputs, output pr.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(output["stdout"].V).NotTo(BeEmpty())
+					Expect(output["exitCode"].V).To(BeEquivalentTo(0))
+					Expect(output["createdFiles"].V).To(BeEmpty())
+					Expect(output["movedFiles"].V).To(BeEmpty())
+					firstDir = output["stdout"].V.(string)
+				},
+			},
+			Updates: []integration.Operation{
+				{
+					Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+						"args": map[string]interface{}{
+							"tmpdir": true,
+						},
+					}),
+					Hook: func(inputs, output pr.PropertyMap) {
+						Expect(output["stderr"]).To(HavePropertyValue(""))
+						Expect(firstDir).NotTo(BeEmpty())
+						Expect(output["stdout"]).To(HavePropertyValue(firstDir))
+						Expect(output["exitCode"].V).To(BeEquivalentTo(0))
+						Expect(output["triggers"]).To(Equal(pr.NewArrayProperty([]pr.PropertyValue{
+							pr.NewProperty("a trigger"),
+						})))
+						Expect(inputs["args"]).To(Equal(output["args"]))
+					},
+				},
+			},
+		})
 	})
 
 	It("should fail when template is invalid", func() {

@@ -101,27 +101,27 @@ func (Mv) Diff(ctx context.Context, id string, olds MvState, news cmd.CommandArg
 
 	defaultKind := news.UpdateKind()
 
-	if news.Args.Backup != olds.Args.Backup {
+	if cmd.Changed(news.Args.Backup, olds.Args.Backup) {
 		diff["args.backup"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
-	if news.Args.Destination != olds.Args.Destination {
+	if cmd.Changed(news.Args.Destination, olds.Args.Destination) {
 		diff["args.destination"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
-	if news.Args.Directory != olds.Args.Directory {
+	if cmd.Changed(news.Args.Directory, olds.Args.Directory) {
 		diff["args.directory"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
-	if news.Args.Force != olds.Args.Force {
+	if cmd.Changed(news.Args.Force, olds.Args.Force) {
 		diff["args.force"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
-	if news.Args.NoClobber != olds.Args.NoClobber {
+	if cmd.Changed(news.Args.NoClobber, olds.Args.NoClobber) {
 		diff["args.noClobber"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
-	if news.Args.NoTargetDirectory != olds.Args.NoTargetDirectory {
+	if cmd.Changed(news.Args.NoTargetDirectory, olds.Args.NoTargetDirectory) {
 		diff["args.noTargetDirectory"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
@@ -129,19 +129,19 @@ func (Mv) Diff(ctx context.Context, id string, olds MvState, news cmd.CommandArg
 		diff["args.source"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
-	if news.Args.StripTrailingSlashes != olds.Args.StripTrailingSlashes {
+	if cmd.Changed(news.Args.StripTrailingSlashes, olds.Args.StripTrailingSlashes) {
 		diff["args.stripTrailingSlashes"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
-	if news.Args.Suffix != olds.Args.Suffix {
+	if cmd.Changed(news.Args.Suffix, olds.Args.Suffix) {
 		diff["args.suffix"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
-	if news.Args.TargetDirectory != olds.Args.TargetDirectory {
+	if cmd.Changed(news.Args.TargetDirectory, olds.Args.TargetDirectory) {
 		diff["args.targetDirectory"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 
-	if news.Args.Update != olds.Args.Update {
+	if cmd.Changed(news.Args.Update, olds.Args.Update) {
 		diff["args.update"] = provider.PropertyDiff{Kind: defaultKind}
 	}
 

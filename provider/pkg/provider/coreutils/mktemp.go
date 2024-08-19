@@ -69,36 +69,32 @@ func (Mktemp) Diff(ctx context.Context, id string, olds MktempState, news cmd.Co
 		return provider.DiffResponse{}, fmt.Errorf("mv: %w", err)
 	}
 
-	if news.Args.Directory != olds.Args.Directory {
+	if cmd.Changed(news.Args.Directory, olds.Args.Directory) {
 		diff["args.directory"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 
-	if news.Args.DryRun != olds.Args.DryRun {
-		diff["args.destination"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
+	if cmd.Changed(news.Args.DryRun, olds.Args.DryRun) {
+		diff["args.dryRun"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 
-	if news.Args.Quiet != olds.Args.Quiet {
+	if cmd.Changed(news.Args.Quiet, olds.Args.Quiet) {
 		diff["args.quiet"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 
-	if news.Args.Suffix != olds.Args.Suffix {
+	if cmd.Changed(news.Args.Suffix, olds.Args.Suffix) {
 		diff["args.suffix"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 
-	if news.Args.T != olds.Args.T {
+	if cmd.Changed(news.Args.T, olds.Args.T) {
 		diff["args.t"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 
-	if news.Args.Template != olds.Args.Template {
+	if cmd.Changed(news.Args.Template, olds.Args.Template) {
 		diff["args.template"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 
-	if news.Args.TmpDir != olds.Args.TmpDir {
+	if cmd.Changed(news.Args.TmpDir, olds.Args.TmpDir) {
 		diff["args.tmpDir"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
-	}
-
-	if news.Args.Directory != olds.Args.Directory {
-		diff["args.suffix"] = provider.PropertyDiff{Kind: provider.UpdateReplace}
 	}
 
 	return provider.DiffResponse{
