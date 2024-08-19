@@ -20,6 +20,7 @@ var (
 		pb.Bin_BIN_TEE:     "tee",
 		pb.Bin_BIN_WGET:    "wget",
 		pb.Bin_BIN_KUBEADM: "kubeadm",
+		pb.Bin_BIN_CAT:     "cat",
 	}
 	ValueToBin = make(map[string]pb.Bin, len(BinToValue))
 )
