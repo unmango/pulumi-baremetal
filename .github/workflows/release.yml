@@ -34,11 +34,19 @@ jobs:
         go-version-file: provider/go.mod
         cache-dependency-path: provider/go.sum
 
+    - id: version
+      name: Set Provider Version
+      uses: pulumi/provider-version-action@v1
+      with:
+        set-env: PROVIDER_VERSION
+
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v6
       with:
         version: '~> v2'
         args: release
+      env:
+        GORELEASER_CURRENT_TAG: v${{ steps.version.outputs.version }}
 
     - name: Upload binaries
       uses: actions/upload-artifact@v4
