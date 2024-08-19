@@ -24,16 +24,19 @@ func Provider() p.Provider {
 						"Pulumi":         "[3.65.0.0,4)",
 						"Pulumi.Command": "1.0.*",
 					},
+					"respectSchemaVersion": true,
 				},
 				"go": map[string]any{
-					"importBasePath": "github.com/unmango/pulumi-baremetal/sdk/go/baremetal",
-					"generics":       "side-by-side",
+					"importBasePath":       "github.com/unmango/pulumi-baremetal/sdk/go/baremetal",
+					"generics":             "side-by-side",
+					"respectSchemaVersion": true,
 				},
 				"nodejs": map[string]any{
 					"packageName": "@unmango/baremetal",
 					"dependencies": map[string]any{
 						"@pulumi/command": "^1.0.0",
 					},
+					"respectSchemaVersion": true,
 				},
 				"python": map[string]any{
 					"packageName": "unmango_baremetal",
@@ -43,6 +46,7 @@ func Provider() p.Provider {
 					"pyproject": map[string]bool{
 						"enabled": true,
 					},
+					"respectSchemaVersion": true,
 				},
 			},
 		},

@@ -1,6 +1,6 @@
 {
     "name": "@unmango/baremetal",
-    "version": "${VERSION}",
+    "version": "0.0.35",
     "scripts": {
         "build": "tsc"
     },
@@ -15,6 +15,7 @@
     "pulumi": {
         "resource": true,
         "name": "baremetal",
+        "version": "0.0.35",
         "server": "github://api.github.com/unmango"
     }
 }

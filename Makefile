@@ -97,7 +97,7 @@ sdk/python: $(SCHEMA_FILE)
 dotnet_sdk: sdk/dotnet
 	cd ${PACKDIR}/dotnet/ && \
 		echo "${VERSION_GENERIC}" >version.txt && \
-		dotnet build
+		dotnet build /p:Version=${VERSION_GENERIC}
 
 go_sdk: sdk/go
 
