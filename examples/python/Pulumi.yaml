@@ -1,6 +1,0 @@
-name: provider-baremetal-native
-runtime: python
-plugins:
-  providers:
-    - name: baremetal
-      path: ../../bin
