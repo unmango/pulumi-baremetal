@@ -14,6 +14,121 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
+type CatArgsType struct {
+	E               *bool    `pulumi:"e"`
+	Files           []string `pulumi:"files"`
+	Help            *bool    `pulumi:"help"`
+	Number          *bool    `pulumi:"number"`
+	NumberNonblank  *bool    `pulumi:"numberNonblank"`
+	ShowAll         *bool    `pulumi:"showAll"`
+	ShowEnds        *bool    `pulumi:"showEnds"`
+	ShowNonprinting *bool    `pulumi:"showNonprinting"`
+	ShowTabs        *bool    `pulumi:"showTabs"`
+	SqueezeBlank    *bool    `pulumi:"squeezeBlank"`
+	T               *bool    `pulumi:"t"`
+	Version         *bool    `pulumi:"version"`
+}
+
+type CatArgsTypeArgs struct {
+	E               pulumix.Input[*bool]    `pulumi:"e"`
+	Files           pulumix.Input[[]string] `pulumi:"files"`
+	Help            pulumix.Input[*bool]    `pulumi:"help"`
+	Number          pulumix.Input[*bool]    `pulumi:"number"`
+	NumberNonblank  pulumix.Input[*bool]    `pulumi:"numberNonblank"`
+	ShowAll         pulumix.Input[*bool]    `pulumi:"showAll"`
+	ShowEnds        pulumix.Input[*bool]    `pulumi:"showEnds"`
+	ShowNonprinting pulumix.Input[*bool]    `pulumi:"showNonprinting"`
+	ShowTabs        pulumix.Input[*bool]    `pulumi:"showTabs"`
+	SqueezeBlank    pulumix.Input[*bool]    `pulumi:"squeezeBlank"`
+	T               pulumix.Input[*bool]    `pulumi:"t"`
+	Version         pulumix.Input[*bool]    `pulumi:"version"`
+}
+
+func (CatArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*CatArgsType)(nil)).Elem()
+}
+
+func (i CatArgsTypeArgs) ToCatArgsTypeOutput() CatArgsTypeOutput {
+	return i.ToCatArgsTypeOutputWithContext(context.Background())
+}
+
+func (i CatArgsTypeArgs) ToCatArgsTypeOutputWithContext(ctx context.Context) CatArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CatArgsTypeOutput)
+}
+
+func (i *CatArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[*CatArgsTypeArgs] {
+	return pulumix.Val(i)
+}
+
+type CatArgsTypeOutput struct{ *pulumi.OutputState }
+
+func (CatArgsTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*CatArgsType)(nil)).Elem()
+}
+
+func (o CatArgsTypeOutput) ToCatArgsTypeOutput() CatArgsTypeOutput {
+	return o
+}
+
+func (o CatArgsTypeOutput) ToCatArgsTypeOutputWithContext(ctx context.Context) CatArgsTypeOutput {
+	return o
+}
+
+func (o CatArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[CatArgsType] {
+	return pulumix.Output[CatArgsType]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o CatArgsTypeOutput) E() pulumix.Output[*bool] {
+	return pulumix.Apply[CatArgsType](o, func(v CatArgsType) *bool { return v.E })
+}
+
+func (o CatArgsTypeOutput) Files() pulumix.ArrayOutput[string] {
+	value := pulumix.Apply[CatArgsType](o, func(v CatArgsType) []string { return v.Files })
+	return pulumix.ArrayOutput[string]{OutputState: value.OutputState}
+}
+
+func (o CatArgsTypeOutput) Help() pulumix.Output[*bool] {
+	return pulumix.Apply[CatArgsType](o, func(v CatArgsType) *bool { return v.Help })
+}
+
+func (o CatArgsTypeOutput) Number() pulumix.Output[*bool] {
+	return pulumix.Apply[CatArgsType](o, func(v CatArgsType) *bool { return v.Number })
+}
+
+func (o CatArgsTypeOutput) NumberNonblank() pulumix.Output[*bool] {
+	return pulumix.Apply[CatArgsType](o, func(v CatArgsType) *bool { return v.NumberNonblank })
+}
+
+func (o CatArgsTypeOutput) ShowAll() pulumix.Output[*bool] {
+	return pulumix.Apply[CatArgsType](o, func(v CatArgsType) *bool { return v.ShowAll })
+}
+
+func (o CatArgsTypeOutput) ShowEnds() pulumix.Output[*bool] {
+	return pulumix.Apply[CatArgsType](o, func(v CatArgsType) *bool { return v.ShowEnds })
+}
+
+func (o CatArgsTypeOutput) ShowNonprinting() pulumix.Output[*bool] {
+	return pulumix.Apply[CatArgsType](o, func(v CatArgsType) *bool { return v.ShowNonprinting })
+}
+
+func (o CatArgsTypeOutput) ShowTabs() pulumix.Output[*bool] {
+	return pulumix.Apply[CatArgsType](o, func(v CatArgsType) *bool { return v.ShowTabs })
+}
+
+func (o CatArgsTypeOutput) SqueezeBlank() pulumix.Output[*bool] {
+	return pulumix.Apply[CatArgsType](o, func(v CatArgsType) *bool { return v.SqueezeBlank })
+}
+
+func (o CatArgsTypeOutput) T() pulumix.Output[*bool] {
+	return pulumix.Apply[CatArgsType](o, func(v CatArgsType) *bool { return v.T })
+}
+
+func (o CatArgsTypeOutput) Version() pulumix.Output[*bool] {
+	return pulumix.Apply[CatArgsType](o, func(v CatArgsType) *bool { return v.Version })
+}
+
 type ChmodArgsType struct {
 	Changes        *bool    `pulumi:"changes"`
 	Files          []string `pulumi:"files"`
@@ -1200,6 +1315,7 @@ func (o WgetArgsTypeOutput) Wait() pulumix.Output[*string] {
 }
 
 func init() {
+	pulumi.RegisterOutputType(CatArgsTypeOutput{})
 	pulumi.RegisterOutputType(ChmodArgsTypeOutput{})
 	pulumi.RegisterOutputType(MkdirArgsTypeOutput{})
 	pulumi.RegisterOutputType(MktempArgsTypeOutput{})

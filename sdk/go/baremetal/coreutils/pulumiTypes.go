@@ -14,6 +14,133 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
+type CatArgsType struct {
+	E               *bool    `pulumi:"e"`
+	Files           []string `pulumi:"files"`
+	Help            *bool    `pulumi:"help"`
+	Number          *bool    `pulumi:"number"`
+	NumberNonblank  *bool    `pulumi:"numberNonblank"`
+	ShowAll         *bool    `pulumi:"showAll"`
+	ShowEnds        *bool    `pulumi:"showEnds"`
+	ShowNonprinting *bool    `pulumi:"showNonprinting"`
+	ShowTabs        *bool    `pulumi:"showTabs"`
+	SqueezeBlank    *bool    `pulumi:"squeezeBlank"`
+	T               *bool    `pulumi:"t"`
+	Version         *bool    `pulumi:"version"`
+}
+
+// CatArgsTypeInput is an input type that accepts CatArgsTypeArgs and CatArgsTypeOutput values.
+// You can construct a concrete instance of `CatArgsTypeInput` via:
+//
+//	CatArgsTypeArgs{...}
+type CatArgsTypeInput interface {
+	pulumi.Input
+
+	ToCatArgsTypeOutput() CatArgsTypeOutput
+	ToCatArgsTypeOutputWithContext(context.Context) CatArgsTypeOutput
+}
+
+type CatArgsTypeArgs struct {
+	E               pulumi.BoolPtrInput     `pulumi:"e"`
+	Files           pulumi.StringArrayInput `pulumi:"files"`
+	Help            pulumi.BoolPtrInput     `pulumi:"help"`
+	Number          pulumi.BoolPtrInput     `pulumi:"number"`
+	NumberNonblank  pulumi.BoolPtrInput     `pulumi:"numberNonblank"`
+	ShowAll         pulumi.BoolPtrInput     `pulumi:"showAll"`
+	ShowEnds        pulumi.BoolPtrInput     `pulumi:"showEnds"`
+	ShowNonprinting pulumi.BoolPtrInput     `pulumi:"showNonprinting"`
+	ShowTabs        pulumi.BoolPtrInput     `pulumi:"showTabs"`
+	SqueezeBlank    pulumi.BoolPtrInput     `pulumi:"squeezeBlank"`
+	T               pulumi.BoolPtrInput     `pulumi:"t"`
+	Version         pulumi.BoolPtrInput     `pulumi:"version"`
+}
+
+func (CatArgsTypeArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*CatArgsType)(nil)).Elem()
+}
+
+func (i CatArgsTypeArgs) ToCatArgsTypeOutput() CatArgsTypeOutput {
+	return i.ToCatArgsTypeOutputWithContext(context.Background())
+}
+
+func (i CatArgsTypeArgs) ToCatArgsTypeOutputWithContext(ctx context.Context) CatArgsTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(CatArgsTypeOutput)
+}
+
+func (i CatArgsTypeArgs) ToOutput(ctx context.Context) pulumix.Output[CatArgsType] {
+	return pulumix.Output[CatArgsType]{
+		OutputState: i.ToCatArgsTypeOutputWithContext(ctx).OutputState,
+	}
+}
+
+type CatArgsTypeOutput struct{ *pulumi.OutputState }
+
+func (CatArgsTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*CatArgsType)(nil)).Elem()
+}
+
+func (o CatArgsTypeOutput) ToCatArgsTypeOutput() CatArgsTypeOutput {
+	return o
+}
+
+func (o CatArgsTypeOutput) ToCatArgsTypeOutputWithContext(ctx context.Context) CatArgsTypeOutput {
+	return o
+}
+
+func (o CatArgsTypeOutput) ToOutput(ctx context.Context) pulumix.Output[CatArgsType] {
+	return pulumix.Output[CatArgsType]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o CatArgsTypeOutput) E() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v CatArgsType) *bool { return v.E }).(pulumi.BoolPtrOutput)
+}
+
+func (o CatArgsTypeOutput) Files() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v CatArgsType) []string { return v.Files }).(pulumi.StringArrayOutput)
+}
+
+func (o CatArgsTypeOutput) Help() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v CatArgsType) *bool { return v.Help }).(pulumi.BoolPtrOutput)
+}
+
+func (o CatArgsTypeOutput) Number() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v CatArgsType) *bool { return v.Number }).(pulumi.BoolPtrOutput)
+}
+
+func (o CatArgsTypeOutput) NumberNonblank() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v CatArgsType) *bool { return v.NumberNonblank }).(pulumi.BoolPtrOutput)
+}
+
+func (o CatArgsTypeOutput) ShowAll() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v CatArgsType) *bool { return v.ShowAll }).(pulumi.BoolPtrOutput)
+}
+
+func (o CatArgsTypeOutput) ShowEnds() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v CatArgsType) *bool { return v.ShowEnds }).(pulumi.BoolPtrOutput)
+}
+
+func (o CatArgsTypeOutput) ShowNonprinting() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v CatArgsType) *bool { return v.ShowNonprinting }).(pulumi.BoolPtrOutput)
+}
+
+func (o CatArgsTypeOutput) ShowTabs() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v CatArgsType) *bool { return v.ShowTabs }).(pulumi.BoolPtrOutput)
+}
+
+func (o CatArgsTypeOutput) SqueezeBlank() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v CatArgsType) *bool { return v.SqueezeBlank }).(pulumi.BoolPtrOutput)
+}
+
+func (o CatArgsTypeOutput) T() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v CatArgsType) *bool { return v.T }).(pulumi.BoolPtrOutput)
+}
+
+func (o CatArgsTypeOutput) Version() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v CatArgsType) *bool { return v.Version }).(pulumi.BoolPtrOutput)
+}
+
 type ChmodArgsType struct {
 	Changes        *bool    `pulumi:"changes"`
 	Files          []string `pulumi:"files"`
@@ -1295,6 +1422,7 @@ func (o WgetArgsTypeOutput) Wait() pulumi.StringPtrOutput {
 }
 
 func init() {
+	pulumi.RegisterInputType(reflect.TypeOf((*CatArgsTypeInput)(nil)).Elem(), CatArgsTypeArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*ChmodArgsTypeInput)(nil)).Elem(), ChmodArgsTypeArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*MkdirArgsTypeInput)(nil)).Elem(), MkdirArgsTypeArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*MktempArgsTypeInput)(nil)).Elem(), MktempArgsTypeArgs{})
@@ -1303,6 +1431,7 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*TarArgsTypeInput)(nil)).Elem(), TarArgsTypeArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*TeeArgsTypeInput)(nil)).Elem(), TeeArgsTypeArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*WgetArgsTypeInput)(nil)).Elem(), WgetArgsTypeArgs{})
+	pulumi.RegisterOutputType(CatArgsTypeOutput{})
 	pulumi.RegisterOutputType(ChmodArgsTypeOutput{})
 	pulumi.RegisterOutputType(MkdirArgsTypeOutput{})
 	pulumi.RegisterOutputType(MktempArgsTypeOutput{})

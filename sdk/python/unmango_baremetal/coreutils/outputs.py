@@ -10,6 +10,7 @@ from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 
 __all__ = [
+    'CatArgs',
     'ChmodArgs',
     'MkdirArgs',
     'MktempArgs',
@@ -19,6 +20,133 @@ __all__ = [
     'TeeArgs',
     'WgetArgs',
 ]
+
+@pulumi.output_type
+class CatArgs(dict):
+    @staticmethod
+    def __key_warning(key: str):
+        suggest = None
+        if key == "numberNonblank":
+            suggest = "number_nonblank"
+        elif key == "showAll":
+            suggest = "show_all"
+        elif key == "showEnds":
+            suggest = "show_ends"
+        elif key == "showNonprinting":
+            suggest = "show_nonprinting"
+        elif key == "showTabs":
+            suggest = "show_tabs"
+        elif key == "squeezeBlank":
+            suggest = "squeeze_blank"
+
+        if suggest:
+            pulumi.log.warn(f"Key '{key}' not found in CatArgs. Access the value via the '{suggest}' property getter instead.")
+
+    def __getitem__(self, key: str) -> Any:
+        CatArgs.__key_warning(key)
+        return super().__getitem__(key)
+
+    def get(self, key: str, default = None) -> Any:
+        CatArgs.__key_warning(key)
+        return super().get(key, default)
+
+    def __init__(__self__, *,
+                 files: Sequence[str],
+                 e: Optional[bool] = None,
+                 help: Optional[bool] = None,
+                 number: Optional[bool] = None,
+                 number_nonblank: Optional[bool] = None,
+                 show_all: Optional[bool] = None,
+                 show_ends: Optional[bool] = None,
+                 show_nonprinting: Optional[bool] = None,
+                 show_tabs: Optional[bool] = None,
+                 squeeze_blank: Optional[bool] = None,
+                 t: Optional[bool] = None,
+                 version: Optional[bool] = None):
+        pulumi.set(__self__, "files", files)
+        if e is not None:
+            pulumi.set(__self__, "e", e)
+        if help is not None:
+            pulumi.set(__self__, "help", help)
+        if number is not None:
+            pulumi.set(__self__, "number", number)
+        if number_nonblank is not None:
+            pulumi.set(__self__, "number_nonblank", number_nonblank)
+        if show_all is not None:
+            pulumi.set(__self__, "show_all", show_all)
+        if show_ends is not None:
+            pulumi.set(__self__, "show_ends", show_ends)
+        if show_nonprinting is not None:
+            pulumi.set(__self__, "show_nonprinting", show_nonprinting)
+        if show_tabs is not None:
+            pulumi.set(__self__, "show_tabs", show_tabs)
+        if squeeze_blank is not None:
+            pulumi.set(__self__, "squeeze_blank", squeeze_blank)
+        if t is not None:
+            pulumi.set(__self__, "t", t)
+        if version is not None:
+            pulumi.set(__self__, "version", version)
+
+    @property
+    @pulumi.getter
+    def files(self) -> Sequence[str]:
+        return pulumi.get(self, "files")
+
+    @property
+    @pulumi.getter
+    def e(self) -> Optional[bool]:
+        return pulumi.get(self, "e")
+
+    @property
+    @pulumi.getter
+    def help(self) -> Optional[bool]:
+        return pulumi.get(self, "help")
+
+    @property
+    @pulumi.getter
+    def number(self) -> Optional[bool]:
+        return pulumi.get(self, "number")
+
+    @property
+    @pulumi.getter(name="numberNonblank")
+    def number_nonblank(self) -> Optional[bool]:
+        return pulumi.get(self, "number_nonblank")
+
+    @property
+    @pulumi.getter(name="showAll")
+    def show_all(self) -> Optional[bool]:
+        return pulumi.get(self, "show_all")
+
+    @property
+    @pulumi.getter(name="showEnds")
+    def show_ends(self) -> Optional[bool]:
+        return pulumi.get(self, "show_ends")
+
+    @property
+    @pulumi.getter(name="showNonprinting")
+    def show_nonprinting(self) -> Optional[bool]:
+        return pulumi.get(self, "show_nonprinting")
+
+    @property
+    @pulumi.getter(name="showTabs")
+    def show_tabs(self) -> Optional[bool]:
+        return pulumi.get(self, "show_tabs")
+
+    @property
+    @pulumi.getter(name="squeezeBlank")
+    def squeeze_blank(self) -> Optional[bool]:
+        return pulumi.get(self, "squeeze_blank")
+
+    @property
+    @pulumi.getter
+    def t(self) -> Optional[bool]:
+        return pulumi.get(self, "t")
+
+    @property
+    @pulumi.getter
+    def version(self) -> Optional[bool]:
+        return pulumi.get(self, "version")
+
 
 @pulumi.output_type
 class ChmodArgs(dict):

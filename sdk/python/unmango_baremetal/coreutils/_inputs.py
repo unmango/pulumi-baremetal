@@ -10,6 +10,7 @@ from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 
 __all__ = [
+    'CatArgsArgs',
     'ChmodArgsArgs',
     'MkdirArgsArgs',
     'MktempArgsArgs',
@@ -19,6 +20,154 @@ __all__ = [
     'TeeArgsArgs',
     'WgetArgsArgs',
 ]
+
+@pulumi.input_type
+class CatArgsArgs:
+    def __init__(__self__, *,
+                 files: pulumi.Input[Sequence[pulumi.Input[str]]],
+                 e: Optional[pulumi.Input[bool]] = None,
+                 help: Optional[pulumi.Input[bool]] = None,
+                 number: Optional[pulumi.Input[bool]] = None,
+                 number_nonblank: Optional[pulumi.Input[bool]] = None,
+                 show_all: Optional[pulumi.Input[bool]] = None,
+                 show_ends: Optional[pulumi.Input[bool]] = None,
+                 show_nonprinting: Optional[pulumi.Input[bool]] = None,
+                 show_tabs: Optional[pulumi.Input[bool]] = None,
+                 squeeze_blank: Optional[pulumi.Input[bool]] = None,
+                 t: Optional[pulumi.Input[bool]] = None,
+                 version: Optional[pulumi.Input[bool]] = None):
+        pulumi.set(__self__, "files", files)
+        if e is not None:
+            pulumi.set(__self__, "e", e)
+        if help is not None:
+            pulumi.set(__self__, "help", help)
+        if number is not None:
+            pulumi.set(__self__, "number", number)
+        if number_nonblank is not None:
+            pulumi.set(__self__, "number_nonblank", number_nonblank)
+        if show_all is not None:
+            pulumi.set(__self__, "show_all", show_all)
+        if show_ends is not None:
+            pulumi.set(__self__, "show_ends", show_ends)
+        if show_nonprinting is not None:
+            pulumi.set(__self__, "show_nonprinting", show_nonprinting)
+        if show_tabs is not None:
+            pulumi.set(__self__, "show_tabs", show_tabs)
+        if squeeze_blank is not None:
+            pulumi.set(__self__, "squeeze_blank", squeeze_blank)
+        if t is not None:
+            pulumi.set(__self__, "t", t)
+        if version is not None:
+            pulumi.set(__self__, "version", version)
+
+    @property
+    @pulumi.getter
+    def files(self) -> pulumi.Input[Sequence[pulumi.Input[str]]]:
+        return pulumi.get(self, "files")
+
+    @files.setter
+    def files(self, value: pulumi.Input[Sequence[pulumi.Input[str]]]):
+        pulumi.set(self, "files", value)
+
+    @property
+    @pulumi.getter
+    def e(self) -> Optional[pulumi.Input[bool]]:
+        return pulumi.get(self, "e")
+
+    @e.setter
+    def e(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "e", value)
+
+    @property
+    @pulumi.getter
+    def help(self) -> Optional[pulumi.Input[bool]]:
+        return pulumi.get(self, "help")
+
+    @help.setter
+    def help(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "help", value)
+
+    @property
+    @pulumi.getter
+    def number(self) -> Optional[pulumi.Input[bool]]:
+        return pulumi.get(self, "number")
+
+    @number.setter
+    def number(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "number", value)
+
+    @property
+    @pulumi.getter(name="numberNonblank")
+    def number_nonblank(self) -> Optional[pulumi.Input[bool]]:
+        return pulumi.get(self, "number_nonblank")
+
+    @number_nonblank.setter
+    def number_nonblank(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "number_nonblank", value)
+
+    @property
+    @pulumi.getter(name="showAll")
+    def show_all(self) -> Optional[pulumi.Input[bool]]:
+        return pulumi.get(self, "show_all")
+
+    @show_all.setter
+    def show_all(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "show_all", value)
+
+    @property
+    @pulumi.getter(name="showEnds")
+    def show_ends(self) -> Optional[pulumi.Input[bool]]:
+        return pulumi.get(self, "show_ends")
+
+    @show_ends.setter
+    def show_ends(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "show_ends", value)
+
+    @property
+    @pulumi.getter(name="showNonprinting")
+    def show_nonprinting(self) -> Optional[pulumi.Input[bool]]:
+        return pulumi.get(self, "show_nonprinting")
+
+    @show_nonprinting.setter
+    def show_nonprinting(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "show_nonprinting", value)
+
+    @property
+    @pulumi.getter(name="showTabs")
+    def show_tabs(self) -> Optional[pulumi.Input[bool]]:
+        return pulumi.get(self, "show_tabs")
+
+    @show_tabs.setter
+    def show_tabs(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "show_tabs", value)
+
+    @property
+    @pulumi.getter(name="squeezeBlank")
+    def squeeze_blank(self) -> Optional[pulumi.Input[bool]]:
+        return pulumi.get(self, "squeeze_blank")
+
+    @squeeze_blank.setter
+    def squeeze_blank(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "squeeze_blank", value)
+
+    @property
+    @pulumi.getter
+    def t(self) -> Optional[pulumi.Input[bool]]:
+        return pulumi.get(self, "t")
+
+    @t.setter
+    def t(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "t", value)
+
+    @property
+    @pulumi.getter
+    def version(self) -> Optional[pulumi.Input[bool]]:
+        return pulumi.get(self, "version")
+
+    @version.setter
+    def version(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "version", value)
+
 
 @pulumi.input_type
 class ChmodArgsArgs:
