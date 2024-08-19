@@ -13,12 +13,16 @@ COPY provider/go.mod provider/go.sum ./provider/
 RUN go -C provider mod download
 
 FROM --platform=$BUILDPLATFORM download AS build
+ARG VERSION=1.0.0-alpha.0+dev
 COPY gen/ ./gen/
 WORKDIR /build/provider
 COPY provider/cmd/pulumi-resource-baremetal/main.go ./cmd/
 COPY provider/ ./
 
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /out/pulumi-resource-baremetal cmd/main.go
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
+	go build -o /out/pulumi-resource-baremetal \
+	-ldflags "-X github.com/unmango/pulumi-baremetal/provider.Version=${VERSION}" \
+	cmd/main.go
 
 FROM --platform=$BUILDPLATFORM scratch AS bin
 COPY --from=build /out/pulumi-resource-baremetal /

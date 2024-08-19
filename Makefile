@@ -72,7 +72,11 @@ test_all:: test_provider test_sdks
 test_provider:: .test/lifecycle
 test_sdks:: .test/sdks
 
-docker:: .make/provisioner_docker_build .make/provisioner_test_docker_build
+docker:: \
+	.make/provisioner_docker \
+	.make/provisioner_docker_test \
+	.make/provider_docker
+
 proto:: gen_proto
 
 gen:: gen_proto gen_sdks gen_examples
@@ -204,13 +208,13 @@ bin/node: .make/bin_node
 bin/$(PROVIDER):: $(GEN_SRC) $(PKG_SRC) provider/*go*
 	go -C provider build \
 		-o $(WORKING_DIR)/$@ \
-		-ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" \
+		-ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION_GENERIC}" \
 		$(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
 bin/provisioner:: $(GEN_SRC) provider/cmd/provisioner/*.go $(PKG_SRC)
 	go -C provider build \
 		-o ${WORKING_DIR}/$@ \
-		-ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" \
+		-ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION_GENERIC}" \
 		$(PROJECT)/${PROVIDER_PATH}/cmd/provisioner
 
 $(GEN_SRC) &: $(PROTO_SRC) $(BUF_CONFIG)
@@ -244,15 +248,15 @@ $(GO_MODULES:%=.make/tidy/%): .make/tidy/%: $(addprefix %/,go.mod go.sum)
 	@touch $@
 
 .make/provisioner_docker: provider/cmd/provisioner/Dockerfile .dockerignore $(PROVIDER_SRC)
-	docker build ${WORKING_DIR} -f $< -t ${PROVISIONER_NAME}:${DOCKER_TAG}
+	docker build ${WORKING_DIR} -f $< -t ${PROVISIONER_NAME}:${DOCKER_TAG} --build-arg VERSION=${VERSION_GENERIC}
 	@touch $@
 
 .make/provisioner_docker_test: provider/cmd/provisioner/Dockerfile .dockerignore $(PROVIDER_SRC)
-	docker build ${WORKING_DIR} -f $< --target test -t ${PROVISIONER_NAME}:test
+	docker build ${WORKING_DIR} -f $< --target test -t ${PROVISIONER_NAME}:test --build-arg VERSION=${VERSION_GENERIC}
 	@touch $@
 
 .make/provider_docker: provider/cmd/$(PROVIDER)/Dockerfile .dockerignore $(PROVIDER_SRC)
-	docker build ${WORKING_DIR} -f $< --target bin -t ${PROVIDER}:${DOCKER_TAG}
+	docker build ${WORKING_DIR} -f $< --target bin -t ${PROVIDER}:${DOCKER_TAG} --build-arg VERSION=${VERSION_GENERIC}
 	@touch $@
 
 .make/sdk_docker: tests/sdk/Dockerfile .dockerignore $(PROVIDER_SRC) bin/$(PROVIDER)
