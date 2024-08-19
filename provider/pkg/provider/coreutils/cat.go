@@ -79,7 +79,6 @@ func (Cat) Delete(ctx context.Context, id string, props CatState) error {
 		return fmt.Errorf("cat: %w", err)
 	}
 
-	// TODO: Provisioner: Read current perms before modifying them
 	return nil
 }
 
