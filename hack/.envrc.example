@@ -1,5 +1,0 @@
-#!/bin/bash
-root="$(pwd)"
-
-# Useful for things like VSCode Pulumi YAML intellisense
-export PATH="$PATH:$root/bin"

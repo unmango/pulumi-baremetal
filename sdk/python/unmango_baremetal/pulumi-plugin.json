@@ -1,5 +1,0 @@
-{
-  "resource": true,
-  "name": "baremetal",
-  "server": "github://api.github.com/unmango"
-}
