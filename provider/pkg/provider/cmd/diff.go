@@ -23,3 +23,15 @@ func (s *State[T]) Diff(ctx context.Context, inputs CommandArgs[T]) (map[string]
 
 	return diff, nil
 }
+
+func Changed[T comparable](a *T, b *T) bool {
+	if a == b {
+		return false
+	}
+
+	if a == nil || b == nil {
+		return true
+	}
+
+	return *a != *b
+}
