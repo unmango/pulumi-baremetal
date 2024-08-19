@@ -9,12 +9,15 @@ NUGET_PKG_NAME   := UnMango.Baremetal
 PROVISIONER_NAME := baremetal-provisioner
 
 PROVIDER        := pulumi-resource-${PACK}
-VERSION         ?= $(shell pulumictl get version --language generic)
 SUPPORTED_SDKS  := dotnet go nodejs python
 PROTO_VERSION   := v1alpha1
 PROVIDER_PATH   := provider
-VERSION_PATH    := ${PROVIDER_PATH}.Version
-DOCKER_TAG      ?= $(shell cut -d'.' -f-3 <<<'${VERSION}' | sed 's/+dirty//')
+
+
+PROVIDER_VERSION ?= 1.0.0-alpha.0+dev
+VERSION_GENERIC  = $(shell pulumictl convert-version --language generic --version "$(PROVIDER_VERSION)")
+VERSION_PATH     := ${PROVIDER_PATH}.Version
+DOCKER_TAG       ?= $(shell cut -d'.' -f-3 <<<'${VERSION_GENERIC}' | sed 's/+dirty//')
 
 GOPATH			:= $(shell go env GOPATH)
 
@@ -62,7 +65,7 @@ provider_debug::
 	go -C ${PROVIDER_PATH} build \
 		-o $(WORKING_DIR)/bin/${PROVIDER} \
 		-gcflags="all=-N -l" \
-		-ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION}" \
+		-ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION_GENERIC}" \
 		$(PROJECT)/${PROVIDER_PATH}/cmd/$(PROVIDER)
 
 test_all:: test_provider test_sdks
@@ -80,16 +83,16 @@ gen_examples: $(SUPPORTED_SDKS:%=.make/examples/%)
 .PHONY: sdk/%
 sdk/%: $(SCHEMA_FILE)
 	rm -rf $@
-	pulumi package gen-sdk --language $* $(SCHEMA_FILE) --version "${VERSION}"
+	pulumi package gen-sdk --language $* $(SCHEMA_FILE) --version "${VERSION_GENERIC}"
 
 sdk/python: $(SCHEMA_FILE)
 	rm -rf $@
-	pulumi package gen-sdk --language python $(SCHEMA_FILE) --version "${VERSION}"
+	pulumi package gen-sdk --language python $(SCHEMA_FILE) --version "${VERSION_GENERIC}"
 	cp README.md ${PACKDIR}/python/
 
 dotnet_sdk: sdk/dotnet
 	cd ${PACKDIR}/dotnet/ && \
-		echo "${VERSION}" >version.txt && \
+		echo "${VERSION_GENERIC}" >version.txt && \
 		dotnet build
 
 go_sdk: sdk/go
@@ -97,8 +100,8 @@ go_sdk: sdk/go
 nodejs_sdk: sdk/nodejs
 	cd ${PACKDIR}/nodejs/ && \
 		yarn install && \
-		yarn run tsc && \
-		cp ../../README.md ../../LICENSE package.json yarn.lock bin/
+		yarn run tsc
+	cp README.md LICENSE ${PACKDIR}/nodejs/package.json ${PACKDIR}/nodejs/yarn.lock ${PACKDIR}/nodejs/bin/
 
 python_sdk: sdk/python
 	cp README.md ${PACKDIR}/python/

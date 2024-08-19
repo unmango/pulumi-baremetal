@@ -85,6 +85,12 @@ jobs:
         with:
           pulumi-version-file: .versions/pulumi
 
+      - id: version
+        name: Set Provider Version
+        uses: pulumi/provider-version-action@v1
+        with:
+          set-env: PROVIDER_VERSION
+
       - name: Install provider binary
         uses: actions/download-artifact@v4
         with:
@@ -143,3 +149,18 @@ jobs:
         run: |
           dotnet nuget push ${{ github.workspace }}/sdk/dotnet/bin/Debug/*.nupkg -s ${{ env.NUGET_FEED_URL }} -k ${{ env.NUGET_PUBLISH_KEY }}
           echo "done publishing packages"
+
+      - if: ${{ matrix.language == 'go' && inputs.release }}
+        name: Publish Go SDK
+        uses: pulumi/publish-go-sdk-action@v1
+        with:
+          repository: ${{ github.repository }}
+          base-ref: ${{ github.sha }}
+          source: sdk
+          path: sdk
+          version: ${{ steps.version.outputs.version }}
+          additive: false
+          files: |-
+            go.*
+            go/**
+            !*.tar.gz
