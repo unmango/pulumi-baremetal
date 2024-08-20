@@ -56,6 +56,11 @@ func (s *service) Register(server *grpc.Server) {
 func (s *service) Exec(ctx context.Context, req *pb.ExecRequest) (*pb.ExecResponse, error) {
 	log := s.Log.With("op", "exec")
 
+	if len(req.Args) == 0 {
+		log.ErrorContext(ctx, "no command provided")
+		return nil, errors.New("no command provided")
+	}
+
 	bin := req.Args[0]
 	_, err := command.ParseBin(bin)
 	if err != nil && !slices.Contains(s.Whitelist, bin) {

@@ -141,4 +141,15 @@ var _ = Describe("Grpc Server", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 	})
+
+	Describe("Exec", func() {
+		It("should error when no command is provided", func(ctx context.Context) {
+			res, err := service.Exec(ctx, &pb.ExecRequest{
+				Args: []string{},
+			})
+
+			Expect(err).To(HaveOccurred())
+			Expect(res).To(BeNil())
+		})
+	})
 })
