@@ -20,7 +20,7 @@ jobs:
 
       - name: Goreleaser triggers
         id: goreleaser
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v45
         with:
           files: |
             .github/workflows/**
@@ -28,7 +28,7 @@ jobs:
 
       - name: Lint triggers
         id: lint
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v45
         with:
           files: |
             .github/workflows/**
@@ -38,7 +38,7 @@ jobs:
 
       - name: Buf triggers
         id: buf
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v45
         with:
           files: |
             .github/workflows/**
@@ -49,7 +49,7 @@ jobs:
 
       - name: SDK triggers
         id: sdk
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v45
         with:
           files: |
             .github/workflows/**
@@ -58,7 +58,7 @@ jobs:
 
       - name: Provider triggers
         id: provider
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v45
         with:
           files: |
             .github/workflows/**
@@ -69,7 +69,7 @@ jobs:
 
       - name: Installer triggers
         id: install-sh
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v45
         with:
           files: |
             .github/workflows/**
@@ -134,7 +134,7 @@ jobs:
 
       - name: Get changed files
         id: diff
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v45
         with:
           files: |
             **/*.proto
