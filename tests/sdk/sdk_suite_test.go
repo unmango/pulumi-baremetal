@@ -13,7 +13,6 @@ import (
 
 	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 	"github.com/unmango/pulumi-baremetal/tests/services"
-	"github.com/unmango/pulumi-baremetal/tests/util"
 )
 
 var (
@@ -31,18 +30,13 @@ var _ = BeforeSuite(func(ctx context.Context) {
 	wd = path.Join(cwd, "..", "..")
 	Expect(wd).NotTo(BeNil())
 
-	By("generating client certs")
-	clientCerts, err := util.NewCertBundle("ca", "pulumi")
-	Expect(err).NotTo(HaveOccurred())
+	// By("generating client certs")
+	// clientCerts, err := util.NewCertBundle("ca", "pulumi")
+	// Expect(err).NotTo(HaveOccurred())
 
-	By("creating a provisioner")
-	prov, err := services.NewProvisioner("4200", clientCerts.Ca, GinkgoWriter)
-	Expect(err).NotTo(HaveOccurred())
-
-	By("starting the provisioner")
-	err = prov.Start(ctx)
-	Expect(err).NotTo(HaveOccurred())
-	provisioner = prov
+	// By("creating a provisioner")
+	// prov, err := services.NewProvisioner("4200", clientCerts.Ca, GinkgoWriter)
+	// Expect(err).NotTo(HaveOccurred())
 })
 
 func TestSdk(t *testing.T) {
@@ -63,9 +57,6 @@ var _ = DescribeSdk("dotnet", func(base integration.ProgramTestOptions) integrat
 })
 
 var _ = AfterSuite(func(ctx context.Context) {
-	By("stopping the provisioner")
-	err := provisioner.Stop(ctx)
-	Expect(err).NotTo(HaveOccurred())
 })
 
 func DescribeSdk(sdk string, configure configureTest) bool {
@@ -109,7 +100,7 @@ func baseOptions(out io.Writer) integration.ProgramTestOptions {
 		Stdout:        out,
 		Stderr:        out,
 		Config: map[string]string{
-			"baremetal:address": "localhost",
+			"baremetal:address": "provisioner-test",
 			"baremetal:port":    "4200",
 		},
 		LocalProviders: []integration.LocalDependency{{

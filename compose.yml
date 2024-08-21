@@ -1,0 +1,33 @@
+networks:
+  pulumi-baremetal:
+
+services:
+  provisioner-test:
+    build:
+      context: .
+      dockerfile: provider/cmd/provisioner/Dockerfile
+      target: test
+      args:
+        - VERSION=${VERSION}
+    environment:
+      - GRPC_GO_LOG_SEVERITY_LEVEL=info
+    command: >
+      --network tcp4
+      --address 0.0.0.0:4200
+      --verbose
+    ports:
+      - 4200
+    networks:
+      - pulumi-baremetal
+
+  sdk-tests:
+    depends_on:
+      - provisioner-test
+    restart: 'no'
+    build:
+      context: .
+      dockerfile: tests/sdk/Dockerfile
+    networks:
+      - pulumi-baremetal
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

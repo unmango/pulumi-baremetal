@@ -12,7 +12,7 @@ return await Deployment.RunAsync(() =>
             Stdin = "whoops",
             Files = new[]
             {
-                "/tmp/tee/test.txt",
+                "/tmp/tee-test.txt",
             },
         },
     });

@@ -218,6 +218,9 @@ $(GO_MODULES:%=.make/lint/%): .make/lint/%:
 .make/docker/sdk: tests/sdk/Dockerfile .dockerignore $(PROVIDER_SRC) bin/$(PROVIDER)
 	docker build ${WORKING_DIR} -f $< -t sdk-test:dotnet
 	@touch $@
+.make/docker/compose_build: compose.yml tests/sdk/Dockerfile provider/cmd/provisioner/Dockerfile .dockerignore $(GO_SRC) bin/$(PROVIDER)
+	VERSION=${VERSION_GENERIC} docker compose build
+	@touch $@
 
 # ------- Examples -------
 .make/examples/%: examples/yaml/** bin/$(PROVIDER)
@@ -235,8 +238,9 @@ $(GO_MODULES:%=.make/lint/%): .make/lint/%:
 export GRPC_GO_LOG_SEVERITY_LEVEL ?=
 TEST_FLAGS ?=
 
-.make/test/docker_sdk: .make/docker/sdk
-	docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock sdk-test:dotnet
+.make/test/docker_sdk: .make/docker/compose_build
+	VERSION=${VERSION_GENERIC} docker compose up --exit-code-from sdk-tests
+	VERSION=${VERSION_GENERIC} docker compose down
 
 .make/test/lifecycle: .make/docker/provisioner_test
 	cd tests/lifecycle && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}

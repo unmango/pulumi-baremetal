@@ -11,7 +11,7 @@ resources:
     properties:
       args:
         stdin: 'whoops'
-        files: ['/tmp/tee/test.txt']
+        files: ['/tmp/tee-test.txt']
 
 outputs:
   stdout: ${tee.stdout}
