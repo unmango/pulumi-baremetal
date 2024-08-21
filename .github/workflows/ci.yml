@@ -285,6 +285,11 @@ jobs:
             provider/go.sum
             tests/go.sum
 
+      - name: Lib Tests
+        working-directory: provider
+        run: |
+          go run github.com/onsi/ginkgo/v2/ginkgo run -r -v --silence-skips --github-output
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
