@@ -55,9 +55,10 @@ lint:: .make/lint/buf .make/lint_go
 remake::
 	rm -rf .make bin dist out hack/.work
 
-test_all:: test_provider test_sdks
+test_all:: test_provider test_sdks test_pkg .make/test/install_script
 test_provider:: .make/test/lifecycle
-test_sdks:: .make/test/sdks
+test_sdks:: $(SUPPORTED_SDKS:%=.make/test/%_sdk)
+test_pkg:: .make/test/pkg
 
 docker:: \
 	.make/docker/provisioner \
@@ -245,7 +246,7 @@ TEST_FLAGS ?=
 
 export PULUMI_LOCAL_NUGET := ${WORKING_DIR}/nuget
 
-.make/test/dotnet_sdk: .make/install_dotnet
+.make/test/dotnet_sdk: .make/install/dotnet
 $(SUPPORTED_SDKS:%=.make/test/%_sdk): .make/test/%_sdk:
 	cd tests/sdk && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}
 	@touch $@
