@@ -12,13 +12,11 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
-	"github.com/unmango/pulumi-baremetal/tests/services"
 )
 
 var (
-	provisioner *services.Provisioner
-	newTester   func(integration.ProgramTestOptions) *integration.ProgramTester
-	wd          string
+	newTester func(integration.ProgramTestOptions) *integration.ProgramTester
+	wd        string
 )
 
 type configureTest func(integration.ProgramTestOptions) integration.ProgramTestOptions
@@ -29,14 +27,6 @@ var _ = BeforeSuite(func(ctx context.Context) {
 	Expect(err).NotTo(HaveOccurred())
 	wd = path.Join(cwd, "..", "..")
 	Expect(wd).NotTo(BeNil())
-
-	// By("generating client certs")
-	// clientCerts, err := util.NewCertBundle("ca", "pulumi")
-	// Expect(err).NotTo(HaveOccurred())
-
-	// By("creating a provisioner")
-	// prov, err := services.NewProvisioner("4200", clientCerts.Ca, GinkgoWriter)
-	// Expect(err).NotTo(HaveOccurred())
 })
 
 func TestSdk(t *testing.T) {
@@ -50,13 +40,9 @@ func TestSdk(t *testing.T) {
 
 var _ = DescribeSdk("dotnet", func(base integration.ProgramTestOptions) integration.ProgramTestOptions {
 	return base.With(integration.ProgramTestOptions{
-		Dir: path.Join("..", "..", "examples", "dotnet"),
-		// DotNetBin:    path.Join(wd, "bin", "dotnet", "dotnet"),
+		Dir:          path.Join("..", "..", "examples", "dotnet"),
 		Dependencies: []string{"UnMango.Baremetal"},
 	})
-})
-
-var _ = AfterSuite(func(ctx context.Context) {
 })
 
 func DescribeSdk(sdk string, configure configureTest) bool {
