@@ -321,4 +321,4 @@ jobs:
         run: make out/install.sh
 
       - name: Test
-        run: make .test/install_script
+        run: make .make/test/install_script
