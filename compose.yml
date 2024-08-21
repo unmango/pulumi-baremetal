@@ -27,6 +27,8 @@ services:
     build:
       context: .
       dockerfile: tests/sdk/Dockerfile
+      args:
+        - SDK=${SDK}
     networks:
       - pulumi-baremetal
     volumes:

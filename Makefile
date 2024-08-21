@@ -113,7 +113,7 @@ out/install.sh: $(PROVIDER_PATH)/cmd/provisioner/install.sh
 out/baremetal-provisioner.service: $(PROVIDER_PATH)/cmd/provisioner/baremetal-provisioner.service
 	mkdir -p '${@D}' && cp '$<' '$@'
 
-bin/$(PROVIDER):: $(GEN_SRC) $(PKG_SRC) provider/*go*
+bin/$(PROVIDER): $(GEN_SRC) $(PKG_SRC) provider/*go*
 	go -C provider build \
 		-o $(WORKING_DIR)/$@ \
 		-ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION_GENERIC}" \
@@ -218,8 +218,8 @@ $(GO_MODULES:%=.make/lint/%): .make/lint/%:
 .make/docker/sdk: tests/sdk/Dockerfile .dockerignore $(PROVIDER_SRC) bin/$(PROVIDER)
 	docker build ${WORKING_DIR} -f $< -t sdk-test:dotnet
 	@touch $@
-.make/docker/compose_build: compose.yml tests/sdk/Dockerfile provider/cmd/provisioner/Dockerfile .dockerignore $(GO_SRC) bin/$(PROVIDER)
-	VERSION=${VERSION_GENERIC} docker compose build
+.make/docker/%_build: compose.yml tests/sdk/Dockerfile provider/cmd/provisioner/Dockerfile .dockerignore $(GO_SRC) bin/$(PROVIDER)
+	VERSION=${VERSION_GENERIC} SDK=$* docker compose build
 	@touch $@
 
 # ------- Examples -------
@@ -238,9 +238,9 @@ $(GO_MODULES:%=.make/lint/%): .make/lint/%:
 export GRPC_GO_LOG_SEVERITY_LEVEL ?=
 TEST_FLAGS ?=
 
-.make/test/docker_sdk: .make/docker/compose_build
-	VERSION=${VERSION_GENERIC} docker compose up --exit-code-from sdk-tests
-	VERSION=${VERSION_GENERIC} docker compose down
+.make/test/%_sdk: .make/docker/%_build
+	VERSION=${VERSION_GENERIC} SDK=$* docker compose up --exit-code-from sdk-tests
+	VERSION=${VERSION_GENERIC} SDK=$* docker compose down
 
 .make/test/lifecycle: .make/docker/provisioner_test
 	cd tests/lifecycle && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}
@@ -250,10 +250,10 @@ TEST_FLAGS ?=
 
 export PULUMI_LOCAL_NUGET := ${WORKING_DIR}/nuget
 
-.make/test/dotnet_sdk: .make/install/dotnet
-$(SUPPORTED_SDKS:%=.make/test/%_sdk): .make/test/%_sdk:
-	cd tests/sdk && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}
-	@touch $@
+# .make/test/dotnet_sdk: .make/install/dotnet
+# $(SUPPORTED_SDKS:%=.make/test/%_sdk): .make/test/%_sdk:
+# 	cd tests/sdk && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}
+# 	@touch $@
 
 .make/test/install_script: out/install.sh $(PROVIDER_PATH)/cmd/provisioner/baremetal-provisioner.service Makefile
 	DEV_MODE=true INSTALL_DIR=${WORKING_DIR}/bin $<
