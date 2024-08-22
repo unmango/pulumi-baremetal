@@ -45,6 +45,8 @@ GEN_SRC      := $(GO_GRPC_SRC) $(GO_PB_SRC)
 
 GINKGO ?= go run github.com/onsi/ginkgo/v2/ginkgo
 
+export PULUMI_LOCAL_NUGET := ${WORKING_DIR}/nuget
+
 default:: provider provisioner
 provider:: bin/$(PROVIDER)
 provisioner:: bin/provisioner
@@ -219,7 +221,7 @@ $(GO_MODULES:%=.make/lint/%): .make/lint/%:
 	docker build ${WORKING_DIR} -f $< -t sdk-test:dotnet
 	@touch $@
 .make/docker/%_build: compose.yml tests/sdk/Dockerfile provider/cmd/provisioner/Dockerfile .dockerignore $(GO_SRC) bin/$(PROVIDER)
-	VERSION=${VERSION_GENERIC} SDK=$* docker compose build
+	VERSION=${VERSION_GENERIC} docker compose build $*-test
 	@touch $@
 
 # ------- Examples -------
@@ -239,16 +241,14 @@ export GRPC_GO_LOG_SEVERITY_LEVEL ?=
 TEST_FLAGS ?=
 
 .make/test/%_sdk: .make/docker/%_build
-	VERSION=${VERSION_GENERIC} SDK=$* docker compose up --exit-code-from sdk-tests
-	VERSION=${VERSION_GENERIC} SDK=$* docker compose down
+	VERSION=${VERSION_GENERIC} docker compose up provisioner-test $*-test --exit-code-from $*-test
+	VERSION=${VERSION_GENERIC} docker compose down
 
 .make/test/lifecycle: .make/docker/provisioner_test
 	cd tests/lifecycle && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}
 
 .make/test/pkg: $(PKG_SRC)
 	cd provider && $(GINKGO) run -v -r
-
-export PULUMI_LOCAL_NUGET := ${WORKING_DIR}/nuget
 
 # .make/test/dotnet_sdk: .make/install/dotnet
 # $(SUPPORTED_SDKS:%=.make/test/%_sdk): .make/test/%_sdk:

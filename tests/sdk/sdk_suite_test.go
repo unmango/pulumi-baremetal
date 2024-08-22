@@ -2,7 +2,6 @@ package sdk_test
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"os"
 	"path"
@@ -15,18 +14,34 @@ import (
 )
 
 var (
-	newTester func(integration.ProgramTestOptions) *integration.ProgramTester
-	wd        string
+	newTester    func(integration.ProgramTestOptions) *integration.ProgramTester
+	workDir, sdk string
+	sdkOptions   = integration.ProgramTestOptions{}
 )
-
-type configureTest func(integration.ProgramTestOptions) integration.ProgramTestOptions
 
 var _ = BeforeSuite(func(ctx context.Context) {
 	By("configuring the working directory")
 	cwd, err := os.Getwd()
 	Expect(err).NotTo(HaveOccurred())
-	wd = path.Join(cwd, "..", "..")
-	Expect(wd).NotTo(BeNil())
+	workDir = path.Join(cwd, "..", "..")
+	Expect(workDir).NotTo(BeNil())
+
+	sdkEnv, ok := os.LookupEnv("SDK")
+	Expect(ok).To(BeTrueBecause("SDK env not set"))
+	sdk = sdkEnv
+
+	switch sdk {
+	case "dotnet":
+		sdkOptions = integration.ProgramTestOptions{
+			Dir:          path.Join(workDir, "examples", "dotnet"),
+			Dependencies: []string{"UnMango.Baremetal"},
+		}
+	case "nodejs":
+		sdkOptions = integration.ProgramTestOptions{
+			Dir:          path.Join(workDir, "examples", "nodejs"),
+			Dependencies: []string{"@unmango/baremetal"},
+		}
+	}
 })
 
 func TestSdk(t *testing.T) {
@@ -38,47 +53,38 @@ func TestSdk(t *testing.T) {
 	RunSpecs(t, "Sdk Suite")
 }
 
-var _ = DescribeSdk("dotnet", func(base integration.ProgramTestOptions) integration.ProgramTestOptions {
-	return base.With(integration.ProgramTestOptions{
-		Dir:          path.Join("..", "..", "examples", "dotnet"),
-		Dependencies: []string{"UnMango.Baremetal"},
+var _ = Describe("SDK test", Ordered, func() {
+	var tester *integration.ProgramTester
+
+	BeforeAll(func() {
+		By("configuring the test")
+		test := baseOptions(GinkgoWriter).With(sdkOptions)
+
+		By("creating the program tester")
+		tester = newTester(test)
+	})
+
+	It("TestLifeCyclePrepare", func() {
+		err := tester.TestLifeCyclePrepare()
+		Expect(err).NotTo(HaveOccurred())
+		DeferCleanup(tester.TestCleanUp)
+	})
+
+	It("TestLifeCycleInitialize", func() {
+		err := tester.TestLifeCycleInitialize()
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	It("TestPreviewUpdateAndEdits", func() {
+		err := tester.TestPreviewUpdateAndEdits()
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	It("TestLifeCycleDestroy", func() {
+		err := tester.TestLifeCycleDestroy()
+		Expect(err).NotTo(HaveOccurred())
 	})
 })
-
-func DescribeSdk(sdk string, configure configureTest) bool {
-	return Describe(fmt.Sprintf("%s SDK test", sdk), Label(sdk), Ordered, func() {
-		var tester *integration.ProgramTester
-
-		BeforeAll(func() {
-			By("configuring the test")
-			test := configure(baseOptions(GinkgoWriter))
-
-			By("creating the program tester")
-			tester = newTester(test)
-		})
-
-		It("TestLifeCyclePrepare", func() {
-			err := tester.TestLifeCyclePrepare()
-			Expect(err).NotTo(HaveOccurred())
-			DeferCleanup(tester.TestCleanUp)
-		})
-
-		It("TestLifeCycleInitialize", func() {
-			err := tester.TestLifeCycleInitialize()
-			Expect(err).NotTo(HaveOccurred())
-		})
-
-		It("TestPreviewUpdateAndEdits", func() {
-			err := tester.TestPreviewUpdateAndEdits()
-			Expect(err).NotTo(HaveOccurred())
-		})
-
-		It("TestLifeCycleDestroy", func() {
-			err := tester.TestLifeCycleDestroy()
-			Expect(err).NotTo(HaveOccurred())
-		})
-	})
-}
 
 func baseOptions(out io.Writer) integration.ProgramTestOptions {
 	return integration.ProgramTestOptions{

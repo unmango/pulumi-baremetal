@@ -1,6 +1,16 @@
 networks:
   pulumi-baremetal:
 
+
+x-sdk-test: &sdk-test
+  depends_on:
+    - provisioner-test
+  restart: 'no'
+  networks:
+    - pulumi-baremetal
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+
 services:
   provisioner-test:
     build:
@@ -12,24 +22,38 @@ services:
     environment:
       - GRPC_GO_LOG_SEVERITY_LEVEL=info
     command: >
-      --network tcp4
-      --address 0.0.0.0:4200
-      --verbose
+      --network tcp4 --address 0.0.0.0:4200 --verbose
     ports:
       - 4200
     networks:
       - pulumi-baremetal
 
-  sdk-tests:
-    depends_on:
-      - provisioner-test
-    restart: 'no'
+  dotnet-test:
+    <<: *sdk-test
     build:
       context: .
       dockerfile: tests/sdk/Dockerfile
-      args:
-        - SDK=${SDK}
-    networks:
-      - pulumi-baremetal
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      target: dotnet
+      args: [ SDK=dotnet ]
+
+  go-test:
+    <<: *sdk-test
+    build:
+      context: .
+      dockerfile: tests/sdk/Dockerfile
+      args: [ SDK=go ]
+
+  nodejs-test:
+    <<: *sdk-test
+    build:
+      context: .
+      dockerfile: tests/sdk/Dockerfile
+      args: [ SDK=nodejs ]
+      target: nodejs
+
+  python-test:
+    <<: *sdk-test
+    build:
+      context: .
+      dockerfile: tests/sdk/Dockerfile
+      args: [ SDK=python ]
