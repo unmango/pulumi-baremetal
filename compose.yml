@@ -33,8 +33,8 @@ services:
     build:
       context: .
       dockerfile: tests/sdk/Dockerfile
-      target: dotnet
       args: [ SDK=dotnet ]
+      target: dotnet
 
   go-test:
     <<: *sdk-test
@@ -42,6 +42,7 @@ services:
       context: .
       dockerfile: tests/sdk/Dockerfile
       args: [ SDK=go ]
+      target: base
 
   nodejs-test:
     <<: *sdk-test
@@ -57,3 +58,4 @@ services:
       context: .
       dockerfile: tests/sdk/Dockerfile
       args: [ SDK=python ]
+      target: base

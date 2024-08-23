@@ -217,9 +217,6 @@ $(GO_MODULES:%=.make/lint/%): .make/lint/%:
 .make/docker/provider: provider/cmd/$(PROVIDER)/Dockerfile .dockerignore $(PROVIDER_SRC)
 	docker build ${WORKING_DIR} -f $< --target bin -t ${PROVIDER}:${DOCKER_TAG} --build-arg VERSION=${VERSION_GENERIC}
 	@touch $@
-.make/docker/sdk: tests/sdk/Dockerfile .dockerignore $(PROVIDER_SRC) bin/$(PROVIDER)
-	docker build ${WORKING_DIR} -f $< -t sdk-test:dotnet
-	@touch $@
 .make/docker/%_build: compose.yml tests/sdk/Dockerfile provider/cmd/provisioner/Dockerfile .dockerignore $(GO_SRC) bin/$(PROVIDER)
 	VERSION=${VERSION_GENERIC} docker compose build $*-test
 	@touch $@

@@ -117,6 +117,9 @@ jobs:
             sdk/python/pyproject.toml
           continue-with-unexpected-changes: ${{ inputs.release }}
 
+      - name: Build SDK Test
+        run: make .make/docker/${{ matrix.language }}_build
+
       - if: ${{ inputs.release }}
         name: Compress SDK folder
         run: tar -zcf sdk/${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }} .
