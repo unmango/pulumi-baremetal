@@ -2,7 +2,6 @@ package sdk_test
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"os"
 	"path"
@@ -12,37 +11,37 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
-	"github.com/unmango/pulumi-baremetal/tests/services"
-	"github.com/unmango/pulumi-baremetal/tests/util"
 )
 
 var (
-	provisioner *services.Provisioner
-	newTester   func(integration.ProgramTestOptions) *integration.ProgramTester
-	wd          string
+	newTester    func(integration.ProgramTestOptions) *integration.ProgramTester
+	workDir, sdk string
+	sdkOptions   = integration.ProgramTestOptions{}
 )
-
-type configureTest func(integration.ProgramTestOptions) integration.ProgramTestOptions
 
 var _ = BeforeSuite(func(ctx context.Context) {
 	By("configuring the working directory")
 	cwd, err := os.Getwd()
 	Expect(err).NotTo(HaveOccurred())
-	wd = path.Join(cwd, "..", "..")
-	Expect(wd).NotTo(BeNil())
+	workDir = path.Join(cwd, "..", "..")
+	Expect(workDir).NotTo(BeNil())
 
-	By("generating client certs")
-	clientCerts, err := util.NewCertBundle("ca", "pulumi")
-	Expect(err).NotTo(HaveOccurred())
+	sdkEnv, ok := os.LookupEnv("SDK")
+	Expect(ok).To(BeTrueBecause("SDK env not set"))
+	sdk = sdkEnv
 
-	By("creating a provisioner")
-	prov, err := services.NewProvisioner("4200", clientCerts.Ca, GinkgoWriter)
-	Expect(err).NotTo(HaveOccurred())
-
-	By("starting the provisioner")
-	err = prov.Start(ctx)
-	Expect(err).NotTo(HaveOccurred())
-	provisioner = prov
+	switch sdk {
+	case "dotnet":
+		sdkOptions = integration.ProgramTestOptions{
+			Dir:          path.Join(workDir, "examples", "dotnet"),
+			Dependencies: []string{"UnMango.Baremetal"},
+		}
+	case "nodejs":
+		sdkOptions = integration.ProgramTestOptions{
+			Dir:          path.Join(workDir, "examples", "nodejs"),
+			Dependencies: []string{"@unmango/baremetal"},
+		}
+	}
 })
 
 func TestSdk(t *testing.T) {
@@ -54,54 +53,35 @@ func TestSdk(t *testing.T) {
 	RunSpecs(t, "Sdk Suite")
 }
 
-var _ = DescribeSdk("dotnet", func(base integration.ProgramTestOptions) integration.ProgramTestOptions {
-	return base.With(integration.ProgramTestOptions{
-		Dir: path.Join("..", "..", "examples", "dotnet"),
-		// DotNetBin:    path.Join(wd, "bin", "dotnet", "dotnet"),
-		Dependencies: []string{"UnMango.Baremetal"},
+var _ = Describe("SDK test", Ordered, func() {
+	var tester *integration.ProgramTester
+
+	It("should initialize", func() {
+		test := baseOptions(GinkgoWriter).With(sdkOptions)
+		tester = newTester(test)
+	})
+
+	It("Prepare", func() {
+		err := tester.TestLifeCyclePrepare()
+		Expect(err).NotTo(HaveOccurred())
+		DeferCleanup(tester.TestCleanUp)
+	})
+
+	It("Initialize", func() {
+		err := tester.TestLifeCycleInitialize()
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	It("Preview and Edits", func() {
+		err := tester.TestPreviewUpdateAndEdits()
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	It("Destroy", func() {
+		err := tester.TestLifeCycleDestroy()
+		Expect(err).NotTo(HaveOccurred())
 	})
 })
-
-var _ = AfterSuite(func(ctx context.Context) {
-	By("stopping the provisioner")
-	err := provisioner.Stop(ctx)
-	Expect(err).NotTo(HaveOccurred())
-})
-
-func DescribeSdk(sdk string, configure configureTest) bool {
-	return Describe(fmt.Sprintf("%s SDK test", sdk), Label(sdk), Ordered, func() {
-		var tester *integration.ProgramTester
-
-		BeforeAll(func() {
-			By("configuring the test")
-			test := configure(baseOptions(GinkgoWriter))
-
-			By("creating the program tester")
-			tester = newTester(test)
-		})
-
-		It("TestLifeCyclePrepare", func() {
-			err := tester.TestLifeCyclePrepare()
-			Expect(err).NotTo(HaveOccurred())
-			DeferCleanup(tester.TestCleanUp)
-		})
-
-		It("TestLifeCycleInitialize", func() {
-			err := tester.TestLifeCycleInitialize()
-			Expect(err).NotTo(HaveOccurred())
-		})
-
-		It("TestPreviewUpdateAndEdits", func() {
-			err := tester.TestPreviewUpdateAndEdits()
-			Expect(err).NotTo(HaveOccurred())
-		})
-
-		It("TestLifeCycleDestroy", func() {
-			err := tester.TestLifeCycleDestroy()
-			Expect(err).NotTo(HaveOccurred())
-		})
-	})
-}
 
 func baseOptions(out io.Writer) integration.ProgramTestOptions {
 	return integration.ProgramTestOptions{
@@ -109,7 +89,7 @@ func baseOptions(out io.Writer) integration.ProgramTestOptions {
 		Stdout:        out,
 		Stderr:        out,
 		Config: map[string]string{
-			"baremetal:address": "localhost",
+			"baremetal:address": "provisioner-test",
 			"baremetal:port":    "4200",
 		},
 		LocalProviders: []integration.LocalDependency{{

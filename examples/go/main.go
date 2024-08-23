@@ -11,7 +11,7 @@ func main() {
 			Args: &coreutils.TeeArgsTypeArgs{
 				Stdin: pulumi.String("whoops"),
 				Files: pulumi.StringArray{
-					pulumi.String("/tmp/tee/test.txt"),
+					pulumi.String("/tmp/tee-test.txt"),
 				},
 			},
 		})

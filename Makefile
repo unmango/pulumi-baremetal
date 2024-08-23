@@ -45,6 +45,8 @@ GEN_SRC      := $(GO_GRPC_SRC) $(GO_PB_SRC)
 
 GINKGO ?= go run github.com/onsi/ginkgo/v2/ginkgo
 
+export PULUMI_LOCAL_NUGET := ${WORKING_DIR}/nuget
+
 default:: provider provisioner
 provider:: bin/$(PROVIDER)
 provisioner:: bin/provisioner
@@ -113,7 +115,7 @@ out/install.sh: $(PROVIDER_PATH)/cmd/provisioner/install.sh
 out/baremetal-provisioner.service: $(PROVIDER_PATH)/cmd/provisioner/baremetal-provisioner.service
 	mkdir -p '${@D}' && cp '$<' '$@'
 
-bin/$(PROVIDER):: $(GEN_SRC) $(PKG_SRC) provider/*go*
+bin/$(PROVIDER): $(GEN_SRC) $(PKG_SRC) provider/*go*
 	go -C provider build \
 		-o $(WORKING_DIR)/$@ \
 		-ldflags "-X ${PROJECT}/${VERSION_PATH}=${VERSION_GENERIC}" \
@@ -215,8 +217,8 @@ $(GO_MODULES:%=.make/lint/%): .make/lint/%:
 .make/docker/provider: provider/cmd/$(PROVIDER)/Dockerfile .dockerignore $(PROVIDER_SRC)
 	docker build ${WORKING_DIR} -f $< --target bin -t ${PROVIDER}:${DOCKER_TAG} --build-arg VERSION=${VERSION_GENERIC}
 	@touch $@
-.make/docker/sdk: tests/sdk/Dockerfile .dockerignore $(PROVIDER_SRC) bin/$(PROVIDER)
-	docker build ${WORKING_DIR} -f $< -t sdk-test:dotnet
+.make/docker/%_build: compose.yml tests/sdk/Dockerfile provider/cmd/provisioner/Dockerfile .dockerignore $(GO_SRC) bin/$(PROVIDER)
+	VERSION=${VERSION_GENERIC} docker compose build $*-test
 	@touch $@
 
 # ------- Examples -------
@@ -235,8 +237,9 @@ $(GO_MODULES:%=.make/lint/%): .make/lint/%:
 export GRPC_GO_LOG_SEVERITY_LEVEL ?=
 TEST_FLAGS ?=
 
-.make/test/docker_sdk: .make/docker/sdk
-	docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock sdk-test:dotnet
+.make/test/%_sdk: .make/docker/%_build
+	VERSION=${VERSION_GENERIC} docker compose up provisioner-test $*-test --exit-code-from $*-test
+	VERSION=${VERSION_GENERIC} docker compose down
 
 .make/test/lifecycle: .make/docker/provisioner_test
 	cd tests/lifecycle && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}
@@ -244,12 +247,10 @@ TEST_FLAGS ?=
 .make/test/pkg: $(PKG_SRC)
 	cd provider && $(GINKGO) run -v -r
 
-export PULUMI_LOCAL_NUGET := ${WORKING_DIR}/nuget
-
-.make/test/dotnet_sdk: .make/install/dotnet
-$(SUPPORTED_SDKS:%=.make/test/%_sdk): .make/test/%_sdk:
-	cd tests/sdk && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}
-	@touch $@
+# .make/test/dotnet_sdk: .make/install/dotnet
+# $(SUPPORTED_SDKS:%=.make/test/%_sdk): .make/test/%_sdk:
+# 	cd tests/sdk && $(GINKGO) run -v --silence-skips ${TEST_FLAGS}
+# 	@touch $@
 
 .make/test/install_script: out/install.sh $(PROVIDER_PATH)/cmd/provisioner/baremetal-provisioner.service Makefile
 	DEV_MODE=true INSTALL_DIR=${WORKING_DIR}/bin $<
