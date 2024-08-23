@@ -56,31 +56,28 @@ func TestSdk(t *testing.T) {
 var _ = Describe("SDK test", Ordered, func() {
 	var tester *integration.ProgramTester
 
-	BeforeAll(func() {
-		By("configuring the test")
+	It("should initialize", func() {
 		test := baseOptions(GinkgoWriter).With(sdkOptions)
-
-		By("creating the program tester")
 		tester = newTester(test)
 	})
 
-	It("TestLifeCyclePrepare", func() {
+	It("Prepare", func() {
 		err := tester.TestLifeCyclePrepare()
 		Expect(err).NotTo(HaveOccurred())
 		DeferCleanup(tester.TestCleanUp)
 	})
 
-	It("TestLifeCycleInitialize", func() {
+	It("Initialize", func() {
 		err := tester.TestLifeCycleInitialize()
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	It("TestPreviewUpdateAndEdits", func() {
+	It("Preview and Edits", func() {
 		err := tester.TestPreviewUpdateAndEdits()
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	It("TestLifeCycleDestroy", func() {
+	It("Destroy", func() {
 		err := tester.TestLifeCycleDestroy()
 		Expect(err).NotTo(HaveOccurred())
 	})
