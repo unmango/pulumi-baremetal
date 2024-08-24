@@ -177,6 +177,44 @@ var _ = Describe("Mv", func() {
 		Expect(provisioner).To(ContainFile(ctx, final))
 	})
 
+	It("should delete when file doesn't exist", func(ctx context.Context) {
+		source := containerPath("mv-custom1.txt")
+		dest := containerPath("mv-custom2.txt")
+
+		By("creating a file to be moved")
+		err := provisioner.WriteFile(ctx, source, []byte("some text"))
+		Expect(err).NotTo(HaveOccurred())
+
+		run(server, integration.LifeCycleTest{
+			Resource: resource,
+			Create: integration.Operation{
+				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
+					"args": map[string]interface{}{
+						"source":      []string{source},
+						"destination": dest,
+					},
+				}),
+				Hook: func(inputs, output pr.PropertyMap) {
+					Expect(output["stderr"]).To(HavePropertyValue(""))
+					Expect(output["stdout"]).To(HavePropertyValue(""))
+					Expect(output["exitCode"]).To(HavePropertyValue(0))
+					Expect(output["createdFiles"].V).To(BeEmpty())
+					Expect(output["movedFiles"].V).To(Equal(pr.NewPropertyMapFromMap(map[string]interface{}{
+						source: dest,
+					})))
+					Expect(output["args"]).To(Equal(inputs["args"]))
+					Expect(provisioner).NotTo(ContainFile(ctx, source))
+					Expect(provisioner).To(ContainFile(ctx, dest))
+					provisioner.Exec(ctx, "rm", dest)
+					Expect(provisioner).NotTo(ContainFile(ctx, dest))
+				},
+			},
+		})
+
+		Expect(provisioner).NotTo(ContainFile(ctx, source))
+		Expect(provisioner).NotTo(ContainFile(ctx, dest))
+	})
+
 	It("should fail when source doesn't exist", func() {
 		run(server, integration.LifeCycleTest{
 			Resource: resource,

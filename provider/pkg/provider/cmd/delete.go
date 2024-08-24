@@ -63,8 +63,7 @@ func (s *State[T]) Delete(ctx context.Context) error {
 		}
 
 		if len(failed) > 0 {
-			log.ErrorStatusf("%d delete operation(s) failed", len(failed))
-			return fmt.Errorf("a delete operation failed: %v", failed)
+			log.WarningStatusf("%d delete operation(s) failed", len(failed))
 		}
 	}
 
