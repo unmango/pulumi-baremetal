@@ -1,6 +1,0 @@
-name: provider-baremetal-native
-runtime: dotnet
-plugins:
-  providers:
-    - name: baremetal
-      path: ../../bin
