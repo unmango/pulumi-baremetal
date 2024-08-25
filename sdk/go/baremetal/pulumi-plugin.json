@@ -1,6 +1,6 @@
 {
   "resource": true,
   "name": "baremetal",
-  "version": "1.0.0-alpha.0+dev",
+  "version": "0.0.40",
   "server": "github://api.github.com/unmango"
 }
