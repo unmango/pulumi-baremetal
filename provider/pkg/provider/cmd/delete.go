@@ -63,7 +63,7 @@ func (s *State[T]) Delete(ctx context.Context) error {
 		}
 
 		if len(failed) > 0 {
-			log.WarningStatusf("%d delete operation(s) failed", len(failed))
+			log.Warningf("%d delete operation(s) failed", len(failed))
 		}
 	}
 
