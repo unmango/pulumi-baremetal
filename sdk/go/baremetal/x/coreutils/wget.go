@@ -10,21 +10,23 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/config"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
 type Wget struct {
 	pulumi.CustomResourceState
 
-	Args         pulumix.GPtrOutput[WgetArgsType, WgetArgsTypeOutput] `pulumi:"args"`
-	CreatedFiles pulumix.ArrayOutput[string]                          `pulumi:"createdFiles"`
-	CustomDelete pulumix.ArrayOutput[string]                          `pulumi:"customDelete"`
-	CustomUpdate pulumix.ArrayOutput[string]                          `pulumi:"customUpdate"`
-	ExitCode     pulumix.Output[int]                                  `pulumi:"exitCode"`
-	MovedFiles   pulumix.MapOutput[string]                            `pulumi:"movedFiles"`
-	Stderr       pulumix.Output[string]                               `pulumi:"stderr"`
-	Stdout       pulumix.Output[string]                               `pulumi:"stdout"`
-	Triggers     pulumix.ArrayOutput[any]                             `pulumi:"triggers"`
+	Args         pulumix.GPtrOutput[WgetArgsType, WgetArgsTypeOutput]                                 `pulumi:"args"`
+	Connection   pulumix.GPtrOutput[config.ProvisionerConnection, config.ProvisionerConnectionOutput] `pulumi:"connection"`
+	CreatedFiles pulumix.ArrayOutput[string]                                                          `pulumi:"createdFiles"`
+	CustomDelete pulumix.ArrayOutput[string]                                                          `pulumi:"customDelete"`
+	CustomUpdate pulumix.ArrayOutput[string]                                                          `pulumi:"customUpdate"`
+	ExitCode     pulumix.Output[int]                                                                  `pulumi:"exitCode"`
+	MovedFiles   pulumix.MapOutput[string]                                                            `pulumi:"movedFiles"`
+	Stderr       pulumix.Output[string]                                                               `pulumi:"stderr"`
+	Stdout       pulumix.Output[string]                                                               `pulumi:"stdout"`
+	Triggers     pulumix.ArrayOutput[any]                                                             `pulumi:"triggers"`
 }
 
 // NewWget registers a new resource with the given unique name, arguments, and options.
@@ -70,15 +72,17 @@ func (WgetState) ElementType() reflect.Type {
 }
 
 type wgetArgs struct {
-	Args         WgetArgsType  `pulumi:"args"`
-	CustomDelete []string      `pulumi:"customDelete"`
-	CustomUpdate []string      `pulumi:"customUpdate"`
-	Triggers     []interface{} `pulumi:"triggers"`
+	Args         WgetArgsType                  `pulumi:"args"`
+	Connection   *config.ProvisionerConnection `pulumi:"connection"`
+	CustomDelete []string                      `pulumi:"customDelete"`
+	CustomUpdate []string                      `pulumi:"customUpdate"`
+	Triggers     []interface{}                 `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Wget resource.
 type WgetArgs struct {
 	Args         pulumix.Input[*WgetArgsTypeArgs]
+	Connection   pulumix.Input[*config.ProvisionerConnectionArgs]
 	CustomDelete pulumix.Input[[]string]
 	CustomUpdate pulumix.Input[[]string]
 	Triggers     pulumix.Input[[]any]
@@ -112,6 +116,14 @@ func (o WgetOutput) Args() pulumix.GPtrOutput[WgetArgsType, WgetArgsTypeOutput] 
 	value := pulumix.Apply[Wget](o, func(v Wget) pulumix.GPtrOutput[WgetArgsType, WgetArgsTypeOutput] { return v.Args })
 	unwrapped := pulumix.Flatten[*WgetArgsType, pulumix.GPtrOutput[WgetArgsType, WgetArgsTypeOutput]](value)
 	return pulumix.GPtrOutput[WgetArgsType, WgetArgsTypeOutput]{OutputState: unwrapped.OutputState}
+}
+
+func (o WgetOutput) Connection() pulumix.GPtrOutput[config.ProvisionerConnection, config.ProvisionerConnectionOutput] {
+	value := pulumix.Apply[Wget](o, func(v Wget) pulumix.GPtrOutput[config.ProvisionerConnection, config.ProvisionerConnectionOutput] {
+		return v.Connection
+	})
+	unwrapped := pulumix.Flatten[*config.ProvisionerConnection, pulumix.GPtrOutput[config.ProvisionerConnection, config.ProvisionerConnectionOutput]](value)
+	return pulumix.GPtrOutput[config.ProvisionerConnection, config.ProvisionerConnectionOutput]{OutputState: unwrapped.OutputState}
 }
 
 func (o WgetOutput) CreatedFiles() pulumix.ArrayOutput[string] {

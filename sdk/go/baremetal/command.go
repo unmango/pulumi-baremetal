@@ -10,19 +10,21 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/config"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
 type Command struct {
 	pulumi.CustomResourceState
 
-	Create   pulumi.StringArrayOutput `pulumi:"create"`
-	Delete   pulumi.StringArrayOutput `pulumi:"delete"`
-	ExitCode pulumi.IntOutput         `pulumi:"exitCode"`
-	Stderr   pulumi.StringOutput      `pulumi:"stderr"`
-	Stdout   pulumi.StringOutput      `pulumi:"stdout"`
-	Triggers pulumi.ArrayOutput       `pulumi:"triggers"`
-	Update   pulumi.StringArrayOutput `pulumi:"update"`
+	Connection config.ProvisionerConnectionPtrOutput `pulumi:"connection"`
+	Create     pulumi.StringArrayOutput              `pulumi:"create"`
+	Delete     pulumi.StringArrayOutput              `pulumi:"delete"`
+	ExitCode   pulumi.IntOutput                      `pulumi:"exitCode"`
+	Stderr     pulumi.StringOutput                   `pulumi:"stderr"`
+	Stdout     pulumi.StringOutput                   `pulumi:"stdout"`
+	Triggers   pulumi.ArrayOutput                    `pulumi:"triggers"`
+	Update     pulumi.StringArrayOutput              `pulumi:"update"`
 }
 
 // NewCommand registers a new resource with the given unique name, arguments, and options.
@@ -68,18 +70,20 @@ func (CommandState) ElementType() reflect.Type {
 }
 
 type commandArgs struct {
-	Create   []string      `pulumi:"create"`
-	Delete   []string      `pulumi:"delete"`
-	Triggers []interface{} `pulumi:"triggers"`
-	Update   []string      `pulumi:"update"`
+	Connection *config.ProvisionerConnection `pulumi:"connection"`
+	Create     []string                      `pulumi:"create"`
+	Delete     []string                      `pulumi:"delete"`
+	Triggers   []interface{}                 `pulumi:"triggers"`
+	Update     []string                      `pulumi:"update"`
 }
 
 // The set of arguments for constructing a Command resource.
 type CommandArgs struct {
-	Create   pulumi.StringArrayInput
-	Delete   pulumi.StringArrayInput
-	Triggers pulumi.ArrayInput
-	Update   pulumi.StringArrayInput
+	Connection config.ProvisionerConnectionPtrInput
+	Create     pulumi.StringArrayInput
+	Delete     pulumi.StringArrayInput
+	Triggers   pulumi.ArrayInput
+	Update     pulumi.StringArrayInput
 }
 
 func (CommandArgs) ElementType() reflect.Type {
@@ -129,6 +133,10 @@ func (o CommandOutput) ToOutput(ctx context.Context) pulumix.Output[*Command] {
 	return pulumix.Output[*Command]{
 		OutputState: o.OutputState,
 	}
+}
+
+func (o CommandOutput) Connection() config.ProvisionerConnectionPtrOutput {
+	return o.ApplyT(func(v *Command) config.ProvisionerConnectionPtrOutput { return v.Connection }).(config.ProvisionerConnectionPtrOutput)
 }
 
 func (o CommandOutput) Create() pulumi.StringArrayOutput {

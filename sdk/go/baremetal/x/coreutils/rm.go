@@ -10,21 +10,23 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/config"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
 type Rm struct {
 	pulumi.CustomResourceState
 
-	Args         pulumix.GPtrOutput[RmArgsType, RmArgsTypeOutput] `pulumi:"args"`
-	CreatedFiles pulumix.ArrayOutput[string]                      `pulumi:"createdFiles"`
-	CustomDelete pulumix.ArrayOutput[string]                      `pulumi:"customDelete"`
-	CustomUpdate pulumix.ArrayOutput[string]                      `pulumi:"customUpdate"`
-	ExitCode     pulumix.Output[int]                              `pulumi:"exitCode"`
-	MovedFiles   pulumix.MapOutput[string]                        `pulumi:"movedFiles"`
-	Stderr       pulumix.Output[string]                           `pulumi:"stderr"`
-	Stdout       pulumix.Output[string]                           `pulumi:"stdout"`
-	Triggers     pulumix.ArrayOutput[any]                         `pulumi:"triggers"`
+	Args         pulumix.GPtrOutput[RmArgsType, RmArgsTypeOutput]                                     `pulumi:"args"`
+	Connection   pulumix.GPtrOutput[config.ProvisionerConnection, config.ProvisionerConnectionOutput] `pulumi:"connection"`
+	CreatedFiles pulumix.ArrayOutput[string]                                                          `pulumi:"createdFiles"`
+	CustomDelete pulumix.ArrayOutput[string]                                                          `pulumi:"customDelete"`
+	CustomUpdate pulumix.ArrayOutput[string]                                                          `pulumi:"customUpdate"`
+	ExitCode     pulumix.Output[int]                                                                  `pulumi:"exitCode"`
+	MovedFiles   pulumix.MapOutput[string]                                                            `pulumi:"movedFiles"`
+	Stderr       pulumix.Output[string]                                                               `pulumi:"stderr"`
+	Stdout       pulumix.Output[string]                                                               `pulumi:"stdout"`
+	Triggers     pulumix.ArrayOutput[any]                                                             `pulumi:"triggers"`
 }
 
 // NewRm registers a new resource with the given unique name, arguments, and options.
@@ -70,15 +72,17 @@ func (RmState) ElementType() reflect.Type {
 }
 
 type rmArgs struct {
-	Args         RmArgsType    `pulumi:"args"`
-	CustomDelete []string      `pulumi:"customDelete"`
-	CustomUpdate []string      `pulumi:"customUpdate"`
-	Triggers     []interface{} `pulumi:"triggers"`
+	Args         RmArgsType                    `pulumi:"args"`
+	Connection   *config.ProvisionerConnection `pulumi:"connection"`
+	CustomDelete []string                      `pulumi:"customDelete"`
+	CustomUpdate []string                      `pulumi:"customUpdate"`
+	Triggers     []interface{}                 `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Rm resource.
 type RmArgs struct {
 	Args         pulumix.Input[*RmArgsTypeArgs]
+	Connection   pulumix.Input[*config.ProvisionerConnectionArgs]
 	CustomDelete pulumix.Input[[]string]
 	CustomUpdate pulumix.Input[[]string]
 	Triggers     pulumix.Input[[]any]
@@ -112,6 +116,14 @@ func (o RmOutput) Args() pulumix.GPtrOutput[RmArgsType, RmArgsTypeOutput] {
 	value := pulumix.Apply[Rm](o, func(v Rm) pulumix.GPtrOutput[RmArgsType, RmArgsTypeOutput] { return v.Args })
 	unwrapped := pulumix.Flatten[*RmArgsType, pulumix.GPtrOutput[RmArgsType, RmArgsTypeOutput]](value)
 	return pulumix.GPtrOutput[RmArgsType, RmArgsTypeOutput]{OutputState: unwrapped.OutputState}
+}
+
+func (o RmOutput) Connection() pulumix.GPtrOutput[config.ProvisionerConnection, config.ProvisionerConnectionOutput] {
+	value := pulumix.Apply[Rm](o, func(v Rm) pulumix.GPtrOutput[config.ProvisionerConnection, config.ProvisionerConnectionOutput] {
+		return v.Connection
+	})
+	unwrapped := pulumix.Flatten[*config.ProvisionerConnection, pulumix.GPtrOutput[config.ProvisionerConnection, config.ProvisionerConnectionOutput]](value)
+	return pulumix.GPtrOutput[config.ProvisionerConnection, config.ProvisionerConnectionOutput]{OutputState: unwrapped.OutputState}
 }
 
 func (o RmOutput) CreatedFiles() pulumix.ArrayOutput[string] {

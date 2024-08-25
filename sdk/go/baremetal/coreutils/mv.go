@@ -10,21 +10,23 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/config"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
 type Mv struct {
 	pulumi.CustomResourceState
 
-	Args         MvArgsTypeOutput         `pulumi:"args"`
-	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
-	CustomDelete pulumi.StringArrayOutput `pulumi:"customDelete"`
-	CustomUpdate pulumi.StringArrayOutput `pulumi:"customUpdate"`
-	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
-	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
-	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
-	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
-	Triggers     pulumi.ArrayOutput       `pulumi:"triggers"`
+	Args         MvArgsTypeOutput                      `pulumi:"args"`
+	Connection   config.ProvisionerConnectionPtrOutput `pulumi:"connection"`
+	CreatedFiles pulumi.StringArrayOutput              `pulumi:"createdFiles"`
+	CustomDelete pulumi.StringArrayOutput              `pulumi:"customDelete"`
+	CustomUpdate pulumi.StringArrayOutput              `pulumi:"customUpdate"`
+	ExitCode     pulumi.IntOutput                      `pulumi:"exitCode"`
+	MovedFiles   pulumi.StringMapOutput                `pulumi:"movedFiles"`
+	Stderr       pulumi.StringOutput                   `pulumi:"stderr"`
+	Stdout       pulumi.StringOutput                   `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput                    `pulumi:"triggers"`
 }
 
 // NewMv registers a new resource with the given unique name, arguments, and options.
@@ -70,15 +72,17 @@ func (MvState) ElementType() reflect.Type {
 }
 
 type mvArgs struct {
-	Args         MvArgsType    `pulumi:"args"`
-	CustomDelete []string      `pulumi:"customDelete"`
-	CustomUpdate []string      `pulumi:"customUpdate"`
-	Triggers     []interface{} `pulumi:"triggers"`
+	Args         MvArgsType                    `pulumi:"args"`
+	Connection   *config.ProvisionerConnection `pulumi:"connection"`
+	CustomDelete []string                      `pulumi:"customDelete"`
+	CustomUpdate []string                      `pulumi:"customUpdate"`
+	Triggers     []interface{}                 `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Mv resource.
 type MvArgs struct {
 	Args         MvArgsTypeInput
+	Connection   config.ProvisionerConnectionPtrInput
 	CustomDelete pulumi.StringArrayInput
 	CustomUpdate pulumi.StringArrayInput
 	Triggers     pulumi.ArrayInput
@@ -135,6 +139,10 @@ func (o MvOutput) ToOutput(ctx context.Context) pulumix.Output[*Mv] {
 
 func (o MvOutput) Args() MvArgsTypeOutput {
 	return o.ApplyT(func(v *Mv) MvArgsTypeOutput { return v.Args }).(MvArgsTypeOutput)
+}
+
+func (o MvOutput) Connection() config.ProvisionerConnectionPtrOutput {
+	return o.ApplyT(func(v *Mv) config.ProvisionerConnectionPtrOutput { return v.Connection }).(config.ProvisionerConnectionPtrOutput)
 }
 
 func (o MvOutput) CreatedFiles() pulumi.StringArrayOutput {

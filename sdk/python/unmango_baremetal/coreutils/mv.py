@@ -9,6 +9,7 @@ import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from . import outputs
+from .. import config as _config
 from ._inputs import *
 
 __all__ = ['MvArgs', 'Mv']
@@ -17,6 +18,7 @@ __all__ = ['MvArgs', 'Mv']
 class MvArgs:
     def __init__(__self__, *,
                  args: pulumi.Input['MvArgsArgs'],
+                 connection: Optional[pulumi.Input['_config.ProvisionerConnectionArgs']] = None,
                  custom_delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  custom_update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None):
@@ -24,6 +26,8 @@ class MvArgs:
         The set of arguments for constructing a Mv resource.
         """
         pulumi.set(__self__, "args", args)
+        if connection is not None:
+            pulumi.set(__self__, "connection", connection)
         if custom_delete is not None:
             pulumi.set(__self__, "custom_delete", custom_delete)
         if custom_update is not None:
@@ -39,6 +43,15 @@ class MvArgs:
     @args.setter
     def args(self, value: pulumi.Input['MvArgsArgs']):
         pulumi.set(self, "args", value)
+
+    @property
+    @pulumi.getter
+    def connection(self) -> Optional[pulumi.Input['_config.ProvisionerConnectionArgs']]:
+        return pulumi.get(self, "connection")
+
+    @connection.setter
+    def connection(self, value: Optional[pulumi.Input['_config.ProvisionerConnectionArgs']]):
+        pulumi.set(self, "connection", value)
 
     @property
     @pulumi.getter(name="customDelete")
@@ -74,6 +87,7 @@ class Mv(pulumi.CustomResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  args: Optional[pulumi.Input[Union['MvArgsArgs', 'MvArgsArgsDict']]] = None,
+                 connection: Optional[pulumi.Input[Union['_config.ProvisionerConnectionArgs', '_config.ProvisionerConnectionArgsDict']]] = None,
                  custom_delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  custom_update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
@@ -107,6 +121,7 @@ class Mv(pulumi.CustomResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  args: Optional[pulumi.Input[Union['MvArgsArgs', 'MvArgsArgsDict']]] = None,
+                 connection: Optional[pulumi.Input[Union['_config.ProvisionerConnectionArgs', '_config.ProvisionerConnectionArgsDict']]] = None,
                  custom_delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  custom_update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
@@ -122,6 +137,7 @@ class Mv(pulumi.CustomResource):
             if args is None and not opts.urn:
                 raise TypeError("Missing required property 'args'")
             __props__.__dict__["args"] = args
+            __props__.__dict__["connection"] = connection
             __props__.__dict__["custom_delete"] = custom_delete
             __props__.__dict__["custom_update"] = custom_update
             __props__.__dict__["triggers"] = triggers
@@ -153,6 +169,7 @@ class Mv(pulumi.CustomResource):
         __props__ = MvArgs.__new__(MvArgs)
 
         __props__.__dict__["args"] = None
+        __props__.__dict__["connection"] = None
         __props__.__dict__["created_files"] = None
         __props__.__dict__["custom_delete"] = None
         __props__.__dict__["custom_update"] = None
@@ -167,6 +184,11 @@ class Mv(pulumi.CustomResource):
     @pulumi.getter
     def args(self) -> pulumi.Output['outputs.MvArgs']:
         return pulumi.get(self, "args")
+
+    @property
+    @pulumi.getter
+    def connection(self) -> pulumi.Output[Optional['_config.outputs.ProvisionerConnection']]:
+        return pulumi.get(self, "connection")
 
     @property
     @pulumi.getter(name="createdFiles")

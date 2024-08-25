@@ -10,21 +10,23 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/config"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
 type Mktemp struct {
 	pulumi.CustomResourceState
 
-	Args         MktempArgsTypeOutput     `pulumi:"args"`
-	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
-	CustomDelete pulumi.StringArrayOutput `pulumi:"customDelete"`
-	CustomUpdate pulumi.StringArrayOutput `pulumi:"customUpdate"`
-	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
-	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
-	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
-	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
-	Triggers     pulumi.ArrayOutput       `pulumi:"triggers"`
+	Args         MktempArgsTypeOutput                  `pulumi:"args"`
+	Connection   config.ProvisionerConnectionPtrOutput `pulumi:"connection"`
+	CreatedFiles pulumi.StringArrayOutput              `pulumi:"createdFiles"`
+	CustomDelete pulumi.StringArrayOutput              `pulumi:"customDelete"`
+	CustomUpdate pulumi.StringArrayOutput              `pulumi:"customUpdate"`
+	ExitCode     pulumi.IntOutput                      `pulumi:"exitCode"`
+	MovedFiles   pulumi.StringMapOutput                `pulumi:"movedFiles"`
+	Stderr       pulumi.StringOutput                   `pulumi:"stderr"`
+	Stdout       pulumi.StringOutput                   `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput                    `pulumi:"triggers"`
 }
 
 // NewMktemp registers a new resource with the given unique name, arguments, and options.
@@ -70,15 +72,17 @@ func (MktempState) ElementType() reflect.Type {
 }
 
 type mktempArgs struct {
-	Args         MktempArgsType `pulumi:"args"`
-	CustomDelete []string       `pulumi:"customDelete"`
-	CustomUpdate []string       `pulumi:"customUpdate"`
-	Triggers     []interface{}  `pulumi:"triggers"`
+	Args         MktempArgsType                `pulumi:"args"`
+	Connection   *config.ProvisionerConnection `pulumi:"connection"`
+	CustomDelete []string                      `pulumi:"customDelete"`
+	CustomUpdate []string                      `pulumi:"customUpdate"`
+	Triggers     []interface{}                 `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Mktemp resource.
 type MktempArgs struct {
 	Args         MktempArgsTypeInput
+	Connection   config.ProvisionerConnectionPtrInput
 	CustomDelete pulumi.StringArrayInput
 	CustomUpdate pulumi.StringArrayInput
 	Triggers     pulumi.ArrayInput
@@ -135,6 +139,10 @@ func (o MktempOutput) ToOutput(ctx context.Context) pulumix.Output[*Mktemp] {
 
 func (o MktempOutput) Args() MktempArgsTypeOutput {
 	return o.ApplyT(func(v *Mktemp) MktempArgsTypeOutput { return v.Args }).(MktempArgsTypeOutput)
+}
+
+func (o MktempOutput) Connection() config.ProvisionerConnectionPtrOutput {
+	return o.ApplyT(func(v *Mktemp) config.ProvisionerConnectionPtrOutput { return v.Connection }).(config.ProvisionerConnectionPtrOutput)
 }
 
 func (o MktempOutput) CreatedFiles() pulumi.StringArrayOutput {

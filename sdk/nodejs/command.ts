@@ -2,6 +2,8 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
+import * as inputs from "./types/input";
+import * as outputs from "./types/output";
 import * as utilities from "./utilities";
 
 export class Command extends pulumi.CustomResource {
@@ -31,6 +33,7 @@ export class Command extends pulumi.CustomResource {
         return obj['__pulumiType'] === Command.__pulumiType;
     }
 
+    public readonly connection!: pulumi.Output<outputs.config.ProvisionerConnection | undefined>;
     public readonly create!: pulumi.Output<string[]>;
     public readonly delete!: pulumi.Output<string[] | undefined>;
     public /*out*/ readonly exitCode!: pulumi.Output<number>;
@@ -53,6 +56,7 @@ export class Command extends pulumi.CustomResource {
             if ((!args || args.create === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'create'");
             }
+            resourceInputs["connection"] = args ? args.connection : undefined;
             resourceInputs["create"] = args ? args.create : undefined;
             resourceInputs["delete"] = args ? args.delete : undefined;
             resourceInputs["triggers"] = args ? args.triggers : undefined;
@@ -61,6 +65,7 @@ export class Command extends pulumi.CustomResource {
             resourceInputs["stderr"] = undefined /*out*/;
             resourceInputs["stdout"] = undefined /*out*/;
         } else {
+            resourceInputs["connection"] = undefined /*out*/;
             resourceInputs["create"] = undefined /*out*/;
             resourceInputs["delete"] = undefined /*out*/;
             resourceInputs["exitCode"] = undefined /*out*/;
@@ -78,6 +83,7 @@ export class Command extends pulumi.CustomResource {
  * The set of arguments for constructing a Command resource.
  */
 export interface CommandArgs {
+    connection?: pulumi.Input<inputs.config.ProvisionerConnectionArgs>;
     create: pulumi.Input<pulumi.Input<string>[]>;
     delete?: pulumi.Input<pulumi.Input<string>[]>;
     triggers?: pulumi.Input<any[]>;

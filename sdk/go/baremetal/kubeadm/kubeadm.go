@@ -10,21 +10,23 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/config"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
 type Kubeadm struct {
 	pulumi.CustomResourceState
 
-	Args         KubeadmArgsTypeOutput    `pulumi:"args"`
-	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
-	CustomDelete pulumi.StringArrayOutput `pulumi:"customDelete"`
-	CustomUpdate pulumi.StringArrayOutput `pulumi:"customUpdate"`
-	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
-	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
-	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
-	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
-	Triggers     pulumi.ArrayOutput       `pulumi:"triggers"`
+	Args         KubeadmArgsTypeOutput                 `pulumi:"args"`
+	Connection   config.ProvisionerConnectionPtrOutput `pulumi:"connection"`
+	CreatedFiles pulumi.StringArrayOutput              `pulumi:"createdFiles"`
+	CustomDelete pulumi.StringArrayOutput              `pulumi:"customDelete"`
+	CustomUpdate pulumi.StringArrayOutput              `pulumi:"customUpdate"`
+	ExitCode     pulumi.IntOutput                      `pulumi:"exitCode"`
+	MovedFiles   pulumi.StringMapOutput                `pulumi:"movedFiles"`
+	Stderr       pulumi.StringOutput                   `pulumi:"stderr"`
+	Stdout       pulumi.StringOutput                   `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput                    `pulumi:"triggers"`
 }
 
 // NewKubeadm registers a new resource with the given unique name, arguments, and options.
@@ -70,15 +72,17 @@ func (KubeadmState) ElementType() reflect.Type {
 }
 
 type kubeadmArgs struct {
-	Args         KubeadmArgsType `pulumi:"args"`
-	CustomDelete []string        `pulumi:"customDelete"`
-	CustomUpdate []string        `pulumi:"customUpdate"`
-	Triggers     []interface{}   `pulumi:"triggers"`
+	Args         KubeadmArgsType               `pulumi:"args"`
+	Connection   *config.ProvisionerConnection `pulumi:"connection"`
+	CustomDelete []string                      `pulumi:"customDelete"`
+	CustomUpdate []string                      `pulumi:"customUpdate"`
+	Triggers     []interface{}                 `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Kubeadm resource.
 type KubeadmArgs struct {
 	Args         KubeadmArgsTypeInput
+	Connection   config.ProvisionerConnectionPtrInput
 	CustomDelete pulumi.StringArrayInput
 	CustomUpdate pulumi.StringArrayInput
 	Triggers     pulumi.ArrayInput
@@ -135,6 +139,10 @@ func (o KubeadmOutput) ToOutput(ctx context.Context) pulumix.Output[*Kubeadm] {
 
 func (o KubeadmOutput) Args() KubeadmArgsTypeOutput {
 	return o.ApplyT(func(v *Kubeadm) KubeadmArgsTypeOutput { return v.Args }).(KubeadmArgsTypeOutput)
+}
+
+func (o KubeadmOutput) Connection() config.ProvisionerConnectionPtrOutput {
+	return o.ApplyT(func(v *Kubeadm) config.ProvisionerConnectionPtrOutput { return v.Connection }).(config.ProvisionerConnectionPtrOutput)
 }
 
 func (o KubeadmOutput) CreatedFiles() pulumi.StringArrayOutput {
