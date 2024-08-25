@@ -7,15 +7,25 @@ import (
 
 	"github.com/pulumi/pulumi-go-provider/infer"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/config"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
 
 type CommandArgs struct {
-	Create   []string `pulumi:"create"`
-	Update   []string `pulumi:"update,optional"`
-	Delete   []string `pulumi:"delete,optional"`
-	Triggers []any    `pulumi:"triggers,optional"`
+	Create     []string                      `pulumi:"create"`
+	Update     []string                      `pulumi:"update,optional"`
+	Delete     []string                      `pulumi:"delete,optional"`
+	Triggers   []any                         `pulumi:"triggers,optional"`
+	Connection *config.ProvisionerConnection `pulumi:"connection,optional"`
+}
+
+func (a CommandArgs) Provisioner(ctx context.Context) (*provisioner.Provisioner, error) {
+	if a.Connection != nil {
+		return provisioner.FromConnection(*a.Connection)
+	} else {
+		return provisioner.FromContext(ctx)
+	}
 }
 
 type Command struct{}
@@ -33,7 +43,7 @@ func (Command) Create(ctx context.Context, name string, inputs CommandArgs, prev
 	log := logger.FromContext(ctx)
 	state := CommandState{}
 
-	p, err := provisioner.FromContext(ctx)
+	p, err := inputs.Provisioner(ctx)
 	if err != nil {
 		log.Error("Failed creating provisioner")
 		return name, state, fmt.Errorf("creating provisioner: %w", err)
@@ -81,7 +91,8 @@ func (Command) Update(ctx context.Context, id string, olds CommandState, news Co
 		Stderr:      olds.Stderr,
 	}
 
-	p, err := provisioner.FromContext(ctx)
+	// What to do if the connection changes?
+	p, err := news.Provisioner(ctx)
 	if err != nil {
 		log.Error("Failed creating provisioner")
 		return state, fmt.Errorf("creating provisioner: %w", err)
@@ -127,7 +138,7 @@ func (Command) Delete(ctx context.Context, id string, props CommandState) error 
 		return nil
 	}
 
-	p, err := provisioner.FromContext(ctx)
+	p, err := props.Provisioner(ctx)
 	if err != nil {
 		log.Error("Failed creating provisioner")
 		return fmt.Errorf("creating provisioner: %w", err)

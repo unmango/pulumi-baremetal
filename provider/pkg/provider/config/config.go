@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-type Config struct {
+type ProvisionerConnection struct {
 	Address string `pulumi:"address"`
 	Port    string `pulumi:"port,optional"`
 	CaPem   string `pulumi:"caPem,optional"`
@@ -19,7 +19,11 @@ type Config struct {
 	KeyPem  string `pulumi:"keyPem,optional" provider:"secret"`
 }
 
-func (c Config) NewGrpcClient() (*grpc.ClientConn, error) {
+type Config struct {
+	ProvisionerConnection
+}
+
+func (c ProvisionerConnection) NewGrpcClient() (*grpc.ClientConn, error) {
 	target := c.Address
 	if c.Port != "" {
 		target = target + ":" + c.Port
@@ -35,7 +39,7 @@ func (c Config) NewGrpcClient() (*grpc.ClientConn, error) {
 	)
 }
 
-func (c Config) TransportCredentials() (credentials.TransportCredentials, error) {
+func (c ProvisionerConnection) TransportCredentials() (credentials.TransportCredentials, error) {
 	if c.CaPem == "" && c.CertPem == "" && c.KeyPem == "" {
 		return insecure.NewCredentials(), nil
 	}

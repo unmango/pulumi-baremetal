@@ -1,15 +1,28 @@
 package cmd
 
 import (
+	"context"
+
 	provider "github.com/pulumi/pulumi-go-provider"
 	pb "github.com/unmango/pulumi-baremetal/gen/go/unmango/baremetal/v1alpha1"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/config"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
 
 type CommandArgs[T Builder] struct {
-	Args         T        `pulumi:"args"`
-	Triggers     []any    `pulumi:"triggers,optional"`
-	CustomUpdate []string `pulumi:"customUpdate,optional"`
-	CustomDelete []string `pulumi:"customDelete,optional"`
+	Args         T                             `pulumi:"args"`
+	Triggers     []any                         `pulumi:"triggers,optional"`
+	CustomUpdate []string                      `pulumi:"customUpdate,optional"`
+	CustomDelete []string                      `pulumi:"customDelete,optional"`
+	Connection   *config.ProvisionerConnection `pulumi:"connection,optional"`
+}
+
+func (a *CommandArgs[T]) Provisioner(ctx context.Context) (*provisioner.Provisioner, error) {
+	if a.Connection != nil {
+		return provisioner.FromConnection(*a.Connection)
+	} else {
+		return provisioner.FromContext(ctx)
+	}
 }
 
 func (a *CommandArgs[T]) Cmd() (*pb.Command, error) {

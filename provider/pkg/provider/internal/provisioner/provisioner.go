@@ -9,33 +9,33 @@ import (
 	"google.golang.org/grpc"
 )
 
-type provisioner struct {
+type Provisioner struct {
 	pb.CommandServiceClient
 	pb.MetaServiceClient
 	conn *grpc.ClientConn
 }
 
 // Close implements io.Closer.
-func (p *provisioner) Close() error {
+func (p *Provisioner) Close() error {
 	return p.conn.Close()
 }
 
-func FromContext(ctx context.Context) (*provisioner, error) {
+func FromContext(ctx context.Context) (*Provisioner, error) {
 	config := infer.GetConfig[config.Config](ctx)
-	return FromConfig(config)
+	return FromConnection(config.ProvisionerConnection)
 }
 
-func FromConfig(config config.Config) (*provisioner, error) {
-	conn, err := config.NewGrpcClient()
+func FromConnection(conn config.ProvisionerConnection) (*Provisioner, error) {
+	client, err := conn.NewGrpcClient()
 	if err != nil {
 		return nil, err
 	}
 
-	return new(conn), nil
+	return new(client), nil
 }
 
-func new(conn *grpc.ClientConn) *provisioner {
+func new(conn *grpc.ClientConn) *Provisioner {
 	cmd := pb.NewCommandServiceClient(conn)
 	meta := pb.NewMetaServiceClient(conn)
-	return &provisioner{cmd, meta, conn}
+	return &Provisioner{cmd, meta, conn}
 }
