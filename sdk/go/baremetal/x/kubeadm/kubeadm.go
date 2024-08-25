@@ -10,23 +10,23 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
-	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/config"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
 type Kubeadm struct {
 	pulumi.CustomResourceState
 
-	Args         pulumix.GPtrOutput[KubeadmArgsType, KubeadmArgsTypeOutput]                           `pulumi:"args"`
-	Connection   pulumix.GPtrOutput[config.ProvisionerConnection, config.ProvisionerConnectionOutput] `pulumi:"connection"`
-	CreatedFiles pulumix.ArrayOutput[string]                                                          `pulumi:"createdFiles"`
-	CustomDelete pulumix.ArrayOutput[string]                                                          `pulumi:"customDelete"`
-	CustomUpdate pulumix.ArrayOutput[string]                                                          `pulumi:"customUpdate"`
-	ExitCode     pulumix.Output[int]                                                                  `pulumi:"exitCode"`
-	MovedFiles   pulumix.MapOutput[string]                                                            `pulumi:"movedFiles"`
-	Stderr       pulumix.Output[string]                                                               `pulumi:"stderr"`
-	Stdout       pulumix.Output[string]                                                               `pulumi:"stdout"`
-	Triggers     pulumix.ArrayOutput[any]                                                             `pulumi:"triggers"`
+	Args         pulumix.GPtrOutput[KubeadmArgsType, KubeadmArgsTypeOutput]                                 `pulumi:"args"`
+	Connection   pulumix.GPtrOutput[baremetal.ProvisionerConnection, baremetal.ProvisionerConnectionOutput] `pulumi:"connection"`
+	CreatedFiles pulumix.ArrayOutput[string]                                                                `pulumi:"createdFiles"`
+	CustomDelete pulumix.ArrayOutput[string]                                                                `pulumi:"customDelete"`
+	CustomUpdate pulumix.ArrayOutput[string]                                                                `pulumi:"customUpdate"`
+	ExitCode     pulumix.Output[int]                                                                        `pulumi:"exitCode"`
+	MovedFiles   pulumix.MapOutput[string]                                                                  `pulumi:"movedFiles"`
+	Stderr       pulumix.Output[string]                                                                     `pulumi:"stderr"`
+	Stdout       pulumix.Output[string]                                                                     `pulumi:"stdout"`
+	Triggers     pulumix.ArrayOutput[any]                                                                   `pulumi:"triggers"`
 }
 
 // NewKubeadm registers a new resource with the given unique name, arguments, and options.
@@ -72,17 +72,17 @@ func (KubeadmState) ElementType() reflect.Type {
 }
 
 type kubeadmArgs struct {
-	Args         KubeadmArgsType               `pulumi:"args"`
-	Connection   *config.ProvisionerConnection `pulumi:"connection"`
-	CustomDelete []string                      `pulumi:"customDelete"`
-	CustomUpdate []string                      `pulumi:"customUpdate"`
-	Triggers     []interface{}                 `pulumi:"triggers"`
+	Args         KubeadmArgsType                  `pulumi:"args"`
+	Connection   *baremetal.ProvisionerConnection `pulumi:"connection"`
+	CustomDelete []string                         `pulumi:"customDelete"`
+	CustomUpdate []string                         `pulumi:"customUpdate"`
+	Triggers     []interface{}                    `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Kubeadm resource.
 type KubeadmArgs struct {
 	Args         pulumix.Input[*KubeadmArgsTypeArgs]
-	Connection   pulumix.Input[*config.ProvisionerConnectionArgs]
+	Connection   pulumix.Input[*baremetal.ProvisionerConnectionArgs]
 	CustomDelete pulumix.Input[[]string]
 	CustomUpdate pulumix.Input[[]string]
 	Triggers     pulumix.Input[[]any]
@@ -118,12 +118,12 @@ func (o KubeadmOutput) Args() pulumix.GPtrOutput[KubeadmArgsType, KubeadmArgsTyp
 	return pulumix.GPtrOutput[KubeadmArgsType, KubeadmArgsTypeOutput]{OutputState: unwrapped.OutputState}
 }
 
-func (o KubeadmOutput) Connection() pulumix.GPtrOutput[config.ProvisionerConnection, config.ProvisionerConnectionOutput] {
-	value := pulumix.Apply[Kubeadm](o, func(v Kubeadm) pulumix.GPtrOutput[config.ProvisionerConnection, config.ProvisionerConnectionOutput] {
+func (o KubeadmOutput) Connection() pulumix.GPtrOutput[baremetal.ProvisionerConnection, baremetal.ProvisionerConnectionOutput] {
+	value := pulumix.Apply[Kubeadm](o, func(v Kubeadm) pulumix.GPtrOutput[baremetal.ProvisionerConnection, baremetal.ProvisionerConnectionOutput] {
 		return v.Connection
 	})
-	unwrapped := pulumix.Flatten[*config.ProvisionerConnection, pulumix.GPtrOutput[config.ProvisionerConnection, config.ProvisionerConnectionOutput]](value)
-	return pulumix.GPtrOutput[config.ProvisionerConnection, config.ProvisionerConnectionOutput]{OutputState: unwrapped.OutputState}
+	unwrapped := pulumix.Flatten[*baremetal.ProvisionerConnection, pulumix.GPtrOutput[baremetal.ProvisionerConnection, baremetal.ProvisionerConnectionOutput]](value)
+	return pulumix.GPtrOutput[baremetal.ProvisionerConnection, baremetal.ProvisionerConnectionOutput]{OutputState: unwrapped.OutputState}
 }
 
 func (o KubeadmOutput) CreatedFiles() pulumix.ArrayOutput[string] {

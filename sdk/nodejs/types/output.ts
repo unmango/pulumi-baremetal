@@ -5,15 +5,12 @@ import * as pulumi from "@pulumi/pulumi";
 import * as inputs from "../types/input";
 import * as outputs from "../types/output";
 
-export namespace config {
-    export interface ProvisionerConnection {
-        address: string;
-        caPem?: string;
-        certPem?: string;
-        keyPem?: string;
-        port?: string;
-    }
-
+export interface ProvisionerConnection {
+    address: string;
+    caPem?: string;
+    certPem?: string;
+    keyPem?: string;
+    port?: string;
 }
 
 export namespace coreutils {

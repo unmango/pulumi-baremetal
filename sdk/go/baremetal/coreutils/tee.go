@@ -10,7 +10,7 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
-	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/config"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
@@ -86,16 +86,16 @@ import (
 type Tee struct {
 	pulumi.CustomResourceState
 
-	Args         TeeArgsTypeOutput                     `pulumi:"args"`
-	Connection   config.ProvisionerConnectionPtrOutput `pulumi:"connection"`
-	CreatedFiles pulumi.StringArrayOutput              `pulumi:"createdFiles"`
-	CustomDelete pulumi.StringArrayOutput              `pulumi:"customDelete"`
-	CustomUpdate pulumi.StringArrayOutput              `pulumi:"customUpdate"`
-	ExitCode     pulumi.IntOutput                      `pulumi:"exitCode"`
-	MovedFiles   pulumi.StringMapOutput                `pulumi:"movedFiles"`
-	Stderr       pulumi.StringOutput                   `pulumi:"stderr"`
-	Stdout       pulumi.StringOutput                   `pulumi:"stdout"`
-	Triggers     pulumi.ArrayOutput                    `pulumi:"triggers"`
+	Args         TeeArgsTypeOutput                        `pulumi:"args"`
+	Connection   baremetal.ProvisionerConnectionPtrOutput `pulumi:"connection"`
+	CreatedFiles pulumi.StringArrayOutput                 `pulumi:"createdFiles"`
+	CustomDelete pulumi.StringArrayOutput                 `pulumi:"customDelete"`
+	CustomUpdate pulumi.StringArrayOutput                 `pulumi:"customUpdate"`
+	ExitCode     pulumi.IntOutput                         `pulumi:"exitCode"`
+	MovedFiles   pulumi.StringMapOutput                   `pulumi:"movedFiles"`
+	Stderr       pulumi.StringOutput                      `pulumi:"stderr"`
+	Stdout       pulumi.StringOutput                      `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput                       `pulumi:"triggers"`
 }
 
 // NewTee registers a new resource with the given unique name, arguments, and options.
@@ -141,17 +141,17 @@ func (TeeState) ElementType() reflect.Type {
 }
 
 type teeArgs struct {
-	Args         TeeArgsType                   `pulumi:"args"`
-	Connection   *config.ProvisionerConnection `pulumi:"connection"`
-	CustomDelete []string                      `pulumi:"customDelete"`
-	CustomUpdate []string                      `pulumi:"customUpdate"`
-	Triggers     []interface{}                 `pulumi:"triggers"`
+	Args         TeeArgsType                      `pulumi:"args"`
+	Connection   *baremetal.ProvisionerConnection `pulumi:"connection"`
+	CustomDelete []string                         `pulumi:"customDelete"`
+	CustomUpdate []string                         `pulumi:"customUpdate"`
+	Triggers     []interface{}                    `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Tee resource.
 type TeeArgs struct {
 	Args         TeeArgsTypeInput
-	Connection   config.ProvisionerConnectionPtrInput
+	Connection   baremetal.ProvisionerConnectionPtrInput
 	CustomDelete pulumi.StringArrayInput
 	CustomUpdate pulumi.StringArrayInput
 	Triggers     pulumi.ArrayInput
@@ -210,8 +210,8 @@ func (o TeeOutput) Args() TeeArgsTypeOutput {
 	return o.ApplyT(func(v *Tee) TeeArgsTypeOutput { return v.Args }).(TeeArgsTypeOutput)
 }
 
-func (o TeeOutput) Connection() config.ProvisionerConnectionPtrOutput {
-	return o.ApplyT(func(v *Tee) config.ProvisionerConnectionPtrOutput { return v.Connection }).(config.ProvisionerConnectionPtrOutput)
+func (o TeeOutput) Connection() baremetal.ProvisionerConnectionPtrOutput {
+	return o.ApplyT(func(v *Tee) baremetal.ProvisionerConnectionPtrOutput { return v.Connection }).(baremetal.ProvisionerConnectionPtrOutput)
 }
 
 func (o TeeOutput) CreatedFiles() pulumi.StringArrayOutput {

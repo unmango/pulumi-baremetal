@@ -8,7 +8,8 @@ import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from . import _utilities
-from . import config as _config
+from . import outputs
+from ._inputs import *
 
 __all__ = ['CommandArgs', 'Command']
 
@@ -16,7 +17,7 @@ __all__ = ['CommandArgs', 'Command']
 class CommandArgs:
     def __init__(__self__, *,
                  create: pulumi.Input[Sequence[pulumi.Input[str]]],
-                 connection: Optional[pulumi.Input['_config.ProvisionerConnectionArgs']] = None,
+                 connection: Optional[pulumi.Input['ProvisionerConnectionArgs']] = None,
                  delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
                  update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None):
@@ -44,11 +45,11 @@ class CommandArgs:
 
     @property
     @pulumi.getter
-    def connection(self) -> Optional[pulumi.Input['_config.ProvisionerConnectionArgs']]:
+    def connection(self) -> Optional[pulumi.Input['ProvisionerConnectionArgs']]:
         return pulumi.get(self, "connection")
 
     @connection.setter
-    def connection(self, value: Optional[pulumi.Input['_config.ProvisionerConnectionArgs']]):
+    def connection(self, value: Optional[pulumi.Input['ProvisionerConnectionArgs']]):
         pulumi.set(self, "connection", value)
 
     @property
@@ -84,7 +85,7 @@ class Command(pulumi.CustomResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 connection: Optional[pulumi.Input[Union['_config.ProvisionerConnectionArgs', '_config.ProvisionerConnectionArgsDict']]] = None,
+                 connection: Optional[pulumi.Input[Union['ProvisionerConnectionArgs', 'ProvisionerConnectionArgsDict']]] = None,
                  create: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
@@ -118,7 +119,7 @@ class Command(pulumi.CustomResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
-                 connection: Optional[pulumi.Input[Union['_config.ProvisionerConnectionArgs', '_config.ProvisionerConnectionArgsDict']]] = None,
+                 connection: Optional[pulumi.Input[Union['ProvisionerConnectionArgs', 'ProvisionerConnectionArgsDict']]] = None,
                  create: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
@@ -176,7 +177,7 @@ class Command(pulumi.CustomResource):
 
     @property
     @pulumi.getter
-    def connection(self) -> pulumi.Output[Optional['_config.outputs.ProvisionerConnection']]:
+    def connection(self) -> pulumi.Output[Optional['outputs.ProvisionerConnection']]:
         return pulumi.get(self, "connection")
 
     @property

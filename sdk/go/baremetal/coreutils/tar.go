@@ -10,23 +10,23 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
-	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/config"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
 type Tar struct {
 	pulumi.CustomResourceState
 
-	Args         TarArgsTypeOutput                     `pulumi:"args"`
-	Connection   config.ProvisionerConnectionPtrOutput `pulumi:"connection"`
-	CreatedFiles pulumi.StringArrayOutput              `pulumi:"createdFiles"`
-	CustomDelete pulumi.StringArrayOutput              `pulumi:"customDelete"`
-	CustomUpdate pulumi.StringArrayOutput              `pulumi:"customUpdate"`
-	ExitCode     pulumi.IntOutput                      `pulumi:"exitCode"`
-	MovedFiles   pulumi.StringMapOutput                `pulumi:"movedFiles"`
-	Stderr       pulumi.StringOutput                   `pulumi:"stderr"`
-	Stdout       pulumi.StringOutput                   `pulumi:"stdout"`
-	Triggers     pulumi.ArrayOutput                    `pulumi:"triggers"`
+	Args         TarArgsTypeOutput                        `pulumi:"args"`
+	Connection   baremetal.ProvisionerConnectionPtrOutput `pulumi:"connection"`
+	CreatedFiles pulumi.StringArrayOutput                 `pulumi:"createdFiles"`
+	CustomDelete pulumi.StringArrayOutput                 `pulumi:"customDelete"`
+	CustomUpdate pulumi.StringArrayOutput                 `pulumi:"customUpdate"`
+	ExitCode     pulumi.IntOutput                         `pulumi:"exitCode"`
+	MovedFiles   pulumi.StringMapOutput                   `pulumi:"movedFiles"`
+	Stderr       pulumi.StringOutput                      `pulumi:"stderr"`
+	Stdout       pulumi.StringOutput                      `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput                       `pulumi:"triggers"`
 }
 
 // NewTar registers a new resource with the given unique name, arguments, and options.
@@ -72,17 +72,17 @@ func (TarState) ElementType() reflect.Type {
 }
 
 type tarArgs struct {
-	Args         TarArgsType                   `pulumi:"args"`
-	Connection   *config.ProvisionerConnection `pulumi:"connection"`
-	CustomDelete []string                      `pulumi:"customDelete"`
-	CustomUpdate []string                      `pulumi:"customUpdate"`
-	Triggers     []interface{}                 `pulumi:"triggers"`
+	Args         TarArgsType                      `pulumi:"args"`
+	Connection   *baremetal.ProvisionerConnection `pulumi:"connection"`
+	CustomDelete []string                         `pulumi:"customDelete"`
+	CustomUpdate []string                         `pulumi:"customUpdate"`
+	Triggers     []interface{}                    `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Tar resource.
 type TarArgs struct {
 	Args         TarArgsTypeInput
-	Connection   config.ProvisionerConnectionPtrInput
+	Connection   baremetal.ProvisionerConnectionPtrInput
 	CustomDelete pulumi.StringArrayInput
 	CustomUpdate pulumi.StringArrayInput
 	Triggers     pulumi.ArrayInput
@@ -141,8 +141,8 @@ func (o TarOutput) Args() TarArgsTypeOutput {
 	return o.ApplyT(func(v *Tar) TarArgsTypeOutput { return v.Args }).(TarArgsTypeOutput)
 }
 
-func (o TarOutput) Connection() config.ProvisionerConnectionPtrOutput {
-	return o.ApplyT(func(v *Tar) config.ProvisionerConnectionPtrOutput { return v.Connection }).(config.ProvisionerConnectionPtrOutput)
+func (o TarOutput) Connection() baremetal.ProvisionerConnectionPtrOutput {
+	return o.ApplyT(func(v *Tar) baremetal.ProvisionerConnectionPtrOutput { return v.Connection }).(baremetal.ProvisionerConnectionPtrOutput)
 }
 
 func (o TarOutput) CreatedFiles() pulumi.StringArrayOutput {

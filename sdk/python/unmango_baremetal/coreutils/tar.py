@@ -9,7 +9,8 @@ import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from . import outputs
-from .. import config as _config
+from .. import _inputs as _root_inputs
+from .. import outputs as _root_outputs
 from ._inputs import *
 
 __all__ = ['TarArgs', 'Tar']
@@ -18,7 +19,7 @@ __all__ = ['TarArgs', 'Tar']
 class TarArgs:
     def __init__(__self__, *,
                  args: pulumi.Input['TarArgsArgs'],
-                 connection: Optional[pulumi.Input['_config.ProvisionerConnectionArgs']] = None,
+                 connection: Optional[pulumi.Input['_root_inputs.ProvisionerConnectionArgs']] = None,
                  custom_delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  custom_update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None):
@@ -46,11 +47,11 @@ class TarArgs:
 
     @property
     @pulumi.getter
-    def connection(self) -> Optional[pulumi.Input['_config.ProvisionerConnectionArgs']]:
+    def connection(self) -> Optional[pulumi.Input['_root_inputs.ProvisionerConnectionArgs']]:
         return pulumi.get(self, "connection")
 
     @connection.setter
-    def connection(self, value: Optional[pulumi.Input['_config.ProvisionerConnectionArgs']]):
+    def connection(self, value: Optional[pulumi.Input['_root_inputs.ProvisionerConnectionArgs']]):
         pulumi.set(self, "connection", value)
 
     @property
@@ -87,7 +88,7 @@ class Tar(pulumi.CustomResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  args: Optional[pulumi.Input[Union['TarArgsArgs', 'TarArgsArgsDict']]] = None,
-                 connection: Optional[pulumi.Input[Union['_config.ProvisionerConnectionArgs', '_config.ProvisionerConnectionArgsDict']]] = None,
+                 connection: Optional[pulumi.Input[Union['_root_inputs.ProvisionerConnectionArgs', '_root_inputs.ProvisionerConnectionArgsDict']]] = None,
                  custom_delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  custom_update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
@@ -121,7 +122,7 @@ class Tar(pulumi.CustomResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  args: Optional[pulumi.Input[Union['TarArgsArgs', 'TarArgsArgsDict']]] = None,
-                 connection: Optional[pulumi.Input[Union['_config.ProvisionerConnectionArgs', '_config.ProvisionerConnectionArgsDict']]] = None,
+                 connection: Optional[pulumi.Input[Union['_root_inputs.ProvisionerConnectionArgs', '_root_inputs.ProvisionerConnectionArgsDict']]] = None,
                  custom_delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  custom_update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
@@ -187,7 +188,7 @@ class Tar(pulumi.CustomResource):
 
     @property
     @pulumi.getter
-    def connection(self) -> pulumi.Output[Optional['_config.outputs.ProvisionerConnection']]:
+    def connection(self) -> pulumi.Output[Optional['_root_outputs.ProvisionerConnection']]:
         return pulumi.get(self, "connection")
 
     @property

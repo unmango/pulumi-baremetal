@@ -5,16 +5,13 @@ import * as pulumi from "@pulumi/pulumi";
 import * as inputs from "../types/input";
 import * as outputs from "../types/output";
 
-export namespace config {
-    export interface ProvisionerConnectionArgs {
-        address: pulumi.Input<string>;
-        caPem?: pulumi.Input<string>;
-        certPem?: pulumi.Input<string>;
-        keyPem?: pulumi.Input<string>;
-        port?: pulumi.Input<string>;
-    }
+export interface ProvisionerConnectionArgs {
+    address: pulumi.Input<string>;
+    caPem?: pulumi.Input<string>;
+    certPem?: pulumi.Input<string>;
+    keyPem?: pulumi.Input<string>;
+    port?: pulumi.Input<string>;
 }
-
 export namespace coreutils {
     export interface CatArgsArgs {
         e?: pulumi.Input<boolean>;

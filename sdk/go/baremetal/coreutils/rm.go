@@ -10,23 +10,23 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
-	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/config"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
 type Rm struct {
 	pulumi.CustomResourceState
 
-	Args         RmArgsTypeOutput                      `pulumi:"args"`
-	Connection   config.ProvisionerConnectionPtrOutput `pulumi:"connection"`
-	CreatedFiles pulumi.StringArrayOutput              `pulumi:"createdFiles"`
-	CustomDelete pulumi.StringArrayOutput              `pulumi:"customDelete"`
-	CustomUpdate pulumi.StringArrayOutput              `pulumi:"customUpdate"`
-	ExitCode     pulumi.IntOutput                      `pulumi:"exitCode"`
-	MovedFiles   pulumi.StringMapOutput                `pulumi:"movedFiles"`
-	Stderr       pulumi.StringOutput                   `pulumi:"stderr"`
-	Stdout       pulumi.StringOutput                   `pulumi:"stdout"`
-	Triggers     pulumi.ArrayOutput                    `pulumi:"triggers"`
+	Args         RmArgsTypeOutput                         `pulumi:"args"`
+	Connection   baremetal.ProvisionerConnectionPtrOutput `pulumi:"connection"`
+	CreatedFiles pulumi.StringArrayOutput                 `pulumi:"createdFiles"`
+	CustomDelete pulumi.StringArrayOutput                 `pulumi:"customDelete"`
+	CustomUpdate pulumi.StringArrayOutput                 `pulumi:"customUpdate"`
+	ExitCode     pulumi.IntOutput                         `pulumi:"exitCode"`
+	MovedFiles   pulumi.StringMapOutput                   `pulumi:"movedFiles"`
+	Stderr       pulumi.StringOutput                      `pulumi:"stderr"`
+	Stdout       pulumi.StringOutput                      `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput                       `pulumi:"triggers"`
 }
 
 // NewRm registers a new resource with the given unique name, arguments, and options.
@@ -72,17 +72,17 @@ func (RmState) ElementType() reflect.Type {
 }
 
 type rmArgs struct {
-	Args         RmArgsType                    `pulumi:"args"`
-	Connection   *config.ProvisionerConnection `pulumi:"connection"`
-	CustomDelete []string                      `pulumi:"customDelete"`
-	CustomUpdate []string                      `pulumi:"customUpdate"`
-	Triggers     []interface{}                 `pulumi:"triggers"`
+	Args         RmArgsType                       `pulumi:"args"`
+	Connection   *baremetal.ProvisionerConnection `pulumi:"connection"`
+	CustomDelete []string                         `pulumi:"customDelete"`
+	CustomUpdate []string                         `pulumi:"customUpdate"`
+	Triggers     []interface{}                    `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Rm resource.
 type RmArgs struct {
 	Args         RmArgsTypeInput
-	Connection   config.ProvisionerConnectionPtrInput
+	Connection   baremetal.ProvisionerConnectionPtrInput
 	CustomDelete pulumi.StringArrayInput
 	CustomUpdate pulumi.StringArrayInput
 	Triggers     pulumi.ArrayInput
@@ -141,8 +141,8 @@ func (o RmOutput) Args() RmArgsTypeOutput {
 	return o.ApplyT(func(v *Rm) RmArgsTypeOutput { return v.Args }).(RmArgsTypeOutput)
 }
 
-func (o RmOutput) Connection() config.ProvisionerConnectionPtrOutput {
-	return o.ApplyT(func(v *Rm) config.ProvisionerConnectionPtrOutput { return v.Connection }).(config.ProvisionerConnectionPtrOutput)
+func (o RmOutput) Connection() baremetal.ProvisionerConnectionPtrOutput {
+	return o.ApplyT(func(v *Rm) baremetal.ProvisionerConnectionPtrOutput { return v.Connection }).(baremetal.ProvisionerConnectionPtrOutput)
 }
 
 func (o RmOutput) CreatedFiles() pulumi.StringArrayOutput {

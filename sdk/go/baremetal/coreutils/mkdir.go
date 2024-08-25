@@ -10,23 +10,23 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
-	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/config"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
 type Mkdir struct {
 	pulumi.CustomResourceState
 
-	Args         MkdirArgsTypeOutput                   `pulumi:"args"`
-	Connection   config.ProvisionerConnectionPtrOutput `pulumi:"connection"`
-	CreatedFiles pulumi.StringArrayOutput              `pulumi:"createdFiles"`
-	CustomDelete pulumi.StringArrayOutput              `pulumi:"customDelete"`
-	CustomUpdate pulumi.StringArrayOutput              `pulumi:"customUpdate"`
-	ExitCode     pulumi.IntOutput                      `pulumi:"exitCode"`
-	MovedFiles   pulumi.StringMapOutput                `pulumi:"movedFiles"`
-	Stderr       pulumi.StringOutput                   `pulumi:"stderr"`
-	Stdout       pulumi.StringOutput                   `pulumi:"stdout"`
-	Triggers     pulumi.ArrayOutput                    `pulumi:"triggers"`
+	Args         MkdirArgsTypeOutput                      `pulumi:"args"`
+	Connection   baremetal.ProvisionerConnectionPtrOutput `pulumi:"connection"`
+	CreatedFiles pulumi.StringArrayOutput                 `pulumi:"createdFiles"`
+	CustomDelete pulumi.StringArrayOutput                 `pulumi:"customDelete"`
+	CustomUpdate pulumi.StringArrayOutput                 `pulumi:"customUpdate"`
+	ExitCode     pulumi.IntOutput                         `pulumi:"exitCode"`
+	MovedFiles   pulumi.StringMapOutput                   `pulumi:"movedFiles"`
+	Stderr       pulumi.StringOutput                      `pulumi:"stderr"`
+	Stdout       pulumi.StringOutput                      `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput                       `pulumi:"triggers"`
 }
 
 // NewMkdir registers a new resource with the given unique name, arguments, and options.
@@ -72,17 +72,17 @@ func (MkdirState) ElementType() reflect.Type {
 }
 
 type mkdirArgs struct {
-	Args         MkdirArgsType                 `pulumi:"args"`
-	Connection   *config.ProvisionerConnection `pulumi:"connection"`
-	CustomDelete []string                      `pulumi:"customDelete"`
-	CustomUpdate []string                      `pulumi:"customUpdate"`
-	Triggers     []interface{}                 `pulumi:"triggers"`
+	Args         MkdirArgsType                    `pulumi:"args"`
+	Connection   *baremetal.ProvisionerConnection `pulumi:"connection"`
+	CustomDelete []string                         `pulumi:"customDelete"`
+	CustomUpdate []string                         `pulumi:"customUpdate"`
+	Triggers     []interface{}                    `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Mkdir resource.
 type MkdirArgs struct {
 	Args         MkdirArgsTypeInput
-	Connection   config.ProvisionerConnectionPtrInput
+	Connection   baremetal.ProvisionerConnectionPtrInput
 	CustomDelete pulumi.StringArrayInput
 	CustomUpdate pulumi.StringArrayInput
 	Triggers     pulumi.ArrayInput
@@ -141,8 +141,8 @@ func (o MkdirOutput) Args() MkdirArgsTypeOutput {
 	return o.ApplyT(func(v *Mkdir) MkdirArgsTypeOutput { return v.Args }).(MkdirArgsTypeOutput)
 }
 
-func (o MkdirOutput) Connection() config.ProvisionerConnectionPtrOutput {
-	return o.ApplyT(func(v *Mkdir) config.ProvisionerConnectionPtrOutput { return v.Connection }).(config.ProvisionerConnectionPtrOutput)
+func (o MkdirOutput) Connection() baremetal.ProvisionerConnectionPtrOutput {
+	return o.ApplyT(func(v *Mkdir) baremetal.ProvisionerConnectionPtrOutput { return v.Connection }).(baremetal.ProvisionerConnectionPtrOutput)
 }
 
 func (o MkdirOutput) CreatedFiles() pulumi.StringArrayOutput {

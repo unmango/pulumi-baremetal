@@ -34,7 +34,7 @@ export class Tar extends pulumi.CustomResource {
     }
 
     public readonly args!: pulumi.Output<outputs.coreutils.TarArgs>;
-    public readonly connection!: pulumi.Output<outputs.config.ProvisionerConnection | undefined>;
+    public readonly connection!: pulumi.Output<outputs.ProvisionerConnection | undefined>;
     public /*out*/ readonly createdFiles!: pulumi.Output<string[]>;
     public readonly customDelete!: pulumi.Output<string[] | undefined>;
     public readonly customUpdate!: pulumi.Output<string[] | undefined>;
@@ -90,7 +90,7 @@ export class Tar extends pulumi.CustomResource {
  */
 export interface TarArgs {
     args: pulumi.Input<inputs.coreutils.TarArgsArgs>;
-    connection?: pulumi.Input<inputs.config.ProvisionerConnectionArgs>;
+    connection?: pulumi.Input<inputs.ProvisionerConnectionArgs>;
     customDelete?: pulumi.Input<pulumi.Input<string>[]>;
     customUpdate?: pulumi.Input<pulumi.Input<string>[]>;
     triggers?: pulumi.Input<any[]>;

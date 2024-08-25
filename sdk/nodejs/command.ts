@@ -33,7 +33,7 @@ export class Command extends pulumi.CustomResource {
         return obj['__pulumiType'] === Command.__pulumiType;
     }
 
-    public readonly connection!: pulumi.Output<outputs.config.ProvisionerConnection | undefined>;
+    public readonly connection!: pulumi.Output<outputs.ProvisionerConnection | undefined>;
     public readonly create!: pulumi.Output<string[]>;
     public readonly delete!: pulumi.Output<string[] | undefined>;
     public /*out*/ readonly exitCode!: pulumi.Output<number>;
@@ -83,7 +83,7 @@ export class Command extends pulumi.CustomResource {
  * The set of arguments for constructing a Command resource.
  */
 export interface CommandArgs {
-    connection?: pulumi.Input<inputs.config.ProvisionerConnectionArgs>;
+    connection?: pulumi.Input<inputs.ProvisionerConnectionArgs>;
     create: pulumi.Input<pulumi.Input<string>[]>;
     delete?: pulumi.Input<pulumi.Input<string>[]>;
     triggers?: pulumi.Input<any[]>;

@@ -14,7 +14,7 @@ namespace UnMango.Baremetal
     public partial class Command : global::Pulumi.CustomResource
     {
         [Output("connection")]
-        public Output<UnMango.Baremetal.Config.Outputs.ProvisionerConnection?> Connection { get; private set; } = null!;
+        public Output<Outputs.ProvisionerConnection?> Connection { get; private set; } = null!;
 
         [Output("create")]
         public Output<ImmutableArray<string>> Create { get; private set; } = null!;
@@ -84,7 +84,7 @@ namespace UnMango.Baremetal
     public sealed class CommandArgs : global::Pulumi.ResourceArgs
     {
         [Input("connection")]
-        public Input<UnMango.Baremetal.Config.Inputs.ProvisionerConnectionArgs>? Connection { get; set; }
+        public Input<Inputs.ProvisionerConnectionArgs>? Connection { get; set; }
 
         [Input("create", required: true)]
         private InputList<string>? _create;
