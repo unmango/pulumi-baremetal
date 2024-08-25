@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	. "github.com/unmango/pulumi-baremetal/tests/expect"
+	"github.com/unmango/pulumi-baremetal/tests/services"
 
 	"github.com/pulumi/pulumi-go-provider/integration"
 	pr "github.com/pulumi/pulumi/sdk/v3/go/common/resource"
@@ -14,13 +15,14 @@ import (
 	"github.com/unmango/pulumi-baremetal/tests/util"
 )
 
-var _ = Describe("Bootstrap", Pending, func() {
+var _ = FDescribe("Bootstrap", func() {
 	var (
-		resource tokens.Type = "baremetal:index:Bootstrap"
-		server   integration.Server
-		host     string
-		port     nat.Port
-		version  = "0.0.1-test"
+		resource   tokens.Type = "baremetal:index:Bootstrap"
+		server     integration.Server
+		host       string
+		port       nat.Port
+		user, pass string
+		version    = "0.0.1-test"
 	)
 
 	BeforeEach(func(ctx context.Context) {
@@ -28,6 +30,8 @@ var _ = Describe("Bootstrap", Pending, func() {
 		By("fetching the connection details")
 		host, port, err = sshServer.ConnectionDetails(ctx)
 		Expect(err).NotTo(HaveOccurred())
+		user = services.SshUserName
+		pass = services.SshPassword
 
 		By("creating a provider server")
 		server = util.NewServer()
@@ -46,12 +50,13 @@ var _ = Describe("Bootstrap", Pending, func() {
 				Inputs: pr.NewPropertyMapFromMap(map[string]interface{}{
 					"version": version,
 					"connection": map[string]interface{}{
-						"host": host,
-						"port": port.Int(),
+						"host":     host,
+						"port":     port.Int(),
+						"user":     user,
+						"password": pass,
 					},
 				}),
-				Hook: func(inputs, output pr.PropertyMap) {
-				},
+				Hook: func(inputs, output pr.PropertyMap) {},
 			},
 		})
 

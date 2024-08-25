@@ -1,6 +1,5 @@
 # Vendored code
-vendor/*
-!vendor/go.mod
+vendor/
 
 # User Specific
 **/.vs

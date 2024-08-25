@@ -2,22 +2,38 @@ package provider
 
 import (
 	"context"
+	"fmt"
+	"path"
+	"strings"
 
 	"github.com/pulumi/pulumi-go-provider/infer"
+	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
+)
+
+const (
+	repo = "https://github.com/unmango/pulumi-baremetal"
+	bin  = "provisioner"
 )
 
 type Bootstrap struct{}
 
 type BootstrapArgs struct {
-	Directory *string `pulumi:"directory,optional"`
-	Version   *string `pulumi:"version"`
+	Arch       string      `pulumi:"arch,optional"`
+	Connection *Connection `pulumi:"connection,optional"`
+	Directory  string      `pulumi:"directory,optional"`
+	Os         string      `pulumi:"os,optional"`
+	Version    *string     `pulumi:"version"`
 }
 
 // Annotate implements infer.Annotated.
 func (b *BootstrapArgs) Annotate(a infer.Annotator) {
+	a.Describe(&b.Arch, "The CPU architecture of the remote system.")
+	a.SetDefault(&b.Arch, "amd64")
 	a.Describe(&b.Directory, "The directory to store the provisioner binary.")
 	a.SetDefault(&b.Directory, "/usr/local/bin")
-	a.Describe(&b.Version, "The version of the provisioner to bootstrap")
+	a.Describe(&b.Os, "The OS type of the remote system.")
+	a.SetDefault(&b.Os, "linux")
+	a.Describe(&b.Version, "The version of the provisioner to bootstrap.")
 }
 
 var _ = (infer.Annotated)((*BootstrapArgs)(nil))
@@ -41,7 +57,68 @@ var _ = (infer.Annotated)((*BootstrapState)(nil))
 
 // Create implements infer.CustomCreate.
 func (Bootstrap) Create(ctx context.Context, name string, inputs BootstrapArgs, preview bool) (id string, output BootstrapState, err error) {
+	log := logger.FromContext(ctx)
 	state := BootstrapState{BootstrapArgs: inputs}
+
+	client, err := inputs.Connection.Dial(ctx)
+	if err != nil {
+		return name, state, err
+	}
+
+	session, err := client.NewSession()
+	if err != nil {
+		return name, state, err
+	}
+	defer session.Close()
+
+	version := "latest"
+	if inputs.Version != nil {
+		version = *inputs.Version
+	}
+
+	archive := fmt.Sprintf("pulumi-resource-baremetal-v%s-%s.tar.gz", inputs.Os, inputs.Arch)
+	url := fmt.Sprintf("%s/releases/%s/assets/%s", repo, version, archive)
+	binPath := path.Join(inputs.Directory, bin)
+	log.Debugf("Using URL: %s", url)
+
+	mktemp, err := session.Output("mktemp --directory")
+	if err != nil {
+		return name, state, err
+	}
+
+	tmp := strings.TrimSpace(string(mktemp))
+	archivePath := path.Join(tmp, archive)
+
+	err = session.Run(fmt.Sprintf("wget --directory-prefix %s %s", tmp, url))
+	if err != nil {
+		return name, state, err
+	}
+
+	err = session.Run(fmt.Sprintf("mkdir --parents %s", inputs.Directory))
+	if err != nil {
+		return name, state, err
+	}
+
+	err = session.Run(strings.Join([]string{
+		"tar", "--extract", "--gzip",
+		"--strip-components", "1",
+		"--file", archivePath,
+		"--directory", tmp,
+		"--verbose",
+	}, " "))
+	if err != nil {
+		return name, state, err
+	}
+
+	tmpBin := path.Join(tmp, bin)
+	err = session.Run(fmt.Sprintf("mv %s %s", tmpBin, binPath))
+	if err != nil {
+		return name, state, err
+	}
+
+	state.ArchiveName = archive
+	state.BinPath = binPath
+	state.Url = url
 
 	return name, state, nil
 }

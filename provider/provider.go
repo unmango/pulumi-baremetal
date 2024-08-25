@@ -58,7 +58,7 @@ func Provider() p.Provider {
 			infer.Resource[coreutils.Rm](),
 			infer.Resource[coreutils.Tee](),
 			infer.Resource[kubeadm.Kubeadm](),
-			// infer.Resource[provider.Bootstrap](),
+			infer.Resource[provider.Bootstrap](),
 		},
 		ModuleMap: map[tokens.ModuleName]tokens.ModuleName{
 			"provider": "index",
