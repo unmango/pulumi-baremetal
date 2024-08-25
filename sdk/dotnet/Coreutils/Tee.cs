@@ -80,6 +80,9 @@ namespace UnMango.Baremetal.Coreutils
         [Output("args")]
         public Output<Outputs.TeeArgs> Args { get; private set; } = null!;
 
+        [Output("connection")]
+        public Output<UnMango.Baremetal.Outputs.ProvisionerConnection?> Connection { get; private set; } = null!;
+
         [Output("createdFiles")]
         public Output<ImmutableArray<string>> CreatedFiles { get; private set; } = null!;
 
@@ -152,6 +155,9 @@ namespace UnMango.Baremetal.Coreutils
     {
         [Input("args", required: true)]
         public Input<Inputs.TeeArgsArgs> Args { get; set; } = null!;
+
+        [Input("connection")]
+        public Input<UnMango.Baremetal.Inputs.ProvisionerConnectionArgs>? Connection { get; set; }
 
         [Input("customDelete")]
         private InputList<string>? _customDelete;

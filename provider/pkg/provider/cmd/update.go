@@ -8,12 +8,11 @@ import (
 	cmd "github.com/unmango/pulumi-baremetal/provider/pkg/command"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/operation"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
-	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/provisioner"
 )
 
 func (s *State[T]) Update(ctx context.Context, inputs CommandArgs[T], preview bool) (State[T], error) {
 	log := logger.FromContext(ctx)
-	p, err := provisioner.FromContext(ctx)
+	p, err := inputs.Provisioner(ctx)
 	if err != nil {
 		log.Error("Failed creating provisioner")
 		return s.Copy(), fmt.Errorf("creating provisioner: %w", err)

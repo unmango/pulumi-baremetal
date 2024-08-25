@@ -67,6 +67,7 @@ func Provider() p.Provider {
 		},
 		ModuleMap: map[tokens.ModuleName]tokens.ModuleName{
 			"provider": "index",
+			"config":   "index",
 		},
 	})
 }

@@ -10,21 +10,23 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
 type Wget struct {
 	pulumi.CustomResourceState
 
-	Args         WgetArgsTypeOutput       `pulumi:"args"`
-	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
-	CustomDelete pulumi.StringArrayOutput `pulumi:"customDelete"`
-	CustomUpdate pulumi.StringArrayOutput `pulumi:"customUpdate"`
-	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
-	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
-	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
-	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
-	Triggers     pulumi.ArrayOutput       `pulumi:"triggers"`
+	Args         WgetArgsTypeOutput                       `pulumi:"args"`
+	Connection   baremetal.ProvisionerConnectionPtrOutput `pulumi:"connection"`
+	CreatedFiles pulumi.StringArrayOutput                 `pulumi:"createdFiles"`
+	CustomDelete pulumi.StringArrayOutput                 `pulumi:"customDelete"`
+	CustomUpdate pulumi.StringArrayOutput                 `pulumi:"customUpdate"`
+	ExitCode     pulumi.IntOutput                         `pulumi:"exitCode"`
+	MovedFiles   pulumi.StringMapOutput                   `pulumi:"movedFiles"`
+	Stderr       pulumi.StringOutput                      `pulumi:"stderr"`
+	Stdout       pulumi.StringOutput                      `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput                       `pulumi:"triggers"`
 }
 
 // NewWget registers a new resource with the given unique name, arguments, and options.
@@ -70,15 +72,17 @@ func (WgetState) ElementType() reflect.Type {
 }
 
 type wgetArgs struct {
-	Args         WgetArgsType  `pulumi:"args"`
-	CustomDelete []string      `pulumi:"customDelete"`
-	CustomUpdate []string      `pulumi:"customUpdate"`
-	Triggers     []interface{} `pulumi:"triggers"`
+	Args         WgetArgsType                     `pulumi:"args"`
+	Connection   *baremetal.ProvisionerConnection `pulumi:"connection"`
+	CustomDelete []string                         `pulumi:"customDelete"`
+	CustomUpdate []string                         `pulumi:"customUpdate"`
+	Triggers     []interface{}                    `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Wget resource.
 type WgetArgs struct {
 	Args         WgetArgsTypeInput
+	Connection   baremetal.ProvisionerConnectionPtrInput
 	CustomDelete pulumi.StringArrayInput
 	CustomUpdate pulumi.StringArrayInput
 	Triggers     pulumi.ArrayInput
@@ -135,6 +139,10 @@ func (o WgetOutput) ToOutput(ctx context.Context) pulumix.Output[*Wget] {
 
 func (o WgetOutput) Args() WgetArgsTypeOutput {
 	return o.ApplyT(func(v *Wget) WgetArgsTypeOutput { return v.Args }).(WgetArgsTypeOutput)
+}
+
+func (o WgetOutput) Connection() baremetal.ProvisionerConnectionPtrOutput {
+	return o.ApplyT(func(v *Wget) baremetal.ProvisionerConnectionPtrOutput { return v.Connection }).(baremetal.ProvisionerConnectionPtrOutput)
 }
 
 func (o WgetOutput) CreatedFiles() pulumi.StringArrayOutput {

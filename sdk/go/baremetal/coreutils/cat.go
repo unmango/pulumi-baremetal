@@ -10,21 +10,23 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
 type Cat struct {
 	pulumi.CustomResourceState
 
-	Args         CatArgsTypeOutput        `pulumi:"args"`
-	CreatedFiles pulumi.StringArrayOutput `pulumi:"createdFiles"`
-	CustomDelete pulumi.StringArrayOutput `pulumi:"customDelete"`
-	CustomUpdate pulumi.StringArrayOutput `pulumi:"customUpdate"`
-	ExitCode     pulumi.IntOutput         `pulumi:"exitCode"`
-	MovedFiles   pulumi.StringMapOutput   `pulumi:"movedFiles"`
-	Stderr       pulumi.StringOutput      `pulumi:"stderr"`
-	Stdout       pulumi.StringOutput      `pulumi:"stdout"`
-	Triggers     pulumi.ArrayOutput       `pulumi:"triggers"`
+	Args         CatArgsTypeOutput                        `pulumi:"args"`
+	Connection   baremetal.ProvisionerConnectionPtrOutput `pulumi:"connection"`
+	CreatedFiles pulumi.StringArrayOutput                 `pulumi:"createdFiles"`
+	CustomDelete pulumi.StringArrayOutput                 `pulumi:"customDelete"`
+	CustomUpdate pulumi.StringArrayOutput                 `pulumi:"customUpdate"`
+	ExitCode     pulumi.IntOutput                         `pulumi:"exitCode"`
+	MovedFiles   pulumi.StringMapOutput                   `pulumi:"movedFiles"`
+	Stderr       pulumi.StringOutput                      `pulumi:"stderr"`
+	Stdout       pulumi.StringOutput                      `pulumi:"stdout"`
+	Triggers     pulumi.ArrayOutput                       `pulumi:"triggers"`
 }
 
 // NewCat registers a new resource with the given unique name, arguments, and options.
@@ -70,15 +72,17 @@ func (CatState) ElementType() reflect.Type {
 }
 
 type catArgs struct {
-	Args         CatArgsType   `pulumi:"args"`
-	CustomDelete []string      `pulumi:"customDelete"`
-	CustomUpdate []string      `pulumi:"customUpdate"`
-	Triggers     []interface{} `pulumi:"triggers"`
+	Args         CatArgsType                      `pulumi:"args"`
+	Connection   *baremetal.ProvisionerConnection `pulumi:"connection"`
+	CustomDelete []string                         `pulumi:"customDelete"`
+	CustomUpdate []string                         `pulumi:"customUpdate"`
+	Triggers     []interface{}                    `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Cat resource.
 type CatArgs struct {
 	Args         CatArgsTypeInput
+	Connection   baremetal.ProvisionerConnectionPtrInput
 	CustomDelete pulumi.StringArrayInput
 	CustomUpdate pulumi.StringArrayInput
 	Triggers     pulumi.ArrayInput
@@ -135,6 +139,10 @@ func (o CatOutput) ToOutput(ctx context.Context) pulumix.Output[*Cat] {
 
 func (o CatOutput) Args() CatArgsTypeOutput {
 	return o.ApplyT(func(v *Cat) CatArgsTypeOutput { return v.Args }).(CatArgsTypeOutput)
+}
+
+func (o CatOutput) Connection() baremetal.ProvisionerConnectionPtrOutput {
+	return o.ApplyT(func(v *Cat) baremetal.ProvisionerConnectionPtrOutput { return v.Connection }).(baremetal.ProvisionerConnectionPtrOutput)
 }
 
 func (o CatOutput) CreatedFiles() pulumi.StringArrayOutput {

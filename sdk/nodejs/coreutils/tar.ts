@@ -34,6 +34,7 @@ export class Tar extends pulumi.CustomResource {
     }
 
     public readonly args!: pulumi.Output<outputs.coreutils.TarArgs>;
+    public readonly connection!: pulumi.Output<outputs.ProvisionerConnection | undefined>;
     public /*out*/ readonly createdFiles!: pulumi.Output<string[]>;
     public readonly customDelete!: pulumi.Output<string[] | undefined>;
     public readonly customUpdate!: pulumi.Output<string[] | undefined>;
@@ -58,6 +59,7 @@ export class Tar extends pulumi.CustomResource {
                 throw new Error("Missing required property 'args'");
             }
             resourceInputs["args"] = args ? args.args : undefined;
+            resourceInputs["connection"] = args ? args.connection : undefined;
             resourceInputs["customDelete"] = args ? args.customDelete : undefined;
             resourceInputs["customUpdate"] = args ? args.customUpdate : undefined;
             resourceInputs["triggers"] = args ? args.triggers : undefined;
@@ -68,6 +70,7 @@ export class Tar extends pulumi.CustomResource {
             resourceInputs["stdout"] = undefined /*out*/;
         } else {
             resourceInputs["args"] = undefined /*out*/;
+            resourceInputs["connection"] = undefined /*out*/;
             resourceInputs["createdFiles"] = undefined /*out*/;
             resourceInputs["customDelete"] = undefined /*out*/;
             resourceInputs["customUpdate"] = undefined /*out*/;
@@ -87,6 +90,7 @@ export class Tar extends pulumi.CustomResource {
  */
 export interface TarArgs {
     args: pulumi.Input<inputs.coreutils.TarArgsArgs>;
+    connection?: pulumi.Input<inputs.ProvisionerConnectionArgs>;
     customDelete?: pulumi.Input<pulumi.Input<string>[]>;
     customUpdate?: pulumi.Input<pulumi.Input<string>[]>;
     triggers?: pulumi.Input<any[]>;

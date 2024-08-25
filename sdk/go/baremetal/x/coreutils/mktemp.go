@@ -10,21 +10,23 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
 type Mktemp struct {
 	pulumi.CustomResourceState
 
-	Args         pulumix.GPtrOutput[MktempArgsType, MktempArgsTypeOutput] `pulumi:"args"`
-	CreatedFiles pulumix.ArrayOutput[string]                              `pulumi:"createdFiles"`
-	CustomDelete pulumix.ArrayOutput[string]                              `pulumi:"customDelete"`
-	CustomUpdate pulumix.ArrayOutput[string]                              `pulumi:"customUpdate"`
-	ExitCode     pulumix.Output[int]                                      `pulumi:"exitCode"`
-	MovedFiles   pulumix.MapOutput[string]                                `pulumi:"movedFiles"`
-	Stderr       pulumix.Output[string]                                   `pulumi:"stderr"`
-	Stdout       pulumix.Output[string]                                   `pulumi:"stdout"`
-	Triggers     pulumix.ArrayOutput[any]                                 `pulumi:"triggers"`
+	Args         pulumix.GPtrOutput[MktempArgsType, MktempArgsTypeOutput]                                   `pulumi:"args"`
+	Connection   pulumix.GPtrOutput[baremetal.ProvisionerConnection, baremetal.ProvisionerConnectionOutput] `pulumi:"connection"`
+	CreatedFiles pulumix.ArrayOutput[string]                                                                `pulumi:"createdFiles"`
+	CustomDelete pulumix.ArrayOutput[string]                                                                `pulumi:"customDelete"`
+	CustomUpdate pulumix.ArrayOutput[string]                                                                `pulumi:"customUpdate"`
+	ExitCode     pulumix.Output[int]                                                                        `pulumi:"exitCode"`
+	MovedFiles   pulumix.MapOutput[string]                                                                  `pulumi:"movedFiles"`
+	Stderr       pulumix.Output[string]                                                                     `pulumi:"stderr"`
+	Stdout       pulumix.Output[string]                                                                     `pulumi:"stdout"`
+	Triggers     pulumix.ArrayOutput[any]                                                                   `pulumi:"triggers"`
 }
 
 // NewMktemp registers a new resource with the given unique name, arguments, and options.
@@ -70,15 +72,17 @@ func (MktempState) ElementType() reflect.Type {
 }
 
 type mktempArgs struct {
-	Args         MktempArgsType `pulumi:"args"`
-	CustomDelete []string       `pulumi:"customDelete"`
-	CustomUpdate []string       `pulumi:"customUpdate"`
-	Triggers     []interface{}  `pulumi:"triggers"`
+	Args         MktempArgsType                   `pulumi:"args"`
+	Connection   *baremetal.ProvisionerConnection `pulumi:"connection"`
+	CustomDelete []string                         `pulumi:"customDelete"`
+	CustomUpdate []string                         `pulumi:"customUpdate"`
+	Triggers     []interface{}                    `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Mktemp resource.
 type MktempArgs struct {
 	Args         pulumix.Input[*MktempArgsTypeArgs]
+	Connection   pulumix.Input[*baremetal.ProvisionerConnectionArgs]
 	CustomDelete pulumix.Input[[]string]
 	CustomUpdate pulumix.Input[[]string]
 	Triggers     pulumix.Input[[]any]
@@ -112,6 +116,14 @@ func (o MktempOutput) Args() pulumix.GPtrOutput[MktempArgsType, MktempArgsTypeOu
 	value := pulumix.Apply[Mktemp](o, func(v Mktemp) pulumix.GPtrOutput[MktempArgsType, MktempArgsTypeOutput] { return v.Args })
 	unwrapped := pulumix.Flatten[*MktempArgsType, pulumix.GPtrOutput[MktempArgsType, MktempArgsTypeOutput]](value)
 	return pulumix.GPtrOutput[MktempArgsType, MktempArgsTypeOutput]{OutputState: unwrapped.OutputState}
+}
+
+func (o MktempOutput) Connection() pulumix.GPtrOutput[baremetal.ProvisionerConnection, baremetal.ProvisionerConnectionOutput] {
+	value := pulumix.Apply[Mktemp](o, func(v Mktemp) pulumix.GPtrOutput[baremetal.ProvisionerConnection, baremetal.ProvisionerConnectionOutput] {
+		return v.Connection
+	})
+	unwrapped := pulumix.Flatten[*baremetal.ProvisionerConnection, pulumix.GPtrOutput[baremetal.ProvisionerConnection, baremetal.ProvisionerConnectionOutput]](value)
+	return pulumix.GPtrOutput[baremetal.ProvisionerConnection, baremetal.ProvisionerConnectionOutput]{OutputState: unwrapped.OutputState}
 }
 
 func (o MktempOutput) CreatedFiles() pulumix.ArrayOutput[string] {

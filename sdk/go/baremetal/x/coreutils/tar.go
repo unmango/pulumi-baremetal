@@ -10,21 +10,23 @@ import (
 	"errors"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
+	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal"
 	"github.com/unmango/pulumi-baremetal/sdk/go/baremetal/internal"
 )
 
 type Tar struct {
 	pulumi.CustomResourceState
 
-	Args         pulumix.GPtrOutput[TarArgsType, TarArgsTypeOutput] `pulumi:"args"`
-	CreatedFiles pulumix.ArrayOutput[string]                        `pulumi:"createdFiles"`
-	CustomDelete pulumix.ArrayOutput[string]                        `pulumi:"customDelete"`
-	CustomUpdate pulumix.ArrayOutput[string]                        `pulumi:"customUpdate"`
-	ExitCode     pulumix.Output[int]                                `pulumi:"exitCode"`
-	MovedFiles   pulumix.MapOutput[string]                          `pulumi:"movedFiles"`
-	Stderr       pulumix.Output[string]                             `pulumi:"stderr"`
-	Stdout       pulumix.Output[string]                             `pulumi:"stdout"`
-	Triggers     pulumix.ArrayOutput[any]                           `pulumi:"triggers"`
+	Args         pulumix.GPtrOutput[TarArgsType, TarArgsTypeOutput]                                         `pulumi:"args"`
+	Connection   pulumix.GPtrOutput[baremetal.ProvisionerConnection, baremetal.ProvisionerConnectionOutput] `pulumi:"connection"`
+	CreatedFiles pulumix.ArrayOutput[string]                                                                `pulumi:"createdFiles"`
+	CustomDelete pulumix.ArrayOutput[string]                                                                `pulumi:"customDelete"`
+	CustomUpdate pulumix.ArrayOutput[string]                                                                `pulumi:"customUpdate"`
+	ExitCode     pulumix.Output[int]                                                                        `pulumi:"exitCode"`
+	MovedFiles   pulumix.MapOutput[string]                                                                  `pulumi:"movedFiles"`
+	Stderr       pulumix.Output[string]                                                                     `pulumi:"stderr"`
+	Stdout       pulumix.Output[string]                                                                     `pulumi:"stdout"`
+	Triggers     pulumix.ArrayOutput[any]                                                                   `pulumi:"triggers"`
 }
 
 // NewTar registers a new resource with the given unique name, arguments, and options.
@@ -70,15 +72,17 @@ func (TarState) ElementType() reflect.Type {
 }
 
 type tarArgs struct {
-	Args         TarArgsType   `pulumi:"args"`
-	CustomDelete []string      `pulumi:"customDelete"`
-	CustomUpdate []string      `pulumi:"customUpdate"`
-	Triggers     []interface{} `pulumi:"triggers"`
+	Args         TarArgsType                      `pulumi:"args"`
+	Connection   *baremetal.ProvisionerConnection `pulumi:"connection"`
+	CustomDelete []string                         `pulumi:"customDelete"`
+	CustomUpdate []string                         `pulumi:"customUpdate"`
+	Triggers     []interface{}                    `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a Tar resource.
 type TarArgs struct {
 	Args         pulumix.Input[*TarArgsTypeArgs]
+	Connection   pulumix.Input[*baremetal.ProvisionerConnectionArgs]
 	CustomDelete pulumix.Input[[]string]
 	CustomUpdate pulumix.Input[[]string]
 	Triggers     pulumix.Input[[]any]
@@ -112,6 +116,14 @@ func (o TarOutput) Args() pulumix.GPtrOutput[TarArgsType, TarArgsTypeOutput] {
 	value := pulumix.Apply[Tar](o, func(v Tar) pulumix.GPtrOutput[TarArgsType, TarArgsTypeOutput] { return v.Args })
 	unwrapped := pulumix.Flatten[*TarArgsType, pulumix.GPtrOutput[TarArgsType, TarArgsTypeOutput]](value)
 	return pulumix.GPtrOutput[TarArgsType, TarArgsTypeOutput]{OutputState: unwrapped.OutputState}
+}
+
+func (o TarOutput) Connection() pulumix.GPtrOutput[baremetal.ProvisionerConnection, baremetal.ProvisionerConnectionOutput] {
+	value := pulumix.Apply[Tar](o, func(v Tar) pulumix.GPtrOutput[baremetal.ProvisionerConnection, baremetal.ProvisionerConnectionOutput] {
+		return v.Connection
+	})
+	unwrapped := pulumix.Flatten[*baremetal.ProvisionerConnection, pulumix.GPtrOutput[baremetal.ProvisionerConnection, baremetal.ProvisionerConnectionOutput]](value)
+	return pulumix.GPtrOutput[baremetal.ProvisionerConnection, baremetal.ProvisionerConnectionOutput]{OutputState: unwrapped.OutputState}
 }
 
 func (o TarOutput) CreatedFiles() pulumix.ArrayOutput[string] {

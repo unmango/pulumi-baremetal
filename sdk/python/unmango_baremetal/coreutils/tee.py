@@ -9,6 +9,8 @@ import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from . import outputs
+from .. import _inputs as _root_inputs
+from .. import outputs as _root_outputs
 from ._inputs import *
 
 __all__ = ['TeeArgs', 'Tee']
@@ -17,6 +19,7 @@ __all__ = ['TeeArgs', 'Tee']
 class TeeArgs:
     def __init__(__self__, *,
                  args: pulumi.Input['TeeArgsArgs'],
+                 connection: Optional[pulumi.Input['_root_inputs.ProvisionerConnectionArgs']] = None,
                  custom_delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  custom_update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None):
@@ -24,6 +27,8 @@ class TeeArgs:
         The set of arguments for constructing a Tee resource.
         """
         pulumi.set(__self__, "args", args)
+        if connection is not None:
+            pulumi.set(__self__, "connection", connection)
         if custom_delete is not None:
             pulumi.set(__self__, "custom_delete", custom_delete)
         if custom_update is not None:
@@ -39,6 +44,15 @@ class TeeArgs:
     @args.setter
     def args(self, value: pulumi.Input['TeeArgsArgs']):
         pulumi.set(self, "args", value)
+
+    @property
+    @pulumi.getter
+    def connection(self) -> Optional[pulumi.Input['_root_inputs.ProvisionerConnectionArgs']]:
+        return pulumi.get(self, "connection")
+
+    @connection.setter
+    def connection(self, value: Optional[pulumi.Input['_root_inputs.ProvisionerConnectionArgs']]):
+        pulumi.set(self, "connection", value)
 
     @property
     @pulumi.getter(name="customDelete")
@@ -74,6 +88,7 @@ class Tee(pulumi.CustomResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  args: Optional[pulumi.Input[Union['TeeArgsArgs', 'TeeArgsArgsDict']]] = None,
+                 connection: Optional[pulumi.Input[Union['_root_inputs.ProvisionerConnectionArgs', '_root_inputs.ProvisionerConnectionArgsDict']]] = None,
                  custom_delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  custom_update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
@@ -231,6 +246,7 @@ class Tee(pulumi.CustomResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  args: Optional[pulumi.Input[Union['TeeArgsArgs', 'TeeArgsArgsDict']]] = None,
+                 connection: Optional[pulumi.Input[Union['_root_inputs.ProvisionerConnectionArgs', '_root_inputs.ProvisionerConnectionArgsDict']]] = None,
                  custom_delete: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  custom_update: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  triggers: Optional[pulumi.Input[Sequence[Any]]] = None,
@@ -246,6 +262,7 @@ class Tee(pulumi.CustomResource):
             if args is None and not opts.urn:
                 raise TypeError("Missing required property 'args'")
             __props__.__dict__["args"] = args
+            __props__.__dict__["connection"] = connection
             __props__.__dict__["custom_delete"] = custom_delete
             __props__.__dict__["custom_update"] = custom_update
             __props__.__dict__["triggers"] = triggers
@@ -277,6 +294,7 @@ class Tee(pulumi.CustomResource):
         __props__ = TeeArgs.__new__(TeeArgs)
 
         __props__.__dict__["args"] = None
+        __props__.__dict__["connection"] = None
         __props__.__dict__["created_files"] = None
         __props__.__dict__["custom_delete"] = None
         __props__.__dict__["custom_update"] = None
@@ -291,6 +309,11 @@ class Tee(pulumi.CustomResource):
     @pulumi.getter
     def args(self) -> pulumi.Output['outputs.TeeArgs']:
         return pulumi.get(self, "args")
+
+    @property
+    @pulumi.getter
+    def connection(self) -> pulumi.Output[Optional['_root_outputs.ProvisionerConnection']]:
+        return pulumi.get(self, "connection")
 
     @property
     @pulumi.getter(name="createdFiles")
