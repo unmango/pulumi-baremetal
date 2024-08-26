@@ -1,10 +1,10 @@
 package provider
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"path"
-	"strings"
 
 	"github.com/pulumi/pulumi-go-provider/infer"
 	"github.com/unmango/pulumi-baremetal/provider/pkg/provider/internal/logger"
@@ -76,43 +76,27 @@ func (Bootstrap) Create(ctx context.Context, name string, inputs BootstrapArgs, 
 		version = *inputs.Version
 	}
 
-	archive := fmt.Sprintf("pulumi-resource-baremetal-v%s-%s.tar.gz", inputs.Os, inputs.Arch)
+	archive := fmt.Sprintf("pulumi-resource-baremetal-v%s-%s-%s.tar.gz", version, inputs.Os, inputs.Arch)
 	url := fmt.Sprintf("%s/releases/%s/assets/%s", repo, version, archive)
 	binPath := path.Join(inputs.Directory, bin)
 	log.Debugf("Using URL: %s", url)
 
-	mktemp, err := session.Output("mktemp --directory")
-	if err != nil {
-		return name, state, err
-	}
+	var stdout, stderr bytes.Buffer
+	session.Stdout = &stdout
+	session.Stderr = &stderr
 
-	tmp := strings.TrimSpace(string(mktemp))
-	archivePath := path.Join(tmp, archive)
+	cmd := fmt.Sprintf(`
+tmp="$(mktemp --directory)"
+wget --directory-prefix $tmp %s
+mkdir --parents %s
+tar -C $tmp -xzvf %s --strip-components 1
+mv $tmp/provisioner %s/provisioner
+`, url, inputs.Directory, archive, inputs.Directory)
 
-	err = session.Run(fmt.Sprintf("wget --directory-prefix %s %s", tmp, url))
+	err = session.Run(cmd)
 	if err != nil {
-		return name, state, err
-	}
-
-	err = session.Run(fmt.Sprintf("mkdir --parents %s", inputs.Directory))
-	if err != nil {
-		return name, state, err
-	}
-
-	err = session.Run(strings.Join([]string{
-		"tar", "--extract", "--gzip",
-		"--strip-components", "1",
-		"--file", archivePath,
-		"--directory", tmp,
-		"--verbose",
-	}, " "))
-	if err != nil {
-		return name, state, err
-	}
-
-	tmpBin := path.Join(tmp, bin)
-	err = session.Run(fmt.Sprintf("mv %s %s", tmpBin, binPath))
-	if err != nil {
+		log.Info(stdout.String())
+		log.Info(stderr.String())
 		return name, state, err
 	}
 
