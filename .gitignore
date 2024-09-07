@@ -1,12 +1,13 @@
 # Vendored code
-/vendor/
+vendor/*
+!vendor/go.mod
 
 # User Specific
 **/.vs
 **/.idea
 **/.ionide
 
-.vscode/
+.vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
 
@@ -25,7 +26,6 @@ Pulumi.*.yaml
 yarn.lock
 /nuget/
 ci-scripts
-.work/
 dist/
 out/
 
