@@ -21,8 +21,7 @@ func Provider() p.Provider {
 				"csharp": map[string]any{
 					"rootNamespace": "UnMango",
 					"packageReferences": map[string]any{
-						"Pulumi":         "[3.65.0.0,4)",
-						"Pulumi.Command": "1.0.*",
+						"Pulumi": "[3.65.0.0,4)",
 					},
 					"respectSchemaVersion": true,
 				},
@@ -32,17 +31,13 @@ func Provider() p.Provider {
 					"respectSchemaVersion": true,
 				},
 				"nodejs": map[string]any{
-					"packageName": "@unmango/baremetal",
-					"dependencies": map[string]any{
-						"@pulumi/command": "^1.0.0",
-					},
+					"packageName":          "@unmango/baremetal",
+					"dependencies":         map[string]any{},
 					"respectSchemaVersion": true,
 				},
 				"python": map[string]any{
 					"packageName": "unmango_baremetal",
-					"requires": map[string]any{
-						"pulumi-command": ">=1.0.0,<2.0.0",
-					},
+					"requires":    map[string]any{},
 					"pyproject": map[string]bool{
 						"enabled": true,
 					},
