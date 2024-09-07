@@ -52,7 +52,7 @@ provider:: bin/$(PROVIDER)
 provisioner:: bin/provisioner
 
 tidy: $(GO_MODULES:%=.make/tidy/%)
-lint:: .make/lint/buf .make/lint_go
+lint:: .make/lint/buf $(GO_MODULES:%=.make/lint/%)
 
 remake::
 	rm -rf .make bin dist out hack/.work

@@ -3,16 +3,14 @@ package provider
 import (
 	"context"
 
-	"github.com/pulumi/pulumi-command/sdk/go/command/remote"
 	"github.com/pulumi/pulumi-go-provider/infer"
 )
 
 type Bootstrap struct{}
 
 type BootstrapArgs struct {
-	Connection *remote.Connection `pulumi:"connection,optional" provider:"type=command@1.0.1:remote:Connection"`
-	Directory  *string            `pulumi:"directory,optional"`
-	Version    *string            `pulumi:"version"`
+	Directory *string `pulumi:"directory,optional"`
+	Version   *string `pulumi:"version"`
 }
 
 // Annotate implements infer.Annotated.
