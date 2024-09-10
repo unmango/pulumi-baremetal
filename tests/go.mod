@@ -1,8 +1,6 @@
 module github.com/unmango/pulumi-baremetal/tests
 
-go 1.22.0
-
-toolchain go1.23.1
+go 1.23.1
 
 replace github.com/unmango/pulumi-baremetal/gen => ../gen
 
