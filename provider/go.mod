@@ -7,7 +7,7 @@ replace github.com/unmango/pulumi-baremetal/gen => ../gen
 require (
 	github.com/onsi/ginkgo/v2 v2.20.2
 	github.com/onsi/gomega v1.34.2
-	github.com/pulumi/pulumi-go-provider v0.21.0
+	github.com/pulumi/pulumi-go-provider v0.22.0
 	github.com/pulumi/pulumi/sdk/v3 v3.132.0
 	github.com/spf13/cobra v1.8.1
 	github.com/unmango/pulumi-baremetal/gen v0.0.0-20240909200633-608a59ce9ed2
@@ -62,6 +62,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/muesli/ansi v0.0.0-20230316100256-276c6243b2f6 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
