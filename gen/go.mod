@@ -1,6 +1,6 @@
 module github.com/unmango/pulumi-baremetal/gen
 
-go 1.22
+go 1.22.0
 
 require (
 	google.golang.org/grpc v1.63.2
