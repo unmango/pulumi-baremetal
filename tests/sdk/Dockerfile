@@ -6,13 +6,13 @@ ARG TARGETOS
 ARG TARGETARCH
 
 ARG SDK
-ARG GOVERSION=1.23.0
+ARG GOVERSION=1.23.1
 
 WORKDIR /usr/local
 RUN curl --fail -L -o- https://go.dev/dl/go${GOVERSION}.${TARGETOS}-${TARGETARCH}.tar.gz | tar -zxv
 
 ENV GOBIN=/usr/local/bin
-ENV GOLANG_VERSION 1.23.0
+ENV GOLANG_VERSION 1.23.1
 ENV GOTOOLCHAIN=local
 ENV PATH=/usr/local/go/bin:${GOBIN}:${PATH}
 
