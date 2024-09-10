@@ -12,8 +12,8 @@ require (
 	github.com/pulumi/pulumi-go-provider v0.21.0
 	github.com/pulumi/pulumi/sdk/v3 v3.131.0
 	github.com/spf13/cobra v1.8.1
-	github.com/unmango/pulumi-baremetal/gen v0.0.0-20240907193346-39aa127d8d7e
-	google.golang.org/grpc v1.66.0
+	github.com/unmango/pulumi-baremetal/gen v0.0.0-20240909200633-608a59ce9ed2
+	google.golang.org/grpc v1.66.1
 )
 
 require (
@@ -95,14 +95,14 @@ require (
 	github.com/zclconf/go-cty v1.15.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	golang.org/x/crypto v0.27.0 // indirect
-	golang.org/x/exp v0.0.0-20240904232852-e7e105dedf7e // indirect
+	golang.org/x/exp v0.0.0-20240909161429-701f63a606c0 // indirect
 	golang.org/x/mod v0.21.0 // indirect
 	golang.org/x/net v0.29.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/term v0.24.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
-	golang.org/x/tools v0.24.0 // indirect
+	golang.org/x/tools v0.25.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
