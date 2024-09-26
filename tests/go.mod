@@ -12,7 +12,7 @@ require (
 	github.com/mdelapenya/tlscert v0.1.0
 	github.com/onsi/ginkgo/v2 v2.20.2
 	github.com/onsi/gomega v1.34.2
-	github.com/pulumi/pulumi-go-provider v0.21.0
+	github.com/pulumi/pulumi-go-provider v0.23.0
 	github.com/pulumi/pulumi/pkg/v3 v3.134.1
 	github.com/pulumi/pulumi/sdk/v3 v3.134.1
 	github.com/testcontainers/testcontainers-go v0.33.0

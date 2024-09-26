@@ -7,8 +7,8 @@ replace github.com/unmango/pulumi-baremetal/gen => ../gen
 require (
 	github.com/onsi/ginkgo/v2 v2.20.2
 	github.com/onsi/gomega v1.34.2
-	github.com/pulumi/pulumi-go-provider v0.21.0
-	github.com/pulumi/pulumi/sdk/v3 v3.132.0
+	github.com/pulumi/pulumi-go-provider v0.23.0
+	github.com/pulumi/pulumi/sdk/v3 v3.134.0
 	github.com/spf13/cobra v1.8.1
 	github.com/unmango/pulumi-baremetal/gen v0.0.0-20240909200633-608a59ce9ed2
 	google.golang.org/grpc v1.63.2
@@ -62,6 +62,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/muesli/ansi v0.0.0-20230316100256-276c6243b2f6 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
@@ -74,8 +75,8 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pkg/term v1.1.0 // indirect
 	github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231 // indirect
-	github.com/pulumi/esc v0.9.1 // indirect
-	github.com/pulumi/pulumi/pkg/v3 v3.131.0 // indirect
+	github.com/pulumi/esc v0.10.0 // indirect
+	github.com/pulumi/pulumi/pkg/v3 v3.134.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/sabhiram/go-gitignore v0.0.0-20210923224102-525f6e181f06 // indirect
