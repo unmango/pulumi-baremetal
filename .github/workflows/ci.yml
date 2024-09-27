@@ -230,7 +230,7 @@ jobs:
           github_token: ${{ github.token }}
 
       - name: Install Pulumi
-        uses: pulumi/actions@v5
+        uses: pulumi/actions@v6
         with:
           pulumi-version-file: .versions/pulumi
 
