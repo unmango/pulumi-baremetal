@@ -13,8 +13,8 @@ require (
 	github.com/onsi/ginkgo/v2 v2.21.0
 	github.com/onsi/gomega v1.35.1
 	github.com/pulumi/pulumi-go-provider v0.23.0
-	github.com/pulumi/pulumi/pkg/v3 v3.137.0
-	github.com/pulumi/pulumi/sdk/v3 v3.137.0
+	github.com/pulumi/pulumi/pkg/v3 v3.138.0
+	github.com/pulumi/pulumi/sdk/v3 v3.138.0
 	github.com/testcontainers/testcontainers-go v0.33.0
 	github.com/unmango/pulumi-baremetal/provider v0.0.0-20240909200633-608a59ce9ed2
 	golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c
@@ -217,7 +217,7 @@ require (
 	google.golang.org/genproto v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect
-	google.golang.org/grpc v1.66.2 // indirect
+	google.golang.org/grpc v1.67.1 // indirect
 	google.golang.org/protobuf v1.35.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
