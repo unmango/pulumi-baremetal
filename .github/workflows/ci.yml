@@ -177,7 +177,7 @@ jobs:
           github_token: ${{ github.token }}
 
       - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.13.0
+        uses: jaxxstorm/action-install-gh-release@v1.14.0
         with:
           repo: pulumi/pulumictl
 
@@ -235,7 +235,7 @@ jobs:
           pulumi-version-file: .versions/pulumi
 
       - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.13.0
+        uses: jaxxstorm/action-install-gh-release@v1.14.0
         with:
           repo: pulumi/pulumictl
 
