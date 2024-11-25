@@ -6,7 +6,7 @@ replace github.com/unmango/pulumi-baremetal/gen => ../gen
 
 require (
 	github.com/onsi/ginkgo/v2 v2.22.0
-	github.com/onsi/gomega v1.35.1
+	github.com/onsi/gomega v1.36.0
 	github.com/pulumi/pulumi-go-provider v0.23.0
 	github.com/pulumi/pulumi/sdk/v3 v3.138.0
 	github.com/spf13/cobra v1.8.1
