@@ -13,8 +13,8 @@ require (
 	github.com/onsi/ginkgo/v2 v2.22.0
 	github.com/onsi/gomega v1.36.0
 	github.com/pulumi/pulumi-go-provider v0.23.0
-	github.com/pulumi/pulumi/pkg/v3 v3.141.0
-	github.com/pulumi/pulumi/sdk/v3 v3.141.0
+	github.com/pulumi/pulumi/pkg/v3 v3.142.0
+	github.com/pulumi/pulumi/sdk/v3 v3.142.0
 	github.com/testcontainers/testcontainers-go v0.33.0
 	github.com/unmango/pulumi-baremetal/provider v0.0.0-20240909200633-608a59ce9ed2
 	golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f
