@@ -462,6 +462,8 @@ github.com/pulumi/pulumi/pkg/v3 v3.142.0 h1:UE8TFyXrlxvPrATpd3Kl3En34KrFIFWOxxNA
 github.com/pulumi/pulumi/pkg/v3 v3.142.0/go.mod h1:3k6WwRIT7veiDnk3Yo2NtqEYX+4dgLCrMIFvEOnjQqI=
 github.com/pulumi/pulumi/pkg/v3 v3.143.0 h1:diAlaNVZSRc59ePqbMuvuf/AwecpZyjhh1pGvmLEUwg=
 github.com/pulumi/pulumi/pkg/v3 v3.143.0/go.mod h1:XzjN1uQI2HWXYolT2L4RIXzvLEnWTSOzFgFFIUfFEa8=
+github.com/pulumi/pulumi/pkg/v3 v3.144.0 h1:1Lx7wTKuyZO8Z83ZhiogIFjMbQoEeWq001uH7ChbYe8=
+github.com/pulumi/pulumi/pkg/v3 v3.144.0/go.mod h1:SuBmq1mC0zYmBFHP/6+oRV6yM7MXUEEDOf4GGhd2o48=
 github.com/pulumi/pulumi/sdk/v3 v3.132.0 h1:UDZHa+WpIEVxWJp+PCbsMxnTUeKMX3xBCcqIHxeAdzI=
 github.com/pulumi/pulumi/sdk/v3 v3.132.0/go.mod h1:J5kQEX8v87aeUhk6NdQXnjCo1DbiOnOiL3Sf2DuDda8=
 github.com/pulumi/pulumi/sdk/v3 v3.133.0 h1:o+7dbJZY9BVgAjOF5GYIWgjp/zpKAgWZwD4pPjUMXKQ=
@@ -492,6 +494,8 @@ github.com/pulumi/pulumi/sdk/v3 v3.142.0 h1:SmcVddGuvwAh3g3XUVQQ5gVRQUKH1yZ6iETp
 github.com/pulumi/pulumi/sdk/v3 v3.142.0/go.mod h1:PvKsX88co8XuwuPdzolMvew5lZV+4JmZfkeSjj7A6dI=
 github.com/pulumi/pulumi/sdk/v3 v3.143.0 h1:z1m8Fc6l723eU2J/bP7UHE5t6WbBu4iIDAl1WaalQk4=
 github.com/pulumi/pulumi/sdk/v3 v3.143.0/go.mod h1:OFpZabILGxrFqzcABFpMCksrHGVp4ymRM2BkKjlazDY=
+github.com/pulumi/pulumi/sdk/v3 v3.144.0 h1:5geCGWyhcrg9JoPbtPN70gHugKfAtri6vgbcCFRb8Ps=
+github.com/pulumi/pulumi/sdk/v3 v3.144.0/go.mod h1:/6gxU2XirnLlImBy5OoqV6I4HcjOf+IznNIZNZExZzo=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.4.7 h1:WUdvkW8uEhrYfLC4ZzdpI2ztxP1I582+49Oc5Mq64VQ=
 github.com/rivo/uniseg v0.4.7/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
@@ -673,6 +677,8 @@ golang.org/x/net v0.31.0 h1:68CPQngjLL0r2AlUKiSxtQFKvzRVbnzLwMUn5SzcLHo=
 golang.org/x/net v0.31.0/go.mod h1:P4fl1q7dY2hnZFxEk4pPSkDHF+QqjitcnDjUQyMM+pM=
 golang.org/x/net v0.32.0 h1:ZqPmj8Kzc+Y6e0+skZsuACbx+wzMgo5MQsJh9Qd6aYI=
 golang.org/x/net v0.32.0/go.mod h1:CwU0IoeOlnQQWJ6ioyFrfRuomB8GKF6KbYXZVyeXNfs=
+golang.org/x/net v0.33.0 h1:74SYHlV8BIgHIFC/LrYkOGIwL19eTYXQ5wc6TBuO36I=
+golang.org/x/net v0.33.0/go.mod h1:HXLR5J+9DxmrqMwG9qjGCxZ+zKXxBru04zlTvWlWuN4=
 golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
 golang.org/x/oauth2 v0.23.0 h1:PbgcYx2W7i4LvjJWEbf0ngHV6qJYr86PkAV3bXdLEbs=
 golang.org/x/oauth2 v0.23.0/go.mod h1:XYTD2NtWslqkgxebSiOHnXEap4TF09sJSc7H1sXbhtI=
