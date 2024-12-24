@@ -11,7 +11,7 @@ require (
 	github.com/docker/go-connections v0.5.0
 	github.com/mdelapenya/tlscert v0.1.0
 	github.com/onsi/ginkgo/v2 v2.22.1
-	github.com/onsi/gomega v1.36.1
+	github.com/onsi/gomega v1.36.2
 	github.com/pulumi/pulumi-go-provider v0.24.0
 	github.com/pulumi/pulumi/pkg/v3 v3.144.1
 	github.com/pulumi/pulumi/sdk/v3 v3.144.1
@@ -218,7 +218,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe29dc1 // indirect
 	google.golang.org/grpc v1.67.1 // indirect
-	google.golang.org/protobuf v1.35.1 // indirect
+	google.golang.org/protobuf v1.36.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	lukechampine.com/frand v1.4.2 // indirect
