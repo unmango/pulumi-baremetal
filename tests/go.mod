@@ -10,7 +10,7 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/mdelapenya/tlscert v0.1.0
-	github.com/onsi/ginkgo/v2 v2.22.1
+	github.com/onsi/ginkgo/v2 v2.22.2
 	github.com/onsi/gomega v1.36.2
 	github.com/pulumi/pulumi-go-provider v0.24.0
 	github.com/pulumi/pulumi/pkg/v3 v3.144.1
