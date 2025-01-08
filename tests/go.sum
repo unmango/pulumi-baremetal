@@ -470,6 +470,8 @@ github.com/pulumi/pulumi/pkg/v3 v3.144.0 h1:1Lx7wTKuyZO8Z83ZhiogIFjMbQoEeWq001uH
 github.com/pulumi/pulumi/pkg/v3 v3.144.0/go.mod h1:SuBmq1mC0zYmBFHP/6+oRV6yM7MXUEEDOf4GGhd2o48=
 github.com/pulumi/pulumi/pkg/v3 v3.144.1 h1:64mVLQDEZa2GN52rTKSyXlA3r+APoqDXrNdkzlASyvs=
 github.com/pulumi/pulumi/pkg/v3 v3.144.1/go.mod h1:q2wZOcwXVI/+OBtEXD6mLS7shhRMgsIGTo/uWfo0q04=
+github.com/pulumi/pulumi/pkg/v3 v3.145.0 h1:hAhFLieunnCKuMd3GbLqE5uWQ1hpNLdl6+bCDFSF4YQ=
+github.com/pulumi/pulumi/pkg/v3 v3.145.0/go.mod h1:N19IsMJ3GyYO5N2JfpsCAVk0eH1NKkF05fZGn5dnhBE=
 github.com/pulumi/pulumi/sdk/v3 v3.132.0 h1:UDZHa+WpIEVxWJp+PCbsMxnTUeKMX3xBCcqIHxeAdzI=
 github.com/pulumi/pulumi/sdk/v3 v3.132.0/go.mod h1:J5kQEX8v87aeUhk6NdQXnjCo1DbiOnOiL3Sf2DuDda8=
 github.com/pulumi/pulumi/sdk/v3 v3.133.0 h1:o+7dbJZY9BVgAjOF5GYIWgjp/zpKAgWZwD4pPjUMXKQ=
