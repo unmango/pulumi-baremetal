@@ -28,6 +28,6 @@ FROM --platform=$BUILDPLATFORM scratch AS bin
 COPY --from=build /out/pulumi-resource-baremetal /
 ENTRYPOINT [ "/pulumi-resource-baremetal" ]
 
-FROM --platform=$BUILDPLATFORM pulumi/pulumi-base:3.146.0-debian AS pulumi
+FROM --platform=$BUILDPLATFORM pulumi/pulumi-base:3.147.0-debian AS pulumi
 COPY --from=build /out/pulumi-resource-baremetal /plugins/
 ENTRYPOINT [ "/bin/bash" ]
