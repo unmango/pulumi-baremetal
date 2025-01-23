@@ -16,7 +16,7 @@ PROVIDER_PATH   := provider
 PROVIDER_VERSION ?= 1.0.0-alpha.0+dev
 VERSION_GENERIC  = $(shell pulumictl convert-version --language generic --version "$(PROVIDER_VERSION)")
 VERSION_PATH     := ${PROVIDER_PATH}.Version
-DOCKER_TAG       ?= $(shell cut -d'.' -f-3 <<<'${VERSION_GENERIC}' | sed 's/+dirty//')
+DOCKER_TAG       ?= $(shell echo '${VERSION_GENERIC}' | cut -d'.' -f-3 | sed 's/+dirty//')
 
 GOPATH			:= $(shell go env GOPATH)
 
