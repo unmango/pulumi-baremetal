@@ -28,7 +28,7 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
 	-ldflags "-X github.com/unmango/pulumi-baremetal/provider.Version=${VERSION}" \
 	cmd/main.go
 
-FROM --platform=$BUILDPLATFORM ubuntu:noble-20241015 AS test-base
+FROM --platform=$BUILDPLATFORM ubuntu:noble-20241118.1 AS test-base
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update \
