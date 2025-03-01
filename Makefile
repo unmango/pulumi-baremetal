@@ -133,7 +133,7 @@ gen/go/%_grpc.pb.go gen/go/%.pb.go &:: proto/%.proto $(BUF_CONFIG)
 buf.lock: $(BUF_CONFIG)
 	buf dep update
 
-.envrc: hack/.envrc.example
+.envrc: hack/example.envrc
 	cp $< $@
 
 # ------ Sentinal Targets ------
