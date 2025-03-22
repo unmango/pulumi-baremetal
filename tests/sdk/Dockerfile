@@ -40,6 +40,7 @@ FROM base AS dotnet
 COPY sdk/dotnet/ sdk/dotnet/
 
 ENV NUGET_PATH=/root/.pulumi-dev/nuget/
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 RUN dotnet build ./sdk/dotnet/UnMango.Baremetal.csproj && \
 	dotnet pack ./sdk/dotnet/UnMango.Baremetal.csproj --output ${NUGET_PATH} && \
 	dotnet nuget add source ${NUGET_PATH} --name docker
