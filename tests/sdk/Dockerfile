@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 ARG SDK=dotnet
-FROM --platform=$BUILDPLATFORM pulumi/pulumi-${SDK}:3.147.0-debian AS base
+FROM --platform=$BUILDPLATFORM pulumi/pulumi-${SDK}:3.157.0-debian AS base
 
 ARG TARGETOS
 ARG TARGETARCH
