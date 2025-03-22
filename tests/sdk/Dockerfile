@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 ARG SDK=dotnet
-FROM --platform=$BUILDPLATFORM pulumi/pulumi-${SDK}:3.147.0-debian AS base
+FROM --platform=$BUILDPLATFORM pulumi/pulumi-${SDK}:3.157.0-debian AS base
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -40,6 +40,7 @@ FROM base AS dotnet
 COPY sdk/dotnet/ sdk/dotnet/
 
 ENV NUGET_PATH=/root/.pulumi-dev/nuget/
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 RUN dotnet build ./sdk/dotnet/UnMango.Baremetal.csproj && \
 	dotnet pack ./sdk/dotnet/UnMango.Baremetal.csproj --output ${NUGET_PATH} && \
 	dotnet nuget add source ${NUGET_PATH} --name docker

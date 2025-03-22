@@ -21,7 +21,7 @@ func Provider() p.Provider {
 				"csharp": map[string]any{
 					"rootNamespace": "UnMango",
 					"packageReferences": map[string]any{
-						"Pulumi": "[3.65.0.0,4)",
+						"Pulumi": "[3.76.0.0,4)",
 					},
 					"respectSchemaVersion": true,
 				},
