@@ -54,7 +54,7 @@ func (s *State[T]) Delete(ctx context.Context) error {
 			display := operation.Display(o)
 
 			if exitCode != 0 {
-				log.Errorf(display)
+				log.Error(display)
 				failed = append(failed, o)
 			} else {
 				log.InfoStatusf("✅ %s", display)
