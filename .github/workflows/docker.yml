@@ -43,7 +43,7 @@ jobs:
           password: ${{ github.token }}
 
       - name: Build
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           file: provider/cmd/provisioner/Dockerfile
           build-args: VERSION=${{ github.ref_name }}
@@ -86,7 +86,7 @@ jobs:
             type=sha
 
       - name: Build
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           file: provider/cmd/pulumi-resource-baremetal/Dockerfile
           build-args: VERSION=${{ github.ref_name }}
