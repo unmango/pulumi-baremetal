@@ -291,7 +291,7 @@ jobs:
           go run github.com/onsi/ginkgo/v2/ginkgo run -r -v --silence-skips --github-output
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Build test image
         uses: docker/build-push-action@v7
