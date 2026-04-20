@@ -84,7 +84,7 @@ jobs:
       - name: Chekcout
         uses: actions/checkout@v4
 
-      - uses: goreleaser/goreleaser-action@v6
+      - uses: goreleaser/goreleaser-action@v7
         with:
           args: check
           version: '~> v2'
