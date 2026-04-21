@@ -21,8 +21,8 @@
 			"customType": "regex",
 			"depNameTemplate": "dprint/dprint",
 			"datasourceTemplate": "github-releases",
-			"fileMatch": [
-				".github\\/.*\\.ya?ml"
+			"managerFilePatterns": [
+				"/.github\\/.*\\.ya?ml/"
 			],
 			"matchStrings": [
 				"dprint-version: (?<currentValue>.*)"
@@ -32,8 +32,8 @@
 			"customType": "regex",
 			"depNameTemplate": "bufbuild/buf",
 			"datasourceTemplate": "github-releases",
-			"fileMatch": [
-				".github\\/.*\\.ya?ml"
+			"managerFilePatterns": [
+				"/.github\\/.*\\.ya?ml/"
 			],
 			"matchStrings": [
 				"(?<currentValue>\\d+\\.\\d+\\.\\d+) # renovate:buf"
@@ -43,8 +43,8 @@
 			"customType": "regex",
 			"depNameTemplate": "pulumi/pulumi",
 			"datasourceTemplate": "github-releases",
-			"fileMatch": [
-				"\\.versions\\/pulumi"
+			"managerFilePatterns": [
+				"/\\.versions\\/pulumi/"
 			],
 			"matchStrings": [
 				"(?<currentValue>\\d+\\.\\d+\\.\\d+)"
