@@ -1,8 +1,8 @@
 [project]
   name = "unmango_baremetal"
-  dependencies = ["parver>=0.2.1", "pulumi>=3.0.0,<4.0.0", "semver>=2.8.1"]
+  dependencies = ["parver>=0.2.1", "pulumi>=3.142.0,<4.0.0", "semver>=2.8.1", "typing-extensions>=4.11; python_version < \"3.11\""]
   readme = "README.md"
-  requires-python = ">=3.8"
+  requires-python = ">=3.9"
   version = "1.0.0a0+dev"
 
 [build-system]

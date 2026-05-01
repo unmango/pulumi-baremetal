@@ -4,22 +4,55 @@
 
 import copy
 import warnings
+import sys
 import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
+if sys.version_info >= (3, 11):
+    from typing import NotRequired, TypedDict, TypeAlias
+else:
+    from typing_extensions import NotRequired, TypedDict, TypeAlias
 from .. import _utilities
 
 __all__ = [
     'CatArgsArgs',
+    'CatArgsArgsDict',
     'ChmodArgsArgs',
+    'ChmodArgsArgsDict',
     'MkdirArgsArgs',
+    'MkdirArgsArgsDict',
     'MktempArgsArgs',
+    'MktempArgsArgsDict',
     'MvArgsArgs',
+    'MvArgsArgsDict',
     'RmArgsArgs',
+    'RmArgsArgsDict',
     'TarArgsArgs',
+    'TarArgsArgsDict',
     'TeeArgsArgs',
+    'TeeArgsArgsDict',
     'WgetArgsArgs',
+    'WgetArgsArgsDict',
 ]
+
+MYPY = False
+
+if not MYPY:
+    class CatArgsArgsDict(TypedDict):
+        files: pulumi.Input[Sequence[pulumi.Input[str]]]
+        e: NotRequired[pulumi.Input[bool]]
+        help: NotRequired[pulumi.Input[bool]]
+        number: NotRequired[pulumi.Input[bool]]
+        number_nonblank: NotRequired[pulumi.Input[bool]]
+        show_all: NotRequired[pulumi.Input[bool]]
+        show_ends: NotRequired[pulumi.Input[bool]]
+        show_nonprinting: NotRequired[pulumi.Input[bool]]
+        show_tabs: NotRequired[pulumi.Input[bool]]
+        squeeze_blank: NotRequired[pulumi.Input[bool]]
+        t: NotRequired[pulumi.Input[bool]]
+        version: NotRequired[pulumi.Input[bool]]
+elif False:
+    CatArgsArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class CatArgsArgs:
@@ -169,6 +202,23 @@ class CatArgsArgs:
         pulumi.set(self, "version", value)
 
 
+if not MYPY:
+    class ChmodArgsArgsDict(TypedDict):
+        files: pulumi.Input[Sequence[pulumi.Input[str]]]
+        changes: NotRequired[pulumi.Input[bool]]
+        help: NotRequired[pulumi.Input[bool]]
+        mode: NotRequired[pulumi.Input[Sequence[pulumi.Input[str]]]]
+        no_preserve_root: NotRequired[pulumi.Input[bool]]
+        octal_mode: NotRequired[pulumi.Input[str]]
+        preserve_root: NotRequired[pulumi.Input[bool]]
+        quiet: NotRequired[pulumi.Input[bool]]
+        recursive: NotRequired[pulumi.Input[bool]]
+        reference: NotRequired[pulumi.Input[str]]
+        verbose: NotRequired[pulumi.Input[bool]]
+        version: NotRequired[pulumi.Input[bool]]
+elif False:
+    ChmodArgsArgsDict: TypeAlias = Mapping[str, Any]
+
 @pulumi.input_type
 class ChmodArgsArgs:
     def __init__(__self__, *,
@@ -317,6 +367,17 @@ class ChmodArgsArgs:
         pulumi.set(self, "version", value)
 
 
+if not MYPY:
+    class MkdirArgsArgsDict(TypedDict):
+        directory: pulumi.Input[Sequence[pulumi.Input[str]]]
+        help: NotRequired[pulumi.Input[bool]]
+        mode: NotRequired[pulumi.Input[str]]
+        parents: NotRequired[pulumi.Input[bool]]
+        verbose: NotRequired[pulumi.Input[bool]]
+        version: NotRequired[pulumi.Input[bool]]
+elif False:
+    MkdirArgsArgsDict: TypeAlias = Mapping[str, Any]
+
 @pulumi.input_type
 class MkdirArgsArgs:
     def __init__(__self__, *,
@@ -392,6 +453,21 @@ class MkdirArgsArgs:
     def version(self, value: Optional[pulumi.Input[bool]]):
         pulumi.set(self, "version", value)
 
+
+if not MYPY:
+    class MktempArgsArgsDict(TypedDict):
+        directory: NotRequired[pulumi.Input[bool]]
+        dry_run: NotRequired[pulumi.Input[bool]]
+        help: NotRequired[pulumi.Input[bool]]
+        p: NotRequired[pulumi.Input[str]]
+        quiet: NotRequired[pulumi.Input[bool]]
+        suffix: NotRequired[pulumi.Input[str]]
+        t: NotRequired[pulumi.Input[bool]]
+        template: NotRequired[pulumi.Input[str]]
+        tmpdir: NotRequired[pulumi.Input[bool]]
+        version: NotRequired[pulumi.Input[bool]]
+elif False:
+    MktempArgsArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class MktempArgsArgs:
@@ -517,6 +593,25 @@ class MktempArgsArgs:
     def version(self, value: Optional[pulumi.Input[bool]]):
         pulumi.set(self, "version", value)
 
+
+if not MYPY:
+    class MvArgsArgsDict(TypedDict):
+        source: pulumi.Input[Sequence[pulumi.Input[str]]]
+        backup: NotRequired[pulumi.Input[str]]
+        destination: NotRequired[pulumi.Input[str]]
+        directory: NotRequired[pulumi.Input[str]]
+        force: NotRequired[pulumi.Input[bool]]
+        help: NotRequired[pulumi.Input[bool]]
+        no_clobber: NotRequired[pulumi.Input[bool]]
+        no_target_directory: NotRequired[pulumi.Input[bool]]
+        strip_trailing_slashes: NotRequired[pulumi.Input[bool]]
+        suffix: NotRequired[pulumi.Input[str]]
+        target_directory: NotRequired[pulumi.Input[str]]
+        update: NotRequired[pulumi.Input[bool]]
+        verbose: NotRequired[pulumi.Input[bool]]
+        version: NotRequired[pulumi.Input[bool]]
+elif False:
+    MvArgsArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class MvArgsArgs:
@@ -690,6 +785,18 @@ class MvArgsArgs:
         pulumi.set(self, "version", value)
 
 
+if not MYPY:
+    class RmArgsArgsDict(TypedDict):
+        files: pulumi.Input[Sequence[pulumi.Input[str]]]
+        dir: NotRequired[pulumi.Input[bool]]
+        force: NotRequired[pulumi.Input[bool]]
+        help: NotRequired[pulumi.Input[bool]]
+        one_file_system: NotRequired[pulumi.Input[bool]]
+        recursive: NotRequired[pulumi.Input[bool]]
+        verbose: NotRequired[pulumi.Input[bool]]
+elif False:
+    RmArgsArgsDict: TypeAlias = Mapping[str, Any]
+
 @pulumi.input_type
 class RmArgsArgs:
     def __init__(__self__, *,
@@ -777,6 +884,53 @@ class RmArgsArgs:
     def verbose(self, value: Optional[pulumi.Input[bool]]):
         pulumi.set(self, "verbose", value)
 
+
+if not MYPY:
+    class TarArgsArgsDict(TypedDict):
+        anchored: NotRequired[pulumi.Input[bool]]
+        append: NotRequired[pulumi.Input[bool]]
+        args: NotRequired[pulumi.Input[Sequence[pulumi.Input[str]]]]
+        bzip2: NotRequired[pulumi.Input[bool]]
+        create: NotRequired[pulumi.Input[bool]]
+        delete: NotRequired[pulumi.Input[bool]]
+        diff: NotRequired[pulumi.Input[bool]]
+        directory: NotRequired[pulumi.Input[str]]
+        exclude: NotRequired[pulumi.Input[str]]
+        exclude_from: NotRequired[pulumi.Input[str]]
+        exclude_vcs: NotRequired[pulumi.Input[bool]]
+        exclude_vcs_ignores: NotRequired[pulumi.Input[bool]]
+        extract: NotRequired[pulumi.Input[bool]]
+        file: NotRequired[pulumi.Input[str]]
+        gzip: NotRequired[pulumi.Input[bool]]
+        ignore_command_error: NotRequired[pulumi.Input[bool]]
+        keep_directory_symlink: NotRequired[pulumi.Input[bool]]
+        keep_newer_files: NotRequired[pulumi.Input[bool]]
+        keep_oldfiles: NotRequired[pulumi.Input[bool]]
+        list: NotRequired[pulumi.Input[bool]]
+        lzip: NotRequired[pulumi.Input[bool]]
+        lzma: NotRequired[pulumi.Input[bool]]
+        lzop: NotRequired[pulumi.Input[bool]]
+        no_anchored: NotRequired[pulumi.Input[bool]]
+        no_overwrite_dir: NotRequired[pulumi.Input[bool]]
+        no_seek: NotRequired[pulumi.Input[bool]]
+        overwrite: NotRequired[pulumi.Input[bool]]
+        overwrite_dir: NotRequired[pulumi.Input[bool]]
+        remove_files: NotRequired[pulumi.Input[bool]]
+        skip_old_files: NotRequired[pulumi.Input[bool]]
+        sparse: NotRequired[pulumi.Input[bool]]
+        strip_components: NotRequired[pulumi.Input[int]]
+        suffix: NotRequired[pulumi.Input[str]]
+        to_stdout: NotRequired[pulumi.Input[bool]]
+        transform: NotRequired[pulumi.Input[str]]
+        unlink_first: NotRequired[pulumi.Input[bool]]
+        update: NotRequired[pulumi.Input[bool]]
+        verbose: NotRequired[pulumi.Input[bool]]
+        verify: NotRequired[pulumi.Input[bool]]
+        version: NotRequired[pulumi.Input[bool]]
+        xz: NotRequired[pulumi.Input[bool]]
+        zstd: NotRequired[pulumi.Input[bool]]
+elif False:
+    TarArgsArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class TarArgsArgs:
@@ -1287,6 +1441,14 @@ class TarArgsArgs:
         pulumi.set(self, "zstd", value)
 
 
+if not MYPY:
+    class TeeArgsArgsDict(TypedDict):
+        files: pulumi.Input[Sequence[pulumi.Input[str]]]
+        append: NotRequired[pulumi.Input[bool]]
+        stdin: NotRequired[pulumi.Input[str]]
+elif False:
+    TeeArgsArgsDict: TypeAlias = Mapping[str, Any]
+
 @pulumi.input_type
 class TeeArgsArgs:
     def __init__(__self__, *,
@@ -1326,6 +1488,57 @@ class TeeArgsArgs:
     def stdin(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "stdin", value)
 
+
+if not MYPY:
+    class WgetArgsArgsDict(TypedDict):
+        urls: pulumi.Input[Sequence[pulumi.Input[str]]]
+        append_output: NotRequired[pulumi.Input[str]]
+        background: NotRequired[pulumi.Input[bool]]
+        base: NotRequired[pulumi.Input[str]]
+        ca_certificate_file: NotRequired[pulumi.Input[str]]
+        ca_directory: NotRequired[pulumi.Input[str]]
+        certificate: NotRequired[pulumi.Input[str]]
+        certificate_type: NotRequired[pulumi.Input[str]]
+        config: NotRequired[pulumi.Input[str]]
+        continue_: NotRequired[pulumi.Input[bool]]
+        crl_file: NotRequired[pulumi.Input[str]]
+        cut_dirs: NotRequired[pulumi.Input[int]]
+        debug: NotRequired[pulumi.Input[bool]]
+        directory_prefix: NotRequired[pulumi.Input[str]]
+        execute: NotRequired[pulumi.Input[Sequence[pulumi.Input[str]]]]
+        force_directories: NotRequired[pulumi.Input[bool]]
+        force_html: NotRequired[pulumi.Input[bool]]
+        help: NotRequired[pulumi.Input[bool]]
+        https_only: NotRequired[pulumi.Input[bool]]
+        inet4_only: NotRequired[pulumi.Input[bool]]
+        input_file: NotRequired[pulumi.Input[str]]
+        keep_session_cookies: NotRequired[pulumi.Input[bool]]
+        no_clobber: NotRequired[pulumi.Input[bool]]
+        no_directories: NotRequired[pulumi.Input[bool]]
+        no_dns_cache: NotRequired[pulumi.Input[bool]]
+        no_verbose: NotRequired[pulumi.Input[bool]]
+        output_document: NotRequired[pulumi.Input[str]]
+        output_file: NotRequired[pulumi.Input[str]]
+        password: NotRequired[pulumi.Input[str]]
+        private_key: NotRequired[pulumi.Input[str]]
+        private_key_type: NotRequired[pulumi.Input[str]]
+        progress: NotRequired[pulumi.Input[str]]
+        quiet: NotRequired[pulumi.Input[bool]]
+        random_wait: NotRequired[pulumi.Input[bool]]
+        report_speed: NotRequired[pulumi.Input[str]]
+        save_cookies: NotRequired[pulumi.Input[str]]
+        show_progress: NotRequired[pulumi.Input[bool]]
+        start_pos: NotRequired[pulumi.Input[str]]
+        timeout: NotRequired[pulumi.Input[str]]
+        timestamping: NotRequired[pulumi.Input[bool]]
+        tries: NotRequired[pulumi.Input[int]]
+        user: NotRequired[pulumi.Input[str]]
+        user_agent: NotRequired[pulumi.Input[str]]
+        verbose: NotRequired[pulumi.Input[bool]]
+        version: NotRequired[pulumi.Input[str]]
+        wait: NotRequired[pulumi.Input[str]]
+elif False:
+    WgetArgsArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class WgetArgsArgs:
