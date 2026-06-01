@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM --platform=$BUILDPLATFORM golang:1.26.2-bookworm AS base
+FROM --platform=$BUILDPLATFORM golang:1.26.3-bookworm AS base
 ARG BUILDPLATFORM
 ARG TARGETOS
 ARG TARGETARCH
