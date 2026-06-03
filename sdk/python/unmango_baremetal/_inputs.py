@@ -4,14 +4,32 @@
 
 import copy
 import warnings
+import sys
 import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
+if sys.version_info >= (3, 11):
+    from typing import NotRequired, TypedDict, TypeAlias
+else:
+    from typing_extensions import NotRequired, TypedDict, TypeAlias
 from . import _utilities
 
 __all__ = [
     'ProvisionerConnectionArgs',
+    'ProvisionerConnectionArgsDict',
 ]
+
+MYPY = False
+
+if not MYPY:
+    class ProvisionerConnectionArgsDict(TypedDict):
+        address: pulumi.Input[str]
+        ca_pem: NotRequired[pulumi.Input[str]]
+        cert_pem: NotRequired[pulumi.Input[str]]
+        key_pem: NotRequired[pulumi.Input[str]]
+        port: NotRequired[pulumi.Input[str]]
+elif False:
+    ProvisionerConnectionArgsDict: TypeAlias = Mapping[str, Any]
 
 @pulumi.input_type
 class ProvisionerConnectionArgs:
