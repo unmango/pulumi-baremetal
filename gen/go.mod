@@ -1,10 +1,10 @@
 module github.com/unmango/pulumi-baremetal/gen
 
-go 1.22
+go 1.23
 
 require (
 	google.golang.org/grpc v1.67.1
-	google.golang.org/protobuf v1.36.3
+	google.golang.org/protobuf v1.36.11
 )
 
 require (
