@@ -205,7 +205,8 @@ var _ = Describe("Mv", func() {
 					Expect(output["args"]).To(Equal(inputs["args"]))
 					Expect(provisioner).NotTo(ContainFile(ctx, source))
 					Expect(provisioner).To(ContainFile(ctx, dest))
-					provisioner.Exec(ctx, "rm", dest)
+					_, err := provisioner.Exec(ctx, "rm", dest)
+					Expect(err).NotTo(HaveOccurred())
 					Expect(provisioner).NotTo(ContainFile(ctx, dest))
 				},
 			},
