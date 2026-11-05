@@ -14,7 +14,7 @@ require (
 	github.com/onsi/gomega v1.44.0
 	github.com/pulumi/pulumi-go-provider v0.26.0
 	github.com/pulumi/pulumi/pkg/v3 v3.162.0
-	github.com/pulumi/pulumi/sdk/v3 v3.162.0
+	github.com/pulumi/pulumi/sdk/v3 v3.274.1
 	github.com/testcontainers/testcontainers-go v0.35.0
 	github.com/unmango/pulumi-baremetal/provider v0.0.0-20240909200633-608a59ce9ed2
 	golang.org/x/exp v0.0.0-20261014143641-f0251eb4aa3e
